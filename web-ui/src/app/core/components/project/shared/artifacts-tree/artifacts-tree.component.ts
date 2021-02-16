@@ -17,8 +17,8 @@ import {
   Artifact,
   ArtifactListResponse,
 } from "src/app/core/models/artifact.model";
-import * as FileSaver from "file-saver";
 import { HttpResponse } from "@angular/common/http";
+import { FileSaverService } from "ngx-filesaver";
 
 /** File node data with possible child nodes. */
 export interface FileNode {
@@ -66,7 +66,10 @@ export class ArtifactsTreeComponent implements OnInit, OnChanges, OnDestroy {
   /** The MatTreeFlatDataSource connects the control and flattener to provide data. */
   dataSource: MatTreeFlatDataSource<FileNode, FlatTreeNode>;
 
-  constructor(private artifactsApiService: ArtifactsApiService) {
+  constructor(
+    private artifactsApiService: ArtifactsApiService,
+    private fileSaverService: FileSaverService
+  ) {
     this.treeFlattener = new MatTreeFlattener(
       this.transformer,
       this.getLevel,
@@ -139,7 +142,7 @@ export class ArtifactsTreeComponent implements OnInit, OnChanges, OnDestroy {
       );
 
       const fileName = regEx.exec(contentDisposition)[1];
-      FileSaver.saveAs(blob, fileName);
+      this.fileSaverService.save(blob, fileName);
     });
   }
 

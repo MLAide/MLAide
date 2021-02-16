@@ -10,7 +10,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTreeModule } from "@angular/material/tree";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import * as FileSaver from "file-saver";
+import { FileSaverService } from "ngx-filesaver";
 import { of } from "rxjs";
 import {
   Artifact,
@@ -40,12 +40,14 @@ describe("ArtifactsTreeComponent", () => {
 
   // service stubs
   let artifactsApiServiceStub: jasmine.SpyObj<ArtifactsApiService>;
+  let fileSaverServiceStub: jasmine.SpyObj<FileSaverService>;
 
   // data source mocks
   let artifactListDataSourceMock: ListDataSourceMock<
     Artifact,
     ArtifactListResponse
   > = new ListDataSourceMock();
+  fileSaverServiceStub = jasmine.createSpyObj("fileSaverServiceStub", ["save"]);
 
   beforeEach(async () => {
     // setup fakes
@@ -61,6 +63,7 @@ describe("ArtifactsTreeComponent", () => {
       declarations: [ArtifactsTreeComponent],
       providers: [
         { provide: ArtifactsApiService, useValue: artifactsApiServiceStub },
+        { provide: FileSaverService, useValue: fileSaverServiceStub },
       ],
       imports: [
         BrowserAnimationsModule,
@@ -312,7 +315,7 @@ describe("ArtifactsTreeComponent", () => {
       );
     });
 
-    it("should call FileSaver saveAs with correct blob, filename and content disposition", (done) => {
+    it("should call FileSaver saveAs with correct blob, filename and content disposition", () => {
       // arrange + act also in beforeEach
       // setup artifacts api
       const node: FlatTreeNode = {
@@ -335,19 +338,15 @@ describe("ArtifactsTreeComponent", () => {
         headers: headers,
       });
       artifactsApiServiceStub.download.and.returnValue(of(response));
-      const spy = spyOn(FileSaver, "saveAs");
 
       // act
       component.download(node);
 
       // assert
-      expect(spy).toHaveBeenCalledWith(jasmine.any(Blob), "data.csv");
-      const actualBlob: Blob = spy.calls.first().args[0] as Blob;
-      expect(actualBlob.type).toBe("text/csv");
-      actualBlob.arrayBuffer().then((buffer) => {
-        expect(buffer).toEqual(returnBuffer);
-        done();
-      });
+      expect(fileSaverServiceStub.save).toHaveBeenCalledWith(
+        new Blob([returnBuffer], { type: "text/csv" }),
+        "data.csv"
+      );
     });
   });
 
