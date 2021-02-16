@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="d2a7deb7096cada2c3177157652680fe7e6de0ed" datatype="html">
+        <source>Projects</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/project-list/project-list.component.html</context>
+          <context context-type="linenumber">4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4eb84de23219c85432e38fb4fbdeb6c0f103ff8b" datatype="html">
+        <source>Show all</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="994363f08f9fbfa3b3994ff7b35c6904fdff18d8" datatype="html">
+        <source>Profile</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="808294c2fe6ae422cdce77e4aaddb2eaac5e18fa" datatype="html">
+        <source>
+      Loading...
+    </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2766254cee071d09a8828c29a2b440a0ca8133d6" datatype="html">
+        <source>Add Project</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/create-project/create-project.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="d7b35c384aecd25a516200d6921836374613dfe7" datatype="html">
+        <source>Cancel</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/create-project/create-project.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/create-experiment/create-experiment.component.html</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="be5c752b58791dd799bc5d5482d4351e06f18673" datatype="html">
+        <source>Ok</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/create-project/create-project.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/create-experiment/create-experiment.component.html</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="deaa52a8150e281fd27dda07ced15b6e98b35199" datatype="html">
+        <source>Add Experiment</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/create-experiment/create-experiment.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4092e17a1338c591f328e1d74bf22cb84e5b2de2" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{item.value}}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/create-experiment/create-experiment.component.html</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/models-list/models-list.component.html</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5f27726154e0e74a500ccd7a71df6e212dd6ce11" datatype="html">
+        <source>Experiments</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/experiments-list/experiments-list.component.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/project/project.component.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7a4b7a0b2fdc77fdbb801f2ea739a00416c1d0c1" datatype="html">
+        <source>
+            Add experiment
+        </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/experiments-list/experiments-list.component.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="c6b71b36fbebb2da7532c82a633b650eee4a2828" datatype="html">
+        <source>
+                Add project
+            </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/project-list/project-list.component.html</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="cff1428d10d59d14e45edec3c735a27b5482db59" datatype="html">
+        <source>Name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/project-list/project-list.component.html</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="a6493c6ca346cd052da40423eda9c132de2b2002" datatype="html">
+        <source>Key</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/project-list/project-list.component.html</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="bc9b75b5af0b69c4b039c3c7d70c16fe96cee1e6" datatype="html">
+        <source>CreatedAt</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/project-list/project-list.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="be37a41139d137a21483439caa3709cdcea48185" datatype="html">
+        <source>Dashboards</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/project/project.component.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="96223d0bbba64fbd2c02b42540ee33c4db4d94d5" datatype="html">
+        <source>Runs</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/project/project.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="66f618f8ac4973f8beeab64d732acd58b44402e6" datatype="html">
+        <source>Models</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/project/project.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="121cc5391cd2a5115bc2b3160379ee5b36cd7716" datatype="html">
+        <source>Settings</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/project/project.component.html</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="f8acff72737c39a9cabec7a8481d7c084bebe20e" datatype="html">
+        <source> Run Name </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/models-list/models-list.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="cfdbf26d92a1a4d5886898347300a43f89d3e1c3" datatype="html">
+        <source> Model Name </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/models-list/models-list.component.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="55841e4bef36a1768906aa7555c43c31b7c61a3b" datatype="html">
+        <source> Version </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/models-list/models-list.component.html</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="f9c8c5ea47cd67574358bc5f672f24cf541ddbbd" datatype="html">
+        <source> Stage</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/models-list/models-list.component.html</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

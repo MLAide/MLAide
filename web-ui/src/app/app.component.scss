@@ -1,0 +1,25 @@
+@import "~@angular/material/theming";
+
+.app-toolbar {
+  position: fixed;
+  position: -webkit-sticky; /* For macOS/iOS Safari */
+  top: 0px;
+  right: 0px;
+  left: 0px;
+  z-index: 1000; /* Ensure that your app's content doesn't overlap the toolbar */
+  // background-color: rgba(32, 35, 44, 0.9); // transparent;
+}
+
+.app-toolbar-inactive {
+  // color: white;
+  @include mat-elevation(4);
+  // background-color: rgba(32, 35, 44, 0.9); //transparent;
+}
+
+.app-toolbar-active {
+  // background-color: white;
+  background-color: rgba(32, 35, 44, 0.9);
+  color: white;
+  @include mat-elevation-transition;
+  @include mat-elevation(8);
+}

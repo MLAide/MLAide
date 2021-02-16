@@ -1,0 +1,47 @@
+.example-container {
+    overflow: auto;
+  }
+  
+  .mat-table {
+    overflow: auto;
+  }
+  
+  .mat-cell,
+  .mat-header-cell {
+    word-wrap: initial;
+    display: table-cell;
+    padding-right: 16px;
+    line-break: unset;
+    white-space: nowrap;
+    overflow: hidden;
+    vertical-align: middle;
+  }
+  
+  .mat-row,
+  .mat-header-row {
+    display: table-row;
+  }
+
+  .equal-values {
+    border-radius: 4px;
+    border-color: gray; 
+    border-style: solid; 
+    border-width: 2px; 
+    width: 16px; 
+    height: 16px; 
+    background-color: white;
+  }
+
+  .divergent-values {
+    border-radius: 4px; 
+    border-color: gray; 
+    border-style: solid; 
+    border-width: 2px; 
+    width: 16px; 
+    height: 16px; 
+    background-color: #badbfc;
+  }
+
+  .make-bg-divergent {
+    background-color: #badbfc;
+  }

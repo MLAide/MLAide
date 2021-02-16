@@ -1,0 +1,62 @@
+<div fxLayout="row" fxLayoutAlign="end center">
+  <div fxLayout="row" class="margin-right-sm">
+    <div class="margin-right-sm equal-values"></div>
+    <div>
+      <span id="equal-values-legend" class="mat-body" i18n>Equal values</span>
+    </div>
+  </div>
+  <div fxLayout="row">
+    <div class="margin-right-sm divergent-values"></div>
+    <div>
+      <span id="divergent-values-legend" class="mat-body" i18n
+        >Divergent values</span
+      >
+    </div>
+  </div>
+</div>
+<div>
+  <h3 class="mat-h3"></h3>
+</div>
+<div fxLayout="column" class="example-container mat-elevation-z2">
+  <table mat-table matSort [dataSource]="dataSource">
+    <!-- https://github.com/angular/components/issues/6159 -->
+    <ng-container
+      [matColumnDef]="column"
+      *ngFor="let column of displayedColumnsName; let i = index"
+    >
+      <th
+        mat-header-cell
+        mat-sort-header
+        *matHeaderCellDef
+        style="border-bottom: none"
+      >
+        {{ column ? column : " " }}
+      </th>
+      <td
+        mat-cell
+        *matCellDef="let element"
+        [class.make-bg-divergent]="!valuesInRowDiffer(element)"
+      >
+        {{ element[i] ? element[i] : "-" }}
+      </td>
+    </ng-container>
+
+    <ng-container
+      [matColumnDef]="secondColumn"
+      *ngFor="let secondColumn of displayedColumnsStartTime; let i = index"
+    >
+      <th mat-header-cell *matHeaderCellDef>
+        <i>{{
+          secondColumn === "
+                    "
+            ? " "
+            : (secondColumn | date: "medium")
+        }}</i>
+      </th>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumnsName"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumnsStartTime"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumnsName"></tr>
+  </table>
+</div>

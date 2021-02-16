@@ -1,0 +1,23 @@
+.example-container {
+    overflow: auto;
+  }
+  
+  .mat-table {
+    overflow: auto;
+  }
+  
+  .mat-cell,
+  .mat-header-cell {
+    word-wrap: initial;
+    display: table-cell;
+    padding-right: 16px;
+    line-break: unset;
+    white-space: nowrap;
+    overflow: hidden;
+    vertical-align: middle;
+  }
+  
+  .mat-row,
+  .mat-header-row {
+    display: table-row;
+  }

@@ -1,0 +1,49 @@
+<div fxLayout="column" fxLayoutAlign="space-between start">
+    <h1 class="mat-display-2">{{experiment?.name}}</h1>
+</div>
+<div fxLayout="column">
+    <h2 class="mat-h2" i18n>Graph</h2>
+</div>
+<div fxLayout="row" fxLayoutAlign="space-between center">
+    <span id="experiment-graph-header-description" class="mat-body" i18n>
+        This graph shows the connections between runs and artifacts within the experiment <i>{{experiment?.name}}</i>
+    </span>
+    <div fxLayout="row" role="Legend for below experiment lineage">
+        <div fxLayout="row" class="margin-right-sm">
+            <div class="margin-right-sm runs-box">
+            </div>
+            <div><span class="mat-body" i18n>Runs</span></div>
+        </div>
+        <div fxLayout="row">
+            <div class="margin-right-sm artifacts-box">
+            </div>
+            <div><span class="mat-body" i18n>Artifacts</span></div>
+        </div>
+    </div>
+</div>
+<div>
+    <h3 class="mat-h3"></h3>
+</div>
+<div fxLayout="column">
+    <mat-card>
+        <mat-card-content>
+            <svg id="experiment-graph" #experimentGraph role="Visualized experiment lineage"
+                aria-label="Shows the connections betweens runs and artifacts within the experiment">
+                <g></g>
+            </svg>
+        </mat-card-content>
+    </mat-card>
+</div>
+<div>
+    <div fxLayout="column">
+        <h2 id="runs-title" class="mat-h2" i18n>Runs</h2>
+    </div>
+    <app-runs-list-table [runListDataSource]="runListDataSource" [projectKey]="projectKey"></app-runs-list-table>
+</div>
+<div>
+    <div fxLayout="column">
+        <h2 id="artifacts-title" class="mat-h2" i18n>Artifacts</h2>
+    </div>
+    <app-artifacts-list-table [artifactListDataSource]="artifactListDataSource" [projectKey]="projectKey">
+    </app-artifacts-list-table>
+</div>
