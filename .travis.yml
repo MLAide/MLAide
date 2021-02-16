@@ -7,10 +7,10 @@ branches:
   only:
     - master
 before_script:
+  - cd web-ui
   - npm install -g @angular/cli
   - npm install --save-dev @angular-devkit/build-angular
   - npm install
 script:
-  - cd web-ui
   - npm run test-headless
   - ng build
