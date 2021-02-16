@@ -10,6 +10,5 @@ before_script:
   - npm install -g @angular/cli
 script:
   - cd web-ui
-  - ng lint
   - npm run test-headless
   - ng build
