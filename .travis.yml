@@ -8,6 +8,7 @@ branches:
     - master
 before_script:
   - npm install -g @angular/cli
+  - npm install --save-dev @angular-devkit/build-angular
   - npm install
 script:
   - cd web-ui
