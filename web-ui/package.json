@@ -9,7 +9,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "postinstall": "ngcc",
-    "coverage": "ng test --no-watch --code-coverage"
+    "coverage": "ng test --no-watch --code-coverage",
+    "test-headless": "ng test --watch=false --browsers=ChromeHeadless"
   },
   "private": true,
   "dependencies": {
