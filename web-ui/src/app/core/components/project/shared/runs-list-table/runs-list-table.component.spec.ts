@@ -72,8 +72,12 @@ describe("RunsListTableComponent", () => {
     fakeProject = await getRandomProject();
     fakeRuns = await getRandomRuns(3);
 
-    runsApiServiceStub = jasmine.createSpyObj("runsApiService", ["exportRunsByRunKeys"]);
-    fileSaverServiceStub = jasmine.createSpyObj("fileSaverServiceStub", ["save"]);
+    runsApiServiceStub = jasmine.createSpyObj("runsApiService", [
+      "exportRunsByRunKeys",
+    ]);
+    fileSaverServiceStub = jasmine.createSpyObj("fileSaverServiceStub", [
+      "save",
+    ]);
 
     await TestBed.configureTestingModule({
       declarations: [
@@ -880,9 +884,18 @@ describe("RunsListTableComponent", () => {
             const aElement: TestElement = await runLink.host();
 
             expect(runLink).toBeTruthy();
-            expect(await aElement.getAttribute("ng-reflect-router-link")).toEqual(
-              // Only take 27 characters because the attribute will be shortened automatically to 27 chars
-              String(`/projects/${fakeProject.key}/runs/${run.key}`).substr(0, 27)
+            // Only take 27 characters because in travis the attribute will not be shortened automatically to 27 chars
+            expect(
+              (await aElement.getAttribute("ng-reflect-router-link")).substr(
+                0,
+                27
+              )
+            ).toEqual(
+              // Only take 27 characters because in the attribute will be shortened automatically to 27 chars
+              String(`/projects/${fakeProject.key}/runs/${run.key}`).substr(
+                0,
+                27
+              )
             );
           })
         );
