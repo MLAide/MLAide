@@ -315,7 +315,7 @@ describe("ArtifactsTreeComponent", () => {
       );
     });
 
-    it("should call FileSaver saveAs with correct blob, filename and content disposition", () => {
+    it("should call FileSaver saveAs with correct blob, filename and content disposition", async (done) => {
       // arrange + act also in beforeEach
       // setup artifacts api
       const node: FlatTreeNode = {
@@ -344,9 +344,15 @@ describe("ArtifactsTreeComponent", () => {
 
       // assert
       expect(fileSaverServiceStub.save).toHaveBeenCalledWith(
-        new Blob([returnBuffer], { type: "text/csv" }),
+        jasmine.any(Blob),
         "data.csv"
       );
+      const actualBlob = fileSaverServiceStub.save.calls.argsFor(0)[0] as Blob;
+      expect(actualBlob.type).toBe("text/csv");
+      actualBlob.arrayBuffer().then((buffer) => {
+        expect(buffer).toEqual(returnBuffer);
+        done();
+      });
     });
   });
 
