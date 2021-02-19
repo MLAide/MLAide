@@ -1,0 +1,34 @@
+spring:
+  data:
+    mongodb:
+      database: mvc
+      auto-index-creation: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://mvc-dev.eu.auth0.com/.well-known/jwks.json
+
+server:
+  port: 9000
+
+logging:
+  level:
+    root: INFO
+
+mvc:
+  security:
+    audience: https://api.mvc.io
+  user-info-uri: https://mvc-dev.eu.auth0.com/userinfo
+  object-storage:
+    endpoint: http://localhost:9001
+    region: us-east-1
+    credentials:
+      access-key: "minio"
+      secret-key: "minio123"
+  cors:
+    allowed-origins:
+    - http://localhost:4200
+    - http://localhost:4201
+  database:
+    enable-transactions: false

@@ -1,0 +1,1341 @@
+openapi: "3.0.0"
+info:
+  version: 0.0.1
+  title: Model Version Control
+  license:
+    name: unspecified
+servers:
+  - url: http://api.mvc.io/v1
+security:
+  - oauth2: []
+paths:
+  /projects:
+    get:
+      summary: List all projects
+      operationId: listProjects
+      tags:
+        - projects
+      responses:
+        '200':
+          description: An object containing an array of projects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Projects"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a project
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Project"
+      tags:
+        - projects
+      responses:
+        '200':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}:
+    get:
+      summary: Info for a specific project
+      operationId: getProjectByKey
+      tags:
+        - projects
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The requested project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        '404':
+          description: The requested project does not exist
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/members:
+    get:
+      summary: Get members of a project
+      operationId: getProjectMembers
+      tags:
+        - projects
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The project members
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectMembers"
+        '404':
+          description: The requested project does not exist
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      summary: Create a new or update an existing project member
+      operationId: addOrUpdateProjectMember
+      tags:
+        - projects
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/ProjectMember"
+      responses:
+        '204':
+          description: Project members were created/updated successfully
+        '404':
+          description: The requested project does not exist
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/members/{email}:
+    delete:
+      summary: Delete a member of a project
+      operationId: deleteProjectMember
+      tags:
+        - projects
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project
+          schema:
+            type: string
+        - name: email
+          in: path
+          required: true
+          description: The email of the user to delete. The email must be url encoded
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Project member created or updated successfully
+        '404':
+          description: The requested project does not exist
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/runs:
+    get:
+      summary: List all runs of a project
+      operationId: listRuns
+      tags:
+        - runs
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the experiments belong to
+          schema:
+            type: string
+        - name: runKeys
+          in: query
+          required: false
+          description: Keys of runs that shall be returned
+          schema:
+            type: array
+            items:
+              type: number
+        - name: experimentKey
+          in: query
+          required: false
+          description: Key of experiment that returned runs shall contain as experimentRef
+          schema:
+            type: string
+      responses:
+        '200':
+          description: An object containing an array of runs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Runs"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a new run
+      operationId: createRun
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Run"
+      tags:
+        - runs
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the run should belong to
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Run created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Run"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/runs/{runKey}:
+    get:
+      summary: Get single run by runKey
+      operationId: getRunByKey
+      description: Get single run by runKey
+      tags:
+        - runs
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the run belongs to
+          schema:
+            type: string
+        - name: runKey
+          in: path
+          required: true
+          description: The key of the run that should be updated
+          schema:
+            type: number
+      responses:
+        '200':
+          description: An object containing the requested run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Run"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      summary: Partial update an existing run
+      operationId: partialUpdateRun
+      description: "Update an existing run. This operation executes a partial update.
+        That means, that only properties that should be modified must be contained in the request body.
+        Only the status, parameters and metrics can be updated. If you update parameters or metrics with this
+        operation, all existing parameters/metrics are replaced. If you want to add a parameter/metric to the
+        existing ones, you should use PUT /projects/{projectKey}/runs/{runKey}/parameters or
+        PUT /projects/{projectKey}/runs/{runKey}/metrics"
+      tags:
+        - runs
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the run belongs to
+          schema:
+            type: string
+        - name: runKey
+          in: path
+          required: true
+          description: The key of the run that should be updated
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/Run"
+      responses:
+        '204':
+          description: The update was successful
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/runs/{runKey}/note:
+    put:
+      summary: Create a new or update the existing note for an existing run
+      operationId: createOrUpdateRunNote
+      tags:
+        - runs
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the run belongs to
+          schema:
+            type: string
+        - name: runKey
+          in: path
+          required: true
+          description: The key of the run that should be updated
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: This was an awesome run!
+      responses:
+        '200':
+          description: The updated note
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: This was an awesome run!
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/runs/{runKey}/parameters:
+    patch:
+      summary: Merge/Patch a parameter object into the existing parameter object
+      operationId: updateRunParameters
+      tags:
+        - runs
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the run belongs to
+          schema:
+            type: string
+        - name: runKey
+          in: path
+          required: true
+          description: The key of the run that should be updated
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/RunParameter"
+      responses:
+        '204':
+          description: The operation was successful
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/runs/{runKey}/metrics:
+    patch:
+      summary: Merge/Patch a metrics object into the existing metrics object
+      operationId: updateRunMetrics
+      tags:
+        - runs
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the run belongs to
+          schema:
+            type: string
+        - name: runKey
+          in: path
+          required: true
+          description: The key of the run that should be updated
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/RunMetric"
+      responses:
+        '204':
+          description: The operation was successful
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/experiments:
+    get:
+      summary: List all experiments of a project
+      operationId: listExperiments
+      tags:
+        - experiments
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the experiments belong to
+          schema:
+            type: string
+      responses:
+        '200':
+          description: An object containing an array of experiments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Experiments"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a new experiment
+      operationId: createExperiment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Experiment"
+      tags:
+        - experiments
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the experiment should belong to
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Experiment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Experiment"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/experiments/{experimentKey}:
+    get:
+      summary: Get single experiment by experimentKey
+      operationId: getExperimentByKey
+      description: Get single experiment by experimentKey
+      tags:
+        - experiments
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the experiment belongs to
+          schema:
+            type: string
+        - name: experimentKey
+          in: path
+          required: true
+          description: The key of the experiment that should be provided
+          schema:
+            type: string
+      responses:
+        '200':
+          description: An object containing the requested experiment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Experiment"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      summary: Merge/Patch a experiment object into the existing experiment object
+      operationId: updateExperiment
+      tags:
+        - experiments
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the run belongs to
+          schema:
+            type: string
+        - name: experimentKey
+          in: path
+          required: true
+          description: The key of the experiment that should be updated
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/Experiment"
+      responses:
+        '204':
+          description: The operation was successful
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/artifacts:
+    get:
+      summary: Get all artifacts of this project
+      operationId: listArtifacts
+      tags:
+        - artifacts
+      parameters:
+        - name: isModel
+          in: query
+          required: false
+          description: Get only artifacts that are models
+          schema:
+            type: boolean
+        - name: runKeys
+          in: query
+          required: false
+          description: Filter for artifacts that are attached to the specified runs. If run keys are specified `isModel` parameter will be ignored.
+          schema:
+            type: array
+            items:
+              type: number
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the artifacts belong to
+          schema:
+            type: string
+      responses:
+        '200':
+          description: An object containing an array of artifacts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Artifacts"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a new artifact
+      operationId: createArtifact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Artifact"
+      tags:
+        - artifacts
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the artifact should belong to
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Artifact created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Artifact"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/artifacts/{artifactName}/{artifactVersion}:
+    get:
+      summary: Get a specific artifact
+      operationId: getArtifact
+      tags:
+        - artifacts
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the artifacts belong to
+          schema:
+            type: string
+        - name: artifactName
+          in: path
+          required: true
+          description: The name of the artifact
+          schema:
+            type: string
+        - name: artifactVersion
+          in: path
+          required: true
+          description: The version of the artifact
+          schema:
+            type: number
+      responses:
+        '200':
+          description: The artifact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Artifact"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/artifacts/{artifactName}/{artifactVersion}/files:
+    get:
+      summary: Download all files of the artifact as a ZIP file
+      operationId: downloadArtifact
+      tags:
+        - artifacts
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the artifacts belong to
+          schema:
+            type: string
+        - name: artifactName
+          in: path
+          required: true
+          description: The name of the artifact that the file should be uploaded to
+          schema:
+            type: string
+        - name: artifactVersion
+          in: path
+          required: true
+          description: The version of the artifact that the file should be uploaded to
+          schema:
+            type: number
+      responses:
+        '200':
+          description: A file stream representing a ZIP file containing all files
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Upload a new file
+      operationId: uploadFile
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: base64
+      tags:
+        - artifacts
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the artifact belongs to
+          schema:
+            type: string
+        - name: artifactName
+          in: path
+          required: true
+          description: The name of the artifact that the file should be uploaded to
+          schema:
+            type: string
+        - name: artifactVersion
+          in: path
+          required: true
+          description: The version of the artifact that the file should be uploaded to
+          schema:
+            type: number
+      responses:
+        '204':
+          description: File uploaded successfully
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/artifacts/{artifactName}/{artifactVersion}/files/{fileId}:
+    get:
+      summary: Download a single file of an artifact
+      operationId: downloadArtifactFile
+      tags:
+        - artifacts
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the artifacts belong to
+          schema:
+            type: string
+        - name: artifactName
+          in: path
+          required: true
+          description: The name of the artifact that the file should be uploaded to
+          schema:
+            type: string
+        - name: artifactVersion
+          in: path
+          required: true
+          description: The version of the artifact that the file should be uploaded to
+          schema:
+            type: number
+        - name: fileId
+          in: path
+          required: true
+          description: The id of the file
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A file stream representing the file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/artifacts/{artifactName}/{artifactVersion}/model:
+    put:
+      summary: Create or update a model
+      operationId: createOrUpdateModel
+      tags:
+        - artifacts
+      parameters:
+        - name: artifactName
+          in: path
+          required: true
+          description: The name of the artifact
+          schema:
+            type: string
+        - name: artifactVersion
+          in: path
+          required: true
+          description: The version of the artifact
+          schema:
+            type: number
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the model should belong to
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrUpdateModel"
+      responses:
+        '204':
+          description: Model created
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /users/current:
+    get:
+      summary: Get current user
+      operationId: getCurrentUser
+      tags:
+        - users
+      responses:
+        '200':
+          description: Current user object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: Update current user
+      operationId: updateCurrentUser
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        '204':
+          description: User updated
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /users/current/api-keys:
+    get:
+      summary: Get API keys of current user
+      operationId: getApiKeys
+      tags:
+        - users
+      responses:
+        '200':
+          description: List of API keys
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeys"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a new API key
+      operationId: createApiKey
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApiKey"
+      responses:
+        '200':
+          description: API key created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKey"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /users/current/api-keys/{apiKeyId}:
+    delete:
+      summary: Delete API key
+      operationId: deleteApiKey
+      tags:
+        - users
+      parameters:
+        - name: apiKeyId
+          in: path
+          required: true
+          description: The id of the api key
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Delete was successful
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    ApiKey:
+      type: object
+      required:
+        - createdAt
+        - id
+      properties:
+        apiKey:
+          type: string
+          description: This property is only set in the response of the createApiKey operation
+          readOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        description:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        id:
+          type: string
+          readOnly: true
+    ApiKeys:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApiKey"
+    Artifact:
+      type: object
+      required:
+        - createdAt
+        - files
+        - id
+        - name
+        - runKey
+        - type
+        - version
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        createdBy:
+          $ref: "#/components/schemas/UserRef"
+        files:
+          type: array
+          readOnly: true
+          items:
+            $ref: "#/components/schemas/ArtifactFile"
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        model:
+          $ref: '#/components/schemas/Model'
+        name:
+          type: string
+          example: elasticnet-wine-model
+        runKey:
+          type: number
+          example: 1
+        runName:
+          type: string
+          readOnly: true
+          example: linear-regression-with-sklearn
+        type:
+          type: string
+          readOnly: true
+          example: model
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        version:
+          type: number
+          example: 1
+          readOnly: true
+    ArtifactFile:
+      type: object
+      required:
+        - fileId
+        - fileName
+      properties:
+        fileId:
+          type: string
+          readOnly: true
+        fileName:
+          type: string
+          readOnly: true
+          example: directory/file.txt
+    ArtifactRef:
+      type: object
+      required:
+        - name
+        - version
+      properties:
+        name:
+          type: string
+        version:
+          type: integer
+          format: int32
+    Artifacts:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Artifact"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 404
+        message:
+          type: string
+          example: The requested resource does not exist
+    Experiment:
+      type: object
+      required:
+        - createdAt
+        - key
+        - name
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        key:
+          type: string
+          example: linear-regression-with-sklearn
+        name:
+          type: string
+          example: linear regression with sklearn
+        tags:
+          type: array
+          items:
+            type: string
+          example:
+            - sklearn
+            - failed
+        status:
+          type: string
+          default: TODO
+          enum:
+            - TODO
+            - IN_PROGRESS
+            - COMPLETED
+    Experiments:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Experiment"
+    CreateOrUpdateModel:
+      required:
+        - stage
+      properties:
+        stage:
+          $ref: "#/components/schemas/ModelStage"
+        note:
+          type: string
+    Model:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        createdBy:
+          $ref: "#/components/schemas/UserRef"
+        modelRevisions:
+          type: array
+          readOnly: true
+          items:
+            $ref: "#/components/schemas/ModelRevision"
+        stage:
+          $ref: "#/components/schemas/ModelStage"
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+    ModelStage:
+      type: string
+      default: NONE
+      enum:
+        - NONE
+        - STAGING
+        - PRODUCTION
+        - ABANDONED
+        - DEPRECATED
+    ModelRevision:
+      type: object
+      readOnly: true
+      required:
+        - createdAt
+        - createdBy
+        - oldStage
+        - newStage
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          $ref: "#/components/schemas/UserRef"
+        newStage:
+          $ref: "#/components/schemas/ModelStage"
+        note:
+          type: string
+        oldStage:
+          $ref: "#/components/schemas/ModelStage"
+    Project:
+      type: object
+      required:
+        - key
+        - name
+        - createdAt
+      properties:
+        key:
+          type: string
+          description: The unique key of a project. The project key must only include characters, digits and hyphens.
+          example: my-first-ml-project
+        name:
+          type: string
+          example: My First ML Project
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+    ProjectMember:
+      type: object
+      required:
+        - email
+        - nickName
+        - role
+        - userId
+      properties:
+        email:
+          type: string
+        nickName:
+          type: string
+          readOnly: true
+        role:
+          type: string
+          enum:
+            - OWNER
+            - CONTRIBUTOR
+            - REPORTER
+        userId:
+          type: string
+          readOnly: true
+    ProjectMembers:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectMember"
+    Projects:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+    Run:
+      type: object
+      required:
+        - id
+        - status
+        - createdBy
+        - createdAt
+      properties:
+        artifacts:
+          type: array
+          readOnly: true
+          items:
+            $ref: "#/components/schemas/ArtifactRef"
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        createdBy:
+          $ref: "#/components/schemas/UserRef"
+        endTime:
+          type: string
+          format: date-time
+          readOnly: true
+        experimentRefs:
+          type: array
+          items:
+            properties:
+              experimentKey:
+                type: string
+        id:
+          type: string
+          readOnly: true
+          example: ed9b4c00-d1d7-4dd4-b58b-008f5fc587a5
+        metrics:
+          $ref: "#/components/schemas/RunMetric"
+        name:
+          type: string
+          example: training model with sklearn
+        note:
+          type: string
+          example: should try better though
+        parameters:
+          $ref: "#/components/schemas/RunParameter"
+        startTime:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          type: string
+          enum:
+            - RUNNING
+            - COMPLETED
+            - FAILED
+          readOnly: true
+        usedArtifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArtifactRef"
+    Runs:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Run"
+    RunMetric:
+      type: object
+      additionalProperties: true
+      example:
+        acc: 98
+        rmse: 98
+    RunParameter:
+      type: object
+      additionalProperties: true
+      example:
+        batch_size: 512
+        mse: 0.1
+    User:
+      type: object
+      readOnly: true
+      required:
+        - email
+        - id
+        - nickName
+      properties:
+        userId:
+          type: string
+          readOnly: true
+          example: 5def26a1-a932-404a-998c-aabf84994dd0
+        email:
+          type: string
+          readOnly: true
+          example: adam-test@mvc.io
+        firstName:
+          type: string
+          readOnly: false
+          example: Adam
+        lastName:
+          type: string
+          readOnly: false
+          example: Test
+        nickName:
+          type: string
+          readOnly: false
+          example: Alice
+    UserRef:
+      type: object
+      readOnly: true
+      required:
+        - userId
+        - nickName
+      properties:
+        userId:
+          type: string
+          readOnly: true
+          example: 5def26a1-a932-404a-998c-aabf84994dd0
+        nickName:
+          type: string
+          readOnly: true
+          example: Alice
+
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      description: This API uses OAuth 2 with the Authorization Code Flow with Proof Key for Code Exchange (PKCE).
+      flows:
+        authorizationCode:
+          authorizationUrl: https://mvc-dev.eu.auth0.com/authorize
+          tokenUrl: https://mvc-dev.eu.auth0.com/oauth/token
+          scopes:
+            projects:create: Create new projects
+            projects:edit: Edit existing projects
