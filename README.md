@@ -1,5 +1,5 @@
 # :construction: Work in Progress :construction:
-# MLAide [![Build Status](https://travis-ci.com/MLAide/MLAide.svg?branch=master)](https://travis-ci.com/MLAide/MLAide)
+# MLAide [![Angular CI](https://github.com/MLAide/MLAide/actions/workflows/angular.yml/badge.svg)](https://github.com/MLAide/MLAide/actions/workflows/angular.yml)
 
 ## Purpose
 
