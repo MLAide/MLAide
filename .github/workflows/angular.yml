@@ -28,11 +28,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: cd web-ui
-        run: cd web-ui
-        
+          
       - name: npm install and npm run build
+        working-directory: ./web-ui
         run: |
           npm ci
           npm run test-headless
