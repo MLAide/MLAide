@@ -6,12 +6,11 @@ sudo: required
 branches:
   only:
     - master
-addons:
-  apt:
-    sources:
-      - google-chrome
-    packages:
-      - google-chrome-stable
+sources:
+  - google-chrome
+packages:
+  - dpkg
+  - google-chrome-stable
 cache:
   directories:
     - ./node_modules
