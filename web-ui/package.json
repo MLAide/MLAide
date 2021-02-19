@@ -10,7 +10,7 @@
     "e2e": "ng e2e",
     "postinstall": "ngcc",
     "coverage": "ng test --no-watch --code-coverage",
-    "test-headless": "ng test --watch=false --browsers=ChromeHeadless"
+    "test-headless": "ng test --watch=false --no-progress --browsers=ChromeHeadlessNoSandbox"
   },
   "private": true,
   "dependencies": {
