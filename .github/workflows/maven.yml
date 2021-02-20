@@ -7,11 +7,11 @@ on:
   push:
     branches: [ master ]
     paths: 
-    - '/webserver/**'
+    - 'webserver/**'
   pull_request:
     branches: [ master ]
     paths: 
-    - '/webserver/**'
+    - 'webserver/**'
 
 jobs:
   build:
