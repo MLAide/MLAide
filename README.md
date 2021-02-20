@@ -1,5 +1,5 @@
 # :construction: Work in Progress :construction:
-# MLAide [![Build Status](https://travis-ci.com/MLAide/MLAide.svg?branch=master)](https://travis-ci.com/MLAide/MLAide)
+# MLAide [![Angular CI](https://github.com/MLAide/MLAide/actions/workflows/angular.yml/badge.svg)](https://github.com/MLAide/MLAide/actions/workflows/angular.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MLAide_MLAide&metric=alert_status)](https://sonarcloud.io/dashboard?id=MLAide_MLAide)
 
 ## Purpose
 
