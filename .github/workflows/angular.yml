@@ -3,8 +3,12 @@ name: Angular CI
 on:
   push:
     branches: [ master ]
+    paths: 
+    - './web-ui/**'
   pull_request:
     branches: [ master ]
+    paths: 
+    - './web-ui/**'
 
 jobs:
   build:
