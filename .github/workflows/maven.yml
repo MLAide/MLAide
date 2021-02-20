@@ -34,5 +34,5 @@ jobs:
 
     - name: Build with Maven
       working-directory: ./webserver
-      run: mvn --batch-mode --update-snapshots verify
-      #run: mvn -e --batch-mode --update-snapshots clean test
+      #run: mvn --batch-mode --update-snapshots verify
+      run: mvn -e --batch-mode --update-snapshots clean test
