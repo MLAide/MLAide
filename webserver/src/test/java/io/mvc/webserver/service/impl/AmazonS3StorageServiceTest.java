@@ -10,18 +10,17 @@ import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
 import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest;
 import com.amazonaws.services.s3.model.UploadPartRequest;
 import io.mvc.webserver.faker.FileFaker;
+import io.mvc.webserver.integration.S3;
 import io.mvc.webserver.service.FileUploadResult;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -36,10 +35,7 @@ class AmazonS3StorageServiceTest {
     private AmazonS3 s3;
 
     @Container
-    @SuppressWarnings("rawtypes")
-    public static DockerComposeContainer environment =
-            new DockerComposeContainer(new File("src/test/resources/minio.yaml"))
-                    .withExposedService("nginx", 9100);
+    public static S3 s3Container = new S3();
 
     @BeforeEach
     void createStorageService() {
@@ -231,10 +227,7 @@ class AmazonS3StorageServiceTest {
     }
 
     private AmazonS3 amazonS3() {
-        String minioUrl = "http://"
-                + environment.getServiceHost("nginx", 9100)
-                + ":"
-                + environment.getServicePort("nginx", 9100);
+        String minioUrl = s3Container.getS3Endpoint();
 
         var endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(minioUrl, "us-east-1");
         var credentials = new BasicAWSCredentials("minio", "minio123");

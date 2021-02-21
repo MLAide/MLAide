@@ -1,16 +1,14 @@
 package io.mvc.webserver.repository;
 
+import io.mvc.webserver.integration.MongoDB;
 import io.mvc.webserver.repository.entity.ArtifactRefEntity;
 import io.mvc.webserver.repository.entity.RunEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.testcontainers.containers.MongoDBContainer;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -23,20 +21,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Testcontainers
-@ContextConfiguration(initializers = ExtendedRunQueriesImplTest.Initializer.class)
 class ExtendedRunQueriesImplTest {
     @Container
-    private static final MongoDBContainer mongoDB = new MongoDBContainer("mongo:4.2.5");
+    private static final MongoDB mongoDB = new MongoDB();
 
-    public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-        @Override
-        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            TestPropertyValues values = TestPropertyValues.of(
-                    "spring.data.mongodb.uri=" + mongoDB.getReplicaSetUrl()
-            );
-            values.applyTo(configurableApplicationContext);
-        }
+    @DynamicPropertySource
+    public static void mongoDBProperties(DynamicPropertyRegistry registry) {
+        mongoDB.updateSpringProperties(registry);
     }
 
     @Autowired
