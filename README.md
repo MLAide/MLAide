@@ -1,5 +1,8 @@
 # :construction: Work in Progress :construction:
-# MLAide [![Angular CI](https://github.com/MLAide/MLAide/actions/workflows/angular.yml/badge.svg)](https://github.com/MLAide/MLAide/actions/workflows/angular.yml) [![Java CI with Maven](https://github.com/MLAide/MLAide/actions/workflows/maven.yml/badge.svg?branch=master)](https://github.com/MLAide/MLAide/actions/workflows/maven.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mlaide&metric=alert_status)](https://sonarcloud.io/dashboard?id=mlaide)
+# MLAide 
+
+## CI
+[![Web UI CI](https://github.com/MLAide/MLAide/actions/workflows/web-ui.yml/badge.svg)](https://github.com/MLAide/MLAide/actions/workflows/web-ui.yml) [![Webserver CI](https://github.com/MLAide/MLAide/actions/workflows/webserver.yml/badge.svg)](https://github.com/MLAide/MLAide/actions/workflows/webserver.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=web-ui&metric=alert_status)](https://sonarcloud.io/dashboard?id=web-ui) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=webserver&metric=alert_status)](https://sonarcloud.io/dashboard?id=webserver)
 
 ## Purpose
 
