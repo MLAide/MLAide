@@ -37,7 +37,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           
       - name: npm install and npm run build
-        working-directory: ./web-ui
+        #working-directory: ./web-ui
         run: |
           npm ci
           npm run test-headless
@@ -47,4 +47,4 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ANGULAR }}
