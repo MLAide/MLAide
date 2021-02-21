@@ -1,4 +1,4 @@
-package io.mvc.webserver.service;
+package io.mvc.webserver.service.impl;
 
 import com.github.javafaker.Faker;
 import io.mvc.webserver.faker.ProjectFaker;
@@ -6,7 +6,6 @@ import io.mvc.webserver.model.ArtifactRef;
 import io.mvc.webserver.model.Project;
 import io.mvc.webserver.repository.ArtifactRepository;
 import io.mvc.webserver.repository.entity.ArtifactRefEntity;
-import io.mvc.webserver.service.impl.ValidationServiceImpl;
 import io.mvc.webserver.service.mapper.ArtifactMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;

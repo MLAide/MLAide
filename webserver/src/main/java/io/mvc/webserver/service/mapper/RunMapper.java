@@ -7,7 +7,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
 import java.util.List;
-import java.util.Map;
 
 @Mapper(uses = CommonDataTypeMapper.class, componentModel = "spring")
 public interface RunMapper {
