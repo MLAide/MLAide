@@ -3,8 +3,13 @@ name: Angular CI
 on:
   push:
     branches: [ master ]
+    paths: 
+    - 'web-ui/**'
   pull_request:
     branches: [ master ]
+    types: [opened, synchronize, reopened]
+    paths: 
+    - 'web-ui/**'
 
 jobs:
   build:
@@ -14,7 +19,9 @@ jobs:
         node-version: [12.x]
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: Cache node modules
         uses: actions/cache@v1
@@ -34,3 +41,10 @@ jobs:
         run: |
           npm ci
           npm run test-headless
+          npm run build
+          
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
