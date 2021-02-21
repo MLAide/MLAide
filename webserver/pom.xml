@@ -21,6 +21,9 @@
 		<mapstruct.version>1.4.2.Final</mapstruct.version>
 		<lombok.version>1.18.16</lombok.version>
 		<testcontainers.version>1.15.1</testcontainers.version>
+		<sonar.projectKey>mlaide</sonar.projectKey>
+		<sonar.organization>mlaide</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 
 	<dependencies>
