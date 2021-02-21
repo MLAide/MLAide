@@ -3,8 +3,8 @@ name: Angular CI
 on:
   push:
     branches: [ master ]
-    paths: 
-    - 'web-ui/**'
+    #paths: 
+   # - 'web-ui/**'
   pull_request:
     branches: [ master ]
     types: [opened, synchronize, reopened]
@@ -37,7 +37,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           
       - name: npm install and npm run build
-        #working-directory: ./web-ui
+        working-directory: ./web-ui
         run: |
           npm ci
           npm run test-headless
