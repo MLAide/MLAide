@@ -3,15 +3,14 @@ name: Web UI CI
 on:
   push:
     branches: [ master ]
-    #paths: 
-   # - 'web-ui/**'
+    paths: 
+    - 'web-ui/**'
   pull_request:
     branches: [ master ]
     types: [opened, synchronize, reopened]
     paths: 
     - 'web-ui/**'
     
- # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 jobs:
   build:
