@@ -1,16 +1,17 @@
-name: Angular CI
+name: Web UI CI
 
 on:
   push:
     branches: [ master ]
-    #paths: 
-   # - 'web-ui/**'
+    paths: 
+    - 'web-ui/**'
   pull_request:
     branches: [ master ]
     types: [opened, synchronize, reopened]
     paths: 
     - 'web-ui/**'
-
+    
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -47,7 +48,4 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ANGULAR }}
-        with:
-          projectKey: mlaide-angular
-       
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_WEB_UI }}
