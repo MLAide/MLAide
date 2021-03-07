@@ -33,5 +33,5 @@ Track all relevant information of your machine learning models with ML Aide to m
 
 ## Links
 
-- **Web Page:** https://mlaide-ai.web.app/
+- **Homepage:** https://mlaide-ai.web.app/
 - **Documentation:** https://mlaide.github.io/docs/
