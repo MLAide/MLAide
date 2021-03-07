@@ -1,7 +1,8 @@
 import { HttpClient, HttpResponse } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { map } from "rxjs/operators";
+import { APP_CONFIG, IAppConfig } from "src/app/config/app-config.model";
 import {
   ArtifactListResponse,
   CreateOrUpdateModel,
@@ -12,9 +13,16 @@ import { ListDataSource } from "./list-data-source";
   providedIn: "root",
 })
 export class ArtifactsApiService {
-  public readonly API_URL = "http://localhost:9000";
+  public readonly API_URL;
+  public readonly API_VERSION;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    @Inject(APP_CONFIG) appConfig: IAppConfig,
+    private http: HttpClient
+  ) {
+    this.API_URL = appConfig.apiServer.uri;
+    this.API_VERSION = appConfig.apiServer.version;
+  }
 
   getArtifacts(
     projectKey: string,
@@ -22,6 +30,7 @@ export class ArtifactsApiService {
   ): ListDataSource<ArtifactListResponse> {
     return new ArtifactsListDataSource(
       this.API_URL,
+      this.API_VERSION,
       this.http,
       projectKey,
       onlyModels
@@ -34,6 +43,7 @@ export class ArtifactsApiService {
   ): ListDataSource<ArtifactListResponse> {
     return new ArtifactsListDataSource(
       this.API_URL,
+      this.API_VERSION,
       this.http,
       projectKey,
       false,
@@ -48,7 +58,7 @@ export class ArtifactsApiService {
     createOrUpdateModel: CreateOrUpdateModel
   ): Observable<void> {
     return this.http.put<void>(
-      `${this.API_URL}/api/v1/projects/${projectKey}/artifacts/${artifactName}/${artifactVersion}/model`,
+      `${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/artifacts/${artifactName}/${artifactVersion}/model`,
       createOrUpdateModel
     );
   }
@@ -61,7 +71,7 @@ export class ArtifactsApiService {
   ): Observable<HttpResponse<ArrayBuffer>> {
     if (fileId) {
       return this.http.get(
-        `${this.API_URL}/api/v1/projects/${projectKey}/artifacts/${artifactName}/${artifactVersion}/files/${fileId}`,
+        `${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/artifacts/${artifactName}/${artifactVersion}/files/${fileId}`,
         {
           observe: "response",
           responseType: "arraybuffer",
@@ -69,7 +79,7 @@ export class ArtifactsApiService {
       );
     } else {
       return this.http.get(
-        `${this.API_URL}/api/v1/projects/${projectKey}/artifacts/${artifactName}/${artifactVersion}/files`,
+        `${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/artifacts/${artifactName}/${artifactVersion}/files`,
         {
           observe: "response",
           responseType: "arraybuffer",
@@ -88,6 +98,7 @@ export class ArtifactsListDataSource
 
   constructor(
     private apiUrl: string,
+    private apiVersion: string,
     private http: HttpClient,
     private projectKey: string,
     private onlyModels = false,
@@ -107,7 +118,7 @@ export class ArtifactsListDataSource
     }
 
     const artifacts = this.http.get<ArtifactListResponse>(
-      `${this.apiUrl}/api/v1/projects/${this.projectKey}/artifacts`,
+      `${this.apiUrl}/api/${this.apiVersion}/projects/${this.projectKey}/artifacts`,
       { params }
     );
 

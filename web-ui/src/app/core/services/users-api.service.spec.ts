@@ -1,23 +1,33 @@
-import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
-import { skip } from 'rxjs/operators';
-import { TestBed } from '@angular/core/testing';
-import { getRandomApiKey, getRandomApiKeys, getRandomUser } from './../../mocks/fake-generator';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+  TestRequest,
+} from "@angular/common/http/testing";
+import { skip } from "rxjs/operators";
+import { TestBed } from "@angular/core/testing";
+import {
+  getRandomApiKey,
+  getRandomApiKeys,
+  getRandomUser,
+} from "./../../mocks/fake-generator";
 
-import { ApiKeysListDataSource, UsersApiService } from './users-api.service';
-import { ApiKey, ApiKeyListResponse } from '../models/apiKey.model';
-import { User } from '../models/user.model';
-import { Observable } from 'rxjs';
-import { ListDataSource } from '.';
+import { UsersApiService } from "./users-api.service";
+import { ApiKey, ApiKeyListResponse } from "../models/apiKey.model";
+import { User } from "../models/user.model";
+import { Observable } from "rxjs";
+import { ListDataSource } from ".";
+import { APP_CONFIG } from "src/app/config/app-config.model";
+import { appConfigMock } from "src/app/mocks/app-config.mock";
 
-describe('UsersApiService', () => {
+describe("UsersApiService", () => {
   let service: UsersApiService;
   let httpMock: HttpTestingController;
+  let mockConfig = appConfigMock;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule
-      ]
+      providers: [{ provide: APP_CONFIG, useValue: mockConfig }],
+      imports: [HttpClientTestingModule],
     });
     service = TestBed.inject(UsersApiService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -27,12 +37,12 @@ describe('UsersApiService', () => {
     httpMock.verify();
   });
 
-  it('should be created', () => {
+  it("should be created", () => {
     expect(service).toBeTruthy();
   });
 
-  describe('getCurrentUser', () => {
-    it('should return user from api response', async (done) => {
+  describe("getCurrentUser", () => {
+    it("should return user from api response", async (done) => {
       // arrange
       const fakeUser: User = await getRandomUser();
 
@@ -40,19 +50,21 @@ describe('UsersApiService', () => {
       const user$: Observable<User> = service.getCurrentUser();
 
       // assert
-      user$.pipe(skip(1)).subscribe(response => {
+      user$.pipe(skip(1)).subscribe((response) => {
         expect(response).toEqual(fakeUser);
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/users/current`);
-      expect(req.request.method).toBe('GET');
+      const req: TestRequest = httpMock.expectOne(
+        `${service.API_URL}/api/v1/users/current`
+      );
+      expect(req.request.method).toBe("GET");
       req.flush(fakeUser);
     });
   });
 
-  describe('updateCurrentUser', () => {
-    it('should call put on api request', async (done) => {
+  describe("updateCurrentUser", () => {
+    it("should call put on api request", async (done) => {
       // arrange
       const fakeUser: User = await getRandomUser();
 
@@ -62,13 +74,15 @@ describe('UsersApiService', () => {
       });
 
       // assert
-      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/users/current`);
-      expect(req.request.method).toBe('PUT');
+      const req: TestRequest = httpMock.expectOne(
+        `${service.API_URL}/api/v1/users/current`
+      );
+      expect(req.request.method).toBe("PUT");
       expect(req.request.body).toBe(fakeUser);
       req.flush(null);
     });
 
-    it('should update currentUser observable on successful update', async (done) => {
+    it("should update currentUser observable on successful update", async (done) => {
       // arrange
       const fakeUser: User = await getRandomUser();
 
@@ -79,15 +93,17 @@ describe('UsersApiService', () => {
       service.currentUser$.pipe(skip(1)).subscribe((user) => {
         expect(user).toBe(fakeUser);
         done();
-      })
+      });
 
-      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/users/current`);
+      const req: TestRequest = httpMock.expectOne(
+        `${service.API_URL}/api/v1/users/current`
+      );
       req.flush(null);
     });
   });
 
-  describe('getApiKeys', () => {
-    it('should return api key data source that emits results from api response', async (done) => {
+  describe("getApiKeys", () => {
+    it("should return api key data source that emits results from api response", async (done) => {
       // arrange
       const fakeApiKeys: ApiKey[] = await getRandomApiKeys(2);
       const dummyResponse: ApiKeyListResponse = { items: fakeApiKeys };
@@ -96,20 +112,22 @@ describe('UsersApiService', () => {
       const dataSource: ListDataSource<ApiKeyListResponse> = service.getApiKeys();
 
       // assert
-      dataSource.items$.pipe(skip(1)).subscribe(response => {
+      dataSource.items$.pipe(skip(1)).subscribe((response) => {
         expect(response.items.length).toBe(fakeApiKeys.length);
         expect(response).toEqual(dummyResponse);
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/users/current/api-keys`);
-      expect(req.request.method).toBe('GET');
+      const req: TestRequest = httpMock.expectOne(
+        `${service.API_URL}/api/v1/users/current/api-keys`
+      );
+      expect(req.request.method).toBe("GET");
       req.flush(dummyResponse);
     });
   });
 
-  describe('createApiKey', () => {
-    it('should return an api key as observable from api response', async (done) => {
+  describe("createApiKey", () => {
+    it("should return an api key as observable from api response", async (done) => {
       // arrange
       const fakeApiKey: ApiKey = await getRandomApiKey();
 
@@ -117,20 +135,22 @@ describe('UsersApiService', () => {
       const apiKey$: Observable<ApiKey> = service.createApiKey(fakeApiKey);
 
       // assert
-      apiKey$.subscribe(response => {
+      apiKey$.subscribe((response) => {
         expect(response).toEqual(fakeApiKey);
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/users/current/api-keys`);
-      expect(req.request.method).toBe('POST');
+      const req: TestRequest = httpMock.expectOne(
+        `${service.API_URL}/api/v1/users/current/api-keys`
+      );
+      expect(req.request.method).toBe("POST");
       expect(req.request.body).toEqual(fakeApiKey);
       req.flush(fakeApiKey);
     });
   });
 
-  describe('deleteApiKey', () => {
-    it('should send a delete request with the api key id', async (done) => {
+  describe("deleteApiKey", () => {
+    it("should send a delete request with the api key id", async (done) => {
       // arrange
       const fakeApiKey: ApiKey = await getRandomApiKey();
 
@@ -140,8 +160,10 @@ describe('UsersApiService', () => {
       });
 
       // assert
-      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/users/current/api-keys/${fakeApiKey.id}`);
-      expect(req.request.method).toBe('DELETE');
+      const req: TestRequest = httpMock.expectOne(
+        `${service.API_URL}/api/v1/users/current/api-keys/${fakeApiKey.id}`
+      );
+      expect(req.request.method).toBe("DELETE");
       req.flush(null);
     });
   });

@@ -1,0 +1,16 @@
+{
+  "env": {
+    "name": "PROD"
+  },
+  "apiServer": {
+    "uri": "${API_URL}",
+    "version": "${API_VERSION}"
+  },
+  "auth": {
+    "allowedUrls": "${AUTH_ALLOWED_URLS}",
+    "audience": "${AUTH_AUDIENCE}",
+    "clientId": "${AUTH_CLIEND_ID}",
+    "issuer": "${AUTH_ISSUER}",
+    "scope": "${AUTH_SCOPE}"
+  }
+}
