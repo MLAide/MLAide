@@ -1,0 +1,17 @@
+// https://pumpingco.de/blog/environment-variables-angular-docker/
+{
+  "env": {
+    "name": "PROD:q"
+  },
+  "apiServer": {
+    "uri": "${API_URL}",
+    "version": "${API_VERSION}"
+  },
+  "auth": {
+    "allowedUrls": "${AUTH_ALLOWED_URLS}",
+    "clientId": "${AUTH_CLIEND_ID}",
+    "customQueryParams": "${AUTH_CUSTOM_QUERY_PARAMS}",
+    "issuer": "${AUTH_ISSUER}",
+    "scope": "${AUTH_SCOPE}"
+  }
+}

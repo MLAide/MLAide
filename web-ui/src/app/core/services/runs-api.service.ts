@@ -1,33 +1,42 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Run, RunListResponse } from '../models/run.model';
-import { ListDataSource } from './list-data-source';
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { BehaviorSubject, Observable, Subject } from "rxjs";
+import { map } from "rxjs/operators";
+import { AppConfig } from "src/assets/config/app.config";
+import { Run, RunListResponse } from "../models/run.model";
+import { ListDataSource } from "./list-data-source";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class RunsApiService {
-  public readonly API_URL = 'http://localhost:9000';
+  public readonly API_URL = AppConfig.settings.apiServer.uri;
+  public readonly API_VERSION = AppConfig.settings.apiServer.version;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  exportRunsByRunKeys(projectKey: string, runKeys: number[]): Observable<ArrayBuffer> {
+  exportRunsByRunKeys(
+    projectKey: string,
+    runKeys: number[]
+  ): Observable<ArrayBuffer> {
     let params = {};
     if (runKeys !== null) {
-      const runKeysParam = runKeys.join(',');
+      const runKeysParam = runKeys.join(",");
       params = {
-        runKeys: runKeysParam
+        runKeys: runKeysParam,
       };
     }
 
-    return this.http.get(`${this.API_URL}/api/v1/projects/${projectKey}/runs`,
-      {
-        observe: 'body',
-        params,
-        responseType: 'arraybuffer',
-      }).pipe(
+    return this.http
+      .get(
+        `${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/runs`,
+        {
+          observe: "body",
+          params,
+          responseType: "arraybuffer",
+        }
+      )
+      .pipe(
         map((file: ArrayBuffer) => {
           return file;
         })
@@ -35,50 +44,73 @@ export class RunsApiService {
   }
 
   getRun(projectKey: string, runKey: number): Observable<Run> {
-    return this.http.get<Run>(`${this.API_URL}/api/v1/projects/${projectKey}/runs/${runKey}`);
+    return this.http.get<Run>(
+      `${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/runs/${runKey}`
+    );
   }
 
   getRuns(projectKey: string): ListDataSource<RunListResponse> {
-    return new RunListDataSource(this.http, this.API_URL, projectKey);
+    return new RunListDataSource(this.http, projectKey);
   }
 
-  getRunsByExperimentKey(projectKey: string, experimentKey: string): ListDataSource<RunListResponse> {
-    return new RunListDataSource(this.http, this.API_URL, projectKey, null, experimentKey);
+  getRunsByExperimentKey(
+    projectKey: string,
+    experimentKey: string
+  ): ListDataSource<RunListResponse> {
+    return new RunListDataSource(this.http, projectKey, null, experimentKey);
   }
 
-  getRunsByRunKeys(projectKey: string, runKeys: number[]): ListDataSource<RunListResponse> {
-    return new RunListDataSource(this.http, this.API_URL, projectKey, runKeys);
+  getRunsByRunKeys(
+    projectKey: string,
+    runKeys: number[]
+  ): ListDataSource<RunListResponse> {
+    return new RunListDataSource(this.http, projectKey, runKeys);
   }
 
-  patchRun(projectKey: string, runKey: number, runToPatch: {}): Observable<Run> {
-    return this.http.patch<Run>(`${this.API_URL}/api/v1/projects/${projectKey}/runs/${runKey}`,
+  patchRun(
+    projectKey: string,
+    runKey: number,
+    runToPatch: {}
+  ): Observable<Run> {
+    return this.http.patch<Run>(
+      `${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/runs/${runKey}`,
       runToPatch,
       {
         headers: {
-          'content-type': 'application/merge-patch+json'
-        }
-      });
+          "content-type": "application/merge-patch+json",
+        },
+      }
+    );
   }
 
-  updateNoteInRun(projectKey: string, runKey: number, note: string): Observable<string> {
-    return this.http.put(`${this.API_URL}/api/v1/projects/${projectKey}/runs/${runKey}/note`,
+  updateNoteInRun(
+    projectKey: string,
+    runKey: number,
+    note: string
+  ): Observable<string> {
+    return this.http.put(
+      `${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/runs/${runKey}/note`,
       note,
       {
         headers: {
-          'content-type': 'text/plain'
+          "content-type": "text/plain",
         },
-        responseType: 'text',
-      });
+        responseType: "text",
+      }
+    );
   }
 }
 
 export class RunListDataSource implements ListDataSource<RunListResponse> {
+  public readonly API_URL = AppConfig.settings.apiServer.uri;
+  public readonly API_VERSION = AppConfig.settings.apiServer.version;
   public items$: Observable<RunListResponse>;
-  private runsSubject$: Subject<RunListResponse> = new BehaviorSubject({ items: [] });
+  private runsSubject$: Subject<RunListResponse> = new BehaviorSubject({
+    items: [],
+  });
 
   constructor(
     private http: HttpClient,
-    private apiUrl: string,
     private projectKey: string,
     private runKeys: number[] = null,
     private experimentKey: string = null
@@ -90,22 +122,25 @@ export class RunListDataSource implements ListDataSource<RunListResponse> {
   public refresh(): void {
     let params = {};
     if (this.runKeys !== null) {
-      const runKeysParam = this.runKeys.join(',');
+      const runKeysParam = this.runKeys.join(",");
       params = {
-        runKeys: runKeysParam
+        runKeys: runKeysParam,
       };
     }
 
     if (this.experimentKey !== null) {
       params = {
-        experimentKey: this.experimentKey
+        experimentKey: this.experimentKey,
       };
     }
-    const runs = this.http.get<RunListResponse>(`${this.apiUrl}/api/v1/projects/${this.projectKey}/runs`, { params });
+    const runs = this.http.get<RunListResponse>(
+      `${this.API_URL}/api/${this.API_VERSION}/projects/${this.projectKey}/runs`,
+      { params }
+    );
 
     runs.subscribe(
-      result => this.runsSubject$.next(result),
-      err => this.runsSubject$.error(err)
+      (result) => this.runsSubject$.next(result),
+      (err) => this.runsSubject$.error(err)
     );
   }
 }
