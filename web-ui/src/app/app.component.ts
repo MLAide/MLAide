@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  Inject,
+  OnDestroy,
+  OnInit,
+} from "@angular/core";
 import {
   ChangeDetectorRef,
   ElementRef,
@@ -7,7 +13,7 @@ import {
 } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { flatMap } from "rxjs/operators";
-import { AppConfig } from "src/assets/config/app.config";
+import { APP_CONFIG, IAppConfig } from "./config/app-config.model";
 import { AuthService } from "./auth/auth.service";
 import { Project } from "./core/models/project.model";
 import { User } from "./core/models/user.model";
@@ -26,8 +32,8 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   public isDoneLoading$: Observable<boolean>;
   public projects: Project[];
   public user: User;
-  public configName = AppConfig.settings.env.name;
-  public apiUrl = AppConfig.settings.apiServer.uri;
+  public configName;
+  public apiUrl;
   tabBarHeight: number;
   title = "web-ui";
   private isAuthenticatedSubscription: Subscription;
@@ -39,7 +45,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     private projectsApiService: ProjectsApiService,
     private userService: UsersApiService
   ) {
-    console.log(JSON.stringify(AppConfig.settings));
     this.isAuthenticated$ = this.authService.isAuthenticated$;
     this.isDoneLoading$ = this.authService.isDoneLoading$;
     this.isDoneLoading$

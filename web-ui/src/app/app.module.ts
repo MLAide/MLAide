@@ -1,6 +1,6 @@
 import { CdkTableModule } from "@angular/cdk/table";
 import { HttpClientModule } from "@angular/common/http";
-import { APP_INITIALIZER, NgModule } from "@angular/core";
+import { NgModule } from "@angular/core";
 import { FlexLayoutModule } from "@angular/flex-layout";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
@@ -25,11 +25,6 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { AuthModule } from "./auth/auth.module";
 import { CoreModule } from "./core/core.module";
-import { AppConfig } from "src/assets/config/app.config";
-
-export function initializeApp(appConfig: AppConfig) {
-  return () => appConfig.load();
-}
 
 @NgModule({
   declarations: [AppComponent],
@@ -61,15 +56,7 @@ export function initializeApp(appConfig: AppConfig) {
     AuthModule.forRoot(),
     CoreModule,
   ],
-  providers: [
-    AppConfig,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeApp,
-      deps: [AppConfig],
-      multi: true,
-    },
-  ],
+  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

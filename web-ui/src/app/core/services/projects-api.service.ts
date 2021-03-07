@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
-import { AppConfig } from "src/assets/config/app.config";
+import { APP_CONFIG, IAppConfig } from "src/app/config/app-config.model";
 
 import { Project, ProjectListResponse } from "../models/project.model";
 import {
@@ -14,10 +14,16 @@ import { ListDataSource } from "./list-data-source";
   providedIn: "root",
 })
 export class ProjectsApiService {
-  public readonly API_URL = AppConfig.settings.apiServer.uri;
-  public readonly API_VERSION = AppConfig.settings.apiServer.version;
+  public readonly API_URL;
+  public readonly API_VERSION;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    @Inject(APP_CONFIG) appConfig: IAppConfig,
+    private http: HttpClient
+  ) {
+    this.API_URL = appConfig.apiServer.uri;
+    this.API_VERSION = appConfig.apiServer.version;
+  }
 
   addProject(project: Project): Observable<Project> {
     return this.http.post<Project>(
@@ -33,13 +39,18 @@ export class ProjectsApiService {
   }
 
   getProjects(): ListDataSource<ProjectListResponse> {
-    return new ProjectListDataSource(this.http);
+    return new ProjectListDataSource(this.API_URL, this.API_VERSION, this.http);
   }
 
   getProjectMembers(
     projectKey: string
   ): ListDataSource<ProjectMemberListResponse> {
-    return new ProjectMemberListDataSource(this.http, projectKey);
+    return new ProjectMemberListDataSource(
+      this.API_URL,
+      this.API_VERSION,
+      this.http,
+      projectKey
+    );
   }
 
   createOrUpdateProjectMembers(
@@ -66,21 +77,23 @@ export class ProjectsApiService {
 
 export class ProjectListDataSource
   implements ListDataSource<ProjectListResponse> {
-  public readonly API_URL = AppConfig.settings.apiServer.uri;
-  public readonly API_VERSION = AppConfig.settings.apiServer.version;
   public items$: Observable<ProjectListResponse>;
   private projectsSubject$: Subject<ProjectListResponse> = new BehaviorSubject({
     items: [],
   });
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private apiUrl: string,
+    private apiVersion: string,
+    private http: HttpClient
+  ) {
     this.items$ = this.projectsSubject$.asObservable();
     this.refresh();
   }
 
   public refresh(): void {
     const projects = this.http.get<ProjectListResponse>(
-      `${this.API_URL}/api/${this.API_VERSION}/projects`
+      `${this.apiUrl}/api/${this.apiVersion}/projects`
     );
 
     projects.subscribe(
@@ -92,21 +105,24 @@ export class ProjectListDataSource
 
 export class ProjectMemberListDataSource
   implements ListDataSource<ProjectMemberListResponse> {
-  public readonly API_URL = AppConfig.settings.apiServer.uri;
-  public readonly API_VERSION = AppConfig.settings.apiServer.version;
   public items$: Observable<ProjectMemberListResponse>;
   private projectsSubject$: Subject<ProjectMemberListResponse> = new BehaviorSubject(
     { items: [] }
   );
 
-  constructor(private http: HttpClient, private projectKey: string) {
+  constructor(
+    private apiUrl: string,
+    private apiVersion: string,
+    private http: HttpClient,
+    private projectKey: string
+  ) {
     this.items$ = this.projectsSubject$.asObservable();
     this.refresh();
   }
 
   public refresh(): void {
     const projects = this.http.get<ProjectMemberListResponse>(
-      `${this.API_URL}/api/${this.API_VERSION}/projects/${this.projectKey}/members`
+      `${this.apiUrl}/api/${this.apiVersion}/projects/${this.projectKey}/members`
     );
 
     projects.subscribe(

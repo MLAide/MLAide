@@ -1,8 +1,8 @@
 import { HttpClient, HttpResponse } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { map } from "rxjs/operators";
-import { AppConfig } from "src/assets/config/app.config";
+import { APP_CONFIG, IAppConfig } from "src/app/config/app-config.model";
 import {
   ArtifactListResponse,
   CreateOrUpdateModel,
@@ -13,23 +13,42 @@ import { ListDataSource } from "./list-data-source";
   providedIn: "root",
 })
 export class ArtifactsApiService {
-  public readonly API_URL = AppConfig.settings.apiServer.uri;
-  public readonly API_VERSION = AppConfig.settings.apiServer.version;
+  public readonly API_URL;
+  public readonly API_VERSION;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    @Inject(APP_CONFIG) appConfig: IAppConfig,
+    private http: HttpClient
+  ) {
+    this.API_URL = appConfig.apiServer.uri;
+    this.API_VERSION = appConfig.apiServer.version;
+  }
 
   getArtifacts(
     projectKey: string,
     onlyModels = false
   ): ListDataSource<ArtifactListResponse> {
-    return new ArtifactsListDataSource(this.http, projectKey, onlyModels);
+    return new ArtifactsListDataSource(
+      this.API_URL,
+      this.API_VERSION,
+      this.http,
+      projectKey,
+      onlyModels
+    );
   }
 
   getArtifactsByRunKeys(
     projectKey: string,
     runKeys: number[]
   ): ListDataSource<ArtifactListResponse> {
-    return new ArtifactsListDataSource(this.http, projectKey, false, runKeys);
+    return new ArtifactsListDataSource(
+      this.API_URL,
+      this.API_VERSION,
+      this.http,
+      projectKey,
+      false,
+      runKeys
+    );
   }
 
   putModel(
@@ -72,14 +91,14 @@ export class ArtifactsApiService {
 
 export class ArtifactsListDataSource
   implements ListDataSource<ArtifactListResponse> {
-  public readonly API_URL = AppConfig.settings.apiServer.uri;
-  public readonly API_VERSION = AppConfig.settings.apiServer.version;
   public items$: Observable<ArtifactListResponse>;
   private artifactsSubject$: Subject<ArtifactListResponse> = new BehaviorSubject(
     { items: [] }
   );
 
   constructor(
+    private apiUrl: string,
+    private apiVersion: string,
     private http: HttpClient,
     private projectKey: string,
     private onlyModels = false,
@@ -99,7 +118,7 @@ export class ArtifactsListDataSource
     }
 
     const artifacts = this.http.get<ArtifactListResponse>(
-      `${this.API_URL}/api/${this.API_VERSION}/projects/${this.projectKey}/artifacts`,
+      `${this.apiUrl}/api/${this.apiVersion}/projects/${this.projectKey}/artifacts`,
       { params }
     );
 

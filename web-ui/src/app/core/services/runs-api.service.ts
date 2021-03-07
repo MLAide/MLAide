@@ -1,8 +1,8 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { map } from "rxjs/operators";
-import { AppConfig } from "src/assets/config/app.config";
+import { APP_CONFIG, IAppConfig } from "src/app/config/app-config.model";
 import { Run, RunListResponse } from "../models/run.model";
 import { ListDataSource } from "./list-data-source";
 
@@ -10,10 +10,16 @@ import { ListDataSource } from "./list-data-source";
   providedIn: "root",
 })
 export class RunsApiService {
-  public readonly API_URL = AppConfig.settings.apiServer.uri;
-  public readonly API_VERSION = AppConfig.settings.apiServer.version;
+  public readonly API_URL;
+  public readonly API_VERSION;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    @Inject(APP_CONFIG) appConfig: IAppConfig,
+    private http: HttpClient
+  ) {
+    this.API_URL = appConfig.apiServer.uri;
+    this.API_VERSION = appConfig.apiServer.version;
+  }
 
   exportRunsByRunKeys(
     projectKey: string,
@@ -50,21 +56,39 @@ export class RunsApiService {
   }
 
   getRuns(projectKey: string): ListDataSource<RunListResponse> {
-    return new RunListDataSource(this.http, projectKey);
+    return new RunListDataSource(
+      this.API_URL,
+      this.API_VERSION,
+      this.http,
+      projectKey
+    );
   }
 
   getRunsByExperimentKey(
     projectKey: string,
     experimentKey: string
   ): ListDataSource<RunListResponse> {
-    return new RunListDataSource(this.http, projectKey, null, experimentKey);
+    return new RunListDataSource(
+      this.API_URL,
+      this.API_VERSION,
+      this.http,
+      projectKey,
+      null,
+      experimentKey
+    );
   }
 
   getRunsByRunKeys(
     projectKey: string,
     runKeys: number[]
   ): ListDataSource<RunListResponse> {
-    return new RunListDataSource(this.http, projectKey, runKeys);
+    return new RunListDataSource(
+      this.API_URL,
+      this.API_VERSION,
+      this.http,
+      projectKey,
+      runKeys
+    );
   }
 
   patchRun(
@@ -102,14 +126,14 @@ export class RunsApiService {
 }
 
 export class RunListDataSource implements ListDataSource<RunListResponse> {
-  public readonly API_URL = AppConfig.settings.apiServer.uri;
-  public readonly API_VERSION = AppConfig.settings.apiServer.version;
   public items$: Observable<RunListResponse>;
   private runsSubject$: Subject<RunListResponse> = new BehaviorSubject({
     items: [],
   });
 
   constructor(
+    private apiUrl: string,
+    private apiVersion: string,
     private http: HttpClient,
     private projectKey: string,
     private runKeys: number[] = null,
@@ -134,7 +158,7 @@ export class RunListDataSource implements ListDataSource<RunListResponse> {
       };
     }
     const runs = this.http.get<RunListResponse>(
-      `${this.API_URL}/api/${this.API_VERSION}/projects/${this.projectKey}/runs`,
+      `${this.apiUrl}/api/${this.apiVersion}/projects/${this.projectKey}/runs`,
       { params }
     );
 

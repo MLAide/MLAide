@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
-import { AppConfig } from "src/assets/config/app.config";
+import { APP_CONFIG, IAppConfig } from "src/app/config/app-config.model";
 
 import { Experiment, ExperimentListResponse } from "../models/experiment.model";
 import { ListDataSource } from "./list-data-source";
@@ -10,10 +10,16 @@ import { ListDataSource } from "./list-data-source";
   providedIn: "root",
 })
 export class ExperimentsApiService {
-  public readonly API_URL = AppConfig.settings.apiServer.uri;
-  public readonly API_VERSION = AppConfig.settings.apiServer.version;
+  public readonly API_URL;
+  public readonly API_VERSION;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    @Inject(APP_CONFIG) appConfig: IAppConfig,
+    private http: HttpClient
+  ) {
+    this.API_URL = appConfig.apiServer.uri;
+    this.API_VERSION = appConfig.apiServer.version;
+  }
 
   addExperiment(
     projectKey: string,
@@ -35,7 +41,12 @@ export class ExperimentsApiService {
   }
 
   getExperiments(projectKey: string): ListDataSource<ExperimentListResponse> {
-    return new ExperimentListDataSource(this.http, projectKey);
+    return new ExperimentListDataSource(
+      this.API_URL,
+      this.API_VERSION,
+      this.http,
+      projectKey
+    );
   }
 
   patchExperiment(
@@ -57,21 +68,24 @@ export class ExperimentsApiService {
 
 export class ExperimentListDataSource
   implements ListDataSource<ExperimentListResponse> {
-  public readonly API_URL = AppConfig.settings.apiServer.uri;
-  public readonly API_VERSION = AppConfig.settings.apiServer.version;
   public items$: Observable<ExperimentListResponse>;
   private experimentsSubject$: Subject<ExperimentListResponse> = new BehaviorSubject(
     { items: [] }
   );
 
-  constructor(private http: HttpClient, private projectKey: string) {
+  constructor(
+    private apiUrl: string,
+    private apiVersion: string,
+    private http: HttpClient,
+    private projectKey: string
+  ) {
     this.items$ = this.experimentsSubject$.asObservable();
     this.refresh();
   }
 
   public refresh(): void {
     const experiments = this.http.get<ExperimentListResponse>(
-      `${this.API_URL}/api/${this.API_VERSION}/projects/${this.projectKey}/experiments`
+      `${this.apiUrl}/api/${this.apiVersion}/projects/${this.projectKey}/experiments`
     );
 
     experiments.subscribe(
