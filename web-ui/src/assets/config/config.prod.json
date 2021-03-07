@@ -8,8 +8,8 @@
   },
   "auth": {
     "allowedUrls": "dummy",
+    "audience": "dummy",
     "clientId": "dummy",
-    "customQueryParams": "dummy",
     "issuer": "dummy",
     "scope": "dummy"
   }

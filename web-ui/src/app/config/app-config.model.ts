@@ -22,5 +22,6 @@ export interface IAppConfig {
     };
     issuer: string;
     scope: string;
+    audience: string;
   };
 }

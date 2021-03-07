@@ -8,8 +8,8 @@
   },
   "auth": {
     "allowedUrls": "${AUTH_ALLOWED_URLS}",
+    "audience": "${AUTH_AUDIENCE}",
     "clientId": "${AUTH_CLIEND_ID}",
-    "customQueryParams": "${AUTH_CUSTOM_QUERY_PARAMS}",
     "issuer": "${AUTH_ISSUER}",
     "scope": "${AUTH_SCOPE}"
   }
