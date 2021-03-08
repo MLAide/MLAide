@@ -1,6 +1,9 @@
 <div fxLayout="row" #tabBar>
   <mat-toolbar color="primary">
-    <mat-toolbar-row class="app-toolbar app-toolbar-inactive" (scroll)="onWindowScroll($event);">
+    <mat-toolbar-row
+      class="app-toolbar app-toolbar-inactive"
+      (scroll)="onWindowScroll($event)"
+    >
       <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
         <div fxLayout="row">
           <div>
@@ -10,15 +13,21 @@
             <a mat-button [matMenuTriggerFor]="projectsMenu" i18n>Projects</a>
             <mat-menu #projectsMenu="matMenu">
               <div *ngFor="let project of projects">
-                <a mat-menu-item [routerLink]="['/projects', project.key]">{{project.name}}</a>
+                <a mat-menu-item [routerLink]="['/projects', project.key]">{{
+                  project.name
+                }}</a>
               </div>
               <a mat-menu-item [routerLink]="['/projects']" i18n>Show all</a>
             </mat-menu>
           </div>
         </div>
         <div *ngIf="isAuthenticated$ | async">
-          <a mat-button [matMenuTriggerFor]="menu" aria-label="User profile button with a menu">
-            {{user?.nickName}}
+          <a
+            mat-button
+            [matMenuTriggerFor]="menu"
+            aria-label="User profile button with a menu"
+          >
+            {{ user?.nickName }}
           </a>
           <mat-menu #menu="matMenu">
             <a mat-menu-item [routerLink]="['/user-settings']">
@@ -30,8 +39,14 @@
           </mat-menu>
         </div>
         <div *ngIf="(isAuthenticated$ | async) == false">
-          <a mat-flat-button color="primary" (click)="login()" aria-label="Login button">
-            <mat-icon>login</mat-icon><span class="button-text" i18n>Login</span>
+          <a
+            mat-flat-button
+            color="primary"
+            (click)="login()"
+            aria-label="Login button"
+          >
+            <mat-icon>login</mat-icon
+            ><span class="button-text" i18n>Login</span>
           </a>
         </div>
       </div>
@@ -41,6 +56,6 @@
 
 <!--https://stackoverflow.com/questions/46966728/use-variable-inside-style-tag-angular-2
 https://stackoverflow.com/questions/33135398/how-do-properly-use-csss-calc-with-ng-style-->
-<div [ngStyle]="{'height': 'calc(100vh - ' +tabBarHeight +'px)'}">
+<div [ngStyle]="{ height: 'calc(100vh - ' + tabBarHeight + 'px)' }">
   <router-outlet></router-outlet>
 </div>

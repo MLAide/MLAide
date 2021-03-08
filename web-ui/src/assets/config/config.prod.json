@@ -1,0 +1,16 @@
+{
+  "env": {
+    "name": "PROD"
+  },
+  "apiServer": {
+    "uri": "dummy",
+    "version": "dummy"
+  },
+  "auth": {
+    "allowedUrls": "dummy",
+    "audience": "dummy",
+    "clientId": "dummy",
+    "issuer": "dummy",
+    "scope": "dummy"
+  }
+}
