@@ -76,7 +76,7 @@ services:
   nginx:
     image: nginx:1.19.2-alpine
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./minio/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
       - "9001:9000"
     depends_on:
@@ -118,12 +118,9 @@ services:
     volumes:
       - $KEYCLOACK_CONFIGURATION:/tmp/mlaide.json
 
-  web:
-    build:
-      context: ..
-      dockerfile: ../Dockerfile
-    image: $APP_NAME
-    container_name: $APP_NAME
+  webserver:
+    image: mlaide/webserver
+    container_name: mlaide-webserver
     restart: on-failure
     depends_on:
       - mongo

@@ -21,4 +21,4 @@ connection from your Python app to MLAide.
 ```python
 ```
 
-# TODO: Add api key
+# TODO: Add pre-defined api key
