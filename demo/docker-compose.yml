@@ -1,0 +1,156 @@
+# https://saeidfarahi.medium.com/get-started-with-spring-boot-mongodb-and-docker-compose-cfae8283ed1b
+version: "3.8"
+
+services:
+  # starts 4 docker containers running minio server instances.
+  # using nginx reverse proxy, load balancing, you can access
+  # it through port 9000.
+  minio1:
+    image: minio/minio:RELEASE.2020-10-09T22-55-05Z
+    volumes:
+      - data1-1:/data1
+      - data1-2:/data2
+    expose:
+      - "9000"
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server http://minio{1...4}/data{1...2}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  minio2:
+    image: minio/minio:RELEASE.2020-10-09T22-55-05Z
+    volumes:
+      - data2-1:/data1
+      - data2-2:/data2
+    expose:
+      - "9000"
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server http://minio{1...4}/data{1...2}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  minio3:
+    image: minio/minio:RELEASE.2020-10-09T22-55-05Z
+    volumes:
+      - data3-1:/data1
+      - data3-2:/data2
+    expose:
+      - "9000"
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server http://minio{1...4}/data{1...2}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  minio4:
+    image: minio/minio:RELEASE.2020-10-09T22-55-05Z
+    volumes:
+      - data4-1:/data1
+      - data4-2:/data2
+    expose:
+      - "9000"
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server http://minio{1...4}/data{1...2}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  nginx:
+    image: nginx:1.19.2-alpine
+    volumes:
+      - ./minio/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "9001:9000"
+    depends_on:
+      - minio1
+      - minio2
+      - minio3
+      - minio4
+
+  mongo:
+    image: mongo:4.4
+    container_name: mongo
+    hostname: mongo
+    restart: unless-stopped
+    ports:
+      - $MONGO_HOST_PORT:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_ROOT_PASSWORD
+      - MONGO_INITDB_DATABASE=$MONGO_DB
+      - MONGO_DB_USERNAME=$MONGO_DB_USERNAME
+      - MONGO_DB_PASSWORD=$MONGO_DB_PASSWORD
+    volumes:
+      - $MONGO_DATA_HOST_PATH:/data/db/
+      - $MONGO_LOG_HOST_PATH:/var/log/mongodb/
+      - $MONGO_INITDB_SCRIPTS_HOST_PATH:/docker-entrypoint-initdb.d/
+    command: ["--bind_ip", "0.0.0.0"]
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloack
+    hostname: keycloack
+    restart: unless-stopped
+    ports:
+      - 9999:8080
+    environment:
+      - KEYCLOAK_USER=$KEYCLOACK_ADMIN_USER
+      - KEYCLOAK_PASSWORD=$KEYCLOACK_ADMIN_PASSWORD
+      - KEYCLOAK_IMPORT=/tmp/mlaide.json
+    volumes:
+      - $KEYCLOACK_CONFIGURATION:/tmp/mlaide.json
+
+  webserver:
+    image: mlaide/webserver
+    container_name: mlaide-webserver
+    restart: on-failure
+    depends_on:
+      - mongo
+      - nginx
+      - keycloak
+    ports:
+      - $SERVER_HOST_PORT:8080
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_APPLICATION_NAME=$APP_NAME
+      - SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE=$MONGO_DB
+      - SPRING_DATA_MONGODB_AUTO_INDEX_CREATION=$MONGO_AUTO_INDEX_CREATION
+      - SPRING_DATA_MONGODB_HOST=mongo
+      - SPRING_DATA_MONGODB_PORT=27017
+      - SPRING_DATA_MONGODB_USERNAME=$MONGO_DB_USERNAME
+      - SPRING_DATA_MONGODB_PASSWORD=$MONGO_DB_PASSWORD
+      - SPRING_DATA_MONGODB_DATABASE=$MONGO_DB
+      - spring.security.oauth2.resourceserver.jwt.jwk-set-uri=$MLAIDE_AUTH_JWK_SET_URI
+      - mvc.security.audience=$MLAIDE_AUTH_AUDIENCE
+      - mvc.user-info-uri=$MLAIDE_AUTH_USER_INFO_ENDPOINT
+
+## By default this config uses default local driver,
+## For custom volumes replace with volume driver configuration.
+volumes:
+  data1-1:
+  data1-2:
+  data2-1:
+  data2-2:
+  data3-1:
+  data3-2:
+  data4-1:
+  data4-2:
