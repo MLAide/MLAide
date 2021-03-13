@@ -102,20 +102,20 @@ services:
       - $MONGO_INITDB_SCRIPTS_HOST_PATH:/docker-entrypoint-initdb.d/
     command: ["--bind_ip", "0.0.0.0"]
 
-  keycloack:
+  keycloak:
     image: quay.io/keycloak/keycloak:latest
-    container_name: keycloack
-    hostname: keycloack.mlaide
+    container_name: keycloak
+    hostname: keycloak.mlaide
     restart: unless-stopped
     ports:
-      - $KEYCLOACK_PORT:$KEYCLOACK_PORT
-    command: -Djboss.http.port=$KEYCLOACK_PORT
+      - $KEYCLOAK_PORT:$KEYCLOAK_PORT
+    command: -Djboss.http.port=$KEYCLOAK_PORT
     environment:
-      - KEYCLOAK_USER=$KEYCLOACK_ADMIN_USER
-      - KEYCLOAK_PASSWORD=$KEYCLOACK_ADMIN_PASSWORD
+      - KEYCLOAK_USER=$KEYCLOAK_ADMIN_USER
+      - KEYCLOAK_PASSWORD=$KEYCLOAK_ADMIN_PASSWORD
       - KEYCLOAK_IMPORT=/tmp/mlaide.json
     volumes:
-      - $KEYCLOACK_CONFIGURATION:/tmp/mlaide.json
+      - $KEYCLOAK_CONFIGURATION:/tmp/mlaide.json
 
   webserver:
     image: mlaide/webserver
@@ -124,7 +124,7 @@ services:
     depends_on:
       - mongo
       - minio-nginx
-      - keycloack
+      - keycloak
     ports:
       - $SERVER_PORT:8080
     environment:

@@ -7,7 +7,7 @@ Now you should have several containers running:
 - **MLAide webserver**
 - **MongoDB** that is used by the webserver to store all structured metadata
 - **min.io** that is used by the webserver to store all artifacts and models
-- **keycloack** to provide an identity provider, authentication and authorization
+- **keycloak** to provide an identity provider, authentication and authorization
 
 You can access the [Web UI on localhost:8880](http://localhost:8880) with your browser. This demo
 provides three pre-defined users:
