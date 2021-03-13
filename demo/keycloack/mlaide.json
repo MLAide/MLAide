@@ -345,6 +345,7 @@
     "username" : "adam",
     "enabled" : true,
     "totp" : false,
+    "email": "adam@demo.mlaide.com",
     "emailVerified" : true,
     "firstName" : "Adam",
     "lastName" : "Test",
@@ -356,7 +357,57 @@
       "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
     } ],
     "disableableCredentialTypes" : [ ],
-    "requiredActions" : [ "UPDATE_PASSWORD" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "uma_authorization", "offline_access" ],
+    "clientRoles" : {
+      "account" : [ "manage-account", "view-profile" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "6fc77e41-0add-4dc9-a2b5-411e67a535cd",
+    "createdTimestamp" : 1615151715435,
+    "username" : "bob",
+    "enabled" : true,
+    "totp" : false,
+    "email": "bob@demo.mlaide.com",
+    "emailVerified" : true,
+    "firstName" : "Bob",
+    "lastName" : "Test",
+    "credentials" : [ {
+      "id" : "afc90300-626f-45ea-b224-67c773d32860",
+      "type" : "password",
+      "createdDate" : 1615151728988,
+      "secretData" : "{\"value\":\"s881N3oZDjYx1FR7Ms8XAN9l7zz5shBNCNONvEbotmof7SW4B/AnwW+5B9z5ol8B0MkuaqX7HpMYL6aqwbSaaQ==\",\"salt\":\"ijPC0ZB5HxbmrVmbh0Z6UQ==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "uma_authorization", "offline_access" ],
+    "clientRoles" : {
+      "account" : [ "manage-account", "view-profile" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "218d3202-dd71-4f6a-b57a-af27d6cfad52",
+    "createdTimestamp" : 1615151715435,
+    "username" : "eve",
+    "enabled" : true,
+    "totp" : false,
+    "email": "eve@demo.mlaide.com",
+    "emailVerified" : true,
+    "firstName" : "Eve",
+    "lastName" : "Test",
+    "credentials" : [ {
+      "id" : "df54375f-9f13-4ec9-9c3e-6f7596116337",
+      "type" : "password",
+      "createdDate" : 1615151728988,
+      "secretData" : "{\"value\":\"XqgxvXemZPaJaybdn0LtJ5H1Nd0AjTolw1Al2Of7ZvzunKXeLDaL1xGjzTrxvhEeBkAc3BiR5EGAd+3fEo+Dtw==\",\"salt\":\"f/YKHUERhxZ+zMi/OScecw==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
     "realmRoles" : [ "uma_authorization", "offline_access" ],
     "clientRoles" : {
       "account" : [ "manage-account", "view-profile" ]
@@ -505,8 +556,8 @@
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "0b53b4d5-8235-4304-9530-2326c3f8ca37",
-    "redirectUris" : [ "http://localhost:4200" ],
-    "webOrigins" : [ ],
+    "redirectUris" : [ "http://localhost:8880", "http://localhost:8880/silent-refresh.html", "http://localhost:8880/index.html", "http://localhost:8880/*" ],
+    "webOrigins" : [ "*" ],
     "notBefore" : 0,
     "bearerOnly" : false,
     "consentRequired" : false,

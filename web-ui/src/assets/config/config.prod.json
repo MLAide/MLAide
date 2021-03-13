@@ -11,6 +11,7 @@
     "audience": "dummy",
     "clientId": "dummy",
     "issuer": "dummy",
-    "scope": "dummy"
+    "scope": "dummy",
+    "disableSecurity": "dummy"
   }
 }

@@ -11,6 +11,7 @@
     "audience": "${AUTH_AUDIENCE}",
     "clientId": "${AUTH_CLIEND_ID}",
     "issuer": "${AUTH_ISSUER}",
-    "scope": "${AUTH_SCOPE}"
+    "scope": "${AUTH_SCOPE}",
+    "disableSecurity": "${AUTH_DISABLE_SECURITY}"
   }
 }

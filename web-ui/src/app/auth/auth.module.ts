@@ -56,6 +56,8 @@ export class AuthModule {
 }
 
 export function authConfigFactory(appConfig: IAppConfig): AuthConfig {
+  const isSecurityDisabled = appConfig.auth.disableSecurity === 'true';
+
   return {
     // Url of the Identity Provider
     issuer: appConfig.auth.issuer,
@@ -89,8 +91,11 @@ export function authConfigFactory(appConfig: IAppConfig): AuthConfig {
     clearHashAfterLogin: false, // https://github.com/manfredsteyer/angular-oauth2-oidc/issues/457#issuecomment-431807040,
     // nonceStateSeparator : 'semicolon', // Real semicolon gets mangled by IdentityServer's URI encoding
     customQueryParams: {
-      audience: appConfig.auth.audience,
+      audience: appConfig.auth.audience !== "" ? appConfig.auth.audience : undefined,
     },
+    strictDiscoveryDocumentValidation: !isSecurityDisabled,
+    skipIssuerCheck: isSecurityDisabled,
+    requireHttps: !isSecurityDisabled
   };
 }
 

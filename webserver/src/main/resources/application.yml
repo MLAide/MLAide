@@ -19,7 +19,9 @@ logging:
 mvc:
   security:
     audience: https://api.mvc.io
-  user-info-uri: https://mvc-dev.eu.auth0.com/userinfo
+  user-info:
+    uri: https://mvc-dev.eu.auth0.com/userinfo
+    nickname-property: nickname
   object-storage:
     endpoint: http://localhost:9001
     region: us-east-1

@@ -32,11 +32,11 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ### Build
 
-`docker build -t mlaide-web-ui:0.1.0a0 -t mlaide-web-ui:latest .`
+`docker build -t mlaide/web-ui:latest .`
 
 ### Run
 
-`docker run --env-file .env --name mlaide-web-ui-container -d -p 8080:80 mlaide-web-ui`
+`docker run --env-file .env --name mlaide-web-ui-container -d -p 8080:80 mlaide/web-ui`
 
 ### Debug
 
