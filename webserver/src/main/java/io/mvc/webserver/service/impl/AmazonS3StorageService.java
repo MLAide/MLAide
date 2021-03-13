@@ -8,6 +8,7 @@ import io.mvc.webserver.service.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -18,18 +19,20 @@ import java.util.List;
 
 @Service
 public class AmazonS3StorageService implements StorageService {
-    public static final int BUFFER_SIZE = 10 * 1024 * 1024;
-    private final Logger LOGGER = LoggerFactory.getLogger(AmazonS3StorageService.class);
+    private final Logger logger = LoggerFactory.getLogger(AmazonS3StorageService.class);
     private final AmazonS3 amazonS3;
+    private final int bufferSize;
 
     @Autowired
-    public AmazonS3StorageService(AmazonS3 amazonS3) {
+    public AmazonS3StorageService(AmazonS3 amazonS3,
+                                  @Value("${mvc.object-storage.chunk-size}") int bufferSize) {
         this.amazonS3 = amazonS3;
+        this.bufferSize = bufferSize;
     }
 
     @Override
     public FileUploadResult upload(String bucketName, String keyName, InputStream inputStream) throws IOException {
-        byte[] bytes = new byte[BUFFER_SIZE];
+        byte[] bytes = new byte[bufferSize];
         String uploadId = amazonS3
                 .initiateMultipartUpload(new InitiateMultipartUploadRequest(bucketName, keyName))
                 .getUploadId();
@@ -48,7 +51,7 @@ public class AmazonS3StorageService implements StorageService {
                     .withPartSize(bytesRead);
 
             UploadPartResult uploadResult = amazonS3.uploadPart(part);
-            LOGGER.debug("uploaded chunk #" + partNumber);
+            logger.debug("uploaded chunk #{}", partNumber);
 
             results.add(uploadResult);
             bytesRead = inputStream.read(bytes);
@@ -67,7 +70,7 @@ public class AmazonS3StorageService implements StorageService {
                     .withPartSize(0);
 
             UploadPartResult uploadResult = amazonS3.uploadPart(part);
-            LOGGER.debug("uploaded empty chunk because input file stream was empty");
+            logger.debug("uploaded empty chunk because input file stream was empty");
 
             results.add(uploadResult);
         }
@@ -79,7 +82,7 @@ public class AmazonS3StorageService implements StorageService {
                 .withPartETags(results);
 
         CompleteMultipartUploadResult uploadResult = amazonS3.completeMultipartUpload(completeRequest);
-        LOGGER.info("uploaded file to S3 with versionId '" + uploadResult.getVersionId() + "'");
+        logger.info("uploaded file to S3 with versionId '{}'", uploadResult.getVersionId());
 
         return new FileUploadResult(uploadResult.getETag(), uploadResult.getVersionId());
     }
@@ -106,6 +109,6 @@ public class AmazonS3StorageService implements StorageService {
 
         amazonS3.setBucketVersioningConfiguration(setBucketVersioningConfigurationRequest);
 
-        LOGGER.info("created new bucket '" + bucketName + "'");
+        logger.info("created new bucket '{}'", bucketName);
     }
 }
