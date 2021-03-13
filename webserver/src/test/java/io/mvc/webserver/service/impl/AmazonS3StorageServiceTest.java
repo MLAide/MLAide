@@ -31,6 +31,7 @@ import static org.mockito.Mockito.*;
 
 @Testcontainers
 class AmazonS3StorageServiceTest {
+    private final int bufferSize = 5 * 1024 * 1024; // = 5 MB is the minimum chunk size for amazon S3 client
     private AmazonS3StorageService storageService;
     private AmazonS3 s3;
 
@@ -41,14 +42,14 @@ class AmazonS3StorageServiceTest {
     void createStorageService() {
         this.s3 = spy(amazonS3());
 
-        this.storageService = new AmazonS3StorageService(s3);
+        this.storageService = new AmazonS3StorageService(s3, bufferSize);
     }
 
     @Nested
     class Upload {
         @Test
         void uploading_simple_file_should_be_stored_in_s3() throws IOException {
-            var bytes = FileFaker.randomBytes(2 * AmazonS3StorageService.BUFFER_SIZE);
+            var bytes = FileFaker.randomBytes(2 * bufferSize);
             var inputStream = new ByteArrayInputStream(bytes);
             var bucketName = randomBucketName();
             var fileName = FileFaker.randomFileName();
@@ -65,7 +66,7 @@ class AmazonS3StorageServiceTest {
 
         @Test
         void uploading_large_file_should_be_stored_in_s3() throws IOException {
-            var bytes = FileFaker.randomBytes(4 * AmazonS3StorageService.BUFFER_SIZE);
+            var bytes = FileFaker.randomBytes(4 * bufferSize);
             var inputStream = new ByteArrayInputStream(bytes);
             var bucketName = randomBucketName();
             var fileName = FileFaker.randomFileName();
@@ -100,7 +101,7 @@ class AmazonS3StorageServiceTest {
         @Test
         void uploading_file_smaller_than_one_chunk_should_upload_file_as_multipart_with_one_part() throws IOException {
             // Arrange
-            var bytes = new byte[AmazonS3StorageService.BUFFER_SIZE - 1000];
+            var bytes = new byte[bufferSize - 500];
             var inputStream = new ByteArrayInputStream(bytes);
             var bucketName = randomBucketName();
             var fileName = FileFaker.randomFileName();
@@ -118,7 +119,7 @@ class AmazonS3StorageServiceTest {
         @Test
         void uploading_file_that_fits_in_two_chunks_should_upload_file_as_multipart_with_two_parts() throws IOException {
             // Arrange
-            var bytes = new byte[AmazonS3StorageService.BUFFER_SIZE + 1000];
+            var bytes = new byte[bufferSize + 1000];
             var inputStream = new ByteArrayInputStream(bytes);
             var bucketName = randomBucketName();
             var fileName = FileFaker.randomFileName();
@@ -159,9 +160,9 @@ class AmazonS3StorageServiceTest {
 
                 int expectedPartSize;
                 if (i + 1 == expectedPartNumbers) {
-                    expectedPartSize = expectedBytes.length % AmazonS3StorageService.BUFFER_SIZE;
+                    expectedPartSize = expectedBytes.length % bufferSize;
                 } else {
-                    expectedPartSize = AmazonS3StorageService.BUFFER_SIZE;
+                    expectedPartSize = bufferSize;
                 }
                 assertThat(currentUploadPartRequest.getPartSize()).isEqualTo(expectedPartSize);
             }
@@ -184,11 +185,11 @@ class AmazonS3StorageServiceTest {
             var bucketName = randomBucketName();
             storageService.createBucket(bucketName);
 
-            var bytes1 = FileFaker.randomBytes(AmazonS3StorageService.BUFFER_SIZE);
+            var bytes1 = FileFaker.randomBytes(bufferSize);
             var inputStream1 = new ByteArrayInputStream(bytes1);
             storageService.upload(bucketName, fileName, inputStream1);
 
-            var bytes2 = FileFaker.randomBytes(AmazonS3StorageService.BUFFER_SIZE);
+            var bytes2 = FileFaker.randomBytes(bufferSize);
             var inputStream2 = new ByteArrayInputStream(bytes2);
             storageService.upload(bucketName, fileName, inputStream2);
 
@@ -206,11 +207,11 @@ class AmazonS3StorageServiceTest {
             var bucketName = randomBucketName();
             storageService.createBucket(bucketName);
 
-            var bytes1 = FileFaker.randomBytes(AmazonS3StorageService.BUFFER_SIZE);
+            var bytes1 = FileFaker.randomBytes(bufferSize);
             var inputStream1 = new ByteArrayInputStream(bytes1);
             FileUploadResult upload1 = storageService.upload(bucketName, fileName, inputStream1);
 
-            var bytes2 = FileFaker.randomBytes(AmazonS3StorageService.BUFFER_SIZE);
+            var bytes2 = FileFaker.randomBytes(bufferSize);
             var inputStream2 = new ByteArrayInputStream(bytes2);
             storageService.upload(bucketName, fileName, inputStream2);
 

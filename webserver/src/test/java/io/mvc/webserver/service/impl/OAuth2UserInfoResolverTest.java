@@ -28,12 +28,14 @@ class OAuth2UserInfoResolverTest {
     private @Mock RestTemplate restTemplate;
     private final Faker faker = new Faker();
     private String endpointUri;
+    private String nicknameProperty;
 
     @BeforeEach
     void initialize() {
         endpointUri = faker.internet().url();
+        nicknameProperty = faker.animal().name();
 
-        oAuth2UserInfoResolver = new OAuth2UserInfoResolver(restTemplate, endpointUri);
+        oAuth2UserInfoResolver = new OAuth2UserInfoResolver(restTemplate, endpointUri, nicknameProperty);
     }
 
     @Nested
@@ -44,7 +46,7 @@ class OAuth2UserInfoResolverTest {
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("email", faker.internet().emailAddress());
             responseBody.put("sub", UUID.randomUUID().toString());
-            responseBody.put("nickname", faker.name().name());
+            responseBody.put(nicknameProperty, faker.name().name());
             responseBody.put("given_name", faker.name().firstName());
             responseBody.put("family_name", faker.name().lastName());
 
@@ -59,7 +61,7 @@ class OAuth2UserInfoResolverTest {
             // Assert
             assertThat(user.getEmail()).isEqualTo(responseBody.get("email"));
             assertThat(user.getUserId()).isEqualTo(responseBody.get("sub"));
-            assertThat(user.getNickName()).isEqualTo(responseBody.get("nickname"));
+            assertThat(user.getNickName()).isEqualTo(responseBody.get(nicknameProperty));
             assertThat(user.getFirstName()).isEqualTo(responseBody.get("given_name"));
             assertThat(user.getLastName()).isEqualTo(responseBody.get("family_name"));
         }
@@ -71,7 +73,7 @@ class OAuth2UserInfoResolverTest {
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("email", faker.internet().emailAddress());
             responseBody.put("sub", UUID.randomUUID().toString());
-            responseBody.put("nickname", faker.name().name());
+            responseBody.put(nicknameProperty, faker.name().name());
 
             ResponseEntity<Map<String, Object>> httpResponse = new ResponseEntity<>(responseBody, HttpStatus.OK);
             //noinspection unchecked
@@ -84,7 +86,7 @@ class OAuth2UserInfoResolverTest {
             // Assert
             assertThat(user.getEmail()).isEqualTo(responseBody.get("email"));
             assertThat(user.getUserId()).isEqualTo(responseBody.get("sub"));
-            assertThat(user.getNickName()).isEqualTo(responseBody.get("nickname"));
+            assertThat(user.getNickName()).isEqualTo(responseBody.get(nicknameProperty));
             assertThat(user.getFirstName()).isNull();
             assertThat(user.getLastName()).isNull();
         }
