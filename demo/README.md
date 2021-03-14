@@ -25,9 +25,9 @@ Now you should have several containers running:
 
 You can access the [Web UI on localhost:8880](http://localhost:8880) with your browser. This demo
 provides three pre-defined users:
-- adam (password = adam1)
-- brian (password = brian1)
-- eve (password = eve1)
+- adam (password = adam1, email = adam@demo.mlaide.com)
+- bob (password = bob1, email = bob@demo.mlaide.com)
+- eve (password = eve1, email = eve@demo.mlaide.com)
 
 Now you can start writing your machine learning app with Python. Use the following snippet to create a connection from your Python app to MLAide.
 

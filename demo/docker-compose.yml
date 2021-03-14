@@ -102,7 +102,7 @@ services:
       - $MONGO_INITDB_SCRIPTS_HOST_PATH:/docker-entrypoint-initdb.d/
     command: ["--bind_ip", "0.0.0.0"]
 
-  keycloak:
+  keycloak.mlaide:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
     hostname: keycloak.mlaide
@@ -118,13 +118,14 @@ services:
       - $KEYCLOAK_CONFIGURATION:/tmp/mlaide.json
 
   webserver:
+    #command: java -Djava.security.egd=file:/dev/./urandom -jar /app.jar
     image: mlaide/webserver
     container_name: mlaide-webserver
     restart: on-failure
     depends_on:
       - mongo
       - minio-nginx
-      - keycloak
+      - keycloak.mlaide
     ports:
       - $SERVER_PORT:8080
     environment:
