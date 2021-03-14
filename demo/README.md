@@ -6,6 +6,10 @@ The file is located at `/etc/hosts` (Unix) or `C:\Windows\System32\drivers\etc\h
 ```
 127.0.0.1 keycloak.mlaide
 ```
+Or use the following command to add it.
+```
+echo '127.0.0.1 keycloak.mlaide' | sudo tee -a /etc/hosts
+```
 
 After that start MLAide using 
 ```
