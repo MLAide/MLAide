@@ -1,0 +1,17 @@
+{
+  "env": {
+    "name": "DEV"
+  },
+  "apiServer": {
+    "uri": "http://localhost:8881",
+    "version": "v1"
+  },
+  "auth": {
+    "allowedUrls": "http://localhost:8881",
+    "audience": "https://api.mvc.io",
+    "clientId": "mlaide.demo",
+    "issuer": "http://keycloak.mlaide:8884/auth/realms/MLAide",
+    "scope": "openid profile email offline_access",
+    "disableSecurity": "true"
+  }
+}

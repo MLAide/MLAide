@@ -12,7 +12,7 @@ import {
   ViewChild,
 } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
-import { flatMap } from "rxjs/operators";
+import { filter, flatMap, mergeMap } from "rxjs/operators";
 import { APP_CONFIG, IAppConfig } from "./config/app-config.model";
 import { AuthService } from "./auth/auth.service";
 import { Project } from "./core/models/project.model";
@@ -26,17 +26,15 @@ import { UsersApiService } from "./core/services/users-api.service";
   styleUrls: ["./app.component.scss"],
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
-  public canActivateProtectedRoutes$: Observable<boolean>;
-  @ViewChild("tabBar") elementView: ElementRef;
+  @ViewChild("tabBar") public elementView: ElementRef;
   public isAuthenticated$: Observable<boolean>;
   public isDoneLoading$: Observable<boolean>;
   public projects: Project[];
   public user: User;
-  public configName;
-  public apiUrl;
-  tabBarHeight: number;
-  title = "web-ui";
+  public tabBarHeight: number;
+
   private isAuthenticatedSubscription: Subscription;
+  private isAuthenticatedSubscriptionForProjects: Subscription;
   private projectListSubscription: Subscription;
 
   constructor(
@@ -47,34 +45,20 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
     this.isDoneLoading$ = this.authService.isDoneLoading$;
-    this.isDoneLoading$
+    this.isAuthenticatedSubscription = this.isAuthenticated$
       .pipe(
-        flatMap((isAuthenticated) => {
-          if (isAuthenticated) {
-            return this.userService.getCurrentUser();
-          }
-        })
+        filter((isAuthenticated) => isAuthenticated),
+        mergeMap(() => this.userService.getCurrentUser() )
       )
-      ?.subscribe(
-        (user) => {
-          this.user = user;
-        },
-        (error) => {
-          // This is intentional
-        }
-      );
-    this.canActivateProtectedRoutes$ = this.authService.canActivateProtectedRoutes$;
+      .subscribe((user) => { this.user = user; });
 
     this.authService.runInitialLoginSequence();
-  }
-
-  clearStorage() {
-    localStorage.clear();
   }
 
   login() {
     this.authService.loginWithUserInteraction("/projects");
   }
+
   logout() {
     this.authService.logout();
   }
@@ -87,10 +71,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     this.projectListSubscription.unsubscribe();
     this.isAuthenticatedSubscription.unsubscribe();
+    this.isAuthenticatedSubscriptionForProjects.unsubscribe();
   }
 
   ngOnInit() {
-    this.isAuthenticated$.subscribe((isAuthenticated) => {
+    this.isAuthenticatedSubscriptionForProjects = this.isAuthenticated$.subscribe((isAuthenticated) => {
       if (isAuthenticated) {
         const projectListDataSource = this.projectsApiService.getProjects();
         this.projectListSubscription = projectListDataSource.items$.subscribe(
@@ -110,11 +95,5 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       element.classList.add("app-toolbar-inactive");
       element.classList.remove("app-toolbar-active");
     }
-  }
-  refresh() {
-    this.authService.refresh();
-  }
-  reload() {
-    window.location.reload();
   }
 }

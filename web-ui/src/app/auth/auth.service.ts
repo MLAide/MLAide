@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { OAuthService, UserInfo } from 'angular-oauth2-oidc';
+import { OAuthService, TokenResponse, UserInfo } from 'angular-oauth2-oidc';
 import { BehaviorSubject, combineLatest, Observable, ReplaySubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
@@ -16,9 +16,6 @@ export class AuthService {
 
   private isDoneLoadingSubject$ = new ReplaySubject<boolean>();
   public isDoneLoading$ = this.isDoneLoadingSubject$.asObservable();
-
-  private userProfileSubject$ = new BehaviorSubject<UserInfo>(null);
-  public userProfile$ = this.userProfileSubject$.asObservable();
 
   /**
    * Publishes `true` if and only if (a) all the asynchronous initial
@@ -37,10 +34,7 @@ export class AuthService {
   constructor(private oauthService: OAuthService, private router: Router) {
     this.listenForLoginInDifferentTab();
     this.listenForRetrievingValidAccessToken();
-    this.loadUserProfileOnTokenRetrival();
     this.gotoLoginPageAfterLogout();
-
-    this.oauthService.setupAutomaticSilentRefresh();
   }
 
   public hasValidToken() {
@@ -58,18 +52,17 @@ export class AuthService {
     this.gotoLoginPageAfterLogout();
   }
 
-  public refresh() {
-    this.oauthService.silentRefresh();
+  public refresh(): Promise<TokenResponse> {
+    return this.oauthService.refreshToken();
   }
   
   public async runInitialLoginSequence(): Promise<void> {
     try {
-      await this.oauthService.loadDiscoveryDocument();
-      await this.login();
-      const userProfile = await this.oauthService.loadUserProfile();
-      this.userProfileSubject$.next(userProfile);
+      await this.oauthService.loadDiscoveryDocumentAndTryLogin();
 
       this.isDoneLoadingSubject$.next(true);
+
+      this.oauthService.setupAutomaticSilentRefresh();
 
       if (this.oauthService.state && this.oauthService.state !== 'undefined' && this.oauthService.state !== 'null') {
         let stateUrl = this.oauthService.state;
@@ -108,12 +101,6 @@ export class AuthService {
     });
   }
 
-  private loadUserProfileOnTokenRetrival() {
-    this.oauthService.events
-      .pipe(filter(e => e.type === 'token_received'))
-      .subscribe(() => this.oauthService.loadUserProfile());
-  }
-
   private gotoLoginPageAfterLogout() {
     this.oauthService.events
       .pipe(filter(e => ['logout', 'session_terminated', 'session_error'].includes(e.type)))
@@ -121,48 +108,6 @@ export class AuthService {
   }
 
   private navigateToLoginPage() {
-    // TODO: Remember current URL
     this.router.navigateByUrl('/home');
-  }
-
-  private async login(): Promise<void> {
-    // 1. HASH LOGIN:
-    // Try to log in via hash fragment after redirect back from IdServer from initImplicitFlow:
-    await this.oauthService.tryLogin();
-    if (this.oauthService.hasValidAccessToken()) {
-      return;
-    }
-
-    // 2. SILENT LOGIN:
-    // Try to log in via a refresh because then we can prevent
-    // needing to redirect the user:
-    try {
-      await this.oauthService.silentRefresh();
-    } catch (e) {
-      // Silent refresh failed or some kind of user interaction for login is required
-      // (e.g. the user was never logged in and has to enter credentials)
-      // Subset of situations from https://openid.net/specs/openid-connect-core-1_0.html#AuthError
-      // Only the ones where it's reasonably sure that sending the
-      // user to the IdServer will help.
-      const errorResponsesRequiringUserInteraction = [
-        'interaction_required',
-        'login_required',
-        'account_selection_required',
-        'consent_required',
-      ];
-
-      if (e && e.reason && errorResponsesRequiringUserInteraction.indexOf(e.reason.error) >= 0) {
-        // 3. ASK FOR LOGIN:
-        // At this point we know for sure that we have to ask the
-        // user to log in, so we redirect them to the IdServer to
-        // enter credentials.
-        this.loginWithUserInteraction();
-        return;
-      }
-
-      // We can't handle the truth, just pass on the problem to the
-      // next handler.
-      return Promise.reject(e);
-    }
   }
 }
