@@ -81,15 +81,11 @@ export function authConfigFactory(appConfig: IAppConfig): AuthConfig {
     // Important: Request offline_access to get a refresh token
     scope: appConfig.auth.scope,
 
-    showDebugInformation: true,
+    showDebugInformation: false,
 
-    useSilentRefresh: true, // Needed for Code Flow to suggest using iframe-based refreshes
-    silentRefreshTimeout: 60000,
-    timeoutFactor: 0.75,
-    silentRefreshRedirectUri: window.location.origin + "/silent-refresh.html",
-    sessionChecksEnabled: false, // TODO: Not supported by auth0 - really?
+    sessionChecksEnabled: false,
     clearHashAfterLogin: false, // https://github.com/manfredsteyer/angular-oauth2-oidc/issues/457#issuecomment-431807040,
-    // nonceStateSeparator : 'semicolon', // Real semicolon gets mangled by IdentityServer's URI encoding
+    
     customQueryParams: {
       audience: appConfig.auth.audience !== "" ? appConfig.auth.audience : undefined,
     },
