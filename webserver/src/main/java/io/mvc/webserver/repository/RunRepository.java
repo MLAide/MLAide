@@ -14,28 +14,28 @@ import java.util.Optional;
 @Repository
 public interface RunRepository extends MongoRepository<RunEntity, ObjectId>, ExtendedRunQueries {
     @Override
-    @PostFilter("hasPermission(filterObject, 'REPORTER') " +
+    @PostFilter("hasPermission(filterObject, 'VIEWER') " +
             "or hasPermission(filterObject, 'CONTRIBUTOR') " +
             "or hasPermission(filterObject, 'OWNER')")
     List<RunEntity> findAll();
 
-    @PostFilter("hasPermission(filterObject, 'REPORTER') " +
+    @PostFilter("hasPermission(filterObject, 'VIEWER') " +
             "or hasPermission(filterObject, 'CONTRIBUTOR') " +
             "or hasPermission(filterObject, 'OWNER')")
     List<RunEntity> findAllByProjectKey(String projectKey);
 
-    @PostFilter("hasPermission(filterObject, 'REPORTER') " +
+    @PostFilter("hasPermission(filterObject, 'VIEWER') " +
             "or hasPermission(filterObject, 'CONTRIBUTOR') " +
             "or hasPermission(filterObject, 'OWNER')")
     List<RunEntity> findAllByProjectKeyAndKeyIn(String projectKey, List<Integer> keys);
 
-    @PostFilter("hasPermission(filterObject, 'REPORTER') " +
+    @PostFilter("hasPermission(filterObject, 'VIEWER') " +
             "or hasPermission(filterObject, 'CONTRIBUTOR') " +
             "or hasPermission(filterObject, 'OWNER')")
     List<RunEntity> findAllByProjectKeyAndExperimentRefsExperimentKeyIn(String projectKey, String experimentKey);
 
     @Override
-    @PreAuthorize("hasPermission(#id, 'io.mvc.webserver.repository.entity.RunEntity', 'REPORTER') " +
+    @PreAuthorize("hasPermission(#id, 'io.mvc.webserver.repository.entity.RunEntity', 'VIEWER') " +
             "or hasPermission(#id, 'io.mvc.webserver.repository.entity.RunEntity', 'CONTRIBUTOR') " +
             "or hasPermission(#id, 'io.mvc.webserver.repository.entity.RunEntity', 'OWNER')")
     Optional<RunEntity> findById(ObjectId id);
@@ -45,7 +45,7 @@ public interface RunRepository extends MongoRepository<RunEntity, ObjectId>, Ext
             "or hasPermission(#entity.projectKey, 'io.mvc.webserver.repository.entity.ProjectEntity', 'OWNER')")
     <S extends RunEntity> S save(S entity);
 
-    @PostAuthorize("hasPermission(returnObject, 'REPORTER') " +
+    @PostAuthorize("hasPermission(returnObject, 'VIEWER') " +
             "or hasPermission(returnObject, 'CONTRIBUTOR') " +
             "or hasPermission(returnObject, 'OWNER')")
     RunEntity findOneByProjectKeyAndKey(String projectKey, Integer key);

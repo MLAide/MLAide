@@ -281,7 +281,7 @@ class ProjectServiceImplTest {
             Map<String, MvcPermission> definedPermissions = new LinkedHashMap<>() {{
                 put(fakeUser1.getUserId(), MvcPermission.OWNER);
                 put(fakeUser2.getUserId(), MvcPermission.CONTRIBUTOR);
-                put(fakeUser3.getUserId(), MvcPermission.REPORTER);
+                put(fakeUser3.getUserId(), MvcPermission.VIEWER);
             }};
             when(permissionService.getProjectPermissions(fakeProject.getKey())).thenReturn(definedPermissions);
             when(userService.getUser(fakeUser1.getUserId())).thenReturn(fakeUser1);
@@ -310,7 +310,7 @@ class ProjectServiceImplTest {
             var actualUser3 = projectMembers.getItems().get(2);
             assertThat(actualUser3.getEmail()).isEqualTo(fakeUser3.getEmail());
             assertThat(actualUser3.getNickName()).isEqualTo(fakeUser3.getNickName());
-            assertThat(actualUser3.getRole()).isEqualTo(ProjectMemberRole.REPORTER);
+            assertThat(actualUser3.getRole()).isEqualTo(ProjectMemberRole.VIEWER);
             assertThat(actualUser3.getUserId()).isEqualTo(fakeUser3.getUserId());
         }
     }
@@ -331,7 +331,7 @@ class ProjectServiceImplTest {
             User fakeUser3 = UserFaker.newUser();
             ProjectMember fakeProjectMember1 = ProjectMemberFaker.newProjectMember(ProjectMemberRole.OWNER);
             ProjectMember fakeProjectMember2 = ProjectMemberFaker.newProjectMember(ProjectMemberRole.CONTRIBUTOR);
-            ProjectMember fakeProjectMember3 = ProjectMemberFaker.newProjectMember(ProjectMemberRole.REPORTER);
+            ProjectMember fakeProjectMember3 = ProjectMemberFaker.newProjectMember(ProjectMemberRole.VIEWER);
             when(userService.getUserByEmail(fakeProjectMember1.getEmail())).thenReturn(fakeUser1);
             when(userService.getUserByEmail(fakeProjectMember2.getEmail())).thenReturn(fakeUser2);
             when(userService.getUserByEmail(fakeProjectMember3.getEmail())).thenReturn(fakeUser3);
@@ -349,7 +349,7 @@ class ProjectServiceImplTest {
             assertThat(projectPermissions.size()).isEqualTo(3);
             assertThat(projectPermissions.get(fakeUser1.getUserId())).isEqualTo(MvcPermission.OWNER);
             assertThat(projectPermissions.get(fakeUser2.getUserId())).isEqualTo(MvcPermission.CONTRIBUTOR);
-            assertThat(projectPermissions.get(fakeUser3.getUserId())).isEqualTo(MvcPermission.REPORTER);
+            assertThat(projectPermissions.get(fakeUser3.getUserId())).isEqualTo(MvcPermission.VIEWER);
         }
 
         @Test
