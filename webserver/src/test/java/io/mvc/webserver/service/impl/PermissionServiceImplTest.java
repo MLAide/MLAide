@@ -2,7 +2,6 @@ package io.mvc.webserver.service.impl;
 
 import io.mvc.webserver.faker.ExperimentFaker;
 import io.mvc.webserver.faker.ProjectFaker;
-import io.mvc.webserver.faker.SecurityContextFaker;
 import io.mvc.webserver.faker.UserFaker;
 import io.mvc.webserver.repository.entity.ExperimentEntity;
 import io.mvc.webserver.repository.entity.MvcPermission;
@@ -22,9 +21,6 @@ import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.security.acls.model.MutableAcl;
 import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
@@ -53,7 +49,7 @@ class PermissionServiceImplTest {
     }
 
     @Nested
-    public class GrantPermissionBasedOnProject {
+    class GrantPermissionBasedOnProject {
         @Test
         void grant_permission_on_experiment_should_create_new_acl() {
             var project = ProjectFaker.newProjectEntity();
@@ -90,18 +86,23 @@ class PermissionServiceImplTest {
 
         @Test
         void grant_permission_where_project_does_not_exist_should_throw_NotFoundException() {
+            // Arrange
             var project = ProjectFaker.newProjectEntity();
             var experiment = ExperimentFaker.newExperimentEntity();
             when(aclService.readAclById(any())).thenThrow(org.springframework.security.acls.model.NotFoundException.class);
 
+            String projectKey = project.getKey();
+            String experimentKey = experiment.getKey();
+
+            // Act + Assert
             assertThatThrownBy(
-                    () -> permissionService.grantPermissionBasedOnProject(project.getKey(), experiment.getKey(), ExperimentEntity.class))
+                    () -> permissionService.grantPermissionBasedOnProject(projectKey, experimentKey, ExperimentEntity.class))
                     .isInstanceOf(NotFoundException.class);
         }
     }
 
     @Nested
-    public class GrantPermissionToNewProject {
+    class GrantPermissionToNewProject {
         @Test
         void grant_permission_should_create_new_acl_with_ace_for_current_user() {
             // arrange
@@ -130,7 +131,7 @@ class PermissionServiceImplTest {
     }
 
     @Nested
-    public class GrantPermissionsToExistingProject {
+    class GrantPermissionsToExistingProject {
         @Test
         void grant_permission_should_add_new_ace_to_existing_acl_for_three_specified_users() {
             // arrange
@@ -149,7 +150,7 @@ class PermissionServiceImplTest {
             var permissionsToGrant = new LinkedHashMap<String, MvcPermission>();
             permissionsToGrant.put(user1.getUserId(), MvcPermission.OWNER);
             permissionsToGrant.put(user2.getUserId(), MvcPermission.CONTRIBUTOR);
-            permissionsToGrant.put(user3.getUserId(), MvcPermission.REPORTER);
+            permissionsToGrant.put(user3.getUserId(), MvcPermission.VIEWER);
 
             // act
             permissionService.grantPermissionsToExistingProject(project.getKey(), permissionsToGrant);
@@ -161,11 +162,11 @@ class PermissionServiceImplTest {
             assertThatAceContainsExpectedPermissions(acl.getEntries().get(0), MvcPermission.OWNER, currentUser.getUserId());
             assertThatAceContainsExpectedPermissions(acl.getEntries().get(1), MvcPermission.OWNER, user1.getUserId());
             assertThatAceContainsExpectedPermissions(acl.getEntries().get(2), MvcPermission.CONTRIBUTOR, user2.getUserId());
-            assertThatAceContainsExpectedPermissions(acl.getEntries().get(3), MvcPermission.REPORTER, user3.getUserId());
+            assertThatAceContainsExpectedPermissions(acl.getEntries().get(3), MvcPermission.VIEWER, user3.getUserId());
         }
 
         @Test
-        void grant_OWNER_permission_to_a_project_where_user_already_is_REPORTER_should_set_new_ace_with_OWNER_permission() {
+        void grant_OWNER_permission_to_a_project_where_user_already_is_VIEWER_should_set_new_ace_with_OWNER_permission() {
             // arrange
             var currentUser = UserFaker.newUser();
             setupUserInSecurityContext(currentUser.getUserId());
@@ -175,7 +176,7 @@ class PermissionServiceImplTest {
             var project = ProjectFaker.newProjectEntity();
             var acl = createAcl(ProjectEntity.class, project.getKey());
             acl.insertAce(0, MvcPermission.OWNER, new PrincipalSid(currentUser.getUserId()), true);
-            acl.insertAce(1, MvcPermission.REPORTER, new PrincipalSid(user1.getUserId()), true);
+            acl.insertAce(1, MvcPermission.VIEWER, new PrincipalSid(user1.getUserId()), true);
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
             var permissionsToGrant = new LinkedHashMap<String, MvcPermission>();
@@ -193,7 +194,7 @@ class PermissionServiceImplTest {
         }
 
         @Test
-        void grant_REPORTER_permission_to_a_project_where_user_already_is_CONTRIBUTOR_should_set_new_ace_with_REPORTER_permission() {
+        void grant_VIEWER_permission_to_a_project_where_user_already_is_CONTRIBUTOR_should_set_new_ace_with_VIEWER_permission() {
             // arrange
             var currentUser = UserFaker.newUser();
             setupUserInSecurityContext(currentUser.getUserId());
@@ -207,7 +208,7 @@ class PermissionServiceImplTest {
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
             var permissionsToGrant = new LinkedHashMap<String, MvcPermission>();
-            permissionsToGrant.put(user1.getUserId(), MvcPermission.REPORTER);
+            permissionsToGrant.put(user1.getUserId(), MvcPermission.VIEWER);
 
             // act
             permissionService.grantPermissionsToExistingProject(project.getKey(), permissionsToGrant);
@@ -217,7 +218,7 @@ class PermissionServiceImplTest {
             assertThat(acl.getEntries()).hasSize(2);
 
             assertThatAceContainsExpectedPermissions(acl.getEntries().get(0), MvcPermission.OWNER, currentUser.getUserId());
-            assertThatAceContainsExpectedPermissions(acl.getEntries().get(1), MvcPermission.REPORTER, user1.getUserId());
+            assertThatAceContainsExpectedPermissions(acl.getEntries().get(1), MvcPermission.VIEWER, user1.getUserId());
         }
 
         @Test
@@ -235,8 +236,10 @@ class PermissionServiceImplTest {
             var permissionsToGrant = new LinkedHashMap<String, MvcPermission>();
             permissionsToGrant.put(user1.getUserId(), MvcPermission.OWNER);
 
+            var projectKey = project.getKey();
+
             // act
-            assertThatThrownBy(() -> permissionService.grantPermissionsToExistingProject(project.getKey(), permissionsToGrant))
+            assertThatThrownBy(() -> permissionService.grantPermissionsToExistingProject(projectKey, permissionsToGrant))
                     .isInstanceOf(NotFoundException.class);
 
             // assert
@@ -259,8 +262,10 @@ class PermissionServiceImplTest {
             var permissionsToGrant = new LinkedHashMap<String, MvcPermission>();
             permissionsToGrant.put(user1.getUserId(), MvcPermission.OWNER);
 
+            var projectKey = project.getKey();
+
             // act
-            assertThatThrownBy(() -> permissionService.grantPermissionsToExistingProject(project.getKey(), permissionsToGrant))
+            assertThatThrownBy(() -> permissionService.grantPermissionsToExistingProject(projectKey, permissionsToGrant))
                     .isInstanceOf(AccessDeniedException.class);
 
             // assert
@@ -269,7 +274,7 @@ class PermissionServiceImplTest {
     }
 
     @Nested
-    public class GetProjectPermissions {
+    class GetProjectPermissions {
         @Test
         void get_permissions_of_a_project_where_current_user_has_any_kind_of_permission_should_return_permissions_of_all_users() {
             // arrange
@@ -281,7 +286,7 @@ class PermissionServiceImplTest {
 
             var project = ProjectFaker.newProjectEntity();
             var acl = createAcl(ProjectEntity.class, project.getKey());
-            acl.insertAce(0, MvcPermission.REPORTER, new PrincipalSid(currentUser.getUserId()), true);
+            acl.insertAce(0, MvcPermission.VIEWER, new PrincipalSid(currentUser.getUserId()), true);
             acl.insertAce(1, MvcPermission.CONTRIBUTOR, new PrincipalSid(user1.getUserId()), true);
             acl.insertAce(2, MvcPermission.OWNER, new PrincipalSid(user2.getUserId()), true);
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
@@ -291,13 +296,10 @@ class PermissionServiceImplTest {
 
             // assert
             verify(aclService).readAclById(withObjectIdentity(project));
-            assertThat(actualPermissions).hasSize(3);
-            assertThat(actualPermissions).containsKeys(currentUser.getUserId());
-            assertThat(actualPermissions).containsKeys(user1.getUserId());
-            assertThat(actualPermissions).containsKeys(user2.getUserId());
-            assertThat(actualPermissions.get(currentUser.getUserId())).isEqualTo(MvcPermission.REPORTER);
-            assertThat(actualPermissions.get(user1.getUserId())).isEqualTo(MvcPermission.CONTRIBUTOR);
-            assertThat(actualPermissions.get(user2.getUserId())).isEqualTo(MvcPermission.OWNER);
+            assertThat(actualPermissions).hasSize(3)
+                    .containsEntry(currentUser.getUserId(), MvcPermission.VIEWER)
+                    .containsEntry(user1.getUserId(), MvcPermission.CONTRIBUTOR)
+                    .containsEntry(user2.getUserId(), MvcPermission.OWNER);
         }
 
         @Test
@@ -313,14 +315,16 @@ class PermissionServiceImplTest {
             acl.insertAce(0, MvcPermission.OWNER, new PrincipalSid(user1.getUserId()), true);
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
+            var projectKey = project.getKey();
+
             // act + assert
-            assertThatThrownBy(() -> permissionService.getProjectPermissions(project.getKey()))
+            assertThatThrownBy(() -> permissionService.getProjectPermissions(projectKey))
                 .isInstanceOf(NotFoundException.class);
         }
     }
 
     @Nested
-    public class RevokeProjectPermission {
+    class RevokeProjectPermission {
         @Test
         void revoke_permissions_for_two_of_three_users_should_remove_two_users_from_acl_and_keep_one() {
             // arrange
@@ -334,7 +338,7 @@ class PermissionServiceImplTest {
             var acl = createAcl(ProjectEntity.class, project.getKey());
             acl.insertAce(0, MvcPermission.OWNER, new PrincipalSid(currentUser.getUserId()), true);
             acl.insertAce(1, MvcPermission.CONTRIBUTOR, new PrincipalSid(user1.getUserId()), true);
-            acl.insertAce(2, MvcPermission.REPORTER, new PrincipalSid(user2.getUserId()), true);
+            acl.insertAce(2, MvcPermission.VIEWER, new PrincipalSid(user2.getUserId()), true);
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
             var permissionsToRevoke = asList(user1.getUserId(), user2.getUserId());
@@ -365,8 +369,10 @@ class PermissionServiceImplTest {
 
             var permissionsToRevoke = asList(user1.getUserId(), user2.getUserId());
 
+            var projectKey = project.getKey();
+
             // act + assert
-            assertThatThrownBy(() -> permissionService.revokeProjectPermission(project.getKey(), permissionsToRevoke))
+            assertThatThrownBy(() -> permissionService.revokeProjectPermission(projectKey, permissionsToRevoke))
                     .isInstanceOf(NotFoundException.class);
         }
 
@@ -386,8 +392,10 @@ class PermissionServiceImplTest {
 
             var permissionsToRevoke = singletonList(user1.getUserId());
 
+            var projectKey = project.getKey();
+
             // act + assert
-            assertThatThrownBy(() -> permissionService.revokeProjectPermission(project.getKey(), permissionsToRevoke))
+            assertThatThrownBy(() -> permissionService.revokeProjectPermission(projectKey, permissionsToRevoke))
                     .isInstanceOf(AccessDeniedException.class);
         }
     }

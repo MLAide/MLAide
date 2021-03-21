@@ -12,12 +12,12 @@ import java.util.List;
 @Repository
 public interface ProjectRepository extends MongoRepository<ProjectEntity, ObjectId> {
     @Override
-    @PostFilter("hasPermission(filterObject.key, 'io.mvc.webserver.repository.entity.ProjectEntity', 'REPORTER') " +
+    @PostFilter("hasPermission(filterObject.key, 'io.mvc.webserver.repository.entity.ProjectEntity', 'VIEWER') " +
             "or hasPermission(filterObject.key, 'io.mvc.webserver.repository.entity.ProjectEntity', 'CONTRIBUTOR') " +
             "or hasPermission(filterObject.key, 'io.mvc.webserver.repository.entity.ProjectEntity', 'OWNER')")
     List<ProjectEntity> findAll();
 
-    @PreAuthorize("hasPermission(#projectKey, 'io.mvc.webserver.repository.entity.ProjectEntity', 'REPORTER') " +
+    @PreAuthorize("hasPermission(#projectKey, 'io.mvc.webserver.repository.entity.ProjectEntity', 'VIEWER') " +
             "or hasPermission(#projectKey, 'io.mvc.webserver.repository.entity.ProjectEntity', 'CONTRIBUTOR') " +
             "or hasPermission(#projectKey, 'io.mvc.webserver.repository.entity.ProjectEntity', 'OWNER')")
     ProjectEntity findByKey(String projectKey);

@@ -1183,7 +1183,7 @@ components:
           enum:
             - OWNER
             - CONTRIBUTOR
-            - REPORTER
+            - VIEWER
         userId:
           type: string
           readOnly: true

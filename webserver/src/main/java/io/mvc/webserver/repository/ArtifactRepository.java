@@ -13,17 +13,17 @@ import java.util.List;
 @Repository
 public interface ArtifactRepository extends MongoRepository<ArtifactEntity, ObjectId>, ExtendedArtifactQueries {
     @Override
-    @PostFilter("hasPermission(filterObject, 'REPORTER') " +
+    @PostFilter("hasPermission(filterObject, 'VIEWER') " +
             "or hasPermission(filterObject, 'CONTRIBUTOR') " +
             "or hasPermission(filterObject, 'OWNER')")
     List<ArtifactEntity> findAll();
 
-    @PostFilter("hasPermission(filterObject, 'REPORTER') " +
+    @PostFilter("hasPermission(filterObject, 'VIEWER') " +
             "or hasPermission(filterObject, 'CONTRIBUTOR') " +
             "or hasPermission(filterObject, 'OWNER')")
     List<ArtifactEntity> findAllByProjectKey(String projectKey, Sort sort);
 
-    @PostFilter("hasPermission(filterObject, 'REPORTER') " +
+    @PostFilter("hasPermission(filterObject, 'VIEWER') " +
             "or hasPermission(filterObject, 'CONTRIBUTOR') " +
             "or hasPermission(filterObject, 'OWNER')")
     List<ArtifactEntity> findAllByProjectKeyAndRunKeyIn(String projectKey, List<Integer> runKeys, Sort sort);
@@ -33,12 +33,12 @@ public interface ArtifactRepository extends MongoRepository<ArtifactEntity, Obje
             "or hasPermission(#entity.projectKey, 'io.mvc.webserver.repository.entity.ProjectEntity', 'OWNER')")
     <S extends ArtifactEntity> S save(S entity);
 
-//    @PostAuthorize("hasPermission(returnObject, 'REPORTER') " +
+//    @PostAuthorize("hasPermission(returnObject, 'VIEWER') " +
 //            "or hasPermission(returnObject, 'CONTRIBUTOR') " +
 //            "or hasPermission(returnObject, 'OWNER')")
     ArtifactEntity findOneByProjectKeyAndNameAndVersion(String projectKey, String name, Integer version);
 
-//    @PostAuthorize("hasPermission(returnObject, 'REPORTER') " +
+//    @PostAuthorize("hasPermission(returnObject, 'VIEWER') " +
 //            "or hasPermission(returnObject, 'CONTRIBUTOR') " +
 //            "or hasPermission(returnObject, 'OWNER')")
     ArtifactEntity findFirstByProjectKeyAndNameOrderByVersion(String projectKey, String name);

@@ -134,8 +134,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     private ProjectMemberRole mapPermissionToMemberRole(String projectKey, MvcPermission permission) {
         ProjectMemberRole role;
-        if (MvcPermission.REPORTER.equals(permission)) {
-            role = ProjectMemberRole.REPORTER;
+        if (MvcPermission.VIEWER.equals(permission)) {
+            role = ProjectMemberRole.VIEWER;
         } else if (MvcPermission.CONTRIBUTOR.equals(permission)) {
             role = ProjectMemberRole.CONTRIBUTOR;
         } else if (MvcPermission.OWNER.equals(permission)) {
@@ -156,8 +156,8 @@ public class ProjectServiceImpl implements ProjectService {
             case CONTRIBUTOR:
                 permissionToGrant = MvcPermission.CONTRIBUTOR;
                 break;
-            case REPORTER:
-                permissionToGrant = MvcPermission.REPORTER;
+            case VIEWER:
+                permissionToGrant = MvcPermission.VIEWER;
                 break;
             default:
                 LOGGER.error("Could not map project role " + role + " to project permission");

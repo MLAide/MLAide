@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface ExperimentRepository extends MongoRepository<ExperimentEntity, ObjectId>, ExtendedExperimentQueries {
-    @PostFilter("hasPermission(filterObject, 'REPORTER') " +
+    @PostFilter("hasPermission(filterObject, 'VIEWER') " +
             "or hasPermission(filterObject, 'CONTRIBUTOR') " +
             "or hasPermission(filterObject, 'OWNER')")
     List<ExperimentEntity> findAllByProjectKey(String projectKey);
@@ -22,7 +22,7 @@ public interface ExperimentRepository extends MongoRepository<ExperimentEntity, 
             "or hasPermission(#entity.projectKey, 'io.mvc.webserver.repository.entity.ProjectEntity', 'OWNER')")
     <S extends ExperimentEntity> S save(S entity);
 
-    @PostAuthorize("hasPermission(returnObject, 'REPORTER') " +
+    @PostAuthorize("hasPermission(returnObject, 'VIEWER') " +
             "or hasPermission(returnObject, 'CONTRIBUTOR') " +
             "or hasPermission(returnObject, 'OWNER')")
     ExperimentEntity findOneByProjectKeyAndKey(String projectKey, String key);
