@@ -1,9 +1,16 @@
-import { LoginOptions, OAuthEvent, OAuthService, OAuthSuccessEvent, ParsedIdToken, TokenResponse, UserInfo } from 'angular-oauth2-oidc';
-import { Observable, Subject } from 'rxjs';
+import {
+  LoginOptions,
+  OAuthEvent,
+  OAuthService,
+  OAuthSuccessEvent,
+  ParsedIdToken,
+  TokenResponse,
+  UserInfo,
+} from "angular-oauth2-oidc";
+import { Observable, Subject } from "rxjs";
 
 // copied from https://github.com/jeroenheijmans/sample-angular-oauth2-oidc-with-auth-guards/blob/master/src/testing/mocks.ts
 export class MockOAuthService implements Partial<OAuthService> {
-
   private _events = new Subject<OAuthEvent>();
   events: Observable<OAuthEvent> = this._events.asObservable();
 
@@ -28,33 +35,31 @@ export class MockOAuthService implements Partial<OAuthService> {
   }
 
   authorizationHeader(): string {
-    return '';
+    return "";
   }
 
-  checkSession(): void {
-  }
+  checkSession(): void {}
 
   createAndSaveNonce(): Promise<string> {
-    return Promise.resolve('');
+    return Promise.resolve("");
   }
 
   getAccessToken(): string {
-    return '';
+    return "";
   }
 
   getAccessTokenExpiration(): number {
     return 0;
   }
 
-  getCustomTokenResponseProperty(requestedProperty: string): any {
-  }
+  getCustomTokenResponseProperty(requestedProperty: string): any {}
 
   getGrantedScopes(): object {
     return undefined;
   }
 
   getIdToken(): string {
-    return '';
+    return "";
   }
 
   getIdTokenExpiration(): number {
@@ -66,7 +71,7 @@ export class MockOAuthService implements Partial<OAuthService> {
   }
 
   getRefreshToken(): string {
-    return '';
+    return "";
   }
 
   hasValidAccessToken(): boolean {
@@ -77,23 +82,28 @@ export class MockOAuthService implements Partial<OAuthService> {
     return false;
   }
 
-  initCodeFlow(additionalState?: string, params?: {}): void {
-  }
+  initCodeFlow(additionalState?: string, params?: {}): void {}
 
-  initImplicitFlow(additionalState?: string, params?: string | object): void {
-  }
+  initImplicitFlow(additionalState?: string, params?: string | object): void {}
 
-  initImplicitFlowInPopup(options?: { height?: number; width?: number }): Promise<unknown> {
+  initImplicitFlowInPopup(options?: {
+    height?: number;
+    width?: number;
+  }): Promise<unknown> {
     return Promise.resolve(undefined);
   }
 
-  initImplicitFlowInternal(additionalState?: string, params?: string | object): void {
-  }
+  initImplicitFlowInternal(
+    additionalState?: string,
+    params?: string | object
+  ): void {}
 
-  initLoginFlow(additionalState?: string, params?: {}): void {
-  }
+  initLoginFlow(additionalState?: string, params?: {}): void {}
 
-  initLoginFlowInPopup(options?: { height?: number; width?: number }): Promise<unknown> {
+  initLoginFlowInPopup(options?: {
+    height?: number;
+    width?: number;
+  }): Promise<unknown> {
     return Promise.resolve(undefined);
   }
 
@@ -105,11 +115,13 @@ export class MockOAuthService implements Partial<OAuthService> {
     return Promise.resolve(undefined);
   }
 
-  logOut(): void {
+  logOut(): void {}
 
-  }
-
-  processIdToken(idToken: string, accessToken: string, skipNonceCheck?: boolean): Promise<ParsedIdToken> {
+  processIdToken(
+    idToken: string,
+    accessToken: string,
+    skipNonceCheck?: boolean
+  ): Promise<ParsedIdToken> {
     return Promise.resolve(undefined);
   }
 
@@ -117,21 +129,25 @@ export class MockOAuthService implements Partial<OAuthService> {
     return Promise.resolve(undefined);
   }
 
-  resetImplicitFlow(): void {
-  }
-
+  resetImplicitFlow(): void {}
 
   silentRefresh(params?: object, noPrompt?: boolean): Promise<OAuthEvent> {
     return Promise.resolve(undefined);
   }
 
-  setupAutomaticSilentRefresh(params?: object, listenTo?: 'access_token' | 'id_token' | 'any', noPrompt?: boolean): void {
-  }
+  setupAutomaticSilentRefresh(
+    params?: object,
+    listenTo?: "access_token" | "id_token" | "any",
+    noPrompt?: boolean
+  ): void {}
 
-  stopAutomaticRefresh(): void {
-  }
+  stopAutomaticRefresh(): void {}
 
   tryLogin(options?: LoginOptions): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
+  loadDiscoveryDocumentAndTryLogin(options?: LoginOptions): Promise<boolean> {
     return Promise.resolve(false);
   }
 
@@ -142,5 +158,4 @@ export class MockOAuthService implements Partial<OAuthService> {
   tryLoginImplicitFlow(options?: LoginOptions): Promise<boolean> {
     return Promise.resolve(false);
   }
-
 }
