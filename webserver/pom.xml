@@ -8,7 +8,7 @@
 		<version>2.3.4.RELEASE</version>
 		<relativePath/>
 	</parent>
-	<groupId>io.mvc</groupId>
+	<groupId>com.mlaide</groupId>
 	<artifactId>webserver</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>webserver</name>

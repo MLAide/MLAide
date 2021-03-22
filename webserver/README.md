@@ -45,7 +45,7 @@ Start the container
 docker run -p 9001:9000 \
   -e "MINIO_ACCESS_KEY=AKIAIOSFODNN7EXAMPLE" \
   -e "MINIO_SECRET_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
-  bitnami/minio server /mvc-s3-data{1...8}
+  bitnami/minio server /mlaide-s3-data{1...8}
 ```
 
 In another terminal you can now see the logs:

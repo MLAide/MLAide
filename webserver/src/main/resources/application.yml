@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      database: mvc
+      database: mlaide
       auto-index-creation: true
   security:
     oauth2:
@@ -16,7 +16,7 @@ logging:
   level:
     root: INFO
 
-mvc:
+mlaide:
   security:
     audience: https://api.mvc.io
   user-info:

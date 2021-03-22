@@ -141,13 +141,13 @@ services:
       - SPRING_DATA_MONGODB_DATABASE=$MONGO_DB
       - LOGGING_LEVEL_ROOT=$MLAIDE_SERVER_LOG_LEVEL
       - spring.security.oauth2.resourceserver.jwt.jwk-set-uri=$MLAIDE_SERVER_AUTH_JWK_SET_URI
-      - mvc.security.audience=$MLAIDE_SERVER_AUTH_AUDIENCE
-      - mvc.user-info.uri=$MLAIDE_SERVER_AUTH_USER_INFO_ENDPOINT
-      - mvc.user-info.nickname-property=$MLAIDE_SERVER_AUTH_USER_INFO_NICKNAME_PROPERTY
-      - mvc.object-storage.endpoint=http://minio-nginx:9000
-      - mvc.object-storage.credentials.access-key=$MINIO_ACCESS_KEY
-      - mvc.object-storage.credentials.secret-key=$MINIO_SECRET_KEY
-      - mvc.cors.allowed-origins=http://localhost:$UI_PORT
+      - mlaide.security.audience=$MLAIDE_SERVER_AUTH_AUDIENCE
+      - mlaide.user-info.uri=$MLAIDE_SERVER_AUTH_USER_INFO_ENDPOINT
+      - mlaide.user-info.nickname-property=$MLAIDE_SERVER_AUTH_USER_INFO_NICKNAME_PROPERTY
+      - mlaide.object-storage.endpoint=http://minio-nginx:9000
+      - mlaide.object-storage.credentials.access-key=$MINIO_ACCESS_KEY
+      - mlaide.object-storage.credentials.secret-key=$MINIO_SECRET_KEY
+      - mlaide.cors.allowed-origins=http://localhost:$UI_PORT
 
   web-ui:
     image: mlaide/web-ui
