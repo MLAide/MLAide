@@ -1,11 +1,11 @@
 openapi: "3.0.0"
 info:
   version: 0.0.1
-  title: Model Version Control
+  title: ML Aide
   license:
     name: unspecified
 servers:
-  - url: http://api.mvc.io/v1
+  - url: http://api.mlaide.io/v1
 security:
   - oauth2: []
 paths:
@@ -1299,7 +1299,7 @@ components:
         email:
           type: string
           readOnly: true
-          example: adam-test@mvc.io
+          example: adam-test@mlaide.com
         firstName:
           type: string
           readOnly: false
@@ -1334,8 +1334,8 @@ components:
       description: This API uses OAuth 2 with the Authorization Code Flow with Proof Key for Code Exchange (PKCE).
       flows:
         authorizationCode:
-          authorizationUrl: https://mvc-dev.eu.auth0.com/authorize
-          tokenUrl: https://mvc-dev.eu.auth0.com/oauth/token
+          authorizationUrl: https://mlaide-dev.eu.auth0.com/authorize
+          tokenUrl: https://mlaide-dev.eu.auth0.com/oauth/token
           scopes:
             projects:create: Create new projects
             projects:edit: Edit existing projects
