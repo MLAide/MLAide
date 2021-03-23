@@ -28,6 +28,7 @@ describe("RunsCompareComponent", () => {
 
   // router stubs
   let unsubscriptionSpy: jasmine.Spy<() => void>;
+  let unsubscriptionQueryParamsSpy: jasmine.Spy<() => void>;
 
   // service stubs
   let runsApiServiceStub: jasmine.SpyObj<RunsApiService>;
@@ -43,7 +44,7 @@ describe("RunsCompareComponent", () => {
     expect(component).toBeTruthy();
   });
 
-  describe("ngOnDestroy", () => {
+  describe("ngOnInit", () => {
     it("should set metrics columns with provided runs", async () => {
       // arrange
       await setupStubsAndMocks();
@@ -289,7 +290,20 @@ describe("RunsCompareComponent", () => {
     spyOn(paramMapObservable, "subscribe").and.callFake(function (
       fn
     ): Subscription {
-      fn({ projectKey: fakeProject.key, runKeys: fakeRunKeys });
+      fn({ projectKey: fakeProject.key });
+      return paramMapSubscription;
+    });
+
+    const queryParamMapObservable = new Observable<ParamMap>();
+    const queryParamMapSubscription = new Subscription();
+    unsubscriptionQueryParamsSpy = spyOn(
+      queryParamMapSubscription,
+      "unsubscribe"
+    ).and.callThrough();
+    spyOn(queryParamMapObservable, "subscribe").and.callFake(function (
+      fn
+    ): Subscription {
+      fn({ runKeys: fakeRunKeys });
       return paramMapSubscription;
     });
 
@@ -299,7 +313,13 @@ describe("RunsCompareComponent", () => {
         MockComponent(RunParamsMetricsTableComponent),
       ],
       providers: [
-        { provide: ActivatedRoute, useValue: { params: paramMapObservable } },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            params: paramMapObservable,
+            queryParams: queryParamMapObservable,
+          },
+        },
         { provide: RunsApiService, useValue: runsApiServiceStub },
       ],
     }).compileComponents();
