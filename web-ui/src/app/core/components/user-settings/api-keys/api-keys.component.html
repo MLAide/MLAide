@@ -1,50 +1,86 @@
 <div fxLayout="column">
-    <div fxLayout="row" fxLayoutAlign="space-between center">
-        <div>
-            <h1 class="mat-display-2" i18n>API Keys</h1>
-        </div>
-        <div>
-            <button mat-raised-button color="primary" aria-label="Add API Key" (click)="openCreateApiKeyDialog()" i18n>
-                Add API Key
-            </button>
-        </div>
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <div>
+      <h1 class="mat-display-2" i18n>API Keys</h1>
     </div>
     <div>
-
-        <span id="sub-text" class="mat-body" i18n>Manage your API Keys</span>
-        <h3 class="mat-h3" i18n><span></span></h3>
+      <button
+        mat-raised-button
+        color="primary"
+        aria-label="Add API Key"
+        (click)="openCreateApiKeyDialog()"
+        i18n
+      >
+        Add API Key
+      </button>
     </div>
-    <div fxLayout="column" class="example-container mat-elevation-z2">
-        <table mat-table matSort [dataSource]="dataSource" aria-label="API Keys">
-            <ng-container matColumnDef="description">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header aria-label="API Key Description" i18n>
-                    Description </th>
-                <td mat-cell *matCellDef="let element">
-                    {{element?.description}} </td>
-            </ng-container>
-            <ng-container matColumnDef="createdAt">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header aria-label="API Key Creation Date" i18n>Created
-                    at</th>
-                <td mat-cell *matCellDef="let element"> {{element?.createdAt | date: 'medium'}}</td>
-            </ng-container>
-            <ng-container matColumnDef="expiresAt">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header aria-label="API Key Expiration Date" i18n>Expires
-                    at</th>
-                <td mat-cell *matCellDef="let element"> {{element?.expiresAt ? (element?.expiresAt | date: 'medium') :
-                    '-'
-                    }}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="actions" [stickyEnd]="true">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header aria-label="API Key actions" i18n>Actions</th>
-                <td mat-cell *matCellDef="let element">
-                    <button mat-button (click)="deleteApiKey(element)" aria-label="Icon button to delete api key">
-                        <mat-icon>delete</mat-icon>
-                    </button>
-                </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-    </div>
+  </div>
+  <div fxLayout="column" class="example-container mat-elevation-z2">
+    <table mat-table matSort [dataSource]="dataSource" aria-label="API Keys">
+      <ng-container matColumnDef="description">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          aria-label="API Key Description"
+          i18n
+        >
+          Description
+        </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element?.description }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="createdAt">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          aria-label="API Key Creation Date"
+          i18n
+        >
+          Created at
+        </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element?.createdAt | date: "medium" }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="expiresAt">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          aria-label="API Key Expiration Date"
+          i18n
+        >
+          Expires at
+        </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element?.expiresAt ? (element?.expiresAt | date: "medium") : "-" }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions" [stickyEnd]="true">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          aria-label="API Key actions"
+          i18n
+        >
+          Actions
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <button
+            mat-button
+            (click)="deleteApiKey(element)"
+            aria-label="Icon button to delete api key"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
 </div>

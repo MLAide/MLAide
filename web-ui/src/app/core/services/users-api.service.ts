@@ -25,7 +25,6 @@ export class UsersApiService {
   }
 
   getCurrentUser(): Observable<User> {
-    // TODO: Check if we can remove pipe(share())
     this.http
       .get<User>(`${this.API_URL}/api/${this.API_VERSION}/users/current`)
       .pipe(share())

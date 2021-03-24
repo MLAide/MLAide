@@ -1,51 +1,59 @@
 <div fxLayout="column">
-    <div fxLayout="row" fxLayoutAlign="space-between center">
-        <div>
-            <h1 class="mat-display-2" i18n>Project Members</h1>
-        </div>
-        <div>
-            <button mat-raised-button color="primary" aria-label="Add Project Member"
-                (click)="openAddProjectMemberDialog()" i18n>
-                Add Project Member
-            </button>
-        </div>
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <div>
+      <h1 class="mat-display-2" i18n>Project Members</h1>
     </div>
     <div>
-
-        <span id="sub-text">Manage project members.</span>
-        <h3 class="mat-h3" i18n><span></span></h3>
+      <button
+        mat-raised-button
+        color="primary"
+        aria-label="Add Project Member"
+        (click)="openAddProjectMemberDialog()"
+        i18n
+      >
+        Add Project Member
+      </button>
     </div>
-    <div fxLayout="column" class="example-container mat-elevation-z2">
-        <table mat-table matSort [dataSource]="dataSource">
-            <ng-container matColumnDef="nickName">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header i18n> Nickname </th>
-                <td mat-cell *matCellDef="let element"> {{element?.nickName}} </td>
-            </ng-container>
-            <ng-container matColumnDef="email">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header i18n> Email </th>
-                <td mat-cell *matCellDef="let element"> {{element?.email}} </td>
-            </ng-container>
-            <ng-container matColumnDef="role">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header i18n> Role</th>
-                <td mat-cell *matCellDef="let element">
-                    <app-project-member-role-i18n [key]="element.role"></app-project-member-role-i18n>
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="actions" [stickyEnd]="true">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header i18n>Actions</th>
-                <td mat-cell *matCellDef="let element">
-                    <button mat-button (click)="openEditProjectMemberDialog(element)"
-                        aria-label="Icon button to edit user's role in project">
-                        <mat-icon>edit</mat-icon>
-                    </button>
-                    <button mat-button (click)="removeProjectMember(element)"
-                        aria-label="Icon button to delete user from project">
-                        <mat-icon>delete</mat-icon>
-                    </button>
-                </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-    </div>
+  </div>
+  <div fxLayout="column" class="example-container mat-elevation-z2">
+    <table mat-table matSort [dataSource]="dataSource">
+      <ng-container matColumnDef="nickName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header i18n>Nickname</th>
+        <td mat-cell *matCellDef="let element">{{ element?.nickName }}</td>
+      </ng-container>
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header i18n>Email</th>
+        <td mat-cell *matCellDef="let element">{{ element?.email }}</td>
+      </ng-container>
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header i18n>Role</th>
+        <td mat-cell *matCellDef="let element">
+          <app-project-member-role-i18n
+            [key]="element.role"
+          ></app-project-member-role-i18n>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions" [stickyEnd]="true">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header i18n>Actions</th>
+        <td mat-cell *matCellDef="let element">
+          <button
+            mat-button
+            (click)="openEditProjectMemberDialog(element)"
+            aria-label="Icon button to edit user's role in project"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-button
+            (click)="removeProjectMember(element)"
+            aria-label="Icon button to delete user from project"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
 </div>
