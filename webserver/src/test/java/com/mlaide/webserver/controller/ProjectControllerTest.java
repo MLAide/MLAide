@@ -4,6 +4,7 @@ import com.mlaide.webserver.faker.ProjectFaker;
 import com.mlaide.webserver.model.ItemList;
 import com.mlaide.webserver.model.Project;
 import com.mlaide.webserver.model.ProjectMember;
+import com.mlaide.webserver.service.NotFoundException;
 import com.mlaide.webserver.service.ProjectService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -80,12 +81,10 @@ public class ProjectControllerTest {
             // Arrange
             when(projectService.getProject(projectKey)).thenReturn(Optional.empty());
 
-            // Act
-            ResponseEntity<Project> result = projectController.getProject(projectKey);
-
             // Assert
-            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-            assertThat(result.getBody()).isNull();
+            // Act + Assert
+            assertThatThrownBy(() -> projectController.getProject(projectKey))
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 

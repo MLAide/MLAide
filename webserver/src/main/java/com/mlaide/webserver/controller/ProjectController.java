@@ -3,6 +3,7 @@ package com.mlaide.webserver.controller;
 import com.mlaide.webserver.model.ItemList;
 import com.mlaide.webserver.model.Project;
 import com.mlaide.webserver.model.ProjectMember;
+import com.mlaide.webserver.service.NotFoundException;
 import com.mlaide.webserver.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,17 +31,12 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.getProjects());
     }
 
-    // TODO Change service to
     @GetMapping(path = "/{projectKey}")
     public ResponseEntity<Project> getProject(@PathVariable("projectKey") String projectKey) {
         LOGGER.info("get project by project key");
-        Optional<Project> project = projectService.getProject(projectKey);
+        Project project = projectService.getProject(projectKey).orElseThrow(NotFoundException::new);
 
-        if (project.isEmpty()) {
-            LOGGER.info("could not find any project by project key");
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(project.get());
+        return ResponseEntity.ok(project);
     }
 
     @PostMapping
