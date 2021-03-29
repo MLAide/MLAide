@@ -1,5 +1,6 @@
 package com.mlaide.webserver.repository.entity;
 
+import com.mlaide.webserver.validation.ValidationRegEx;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,6 +9,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Pattern;
 import java.time.OffsetDateTime;
 
 @Document(collection = "projects")
@@ -16,7 +20,11 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 public class ProjectEntity {
     @Id private ObjectId id;
+    // RegEx includes not blank with "+" identifier
+    @Pattern(regexp = ValidationRegEx.projectKey)
     @Indexed(unique = true) private String key;
+    @NotBlank
     private String name;
+    @PastOrPresent
     private OffsetDateTime createdAt = OffsetDateTime.now();
 }

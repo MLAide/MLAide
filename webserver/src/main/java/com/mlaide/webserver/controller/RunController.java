@@ -2,15 +2,18 @@ package com.mlaide.webserver.controller;
 
 import com.mlaide.webserver.model.*;
 import com.mlaide.webserver.service.*;
-import com.mlaide.webserver.model.*;
-import com.mlaide.webserver.service.*;
+import com.mlaide.webserver.validation.ValidationRegEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.json.JsonMergePatch;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +21,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
+@Validated
 @RequestMapping(path = "/api/v1/projects/{projectKey}/runs")
 public class RunController {
-    private final Logger LOGGER = LoggerFactory.getLogger(RunController.class);
+    private final Logger logger = LoggerFactory.getLogger(RunController.class);
     private final ExperimentService experimentService;
     private final RunService runService;
     private final ProjectService projectService;
@@ -42,7 +46,7 @@ public class RunController {
 
     @GetMapping
     public ResponseEntity<ItemList<Run>> getRuns(
-            @PathVariable("projectKey") String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
             @RequestParam(name = "runKeys", required = false) List<Integer> runKeys,
             @RequestParam(name = "experimentKey", required = false) String experimentKey) {
 
@@ -55,26 +59,24 @@ public class RunController {
             String projectKey, List<Integer> runKeys, String experimentKey) {
 
         if (runKeys != null) {
-            LOGGER.info("get runs for keys: " + runKeys.stream().map(Object::toString).collect(Collectors.joining(", ")));
+            logger.info("get runs for keys: {}", runKeys.stream().map(Object::toString).collect(Collectors.joining(", ")));
             return runService.getRunsByKeys(projectKey, runKeys);
         }
 
         if (experimentKey != null) {
-            LOGGER.info("get runs for experimentKey: " + experimentKey);
+            logger.info("get runs for experimentKey: {}", experimentKey);
             return runService.getRunsOfExperiment(projectKey, experimentKey);
         }
 
-        LOGGER.info("get runs");
+        logger.info("get runs");
         return runService.getRuns(projectKey);
     }
 
     @PostMapping
     public ResponseEntity<Run> postRun(
-            @PathVariable("projectKey") String projectKey,
-            @RequestBody Run run) {
-        LOGGER.info("post run");
-
-        // TODO: validate run object
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @Valid @RequestBody Run run) {
+        logger.info("post run");
 
         // TODO: Do not read project here; this is just done because we want to check if the user is permitted to the project; this should be done in the service
         Optional<Project> project = projectService.getProject(projectKey);
@@ -83,8 +85,8 @@ public class RunController {
         }
 
         List<ExperimentRef> experimentRefs = run.getExperimentRefs();
-        if (experimentRefs == null || experimentRefs.size() == 0) {
-            LOGGER.info("run has no experiment ref defined; creating random experiment");
+        if (experimentRefs == null || experimentRefs.isEmpty()) {
+            logger.info("run has no experiment ref defined; creating random experiment");
             Experiment experiment = randomGeneratorService.randomExperiment();
             experiment = experimentService.addExperiment(projectKey, experiment);
 
@@ -102,9 +104,9 @@ public class RunController {
 
     @GetMapping(path = "{runKey}")
     public ResponseEntity<Run> getRun(
-            @PathVariable("projectKey") String projectKey,
-            @PathVariable("runKey") Integer runKey) {
-        LOGGER.info("get run");
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("runKey") @NotNull Integer runKey) {
+        logger.info("get run");
 
         Run run = runService.getRun(projectKey, runKey)
                 .orElseThrow(NotFoundException::new);
@@ -114,10 +116,10 @@ public class RunController {
 
     @PutMapping(path = "{runKey}/note", consumes = "text/plain")
     public ResponseEntity<String> createOrUpdateRunNote(
-            @PathVariable("projectKey") String projectKey,
-            @PathVariable("runKey") Integer runKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("runKey") @NotNull Integer runKey,
             @RequestBody String note) {
-        LOGGER.info("update note in run");
+        logger.info("update note in run");
 
         String updatedNote = runService.createOrUpdateNote(projectKey, runKey, note);
 
@@ -126,10 +128,10 @@ public class RunController {
 
     @PatchMapping(path = "{runKey}", consumes = "application/merge-patch+json")
     public ResponseEntity<Void> patchRun(
-            @PathVariable("projectKey") String projectKey,
-            @PathVariable("runKey") Integer runKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("runKey") @NotNull Integer runKey,
             @RequestBody JsonMergePatch runDiff) {
-        LOGGER.info("patch run");
+        logger.info("patch run");
 
         // Get the already existing run
         Run run = runService.getRun(projectKey, runKey).orElseThrow(NotFoundException::new);
@@ -145,10 +147,10 @@ public class RunController {
 
     @PatchMapping(path = "{runKey}/parameters", consumes = "application/merge-patch+json")
     public ResponseEntity<Void> patchRunParameters(
-             @PathVariable("projectKey") String projectKey,
-             @PathVariable("runKey") Integer runKey,
+             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+             @PathVariable("runKey") @NotNull Integer runKey,
              @RequestBody Map<String, Object> parametersToMerge) {
-        LOGGER.info("patch run parameters");
+        logger.info("patch run parameters");
 
         // Get the already existing run
         Run run = runService.getRun(projectKey, runKey).orElseThrow(NotFoundException::new);
@@ -167,10 +169,10 @@ public class RunController {
 
     @PatchMapping(path = "{runKey}/metrics", consumes = "application/merge-patch+json")
     public ResponseEntity<Void> patchRunMetrics(
-            @PathVariable("projectKey") String projectKey,
-            @PathVariable("runKey") Integer runKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("runKey") @NotNull Integer runKey,
             @RequestBody Map<String, Object> metricsToMerge) {
-        LOGGER.info("patch run metrics");
+        logger.info("patch run metrics");
 
         // Get the already existing run
         Run run = runService.getRun(projectKey, runKey).orElseThrow(NotFoundException::new);

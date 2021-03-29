@@ -1,6 +1,6 @@
 package com.mlaide.webserver.service;
 
-import com.mlaide.webserver.repository.entity.MvcPermission;
+import com.mlaide.webserver.repository.entity.MlAidePermission;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -9,11 +9,11 @@ import java.util.Map;
 public interface PermissionService {
     void grantPermissionBasedOnProject(String projectKey, Serializable objectId, Class<?> objectType);
 
-    void grantPermissionToNewProject(String projectKey, MvcPermission permission);
+    void grantPermissionToNewProject(String projectKey, MlAidePermission permission);
 
-    void grantPermissionsToExistingProject(String projectKey, Map<String, MvcPermission> permissions);
+    void grantPermissionsToExistingProject(String projectKey, Map<String, MlAidePermission> permissions);
 
-    Map<String, MvcPermission> getProjectPermissions(String projectKey);
+    Map<String, MlAidePermission> getProjectPermissions(String projectKey);
 
     void revokeProjectPermission(String projectKey, Collection<String> userIds);
 }

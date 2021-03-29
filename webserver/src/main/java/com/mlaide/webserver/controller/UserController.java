@@ -10,12 +10,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+
 @RestController
+@Validated
 @RequestMapping(path = "/api/v1/users")
 public class UserController {
-    private final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+    private final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
     private final ApiKeyAuthenticationManager apiKeyAuthenticationManager;
 
@@ -27,20 +32,20 @@ public class UserController {
 
     @GetMapping(path = "/current")
     public ResponseEntity<User> getCurrentUser() {
-        LOGGER.info("get current user");
+        logger.info("get current user");
 
         User user = userService.getCurrentUser();
 
         if (user == null) {
-            LOGGER.info("could not find any user");
+            logger.info("could not find any user");
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(user);
     }
 
     @PutMapping(path = "/current")
-    public ResponseEntity<Void> putUser(@RequestBody User user) throws NotFoundException {
-        LOGGER.info("put current user");
+    public ResponseEntity<Void> putUser(@Valid @RequestBody User user) throws NotFoundException {
+        logger.info("put current user");
 
         userService.updateCurrentUser(user);
 
@@ -49,7 +54,7 @@ public class UserController {
 
     @GetMapping(path = "/current/api-keys")
     public ResponseEntity<ItemList<ApiKey>> getApiKeys()  {
-        LOGGER.info("get api keys");
+        logger.info("get api keys");
 
         ItemList<ApiKey> apiKeys = apiKeyAuthenticationManager.getApiKeysForCurrentPrincipal();
 
@@ -58,7 +63,7 @@ public class UserController {
 
     @PostMapping(path = "/current/api-keys")
     public ResponseEntity<ApiKey> postApiKey(@RequestBody ApiKey apiKey)  {
-        LOGGER.info("post api key");
+        logger.info("post api key");
 
         ApiKey createdApiKey = apiKeyAuthenticationManager.createApiKeyForCurrentPrincipal(apiKey);
 
@@ -66,8 +71,8 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/current/api-keys/{apiKeyId}")
-    public ResponseEntity<Void> deleteApiKey(@PathVariable("apiKeyId") String apiKeyId)  {
-        LOGGER.info("delete api key");
+    public ResponseEntity<Void> deleteApiKey(@PathVariable("apiKeyId") @NotBlank String apiKeyId)  {
+        logger.info("delete api key");
 
         apiKeyAuthenticationManager.deleteApiKey(apiKeyId);
 

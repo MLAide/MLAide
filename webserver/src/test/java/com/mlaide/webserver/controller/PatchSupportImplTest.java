@@ -18,6 +18,7 @@ import javax.json.Json;
 import javax.json.JsonMergePatch;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
+import javax.validation.Validator;
 
 import static javax.json.Json.createMergePatch;
 import static javax.json.Json.createObjectBuilder;
@@ -35,10 +36,11 @@ public class PatchSupportImplTest {
     private @Mock RunMapper runMapper;
     private @Mock ExperimentMapper experimentMapper;
     private @Mock ObjectMapper objectMapper;
+    private @Mock Validator validator;
 
     @BeforeEach
     void initialize() {
-        patchSupport = new PatchSupportImpl(runMapper, experimentMapper, objectMapper);
+        patchSupport = new PatchSupportImpl(runMapper, experimentMapper, objectMapper, validator);
     }
 
     @Nested

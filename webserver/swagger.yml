@@ -1056,6 +1056,7 @@ components:
         - createdAt
         - key
         - name
+        - status
       properties:
         createdAt:
           type: string
@@ -1076,7 +1077,6 @@ components:
             - failed
         status:
           type: string
-          default: TODO
           enum:
             - TODO
             - IN_PROGRESS
@@ -1100,6 +1100,7 @@ components:
           type: string
     Model:
       type: object
+      readOnly: true
       properties:
         createdAt:
           type: string

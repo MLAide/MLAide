@@ -12,18 +12,24 @@ import org.springframework.stereotype.Component;
 
 import javax.json.JsonMergePatch;
 import javax.json.JsonValue;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
+import java.util.Set;
 
 @Component
 public class PatchSupportImpl implements PatchSupport {
     private final RunMapper runMapper;
     private final ExperimentMapper experimentMapper;
     private final ObjectMapper objectMapper;
+    private final Validator validator;
 
     @Autowired
-    public PatchSupportImpl(RunMapper runMapper, ExperimentMapper experimentMapper, ObjectMapper objectMapper) {
+    public PatchSupportImpl(RunMapper runMapper, ExperimentMapper experimentMapper, ObjectMapper objectMapper, Validator validator) {
         this.runMapper = runMapper;
         this.experimentMapper = experimentMapper;
         this.objectMapper = objectMapper;
+        this.validator = validator;
     }
 
     @Override
@@ -35,6 +41,8 @@ public class PatchSupportImpl implements PatchSupport {
         RunPatch patchedRun = mergePatch(diff, baseRun, RunPatch.class);
 
         runMapper.updateRun(target, patchedRun);
+
+        validateTarget(target);
     }
 
     @Override
@@ -46,6 +54,16 @@ public class PatchSupportImpl implements PatchSupport {
         ExperimentPatch patchedExperiment = mergePatch(diff, experimentPatch, ExperimentPatch.class);
 
         experimentMapper.updateExperiment(target, patchedExperiment);
+
+        validateTarget(target);
+    }
+
+    private <T> void validateTarget(T target) {
+        // Validate the Java bean and throw an exception if any constraint has been violated
+        Set<ConstraintViolation<T>> violations = validator.validate(target);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
     }
 
     private <T> T mergePatch(JsonMergePatch mergePatch, T targetBean, Class<T> beanClass) {
