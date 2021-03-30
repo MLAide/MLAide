@@ -7,6 +7,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
+import org.springframework.data.mongodb.core.mapping.event.ValidatingMongoEventListener;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -32,6 +34,11 @@ public class MongoConfig {
         converters.add(new OffsetDateTimeToDateConverter());
 
         return new MongoCustomConversions(converters);
+    }
+
+    @Bean
+    public ValidatingMongoEventListener validatingMongoEventListener(LocalValidatorFactoryBean factory) {
+        return new ValidatingMongoEventListener(factory);
     }
 
     static class DateToOffsetDateTimeConverter implements Converter<Date, OffsetDateTime> {

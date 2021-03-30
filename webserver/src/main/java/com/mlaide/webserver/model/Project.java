@@ -15,7 +15,7 @@ import java.time.OffsetDateTime;
 public class Project {
     @NotBlank
     private String name;
-    // RegEx includes not blank with "+" identifier
+    @NotBlank
     @Pattern(regexp = ValidationRegEx.projectKey)
     private String key;
     private OffsetDateTime createdAt;

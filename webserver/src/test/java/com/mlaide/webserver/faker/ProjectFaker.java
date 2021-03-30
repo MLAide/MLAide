@@ -12,7 +12,10 @@ public class ProjectFaker {
 
     public static ProjectEntity newProjectEntity() {
         var project = new ProjectEntity();
-        project.setKey(faker.funnyName().name().toLowerCase());
+        project.setKey(faker.funnyName().name()
+                .toLowerCase()
+                .replace(" ", "-")
+                .replace(".", "-"));
         project.setName(faker.funnyName().name());
         project.setCreatedAt(
                 faker.date().past(1, TimeUnit.SECONDS)
