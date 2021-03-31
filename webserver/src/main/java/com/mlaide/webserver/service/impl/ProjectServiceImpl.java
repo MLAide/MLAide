@@ -79,9 +79,6 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectEntity projectEntity = projectMapper.toEntity(project);
         // TODO: validate project key (only characters, digits and hyphens allowed)
 
-        if (projectEntity.getName() == null || projectEntity.getName().isBlank()) {
-            projectEntity.setName(projectEntity.getKey());
-        }
         projectEntity.setCreatedAt(OffsetDateTime.now(clock));
 
         projectEntity = saveProjectAndGrantOwnerPermissionForCurrentUser(projectEntity);
