@@ -25,6 +25,7 @@ public class Artifact {
     private Model model;
     @NotBlank
     private String name;
+    @NotBlank
     private String type;
     private OffsetDateTime updatedAt;
     private Integer version;

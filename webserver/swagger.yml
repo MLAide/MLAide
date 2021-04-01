@@ -959,6 +959,7 @@ components:
       type: object
       required:
         - createdAt
+        - createdBy
         - files
         - id
         - name
@@ -995,7 +996,6 @@ components:
           example: linear-regression-with-sklearn
         type:
           type: string
-          readOnly: true
           example: model
         updatedAt:
           type: string
