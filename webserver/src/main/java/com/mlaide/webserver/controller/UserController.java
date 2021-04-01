@@ -62,7 +62,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/current/api-keys")
-    public ResponseEntity<ApiKey> postApiKey(@RequestBody ApiKey apiKey)  {
+    public ResponseEntity<ApiKey> postApiKey(@Valid @RequestBody ApiKey apiKey)  {
         logger.info("post api key");
 
         ApiKey createdApiKey = apiKeyAuthenticationManager.createApiKeyForCurrentPrincipal(apiKey);

@@ -927,6 +927,7 @@ components:
       type: object
       required:
         - createdAt
+        - description
         - id
       properties:
         apiKey:
