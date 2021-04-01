@@ -328,7 +328,7 @@ class ProjectServiceImplTest {
             Map<String, MlAidePermission> projectPermissions = argumentCaptor.getValue();
             assertThat(projectPermissions).isNotNull();
             assertThat(projectPermissions.size()).isEqualTo(3);
-            assertThat(projectPermissions.get(fakeUser1.getUserId())).isEqualTo(MlAidePermission.CONTRIBUTOR);
+            assertThat(projectPermissions.get(fakeUser1.getUserId())).isEqualTo(MlAidePermission.OWNER);
             assertThat(projectPermissions.get(fakeUser2.getUserId())).isEqualTo(MlAidePermission.CONTRIBUTOR);
             assertThat(projectPermissions.get(fakeUser3.getUserId())).isEqualTo(MlAidePermission.VIEWER);
         }
