@@ -16,10 +16,14 @@ public class ArtifactFaker {
 
     public static ArtifactEntity newArtifactEntity() {
         var artifact = new ArtifactEntity();
-        artifact.setId(ObjectId.get());
         artifact.setCreatedAt(pastDate());
         artifact.setCreatedBy(newUserRef());
+        artifact.setId(ObjectId.get());
         artifact.setName(faker.funnyName().name());
+        artifact.setProjectKey(faker.funnyName().name()
+                .toLowerCase()
+                .replace(" ", "-")
+                .replace(".", "-"));
         artifact.setRunKey(faker.random().nextInt(50));
         artifact.setRunName(faker.superhero().name());
         artifact.setType(faker.animal().name());

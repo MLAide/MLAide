@@ -1,5 +1,6 @@
 package com.mlaide.webserver.repository.entity;
 
+import com.mlaide.webserver.validation.ValidationRegEx;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,6 +9,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Pattern;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -20,17 +25,27 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 public class ArtifactEntity {
-    private List<FileRefEntity> files;
+    @PastOrPresent
+    @NotNull
     private OffsetDateTime createdAt;
+    @NotNull
     private UserRef createdBy;
-    private String runName;
-    private Integer runKey;
+    private List<FileRefEntity> files;
     @Id private ObjectId id;
     private Map<String, String> metadata;
     private ModelEntity model;
+    @NotBlank
     private String name;
+    @NotBlank
+    @Pattern(regexp = ValidationRegEx.projectKey)
     private String projectKey;
+    @NotNull
+    private Integer runKey;
+    private String runName;
+    @NotBlank
     private String type;
+    @PastOrPresent
     private OffsetDateTime updatedAt;
+    @NotNull
     private Integer version;
 }
