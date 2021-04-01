@@ -42,6 +42,7 @@ public class ApiKeyFaker {
                 faker.date().future(1, TimeUnit.DAYS)
                         .toInstant()
                         .atOffset(ZoneOffset.UTC));
+        apiKeyEntity.setUserId(UUID.randomUUID().toString());
 
         return apiKeyEntity;
     }
