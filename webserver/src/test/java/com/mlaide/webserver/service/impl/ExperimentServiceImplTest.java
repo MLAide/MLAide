@@ -198,21 +198,6 @@ class ExperimentServiceImplTest {
         }
 
         @Test
-        void experiment_status_is_null_should_set_TODO_as_status() throws InvalidInputException {
-            // Arrange
-            experiment.setStatus(null);
-
-            Experiment savedExperiment = ExperimentFaker.newExperiment();
-            when(experimentMapper.fromEntity(savedExperimentEntity)).thenReturn(savedExperiment);
-
-            // Act
-            experimentService.addExperiment(projectKey, experiment);
-
-            // Assert
-            assertThat(experiment.getStatus()).isEqualTo(ExperimentStatus.TODO);
-        }
-
-        @Test
         void experiment_was_saved_successful_should_grant_permission_based_on_project_key() throws InvalidInputException {
             // Arrange
             Experiment savedExperiment = ExperimentFaker.newExperiment();

@@ -927,6 +927,7 @@ components:
       type: object
       required:
         - createdAt
+        - description
         - id
       properties:
         apiKey:
@@ -958,6 +959,7 @@ components:
       type: object
       required:
         - createdAt
+        - createdBy
         - files
         - id
         - name
@@ -994,7 +996,6 @@ components:
           example: linear-regression-with-sklearn
         type:
           type: string
-          readOnly: true
           example: model
         updatedAt:
           type: string
@@ -1056,6 +1057,7 @@ components:
         - createdAt
         - key
         - name
+        - status
       properties:
         createdAt:
           type: string
@@ -1067,6 +1069,12 @@ components:
         name:
           type: string
           example: linear regression with sklearn
+        status:
+          type: string
+          enum:
+            - TODO
+            - IN_PROGRESS
+            - COMPLETED
         tags:
           type: array
           items:
@@ -1074,13 +1082,6 @@ components:
           example:
             - sklearn
             - failed
-        status:
-          type: string
-          default: TODO
-          enum:
-            - TODO
-            - IN_PROGRESS
-            - COMPLETED
     Experiments:
       type: object
       required:
@@ -1094,12 +1095,17 @@ components:
       required:
         - stage
       properties:
-        stage:
-          $ref: "#/components/schemas/ModelStage"
         note:
           type: string
+        stage:
+          $ref: "#/components/schemas/ModelStage"
     Model:
       type: object
+      readOnly: true
+      required:
+        - createdAt
+        - createdBy
+        - stage
       properties:
         createdAt:
           type: string
@@ -1133,27 +1139,31 @@ components:
       required:
         - createdAt
         - createdBy
-        - oldStage
         - newStage
+        - oldStage
       properties:
         createdAt:
           type: string
           format: date-time
         createdBy:
           $ref: "#/components/schemas/UserRef"
-        newStage:
-          $ref: "#/components/schemas/ModelStage"
         note:
           type: string
+        newStage:
+          $ref: "#/components/schemas/ModelStage"
         oldStage:
           $ref: "#/components/schemas/ModelStage"
     Project:
       type: object
       required:
+        - createdAt
         - key
         - name
-        - createdAt
       properties:
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
         key:
           type: string
           description: The unique key of a project. The project key must only include characters, digits and hyphens.
@@ -1161,10 +1171,6 @@ components:
         name:
           type: string
           example: My First ML Project
-        createdAt:
-          type: string
-          format: date-time
-          readOnly: true
     ProjectMember:
       type: object
       required:
@@ -1208,10 +1214,11 @@ components:
     Run:
       type: object
       required:
-        - id
-        - status
         - createdBy
         - createdAt
+        - id
+        - startTime
+        - status
       properties:
         artifacts:
           type: array
@@ -1234,10 +1241,10 @@ components:
             properties:
               experimentKey:
                 type: string
-        id:
-          type: string
+        key:
+          type: number
           readOnly: true
-          example: ed9b4c00-d1d7-4dd4-b58b-008f5fc587a5
+          example: 1
         metrics:
           $ref: "#/components/schemas/RunMetric"
         name:
@@ -1291,11 +1298,8 @@ components:
         - email
         - id
         - nickName
+        - userId
       properties:
-        userId:
-          type: string
-          readOnly: true
-          example: 5def26a1-a932-404a-998c-aabf84994dd0
         email:
           type: string
           readOnly: true
@@ -1312,21 +1316,25 @@ components:
           type: string
           readOnly: false
           example: Alice
-    UserRef:
-      type: object
-      readOnly: true
-      required:
-        - userId
-        - nickName
-      properties:
         userId:
           type: string
           readOnly: true
           example: 5def26a1-a932-404a-998c-aabf84994dd0
+    UserRef:
+      type: object
+      readOnly: true
+      required:
+        - nickName
+        - userId
+      properties:
         nickName:
           type: string
           readOnly: true
           example: Alice
+        userId:
+          type: string
+          readOnly: true
+          example: 5def26a1-a932-404a-998c-aabf84994dd0
 
   securitySchemes:
     oauth2:

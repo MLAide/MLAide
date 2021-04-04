@@ -3,7 +3,7 @@ package com.mlaide.webserver.acl;
 import com.mlaide.webserver.acl.mongodb.AclRepository;
 import com.mlaide.webserver.acl.mongodb.BasicMongoLookupStrategy;
 import com.mlaide.webserver.acl.mongodb.MongoDBMutableAclService;
-import com.mlaide.webserver.repository.entity.MvcPermission;
+import com.mlaide.webserver.repository.entity.MlAidePermission;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
@@ -47,7 +47,7 @@ public class AclConfiguration {
 
     @Bean
     public PermissionFactory permissionFactory() {
-        return new DefaultPermissionFactory(MvcPermission.class);
+        return new DefaultPermissionFactory(MlAidePermission.class);
     }
 
     @Bean

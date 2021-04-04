@@ -1,6 +1,6 @@
 package com.mlaide.webserver.service.impl;
 
-import com.mlaide.webserver.repository.entity.MvcPermission;
+import com.mlaide.webserver.repository.entity.MlAidePermission;
 import com.mlaide.webserver.repository.entity.ProjectEntity;
 import com.mlaide.webserver.service.NotFoundException;
 import com.mlaide.webserver.service.PermissionService;
@@ -44,7 +44,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public void grantPermissionToNewProject(String projectKey, MvcPermission permission) {
+    public void grantPermissionToNewProject(String projectKey, MlAidePermission permission) {
         String principalName = SecurityContextHolder.getContext().getAuthentication().getName();
         Sid sid = new PrincipalSid(principalName);
 
@@ -59,7 +59,7 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     @Transactional
-    public void grantPermissionsToExistingProject(String projectKey, Map<String, MvcPermission> permissions) {
+    public void grantPermissionsToExistingProject(String projectKey, Map<String, MlAidePermission> permissions) {
         throwIfCurrentUserIsNotAllowedToChangePermissionsOfProject(projectKey);
 
         revokeProjectPermission(projectKey, permissions.keySet());
@@ -67,7 +67,7 @@ public class PermissionServiceImpl implements PermissionService {
         ObjectIdentity objectIdentity = new ObjectIdentityImpl(ProjectEntity.class, projectKey);
         MutableAcl acl = readAclById(objectIdentity);
 
-        for (Map.Entry<String, MvcPermission> entry: permissions.entrySet()) {
+        for (Map.Entry<String, MlAidePermission> entry: permissions.entrySet()) {
             Sid sid = new PrincipalSid(entry.getKey());
             acl.insertAce(acl.getEntries().size(), entry.getValue(), sid, true);
         }
@@ -79,7 +79,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public Map<String, MvcPermission> getProjectPermissions(String projectKey) {
+    public Map<String, MlAidePermission> getProjectPermissions(String projectKey) {
         ObjectIdentity objectIdentity = new ObjectIdentityImpl(ProjectEntity.class, projectKey);
         Acl acl = readAclById(objectIdentity);
 
@@ -92,10 +92,10 @@ public class PermissionServiceImpl implements PermissionService {
             throw new NotFoundException("Project " + projectKey + " does not exist");
         }
 
-        var permissions = new HashMap<String, MvcPermission>();
+        var permissions = new HashMap<String, MlAidePermission>();
         for (AccessControlEntry entry: entries) {
             PrincipalSid principalSid = (PrincipalSid) entry.getSid();
-            MvcPermission permission = (MvcPermission) entry.getPermission();
+            MlAidePermission permission = (MlAidePermission) entry.getPermission();
 
             permissions.put(principalSid.getPrincipal(), permission);
         }
@@ -128,15 +128,15 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     private void throwIfCurrentUserIsNotAllowedToChangePermissionsOfProject(String projectKey) {
-        Optional<MvcPermission> permissionOfCurrentUser = getProjectPermissionOfCurrentUser(projectKey);
+        Optional<MlAidePermission> permissionOfCurrentUser = getProjectPermissionOfCurrentUser(projectKey);
         if (permissionOfCurrentUser.isEmpty()) {
             throw new NotFoundException("Project " + projectKey + " does not exist");
-        } else if (!permissionOfCurrentUser.get().equals(MvcPermission.OWNER)) {
+        } else if (!permissionOfCurrentUser.get().equals(MlAidePermission.OWNER)) {
             throw new AccessDeniedException("User is not permitted to do any changes on this project");
         }
     }
 
-    private Optional<MvcPermission> getProjectPermissionOfCurrentUser(String projectKey) {
+    private Optional<MlAidePermission> getProjectPermissionOfCurrentUser(String projectKey) {
         String principalName = SecurityContextHolder.getContext().getAuthentication().getName();
         Sid sid = new PrincipalSid(principalName);
 
@@ -148,7 +148,7 @@ public class PermissionServiceImpl implements PermissionService {
             return Optional.empty();
         }
 
-        return Optional.of((MvcPermission) entry.get().getPermission());
+        return Optional.of((MlAidePermission) entry.get().getPermission());
     }
 
     private MutableAcl readAclById(ObjectIdentity objectIdentity) {

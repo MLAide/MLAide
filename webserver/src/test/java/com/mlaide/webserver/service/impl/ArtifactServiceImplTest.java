@@ -74,7 +74,8 @@ class ArtifactServiceImplTest {
         @BeforeEach
         void initializeCommonDefaultVariables() {
             project = ProjectFaker.newProject();
-            run = RunFaker.newRun(RunStatus.RUNNING);
+            run = RunFaker.newRun();
+            run.setStatus(RunStatus.RUNNING);
             inputArtifact = ArtifactFaker.newArtifact();
             expectedArtifactToSave = ArtifactFaker.newArtifactEntity();
             expectedArtifactToSave.setRunKey(run.getKey());

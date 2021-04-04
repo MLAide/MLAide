@@ -88,28 +88,6 @@ public class ProjectControllerTest {
         }
 
         @Test
-        void specified_project_name_is_null_should_throw_IllegalArgumentException(){
-            // Arrange
-            project.setName(null);
-
-            // Act + Assert
-            assertThatThrownBy(() -> projectController.postProject(project))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("project name must be not null or blank");
-        }
-
-        @Test
-        void specified_project_name_is_blank_should_throw_IllegalArgumentException(){
-            // Arrange
-            project.setName("");
-
-            // Act + Assert
-            assertThatThrownBy(() -> projectController.postProject(project))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("project name must be not null or blank");
-        }
-
-        @Test
         void should_add_specified_project_and_return_200_with_project() {
             // Arrange
             when(projectService.addProject(project)).thenReturn(project);
