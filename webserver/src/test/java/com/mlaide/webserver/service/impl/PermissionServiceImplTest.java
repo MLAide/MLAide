@@ -4,7 +4,7 @@ import com.mlaide.webserver.faker.ExperimentFaker;
 import com.mlaide.webserver.faker.ProjectFaker;
 import com.mlaide.webserver.faker.UserFaker;
 import com.mlaide.webserver.repository.entity.ExperimentEntity;
-import com.mlaide.webserver.repository.entity.MvcPermission;
+import com.mlaide.webserver.repository.entity.MlAidePermission;
 import com.mlaide.webserver.repository.entity.ProjectEntity;
 import com.mlaide.webserver.service.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -114,7 +114,7 @@ class PermissionServiceImplTest {
             when(aclService.createAcl(withObjectIdentity(project))).thenReturn(acl);
 
             // Act
-            permissionService.grantPermissionToNewProject(project.getKey(), MvcPermission.OWNER);
+            permissionService.grantPermissionToNewProject(project.getKey(), MlAidePermission.OWNER);
 
             // Assert
             ArgumentCaptor<ObjectIdentity> objectIdentityCaptor = ArgumentCaptor.forClass(ObjectIdentity.class);
@@ -123,7 +123,7 @@ class PermissionServiceImplTest {
             assertThat(objectIdentityCaptor.getValue().getType()).isEqualTo(ProjectEntity.class.getName());
             assertThat(acl.getEntries()).hasSize(1);
             AccessControlEntry ace = acl.getEntries().get(0);
-            assertThat(ace.getPermission()).isEqualTo(MvcPermission.OWNER);
+            assertThat(ace.getPermission()).isEqualTo(MlAidePermission.OWNER);
             assertThat(ace.getSid()).isInstanceOf(PrincipalSid.class);
             assertThat(((PrincipalSid) ace.getSid()).getPrincipal()).isEqualTo(user.getUserId());
             assertThat(ace.isGranting()).isTrue();
@@ -144,13 +144,13 @@ class PermissionServiceImplTest {
 
             var project = ProjectFaker.newProjectEntity();
             var acl = createAcl(ProjectEntity.class, project.getKey());
-            acl.insertAce(0, MvcPermission.OWNER, new PrincipalSid(currentUser.getUserId()), true);
+            acl.insertAce(0, MlAidePermission.OWNER, new PrincipalSid(currentUser.getUserId()), true);
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
-            var permissionsToGrant = new LinkedHashMap<String, MvcPermission>();
-            permissionsToGrant.put(user1.getUserId(), MvcPermission.OWNER);
-            permissionsToGrant.put(user2.getUserId(), MvcPermission.CONTRIBUTOR);
-            permissionsToGrant.put(user3.getUserId(), MvcPermission.VIEWER);
+            var permissionsToGrant = new LinkedHashMap<String, MlAidePermission>();
+            permissionsToGrant.put(user1.getUserId(), MlAidePermission.OWNER);
+            permissionsToGrant.put(user2.getUserId(), MlAidePermission.CONTRIBUTOR);
+            permissionsToGrant.put(user3.getUserId(), MlAidePermission.VIEWER);
 
             // Act
             permissionService.grantPermissionsToExistingProject(project.getKey(), permissionsToGrant);
@@ -159,10 +159,10 @@ class PermissionServiceImplTest {
             verify(aclService, times(2)).updateAcl(acl);
             assertThat(acl.getEntries()).hasSize(4);
 
-            assertThatAceContainsExpectedPermissions(acl.getEntries().get(0), MvcPermission.OWNER, currentUser.getUserId());
-            assertThatAceContainsExpectedPermissions(acl.getEntries().get(1), MvcPermission.OWNER, user1.getUserId());
-            assertThatAceContainsExpectedPermissions(acl.getEntries().get(2), MvcPermission.CONTRIBUTOR, user2.getUserId());
-            assertThatAceContainsExpectedPermissions(acl.getEntries().get(3), MvcPermission.VIEWER, user3.getUserId());
+            assertThatAceContainsExpectedPermissions(acl.getEntries().get(0), MlAidePermission.OWNER, currentUser.getUserId());
+            assertThatAceContainsExpectedPermissions(acl.getEntries().get(1), MlAidePermission.OWNER, user1.getUserId());
+            assertThatAceContainsExpectedPermissions(acl.getEntries().get(2), MlAidePermission.CONTRIBUTOR, user2.getUserId());
+            assertThatAceContainsExpectedPermissions(acl.getEntries().get(3), MlAidePermission.VIEWER, user3.getUserId());
         }
 
         @Test
@@ -175,12 +175,12 @@ class PermissionServiceImplTest {
 
             var project = ProjectFaker.newProjectEntity();
             var acl = createAcl(ProjectEntity.class, project.getKey());
-            acl.insertAce(0, MvcPermission.OWNER, new PrincipalSid(currentUser.getUserId()), true);
-            acl.insertAce(1, MvcPermission.VIEWER, new PrincipalSid(user1.getUserId()), true);
+            acl.insertAce(0, MlAidePermission.OWNER, new PrincipalSid(currentUser.getUserId()), true);
+            acl.insertAce(1, MlAidePermission.VIEWER, new PrincipalSid(user1.getUserId()), true);
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
-            var permissionsToGrant = new LinkedHashMap<String, MvcPermission>();
-            permissionsToGrant.put(user1.getUserId(), MvcPermission.OWNER);
+            var permissionsToGrant = new LinkedHashMap<String, MlAidePermission>();
+            permissionsToGrant.put(user1.getUserId(), MlAidePermission.OWNER);
 
             // Act
             permissionService.grantPermissionsToExistingProject(project.getKey(), permissionsToGrant);
@@ -189,8 +189,8 @@ class PermissionServiceImplTest {
             verify(aclService, times(2)).updateAcl(acl);
             assertThat(acl.getEntries()).hasSize(2);
 
-            assertThatAceContainsExpectedPermissions(acl.getEntries().get(0), MvcPermission.OWNER, currentUser.getUserId());
-            assertThatAceContainsExpectedPermissions(acl.getEntries().get(1), MvcPermission.OWNER, user1.getUserId());
+            assertThatAceContainsExpectedPermissions(acl.getEntries().get(0), MlAidePermission.OWNER, currentUser.getUserId());
+            assertThatAceContainsExpectedPermissions(acl.getEntries().get(1), MlAidePermission.OWNER, user1.getUserId());
         }
 
         @Test
@@ -203,12 +203,12 @@ class PermissionServiceImplTest {
 
             var project = ProjectFaker.newProjectEntity();
             var acl = createAcl(ProjectEntity.class, project.getKey());
-            acl.insertAce(0, MvcPermission.OWNER, new PrincipalSid(currentUser.getUserId()), true);
-            acl.insertAce(1, MvcPermission.CONTRIBUTOR, new PrincipalSid(user1.getUserId()), true);
+            acl.insertAce(0, MlAidePermission.OWNER, new PrincipalSid(currentUser.getUserId()), true);
+            acl.insertAce(1, MlAidePermission.CONTRIBUTOR, new PrincipalSid(user1.getUserId()), true);
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
-            var permissionsToGrant = new LinkedHashMap<String, MvcPermission>();
-            permissionsToGrant.put(user1.getUserId(), MvcPermission.VIEWER);
+            var permissionsToGrant = new LinkedHashMap<String, MlAidePermission>();
+            permissionsToGrant.put(user1.getUserId(), MlAidePermission.VIEWER);
 
             // Act
             permissionService.grantPermissionsToExistingProject(project.getKey(), permissionsToGrant);
@@ -217,8 +217,8 @@ class PermissionServiceImplTest {
             verify(aclService, times(2)).updateAcl(acl);
             assertThat(acl.getEntries()).hasSize(2);
 
-            assertThatAceContainsExpectedPermissions(acl.getEntries().get(0), MvcPermission.OWNER, currentUser.getUserId());
-            assertThatAceContainsExpectedPermissions(acl.getEntries().get(1), MvcPermission.VIEWER, user1.getUserId());
+            assertThatAceContainsExpectedPermissions(acl.getEntries().get(0), MlAidePermission.OWNER, currentUser.getUserId());
+            assertThatAceContainsExpectedPermissions(acl.getEntries().get(1), MlAidePermission.VIEWER, user1.getUserId());
         }
 
         @Test
@@ -233,8 +233,8 @@ class PermissionServiceImplTest {
             var acl = createAcl(ProjectEntity.class, project.getKey());
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
-            var permissionsToGrant = new LinkedHashMap<String, MvcPermission>();
-            permissionsToGrant.put(user1.getUserId(), MvcPermission.OWNER);
+            var permissionsToGrant = new LinkedHashMap<String, MlAidePermission>();
+            permissionsToGrant.put(user1.getUserId(), MlAidePermission.OWNER);
 
             var projectKey = project.getKey();
 
@@ -256,11 +256,11 @@ class PermissionServiceImplTest {
 
             var project = ProjectFaker.newProjectEntity();
             var acl = createAcl(ProjectEntity.class, project.getKey());
-            acl.insertAce(0, MvcPermission.CONTRIBUTOR, new PrincipalSid(currentUser.getUserId()), true);
+            acl.insertAce(0, MlAidePermission.CONTRIBUTOR, new PrincipalSid(currentUser.getUserId()), true);
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
-            var permissionsToGrant = new LinkedHashMap<String, MvcPermission>();
-            permissionsToGrant.put(user1.getUserId(), MvcPermission.OWNER);
+            var permissionsToGrant = new LinkedHashMap<String, MlAidePermission>();
+            permissionsToGrant.put(user1.getUserId(), MlAidePermission.OWNER);
 
             var projectKey = project.getKey();
 
@@ -286,20 +286,20 @@ class PermissionServiceImplTest {
 
             var project = ProjectFaker.newProjectEntity();
             var acl = createAcl(ProjectEntity.class, project.getKey());
-            acl.insertAce(0, MvcPermission.VIEWER, new PrincipalSid(currentUser.getUserId()), true);
-            acl.insertAce(1, MvcPermission.CONTRIBUTOR, new PrincipalSid(user1.getUserId()), true);
-            acl.insertAce(2, MvcPermission.OWNER, new PrincipalSid(user2.getUserId()), true);
+            acl.insertAce(0, MlAidePermission.VIEWER, new PrincipalSid(currentUser.getUserId()), true);
+            acl.insertAce(1, MlAidePermission.CONTRIBUTOR, new PrincipalSid(user1.getUserId()), true);
+            acl.insertAce(2, MlAidePermission.OWNER, new PrincipalSid(user2.getUserId()), true);
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
             // Act
-            Map<String, MvcPermission> actualPermissions = permissionService.getProjectPermissions(project.getKey());
+            Map<String, MlAidePermission> actualPermissions = permissionService.getProjectPermissions(project.getKey());
 
             // Assert
             verify(aclService).readAclById(withObjectIdentity(project));
             assertThat(actualPermissions).hasSize(3)
-                    .containsEntry(currentUser.getUserId(), MvcPermission.VIEWER)
-                    .containsEntry(user1.getUserId(), MvcPermission.CONTRIBUTOR)
-                    .containsEntry(user2.getUserId(), MvcPermission.OWNER);
+                    .containsEntry(currentUser.getUserId(), MlAidePermission.VIEWER)
+                    .containsEntry(user1.getUserId(), MlAidePermission.CONTRIBUTOR)
+                    .containsEntry(user2.getUserId(), MlAidePermission.OWNER);
         }
 
         @Test
@@ -312,7 +312,7 @@ class PermissionServiceImplTest {
 
             var project = ProjectFaker.newProjectEntity();
             var acl = createAcl(ProjectEntity.class, project.getKey());
-            acl.insertAce(0, MvcPermission.OWNER, new PrincipalSid(user1.getUserId()), true);
+            acl.insertAce(0, MlAidePermission.OWNER, new PrincipalSid(user1.getUserId()), true);
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
             var projectKey = project.getKey();
@@ -336,9 +336,9 @@ class PermissionServiceImplTest {
 
             var project = ProjectFaker.newProjectEntity();
             var acl = createAcl(ProjectEntity.class, project.getKey());
-            acl.insertAce(0, MvcPermission.OWNER, new PrincipalSid(currentUser.getUserId()), true);
-            acl.insertAce(1, MvcPermission.CONTRIBUTOR, new PrincipalSid(user1.getUserId()), true);
-            acl.insertAce(2, MvcPermission.VIEWER, new PrincipalSid(user2.getUserId()), true);
+            acl.insertAce(0, MlAidePermission.OWNER, new PrincipalSid(currentUser.getUserId()), true);
+            acl.insertAce(1, MlAidePermission.CONTRIBUTOR, new PrincipalSid(user1.getUserId()), true);
+            acl.insertAce(2, MlAidePermission.VIEWER, new PrincipalSid(user2.getUserId()), true);
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
             var permissionsToRevoke = asList(user1.getUserId(), user2.getUserId());
@@ -349,7 +349,7 @@ class PermissionServiceImplTest {
             // Assert
             verify(aclService).updateAcl(acl);
             assertThat(acl.getEntries()).hasSize(1);
-            assertThatAceContainsExpectedPermissions(acl.getEntries().get(0), MvcPermission.OWNER, currentUser.getUserId());
+            assertThatAceContainsExpectedPermissions(acl.getEntries().get(0), MlAidePermission.OWNER, currentUser.getUserId());
         }
 
         @Test
@@ -363,8 +363,8 @@ class PermissionServiceImplTest {
 
             var project = ProjectFaker.newProjectEntity();
             var acl = createAcl(ProjectEntity.class, project.getKey());
-            acl.insertAce(0, MvcPermission.CONTRIBUTOR, new PrincipalSid(user1.getUserId()), true);
-            acl.insertAce(1, MvcPermission.OWNER, new PrincipalSid(user2.getUserId()), true);
+            acl.insertAce(0, MlAidePermission.CONTRIBUTOR, new PrincipalSid(user1.getUserId()), true);
+            acl.insertAce(1, MlAidePermission.OWNER, new PrincipalSid(user2.getUserId()), true);
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
             var permissionsToRevoke = asList(user1.getUserId(), user2.getUserId());
@@ -378,7 +378,7 @@ class PermissionServiceImplTest {
 
         @Test
         void revoke_permissions_on_project_where_current_user_has_CONTRIBUTER_permission_should_throw_AccessDeniedException() {
-            // Arrange
+            // arrange
             var currentUser = UserFaker.newUser();
             setupUserInSecurityContext(currentUser.getUserId());
 
@@ -386,8 +386,8 @@ class PermissionServiceImplTest {
 
             var project = ProjectFaker.newProjectEntity();
             var acl = createAcl(ProjectEntity.class, project.getKey());
-            acl.insertAce(0, MvcPermission.CONTRIBUTOR, new PrincipalSid(currentUser.getUserId()), true);
-            acl.insertAce(1, MvcPermission.OWNER, new PrincipalSid(user1.getUserId()), true);
+            acl.insertAce(0, MlAidePermission.CONTRIBUTOR, new PrincipalSid(currentUser.getUserId()), true);
+            acl.insertAce(1, MlAidePermission.OWNER, new PrincipalSid(user1.getUserId()), true);
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
             var permissionsToRevoke = singletonList(user1.getUserId());
@@ -406,7 +406,7 @@ class PermissionServiceImplTest {
     }
 
     private void assertThatAceContainsExpectedPermissions(
-            AccessControlEntry actualAce, MvcPermission expectedPermission, String expectedUserId) {
+            AccessControlEntry actualAce, MlAidePermission expectedPermission, String expectedUserId) {
         assertThat(actualAce.isGranting()).isTrue();
         assertThat(actualAce.getPermission()).isEqualTo(expectedPermission);
         assertThat(actualAce.getSid()).isInstanceOf(PrincipalSid.class);
