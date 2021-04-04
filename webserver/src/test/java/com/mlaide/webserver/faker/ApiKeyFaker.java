@@ -15,15 +15,11 @@ public class ApiKeyFaker {
     public static ApiKey newApiKey() {
         var apiKey = new ApiKey();
         apiKey.setApiKey(UUID.randomUUID().toString());
-        apiKey.setDescription(faker.lorem().paragraph());
         apiKey.setCreatedAt(
-                faker.date().past(1, TimeUnit.SECONDS)
-                        .toInstant()
-                        .atOffset(ZoneOffset.UTC));
+                FakerUtils.pastDate());
+        apiKey.setDescription(faker.lorem().paragraph());
         apiKey.setExpiresAt(
-                faker.date().future(1, TimeUnit.SECONDS)
-                        .toInstant()
-                        .atOffset(ZoneOffset.UTC));
+                FakerUtils.futureDate());
         apiKey.setId(UUID.randomUUID().toString());
 
         return apiKey;
@@ -31,17 +27,13 @@ public class ApiKeyFaker {
 
     public static ApiKeyEntity newApiKeyEntity() {
         var apiKeyEntity = new ApiKeyEntity();
-        apiKeyEntity.setId(ObjectId.get());
+        apiKeyEntity.setCreatedAt(FakerUtils.pastDate());
         apiKeyEntity.setCredentials(UUID.randomUUID().toString());
         apiKeyEntity.setDescription(faker.lorem().paragraph());
-        apiKeyEntity.setCreatedAt(
-                faker.date().past(1, TimeUnit.SECONDS)
-                        .toInstant()
-                        .atOffset(ZoneOffset.UTC));
         apiKeyEntity.setExpiresAt(
-                faker.date().future(1, TimeUnit.DAYS)
-                        .toInstant()
-                        .atOffset(ZoneOffset.UTC));
+                FakerUtils.futureDate());
+        apiKeyEntity.setId(ObjectId.get());
+        apiKeyEntity.setUserId(UUID.randomUUID().toString());
 
         return apiKeyEntity;
     }

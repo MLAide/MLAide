@@ -2,13 +2,11 @@ package com.mlaide.webserver.service.impl;
 
 import com.mlaide.webserver.model.*;
 import com.mlaide.webserver.repository.ProjectRepository;
-import com.mlaide.webserver.repository.entity.MvcPermission;
+import com.mlaide.webserver.repository.entity.MlAidePermission;
 import com.mlaide.webserver.repository.entity.ProjectEntity;
 import com.mlaide.webserver.service.*;
 import com.mlaide.webserver.service.mapper.ProjectMapper;
 import com.mongodb.MongoWriteException;
-import com.mlaide.webserver.model.*;
-import com.mlaide.webserver.service.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,9 +79,6 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectEntity projectEntity = projectMapper.toEntity(project);
         // TODO: validate project key (only characters, digits and hyphens allowed)
 
-        if (projectEntity.getName() == null || projectEntity.getName().isBlank()) {
-            projectEntity.setName(projectEntity.getKey());
-        }
         projectEntity.setCreatedAt(OffsetDateTime.now(clock));
 
         projectEntity = saveProjectAndGrantOwnerPermissionForCurrentUser(projectEntity);
@@ -95,13 +90,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ItemList<ProjectMember> getProjectMembers(String projectKey) {
-        Map<String, MvcPermission> permissions = permissionService.getProjectPermissions(projectKey);
+        Map<String, MlAidePermission> permissions = permissionService.getProjectPermissions(projectKey);
         List<ProjectMember> projectMembers = permissions.entrySet().stream().map(entry -> {
             // Get user
             var user = userService.getUser(entry.getKey());
 
             // Map permission to member role
-            MvcPermission permission = entry.getValue();
+            MlAidePermission permission = entry.getValue();
             ProjectMemberRole role = mapPermissionToMemberRole(projectKey, permission);
 
             return new ProjectMember(user.getUserId(), user.getEmail(), user.getNickName(), role);
@@ -113,14 +108,14 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void addOrUpdateProjectMembers(String projectKey, List<ProjectMember> projectMembers) {
         User currentUser = userService.getCurrentUser();
-        Map<String, MvcPermission> currentPermissions = permissionService.getProjectPermissions(projectKey);
+        Map<String, MlAidePermission> currentPermissions = permissionService.getProjectPermissions(projectKey);
         if (!currentPermissions.containsKey(currentUser.getUserId())
-                || currentPermissions.get(currentUser.getUserId()) != MvcPermission.OWNER) {
+                || currentPermissions.get(currentUser.getUserId()) != MlAidePermission.OWNER) {
             throw new NotFoundException();
         }
 
-        Map<String, MvcPermission> permissionsToGrant = projectMembers.stream().map(member -> {
-            MvcPermission permission = mapMemberRoleToPermission(member.getRole());
+        Map<String, MlAidePermission> permissionsToGrant = projectMembers.stream().map(member -> {
+            MlAidePermission permission = mapMemberRoleToPermission(member.getRole());
             User user = userService.getUserByEmail(member.getEmail());
             return new ImmutablePair<>(user.getUserId(), permission);
         }).collect(Collectors.toMap(x -> x.left, x -> x.right));
@@ -134,13 +129,13 @@ public class ProjectServiceImpl implements ProjectService {
         permissionService.revokeProjectPermission(projectKey, singletonList(user.getUserId()));
     }
 
-    private ProjectMemberRole mapPermissionToMemberRole(String projectKey, MvcPermission permission) {
+    private ProjectMemberRole mapPermissionToMemberRole(String projectKey, MlAidePermission permission) {
         ProjectMemberRole role;
-        if (MvcPermission.VIEWER.equals(permission)) {
+        if (MlAidePermission.VIEWER.equals(permission)) {
             role = ProjectMemberRole.VIEWER;
-        } else if (MvcPermission.CONTRIBUTOR.equals(permission)) {
+        } else if (MlAidePermission.CONTRIBUTOR.equals(permission)) {
             role = ProjectMemberRole.CONTRIBUTOR;
-        } else if (MvcPermission.OWNER.equals(permission)) {
+        } else if (MlAidePermission.OWNER.equals(permission)) {
             role = ProjectMemberRole.OWNER;
         } else {
             LOGGER.error("Could not map project permission " + permission + " of project " + projectKey + " to member role");
@@ -149,17 +144,17 @@ public class ProjectServiceImpl implements ProjectService {
         return role;
     }
 
-    private MvcPermission mapMemberRoleToPermission(ProjectMemberRole role) {
-        MvcPermission permissionToGrant;
+    private MlAidePermission mapMemberRoleToPermission(ProjectMemberRole role) {
+        MlAidePermission permissionToGrant;
         switch (role) {
             case OWNER:
-                permissionToGrant = MvcPermission.OWNER;
+                permissionToGrant = MlAidePermission.OWNER;
                 break;
             case CONTRIBUTOR:
-                permissionToGrant = MvcPermission.CONTRIBUTOR;
+                permissionToGrant = MlAidePermission.CONTRIBUTOR;
                 break;
             case VIEWER:
-                permissionToGrant = MvcPermission.VIEWER;
+                permissionToGrant = MlAidePermission.VIEWER;
                 break;
             default:
                 LOGGER.error("Could not map project role " + role + " to project permission");
@@ -182,7 +177,7 @@ public class ProjectServiceImpl implements ProjectService {
             throw e;
         }
 
-        permissionService.grantPermissionToNewProject(projectEntity.getKey(), MvcPermission.OWNER);
+        permissionService.grantPermissionToNewProject(projectEntity.getKey(), MlAidePermission.OWNER);
 
         return projectEntity;
     }

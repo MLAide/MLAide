@@ -9,7 +9,7 @@ import com.mlaide.webserver.faker.ProjectFaker;
 import com.mlaide.webserver.faker.ProjectMemberFaker;
 import com.mlaide.webserver.faker.UserFaker;
 import com.mlaide.webserver.repository.ProjectRepository;
-import com.mlaide.webserver.repository.entity.MvcPermission;
+import com.mlaide.webserver.repository.entity.MlAidePermission;
 import com.mlaide.webserver.repository.entity.ProjectEntity;
 import com.mlaide.webserver.service.mapper.ProjectMapper;
 import org.bson.BsonDocument;
@@ -103,7 +103,7 @@ class ProjectServiceImplTest {
             Optional<Project> project = projectService.getProject(projectEntity.getKey());
 
             // assert
-            assertThat(project.isPresent()).isTrue();
+            assertThat(project).isPresent();
             assertThat(project.get()).isNotNull();
             assertThat(project.get()).isSameAs(projectDto);
         }
@@ -141,28 +141,6 @@ class ProjectServiceImplTest {
             // Assert
             verify(projectRepository).save(projectEntityToSave);
             assertThat(result).isSameAs(savedProjectDto);
-        }
-
-        @Test
-        void valid_project_where_name_is_null_should_set_default_name_based_on_project_key() {
-            // Arrange
-            var projectDtoToSave = ProjectFaker.newProject();
-            projectDtoToSave.setName(null);
-            var projectEntityToSave = ProjectFaker.newProjectEntity();
-            projectEntityToSave.setName(null);
-            var savedProjectEntity = ProjectFaker.newProjectEntity();
-            var savedProjectDto = ProjectFaker.newProject();
-            when(projectMapper.toEntity(projectDtoToSave)).thenReturn(projectEntityToSave);
-            when(projectRepository.save(projectEntityToSave)).thenReturn(savedProjectEntity);
-            when(projectMapper.fromEntity(savedProjectEntity)).thenReturn(savedProjectDto);
-
-            // Act
-            projectService.addProject(projectDtoToSave);
-
-            // Assert
-            ArgumentCaptor<ProjectEntity> argumentCaptor = ArgumentCaptor.forClass(ProjectEntity.class);
-            verify(projectRepository).save(argumentCaptor.capture());
-            assertThat(argumentCaptor.getValue().getName()).isEqualTo(projectEntityToSave.getKey());
         }
 
         @Test
@@ -260,7 +238,7 @@ class ProjectServiceImplTest {
             projectService.addProject(projectDtoToSave);
 
             // Assert
-            verify(permissionService).grantPermissionToNewProject(savedProjectEntity.getKey(), MvcPermission.OWNER);
+            verify(permissionService).grantPermissionToNewProject(savedProjectEntity.getKey(), MlAidePermission.OWNER);
         }
 
         private DuplicateKeyException createDuplicateKeyException(int mongoWriteErrorCode) {
@@ -281,10 +259,10 @@ class ProjectServiceImplTest {
             User fakeUser1 = UserFaker.newUser();
             User fakeUser2 = UserFaker.newUser();
             User fakeUser3 = UserFaker.newUser();
-            Map<String, MvcPermission> definedPermissions = new LinkedHashMap<>() {{
-                put(fakeUser1.getUserId(), MvcPermission.OWNER);
-                put(fakeUser2.getUserId(), MvcPermission.CONTRIBUTOR);
-                put(fakeUser3.getUserId(), MvcPermission.VIEWER);
+            Map<String, MlAidePermission> definedPermissions = new LinkedHashMap<>() {{
+                put(fakeUser1.getUserId(), MlAidePermission.OWNER);
+                put(fakeUser2.getUserId(), MlAidePermission.CONTRIBUTOR);
+                put(fakeUser3.getUserId(), MlAidePermission.VIEWER);
             }};
             when(permissionService.getProjectPermissions(fakeProject.getKey())).thenReturn(definedPermissions);
             when(userService.getUser(fakeUser1.getUserId())).thenReturn(fakeUser1);
@@ -327,7 +305,7 @@ class ProjectServiceImplTest {
 
             User currentUser = UserFaker.newUser();
             when(userService.getCurrentUser()).thenReturn(currentUser);
-            when(permissionService.getProjectPermissions(fakeProject.getKey())).thenReturn(of(currentUser.getUserId(), MvcPermission.OWNER));
+            when(permissionService.getProjectPermissions(fakeProject.getKey())).thenReturn(of(currentUser.getUserId(), MlAidePermission.OWNER));
 
             User fakeUser1 = UserFaker.newUser();
             User fakeUser2 = UserFaker.newUser();
@@ -345,14 +323,14 @@ class ProjectServiceImplTest {
 
             // assert
             @SuppressWarnings("unchecked")
-            ArgumentCaptor<Map<String, MvcPermission>> argumentCaptor = ArgumentCaptor.forClass(Map.class);
+            ArgumentCaptor<Map<String, MlAidePermission>> argumentCaptor = ArgumentCaptor.forClass(Map.class);
             verify(permissionService).grantPermissionsToExistingProject(eq(fakeProject.getKey()), argumentCaptor.capture());
-            Map<String, MvcPermission> projectPermissions = argumentCaptor.getValue();
+            Map<String, MlAidePermission> projectPermissions = argumentCaptor.getValue();
             assertThat(projectPermissions).isNotNull();
             assertThat(projectPermissions.size()).isEqualTo(3);
-            assertThat(projectPermissions.get(fakeUser1.getUserId())).isEqualTo(MvcPermission.OWNER);
-            assertThat(projectPermissions.get(fakeUser2.getUserId())).isEqualTo(MvcPermission.CONTRIBUTOR);
-            assertThat(projectPermissions.get(fakeUser3.getUserId())).isEqualTo(MvcPermission.VIEWER);
+            assertThat(projectPermissions.get(fakeUser1.getUserId())).isEqualTo(MlAidePermission.OWNER);
+            assertThat(projectPermissions.get(fakeUser2.getUserId())).isEqualTo(MlAidePermission.CONTRIBUTOR);
+            assertThat(projectPermissions.get(fakeUser3.getUserId())).isEqualTo(MlAidePermission.VIEWER);
         }
 
         @Test
@@ -362,7 +340,7 @@ class ProjectServiceImplTest {
             User currentUser = UserFaker.newUser();
             User fakeUser1 = UserFaker.newUser();
             when(userService.getCurrentUser()).thenReturn(currentUser);
-            when(permissionService.getProjectPermissions(fakeProject.getKey())).thenReturn(of(fakeUser1.getUserId(), MvcPermission.OWNER));
+            when(permissionService.getProjectPermissions(fakeProject.getKey())).thenReturn(of(fakeUser1.getUserId(), MlAidePermission.OWNER));
             ProjectMember fakeProjectMember = ProjectMemberFaker.newProjectMember(ProjectMemberRole.OWNER);
 
             // act + assert
@@ -376,7 +354,7 @@ class ProjectServiceImplTest {
             ProjectEntity fakeProject = ProjectFaker.newProjectEntity();
             User currentUser = UserFaker.newUser();
             when(userService.getCurrentUser()).thenReturn(currentUser);
-            when(permissionService.getProjectPermissions(fakeProject.getKey())).thenReturn(of(currentUser.getUserId(), MvcPermission.CONTRIBUTOR));
+            when(permissionService.getProjectPermissions(fakeProject.getKey())).thenReturn(of(currentUser.getUserId(), MlAidePermission.CONTRIBUTOR));
             ProjectMember fakeProjectMember = ProjectMemberFaker.newProjectMember(ProjectMemberRole.OWNER);
 
             // act + assert

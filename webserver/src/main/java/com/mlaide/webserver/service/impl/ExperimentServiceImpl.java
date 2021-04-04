@@ -75,10 +75,6 @@ public class ExperimentServiceImpl implements ExperimentService {
             throw new InvalidInputException("experiment key must be not null or blank");
         }
 
-        if (experiment.getStatus() == null) {
-            experiment.setStatus(ExperimentStatus.TODO);
-        }
-
         ExperimentEntity experimentEntity = experimentMapper.toEntity(experiment);
         experimentEntity.setCreatedAt(OffsetDateTime.now(clock));
         experimentEntity.setProjectKey(projectKey);

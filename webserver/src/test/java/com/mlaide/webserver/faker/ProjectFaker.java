@@ -12,24 +12,18 @@ public class ProjectFaker {
 
     public static ProjectEntity newProjectEntity() {
         var project = new ProjectEntity();
-        project.setKey(faker.funnyName().name().toLowerCase());
+        project.setCreatedAt(FakerUtils.pastDate());
+        project.setKey(FakerUtils.validProjectKey());
         project.setName(faker.funnyName().name());
-        project.setCreatedAt(
-                faker.date().past(1, TimeUnit.SECONDS)
-                        .toInstant()
-                        .atOffset(ZoneOffset.UTC));
 
         return project;
     }
 
     public static Project newProject() {
         var project = new Project();
+        project.setCreatedAt(FakerUtils.pastDate());
         project.setKey(faker.funnyName().name().toLowerCase());
         project.setName(faker.funnyName().name());
-        project.setCreatedAt(
-                faker.date().past(1, TimeUnit.SECONDS)
-                        .toInstant()
-                        .atOffset(ZoneOffset.UTC));
 
         return project;
     }

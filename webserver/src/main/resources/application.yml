@@ -8,6 +8,8 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: https://mvc-dev.eu.auth0.com/.well-known/jwks.json
+  jackson:
+    default-property-inclusion: non_null
 
 server:
   port: 9000

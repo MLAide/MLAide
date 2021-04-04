@@ -1,7 +1,7 @@
 package com.mlaide.webserver.api;
 
 import com.mlaide.webserver.faker.ProjectFaker;
-import com.mlaide.webserver.repository.entity.MvcPermission;
+import com.mlaide.webserver.repository.entity.MlAidePermission;
 import com.mlaide.webserver.repository.entity.ProjectEntity;
 import com.mlaide.webserver.service.PermissionService;
 import org.junit.jupiter.api.Nested;
@@ -35,7 +35,7 @@ public class ProjectResourceTest extends ApiTestWithExternalDependencies {
         void shouldReturnAllProjects() throws Exception {
             ProjectEntity project = ProjectFaker.newProjectEntity();
             mongo.save(project);
-            permissionService.grantPermissionToNewProject(project.getKey(), MvcPermission.OWNER);
+            permissionService.grantPermissionToNewProject(project.getKey(), MlAidePermission.OWNER);
 
             mockMvc.perform(get("/api/v1/projects"))
                     .andDo(print())
