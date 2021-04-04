@@ -26,6 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import javax.validation.ConstraintViolationException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
@@ -57,6 +58,17 @@ public class ArtifactRefEntityTest {
 
     @Nested
     class validation {
+        @Test
+        void should_save_valid_artifactRef() {
+            // Arrange in BeforeEach
+
+            // Act
+            ArtifactRefEntity returnValue = mongo.save(artifactRefEntity);
+
+            // Assert
+            assertThat(returnValue).isEqualTo(artifactRefEntity);
+        }
+
         @ParameterizedTest
         @NullSource
         @ValueSource(strings = {"", " "})

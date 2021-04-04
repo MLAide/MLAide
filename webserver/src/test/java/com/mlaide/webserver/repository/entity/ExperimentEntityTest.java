@@ -27,6 +27,7 @@ import javax.validation.ConstraintViolationException;
 import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
@@ -58,6 +59,17 @@ public class ExperimentEntityTest {
 
     @Nested
     class validation {
+        @Test
+        void should_save_valid_experiment() {
+            // Arrange in BeforeEach
+
+            // Act
+            ExperimentEntity returnValue = mongo.save(experimentEntity);
+
+            // Assert
+            assertThat(returnValue).isEqualTo(experimentEntity);
+        }
+
         @Test
         void createdAt_is_null_should_throw_ConstraintViolationException() {
             // Arrange

@@ -5,6 +5,7 @@ import com.mlaide.webserver.faker.UserFaker;
 import com.mlaide.webserver.integration.MongoDB;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -25,6 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import javax.validation.ConstraintViolationException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
@@ -56,6 +58,17 @@ public class UserEntityTest {
 
     @Nested
     class validation {
+        @Test
+        void should_save_valid_user() {
+            // Arrange in BeforeEach
+
+            // Act
+            UserEntity returnValue = mongo.save(userEntity);
+
+            // Assert
+            assertThat(returnValue).isEqualTo(userEntity);
+        }
+
         @ParameterizedTest
         @NullSource
         @ValueSource(strings = {"", " ", "abc", "abc@", "abc@def."})
