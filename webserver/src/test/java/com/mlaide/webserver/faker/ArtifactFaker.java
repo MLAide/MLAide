@@ -16,14 +16,11 @@ public class ArtifactFaker {
 
     public static ArtifactEntity newArtifactEntity() {
         var artifact = new ArtifactEntity();
-        artifact.setCreatedAt(pastDate());
-        artifact.setCreatedBy(newUserRef());
+        artifact.setCreatedAt(FakerUtils.pastDate());
+        artifact.setCreatedBy(FakerUtils.newUserRef());
         artifact.setId(ObjectId.get());
         artifact.setName(faker.funnyName().name());
-        artifact.setProjectKey(faker.funnyName().name()
-                .toLowerCase()
-                .replace(" ", "-")
-                .replace(".", "-"));
+        artifact.setProjectKey(FakerUtils.validProjectKey());
         artifact.setRunKey(faker.random().nextInt(50));
         artifact.setRunName(faker.superhero().name());
         artifact.setType(faker.animal().name());
@@ -34,8 +31,8 @@ public class ArtifactFaker {
 
     public static Artifact newArtifact() {
         var artifact = new Artifact();
-        artifact.setCreatedAt(pastDate());
-        artifact.setCreatedBy(newUserRef());
+        artifact.setCreatedAt(FakerUtils.pastDate());
+        artifact.setCreatedBy(FakerUtils.newUserRef());
         artifact.setName(faker.funnyName().name());
         artifact.setRunKey(faker.random().nextInt(50));
         artifact.setRunName(faker.superhero().name());
@@ -43,19 +40,5 @@ public class ArtifactFaker {
         artifact.setVersion(faker.random().nextInt(Integer.MAX_VALUE));
 
         return artifact;
-    }
-
-    private static OffsetDateTime pastDate() {
-        return faker.date().past(1, TimeUnit.SECONDS)
-                .toInstant()
-                .atOffset(ZoneOffset.UTC);
-    }
-
-    private static UserRef newUserRef() {
-        UserRef userRef = new UserRef();
-        userRef.setUserId(UUID.randomUUID().toString());
-        userRef.setNickName(faker.name().name());
-
-        return userRef;
     }
 }

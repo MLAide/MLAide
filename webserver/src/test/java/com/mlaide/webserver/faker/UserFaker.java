@@ -16,10 +16,10 @@ public class UserFaker {
 
         userEntity.setEmail(faker.internet().emailAddress());
         userEntity.setFirstName(faker.name().firstName());
+        userEntity.setId(ObjectId.get());
         userEntity.setLastName(faker.name().lastName());
         userEntity.setNickName(faker.funnyName().name());
         userEntity.setUserId(faker.internet().uuid());
-        userEntity.setId(ObjectId.get());
 
         return userEntity;
     }
@@ -29,9 +29,9 @@ public class UserFaker {
 
         user.setEmail(faker.internet().emailAddress());
         user.setFirstName(faker.name().firstName());
+        user.setUserId(faker.internet().uuid());
         user.setLastName(faker.name().lastName());
         user.setNickName(faker.funnyName().name());
-        user.setUserId(faker.internet().uuid());
 
         return user;
     }
