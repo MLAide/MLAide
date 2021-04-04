@@ -28,17 +28,18 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ExperimentEntity {
     @PastOrPresent
+    @NotNull
     private OffsetDateTime createdAt;
+    @Id private ObjectId id;
     @NotBlank
     private String key;
     @NotBlank
     private String name;
+    @Pattern(regexp = ValidationRegEx.projectKey)
+    @Indexed private String projectKey;
     @NotNull
     private String status;
     private List<String> tags;
-    @Pattern(regexp = ValidationRegEx.projectKey)
-    @Indexed private String projectKey;
-    @Id private ObjectId id;
     @PastOrPresent
     private OffsetDateTime updatedAt;
 }
