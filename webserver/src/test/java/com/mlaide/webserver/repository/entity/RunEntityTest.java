@@ -1,7 +1,7 @@
 package com.mlaide.webserver.repository.entity;
 
 import com.mlaide.webserver.configuration.MongoConfig;
-import com.mlaide.webserver.faker.ArtifactFaker;
+import com.mlaide.webserver.faker.RunFaker;
 import com.mlaide.webserver.integration.MongoDB;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -24,7 +24,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.validation.ConstraintViolationException;
-
 import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -33,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ExtendWith(SpringExtension.class)
 @Import(MongoConfig.class)
 @Testcontainers
-public class ArtifactEntityTest {
+public class RunEntityTest {
     @Autowired
     private MongoTemplate mongo;
     @Container
@@ -42,7 +41,7 @@ public class ArtifactEntityTest {
     public static void mongoDBProperties(DynamicPropertyRegistry registry) {
         mongoDB.updateSpringProperties(registry);
     }
-    private ArtifactEntity artifactEntity;
+    private RunEntity runEntity;
 
     @TestConfiguration
     static class MongoMapKeyDotReplacementConfiguration {
@@ -53,8 +52,8 @@ public class ArtifactEntityTest {
     }
 
     @BeforeEach
-    void initialize(){
-        artifactEntity = ArtifactFaker.newArtifactEntity();
+    void initialize() {
+        runEntity = RunFaker.newRunEntity();
     }
 
     @Nested
@@ -62,28 +61,46 @@ public class ArtifactEntityTest {
         @Test
         void createdAt_is_null_should_throw_ConstraintViolationException() {
             // Arrange
-            artifactEntity.setCreatedAt(null);
+            runEntity.setCreatedAt(null);
 
             // Act + Assert
-            assertThatThrownBy(() -> mongo.save(artifactEntity)).isInstanceOf(ConstraintViolationException.class);
+            assertThatThrownBy(() -> mongo.save(runEntity)).isInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
         void createdAt_is_in_the_future_should_throw_ConstraintViolationException() {
             // Arrange
-            artifactEntity.setCreatedAt(OffsetDateTime.now().plusDays(1));
+            runEntity.setCreatedAt(OffsetDateTime.now().plusDays(1));
 
             // Act + Assert
-            assertThatThrownBy(() -> mongo.save(artifactEntity)).isInstanceOf(ConstraintViolationException.class);
+            assertThatThrownBy(() -> mongo.save(runEntity)).isInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
         void createdBy_is_null_should_throw_ConstraintViolationException() {
             // Arrange
-            artifactEntity.setCreatedBy(null);
+            runEntity.setCreatedBy(null);
 
             // Act + Assert
-            assertThatThrownBy(() -> mongo.save(artifactEntity)).isInstanceOf(ConstraintViolationException.class);
+            assertThatThrownBy(() -> mongo.save(runEntity)).isInstanceOf(ConstraintViolationException.class);
+        }
+
+        @Test
+        void endTime_is_in_the_future_should_throw_ConstraintViolationException() {
+            // Arrange
+            runEntity.setEndTime(OffsetDateTime.now().plusDays(1));
+
+            // Act + Assert
+            assertThatThrownBy(() -> mongo.save(runEntity)).isInstanceOf(ConstraintViolationException.class);
+        }
+
+        @Test
+        void key_is_null_should_throw_ConstraintViolationException() {
+            // Arrange
+            runEntity.setKey(null);
+
+            // Act + Assert
+            assertThatThrownBy(() -> mongo.save(runEntity)).isInstanceOf(ConstraintViolationException.class);
         }
 
         @ParameterizedTest
@@ -91,10 +108,10 @@ public class ArtifactEntityTest {
         @ValueSource(strings = {"", " "})
         void invalid_name_should_throw_ConstraintViolationException(String arg) {
             // Arrange
-            artifactEntity.setName(arg);
+            runEntity.setName(arg);
 
             // Act + Assert
-            assertThatThrownBy(() -> mongo.save(artifactEntity)).isInstanceOf(ConstraintViolationException.class);
+            assertThatThrownBy(() -> mongo.save(runEntity)).isInstanceOf(ConstraintViolationException.class);
         }
 
         @ParameterizedTest
@@ -102,48 +119,39 @@ public class ArtifactEntityTest {
         @ValueSource(strings = {"", " ", "project-", "project-!nvalid"})
         void invalid_projectKey_should_throw_ConstraintViolationException(String arg) {
             // Arrange
-            artifactEntity.setProjectKey(arg);
+            runEntity.setProjectKey(arg);
 
             // Act + Assert
-            assertThatThrownBy(() -> mongo.save(artifactEntity)).isInstanceOf(ConstraintViolationException.class);
+            assertThatThrownBy(() -> mongo.save(runEntity)).isInstanceOf(ConstraintViolationException.class);
         }
 
         @Test
-        void runKey_is_null_should_throw_ConstraintViolationException() {
+        void startTime_is_null_should_throw_ConstraintViolationException() {
             // Arrange
-            artifactEntity.setRunKey(null);
+            runEntity.setStartTime(null);
 
             // Act + Assert
-            assertThatThrownBy(() -> mongo.save(artifactEntity)).isInstanceOf(ConstraintViolationException.class);
+            assertThatThrownBy(() -> mongo.save(runEntity)).isInstanceOf(ConstraintViolationException.class);
+        }
+
+        @Test
+        void startTime_is_in_the_future_should_throw_ConstraintViolationException() {
+            // Arrange
+            runEntity.setStartTime(OffsetDateTime.now().plusDays(1));
+
+            // Act + Assert
+            assertThatThrownBy(() -> mongo.save(runEntity)).isInstanceOf(ConstraintViolationException.class);
         }
 
         @ParameterizedTest
         @NullSource
         @ValueSource(strings = {"", " "})
-        void invalid_type_should_throw_ConstraintViolationException(String arg) {
+        void invalid_status_should_throw_ConstraintViolationException(String arg) {
             // Arrange
-            artifactEntity.setType(arg);
+            runEntity.setStatus(arg);
 
             // Act + Assert
-            assertThatThrownBy(() -> mongo.save(artifactEntity)).isInstanceOf(ConstraintViolationException.class);
-        }
-
-        @Test
-        void updatedAt_is_in_the_future_should_throw_ConstraintViolationException() {
-            // Arrange
-            artifactEntity.setUpdatedAt(OffsetDateTime.now().plusDays(1));
-
-            // Act + Assert
-            assertThatThrownBy(() -> mongo.save(artifactEntity)).isInstanceOf(ConstraintViolationException.class);
-        }
-
-        @Test
-        void version_is_null_should_throw_ConstraintViolationException() {
-            // Arrange
-            artifactEntity.setVersion(null);
-
-            // Act + Assert
-            assertThatThrownBy(() -> mongo.save(artifactEntity)).isInstanceOf(ConstraintViolationException.class);
+            assertThatThrownBy(() -> mongo.save(runEntity)).isInstanceOf(ConstraintViolationException.class);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.mlaide.webserver.repository;
 
+import com.mlaide.webserver.faker.RunFaker;
 import com.mlaide.webserver.integration.MongoDB;
 import com.mlaide.webserver.repository.entity.ArtifactRefEntity;
 import com.mlaide.webserver.repository.entity.RunEntity;
@@ -13,6 +14,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
@@ -66,62 +68,50 @@ class ExtendedRunQueriesImplTest {
 
         // Arrange
         String projectKey = UUID.randomUUID().toString();
-        RunEntity r0 = RunEntity.builder()
-                .key(0)
-                .name("r0")
-                .artifacts(singletonList(
-                        ArtifactRefEntity.builder().name("a0").version(1).build()
-                ))
-                .projectKey(projectKey)
-                .build();
-        RunEntity r1 = RunEntity.builder()
-                .key(1)
-                .name("r1")
-                .artifacts(asList(
-                        ArtifactRefEntity.builder().name("a1.0").version(1).build(),
-                        ArtifactRefEntity.builder().name("a1.1").version(1).build()
-                ))
-                .projectKey(projectKey)
-                .build();
-        RunEntity r2 = RunEntity.builder()
-                .key(2)
-                .name("r2")
-                .artifacts(singletonList(
-                        ArtifactRefEntity.builder().name("a2").version(1).build()
-                ))
-                .usedArtifacts(singletonList(
-                        ArtifactRefEntity.builder().name("a1.1").version(1).build()
-                ))
-                .projectKey(projectKey)
-                .build();
-        RunEntity r3 = RunEntity.builder()
-                .key(3)
-                .name("r3")
-                .artifacts(singletonList(
-                        ArtifactRefEntity.builder().name("a3").version(1).build()
-                ))
-                .usedArtifacts(asList(
+        RunEntity r0 = createCustomRunEntityWithArtifactRefs(
+                0,
+                "r0",
+                projectKey,
+                singletonList(ArtifactRefEntity.builder().name("a0").version(1).build())
+        );
+        RunEntity r1 = createCustomRunEntityWithArtifactRefs(
+                1,
+                "r1",
+                projectKey,
+                asList(
+                    ArtifactRefEntity.builder().name("a1.0").version(1).build(),
+                    ArtifactRefEntity.builder().name("a1.1").version(1).build()
+                )
+        );
+        RunEntity r2 = createCustomRunEntityWithArtifactRefsAndUsedArtifacts(
+                2,
+                "r2", projectKey,
+                singletonList(ArtifactRefEntity.builder().name("a2").version(1).build()),
+                singletonList(ArtifactRefEntity.builder().name("a1.1").version(1).build())
+        );
+        RunEntity r3 = createCustomRunEntityWithArtifactRefsAndUsedArtifacts(
+                3,
+                "r3",
+                projectKey,
+                singletonList(ArtifactRefEntity.builder().name("a3").version(1).build()),
+                asList(
                         ArtifactRefEntity.builder().name("a0").version(1).build(),
                         ArtifactRefEntity.builder().name("a1.1").version(1).build()
-                ))
-                .projectKey(projectKey)
-                .build();
-        RunEntity r4 = RunEntity.builder()
-                .key(4)
-                .name("r4")
-                .artifacts(singletonList(
-                        ArtifactRefEntity.builder().name("a4").version(111).build()
-                ))
-                .projectKey(projectKey)
-                .build();
-        RunEntity rAnotherProject = RunEntity.builder()
-                .key(1)
-                .name("rAnotherProject")
-                .artifacts(singletonList(
-                        ArtifactRefEntity.builder().name("a0").version(1).build()
-                ))
-                .projectKey("another-project-key")
-                .build();
+                )
+        );
+        RunEntity r4 = createCustomRunEntityWithArtifactRefs(
+                4,
+                "r4",
+                projectKey,
+                singletonList(ArtifactRefEntity.builder().name("a4").version(111).build())
+        );
+        RunEntity rAnotherProject = createCustomRunEntityWithArtifactRefs(
+                1,
+                "rAnotherProject",
+                "another-project-key",
+                singletonList(ArtifactRefEntity.builder().name("a0").version(1).build())
+        );
+
         mongo.insertAll(asList(r0, r1, r3, r4, r2, rAnotherProject));
 
         var usedArtifacts = asList(
@@ -146,29 +136,10 @@ class ExtendedRunQueriesImplTest {
         String projectKey = UUID.randomUUID().toString();
         RunEntity.ExperimentRefEntity exp1 = new RunEntity.ExperimentRefEntity("experiment1");
         RunEntity.ExperimentRefEntity exp2 = new RunEntity.ExperimentRefEntity("experiment2");
-        RunEntity r1 = RunEntity.builder()
-                .key(1)
-                .name("r1")
-                .projectKey(projectKey)
-                .experimentRefs(asList(exp1, exp2))
-                .build();
-        RunEntity r2 = RunEntity.builder()
-                .key(2)
-                .name("r2")
-                .projectKey(projectKey)
-                .experimentRefs(singletonList(exp1))
-                .build();
-        RunEntity r3 = RunEntity.builder()
-                .key(3)
-                .name("r3")
-                .projectKey(projectKey)
-                .build();
-        RunEntity rAnother = RunEntity.builder()
-                .key(1)
-                .name("r1")
-                .projectKey("another-project")
-                .experimentRefs(singletonList(exp1))
-                .build();
+        RunEntity r1 = createCustomRunEntityWithExperimentRefs(1, "r1", projectKey, asList(exp1, exp2));
+        RunEntity r2 = createCustomRunEntityWithExperimentRefs(2, "r2", projectKey, singletonList(exp1));
+        RunEntity r3 = createCustomRunEntityWithExperimentRefs(3, "r3", projectKey);
+        RunEntity rAnother = createCustomRunEntityWithExperimentRefs(1, "r1", "another-project", singletonList(exp1));
 
         mongo.insertAll(asList(r1, r2, r3, rAnother));
 
@@ -194,5 +165,61 @@ class ExtendedRunQueriesImplTest {
         assertThat(r3.getExperimentRefs()).anyMatch(r -> r.getExperimentKey().equals(exp2.getExperimentKey()));
         assertThat(rAnother.getExperimentRefs()).hasSize(1);
         assertThat(rAnother.getExperimentRefs()).anyMatch(r -> r.getExperimentKey().equals(exp1.getExperimentKey()));
+    }
+
+    private RunEntity createCustomRunEntityWithArtifactRefs(Integer key,
+                                                              String name,
+                                                              String projectKey,
+                                                              List<ArtifactRefEntity> artifactRefList) {
+        RunEntity runEntity = RunFaker.newRunEntity();
+
+        runEntity.setKey(key);
+        runEntity.setName(name);
+        runEntity.setProjectKey(projectKey);
+        runEntity.setArtifacts(artifactRefList);
+
+        return runEntity;
+    }
+
+    private RunEntity createCustomRunEntityWithArtifactRefsAndUsedArtifacts(Integer key,
+                                                            String name,
+                                                            String projectKey,
+                                                            List<ArtifactRefEntity> artifactRefList,
+                                                            List<ArtifactRefEntity> usedArtifactRefList) {
+        RunEntity runEntity = RunFaker.newRunEntity();
+
+        runEntity.setKey(key);
+        runEntity.setName(name);
+        runEntity.setProjectKey(projectKey);
+        runEntity.setArtifacts(artifactRefList);
+        runEntity.setUsedArtifacts(usedArtifactRefList);
+
+        return runEntity;
+    }
+
+    private RunEntity createCustomRunEntityWithExperimentRefs(Integer key,
+                                                              String name,
+                                                              String projectKey,
+                                                              List<RunEntity.ExperimentRefEntity> experimentRefList) {
+        RunEntity runEntity = RunFaker.newRunEntity();
+
+        runEntity.setKey(key);
+        runEntity.setName(name);
+        runEntity.setProjectKey(projectKey);
+        runEntity.setExperimentRefs(experimentRefList);
+
+        return runEntity;
+    }
+
+    private RunEntity createCustomRunEntityWithExperimentRefs(Integer key,
+                                                              String name,
+                                                              String projectKey) {
+        RunEntity runEntity = RunFaker.newRunEntity();
+
+        runEntity.setKey(key);
+        runEntity.setName(name);
+        runEntity.setProjectKey(projectKey);
+
+        return runEntity;
     }
 }
