@@ -36,6 +36,7 @@ public class ExperimentEntity {
     @NotBlank
     private String name;
     @Pattern(regexp = ValidationRegEx.projectKey)
+    @NotBlank
     @Indexed private String projectKey;
     @NotNull
     private String status;
