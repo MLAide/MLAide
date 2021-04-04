@@ -1,6 +1,7 @@
 package com.mlaide.webserver.repository.entity;
 
 import com.mlaide.webserver.configuration.MongoConfig;
+import com.mlaide.webserver.faker.ArtifactRefFaker;
 import com.mlaide.webserver.integration.MongoDB;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -51,9 +52,7 @@ public class ArtifactRefEntityTest {
 
     @BeforeEach
     void initialize(){
-        artifactRefEntity = new ArtifactRefEntity();
-        artifactRefEntity.setName("artifactRefEntity-test");
-        artifactRefEntity.setVersion(1);
+        artifactRefEntity = ArtifactRefFaker.newArtifactRefEntity();
     }
 
     @Nested
