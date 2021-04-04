@@ -3,7 +3,6 @@ package com.mlaide.webserver.controller;
 import com.mlaide.webserver.model.ItemList;
 import com.mlaide.webserver.model.Project;
 import com.mlaide.webserver.model.ProjectMember;
-import com.mlaide.webserver.service.NotFoundException;
 import com.mlaide.webserver.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/api/v1/projects")
 public class ProjectController {
-    private final Logger LOGGER = LoggerFactory.getLogger(ProjectController.class);
+    private final Logger logger = LoggerFactory.getLogger(ProjectController.class);
     private final ProjectService projectService;
 
     @Autowired
@@ -27,21 +25,21 @@ public class ProjectController {
 
     @GetMapping
     public ResponseEntity<ItemList<Project>> getProjects() {
-        LOGGER.info("get projects");
+        logger.info("get projects");
         return ResponseEntity.ok(projectService.getProjects());
     }
 
     @GetMapping(path = "/{projectKey}")
     public ResponseEntity<Project> getProject(@PathVariable("projectKey") String projectKey) {
-        LOGGER.info("get project by project key");
-        Project project = projectService.getProject(projectKey).orElseThrow(NotFoundException::new);
+        logger.info("get project by project key");
+        Project project = projectService.getProject(projectKey);
 
         return ResponseEntity.ok(project);
     }
 
     @PostMapping
     public ResponseEntity<Project> postProject(@RequestBody Project project) {
-        LOGGER.info("post project");
+        logger.info("post project");
         if (project == null) {
             throw new IllegalArgumentException("request body must contain project");
         }

@@ -65,7 +65,7 @@ public class ProjectControllerTest {
         @Test
         void specified_project_exists_should_return_200_with_project() {
             // Arrange
-            when(projectService.getProject(projectKey)).thenReturn(Optional.of(project));
+            when(projectService.getProject(projectKey)).thenReturn(project);
 
             // Act
             ResponseEntity<Project> result = projectController.getProject(projectKey);
@@ -74,17 +74,6 @@ public class ProjectControllerTest {
             assertThat(result).isNotNull();
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(result.getBody()).isSameAs(project);
-        }
-
-        @Test
-        void specified_experiment_does_not_exist_should_throw_NotFoundException() {
-            // Arrange
-            when(projectService.getProject(projectKey)).thenReturn(Optional.empty());
-
-            // Assert
-            // Act + Assert
-            assertThatThrownBy(() -> projectController.getProject(projectKey))
-                    .isInstanceOf(NotFoundException.class);
         }
     }
 

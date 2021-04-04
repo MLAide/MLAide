@@ -21,7 +21,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.access.AccessDeniedException;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -29,8 +28,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -70,17 +69,17 @@ class ProjectServiceImplTest {
     class GetProjects {
         @Test
         void should_read_all_project_entities_from_ProjectRepository_and_map_them_to_DTOs_and_return_them() {
-            // arrange
+            // Arrange
             var projectEntities = asList(ProjectFaker.newProjectEntity(), ProjectFaker.newProjectEntity());
             var projectDto1 = ProjectFaker.newProject();
             var projectDto2 = ProjectFaker.newProject();
             when(projectRepository.findAll()).thenReturn(projectEntities);
             when(projectMapper.fromEntity(projectEntities)).thenReturn(asList(projectDto1, projectDto2));
 
-            // act
+            // Act
             ItemList<Project> projects = projectService.getProjects();
 
-            // assert
+            // Assert
             assertThat(projects).isNotNull();
             assertThat(projects.getItems()).isNotNull();
             assertThat(projects.getItems()).hasSize(2);
@@ -93,32 +92,29 @@ class ProjectServiceImplTest {
     class GetProject {
         @Test
         void specified_project_project_exists_should_return_project() {
-            // arrange
+            // Arrange
             var projectEntity = ProjectFaker.newProjectEntity();
             var projectDto = ProjectFaker.newProject();
             when(projectRepository.findByKey(projectEntity.getKey())).thenReturn(projectEntity);
             when(projectMapper.fromEntity(projectEntity)).thenReturn(projectDto);
 
-            // act
-            Optional<Project> project = projectService.getProject(projectEntity.getKey());
+            // Act
+            Project project = projectService.getProject(projectEntity.getKey());
 
-            // assert
-            assertThat(project.isPresent()).isTrue();
-            assertThat(project.get()).isNotNull();
-            assertThat(project.get()).isSameAs(projectDto);
+            // Assert
+            assertThat(project).isNotNull().isSameAs(projectDto);
         }
 
         @Test
-        void specified_project_does_not_exist_should_return_empty_optional() {
-            // arrange
+        void specified_project_does_not_exist_should_throw_NotFoundException() {
+            // Arrange
             var projectEntity = ProjectFaker.newProjectEntity();
-            when(projectRepository.findByKey(projectEntity.getKey())).thenThrow(AccessDeniedException.class);
+            String projectKey = projectEntity.getKey();
+            when(projectRepository.findByKey(projectKey)).thenReturn(null);
 
-            // act
-            Optional<Project> project = projectService.getProject(projectEntity.getKey());
-
-            // assert
-            assertThat(project.isEmpty()).isTrue();
+            // Act + Assert
+            assertThatThrownBy(() -> projectService.getProject(projectKey))
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 
@@ -276,7 +272,7 @@ class ProjectServiceImplTest {
     class GetProjectMembers {
         @Test
         void project_with_three_members_should_return_list_of_all_members_with_their_permission() {
-            // arrange
+            // Arrange
             ProjectEntity fakeProject = ProjectFaker.newProjectEntity();
             User fakeUser1 = UserFaker.newUser();
             User fakeUser2 = UserFaker.newUser();
@@ -291,10 +287,10 @@ class ProjectServiceImplTest {
             when(userService.getUser(fakeUser2.getUserId())).thenReturn(fakeUser2);
             when(userService.getUser(fakeUser3.getUserId())).thenReturn(fakeUser3);
 
-            // act
+            // Act
             ItemList<ProjectMember> projectMembers = projectService.getProjectMembers(fakeProject.getKey());
 
-            // assert
+            // Assert
             assertThat(projectMembers).isNotNull();
             assertThat(projectMembers.getItems()).hasSize(3);
 
@@ -322,7 +318,7 @@ class ProjectServiceImplTest {
     class AddOrUpdateProjectMembers {
         @Test
         void add_three_members_with_all_possible_roles_should_grant_permission_on_project_using_PermissionService() {
-            // arrange
+            // Arrange
             ProjectEntity fakeProject = ProjectFaker.newProjectEntity();
 
             User currentUser = UserFaker.newUser();
@@ -339,48 +335,53 @@ class ProjectServiceImplTest {
             when(userService.getUserByEmail(fakeProjectMember2.getEmail())).thenReturn(fakeUser2);
             when(userService.getUserByEmail(fakeProjectMember3.getEmail())).thenReturn(fakeUser3);
 
-            // act
+            // Act
             projectService.addOrUpdateProjectMembers(
                     fakeProject.getKey(), asList(fakeProjectMember1, fakeProjectMember2, fakeProjectMember3));
 
-            // assert
+            // Assert
             @SuppressWarnings("unchecked")
             ArgumentCaptor<Map<String, MvcPermission>> argumentCaptor = ArgumentCaptor.forClass(Map.class);
             verify(permissionService).grantPermissionsToExistingProject(eq(fakeProject.getKey()), argumentCaptor.capture());
             Map<String, MvcPermission> projectPermissions = argumentCaptor.getValue();
-            assertThat(projectPermissions).isNotNull();
-            assertThat(projectPermissions.size()).isEqualTo(3);
-            assertThat(projectPermissions.get(fakeUser1.getUserId())).isEqualTo(MvcPermission.OWNER);
-            assertThat(projectPermissions.get(fakeUser2.getUserId())).isEqualTo(MvcPermission.CONTRIBUTOR);
-            assertThat(projectPermissions.get(fakeUser3.getUserId())).isEqualTo(MvcPermission.VIEWER);
+            assertThat(projectPermissions)
+                    .isNotNull()
+                    .hasSize(3)
+                    .containsEntry(fakeUser1.getUserId(),MvcPermission.OWNER)
+                    .containsEntry(fakeUser2.getUserId(),MvcPermission.CONTRIBUTOR)
+                    .containsEntry(fakeUser3.getUserId(),MvcPermission.VIEWER);
         }
 
         @Test
         void current_user_is_not_member_of_specified_project_should_throw_NotFoundException() {
-            // arrange
+            // Arrange
             ProjectEntity fakeProject = ProjectFaker.newProjectEntity();
+            String projectKey = fakeProject.getKey();
             User currentUser = UserFaker.newUser();
             User fakeUser1 = UserFaker.newUser();
             when(userService.getCurrentUser()).thenReturn(currentUser);
             when(permissionService.getProjectPermissions(fakeProject.getKey())).thenReturn(of(fakeUser1.getUserId(), MvcPermission.OWNER));
             ProjectMember fakeProjectMember = ProjectMemberFaker.newProjectMember(ProjectMemberRole.OWNER);
+            List<ProjectMember> projectMemberList = singletonList(fakeProjectMember);
 
-            // act + assert
-            assertThatThrownBy(() -> projectService.addOrUpdateProjectMembers(fakeProject.getKey(), singletonList(fakeProjectMember)))
+            // Act + Assert
+            assertThatThrownBy(() -> projectService.addOrUpdateProjectMembers(projectKey, projectMemberList))
                     .isInstanceOf(NotFoundException.class);
         }
 
         @Test
         void current_user_is_member_of_specified_project_with_role_contributor_should_throw_NotFoundException() {
-            // arrange
+            // Arrange
             ProjectEntity fakeProject = ProjectFaker.newProjectEntity();
+            String projectKey = fakeProject.getKey();
             User currentUser = UserFaker.newUser();
             when(userService.getCurrentUser()).thenReturn(currentUser);
-            when(permissionService.getProjectPermissions(fakeProject.getKey())).thenReturn(of(currentUser.getUserId(), MvcPermission.CONTRIBUTOR));
+            when(permissionService.getProjectPermissions(projectKey)).thenReturn(of(currentUser.getUserId(), MvcPermission.CONTRIBUTOR));
             ProjectMember fakeProjectMember = ProjectMemberFaker.newProjectMember(ProjectMemberRole.OWNER);
+            List<ProjectMember> projectMemberList = singletonList(fakeProjectMember);
 
-            // act + assert
-            assertThatThrownBy(() -> projectService.addOrUpdateProjectMembers(fakeProject.getKey(), singletonList(fakeProjectMember)))
+            // Act + Assert
+            assertThatThrownBy(() -> projectService.addOrUpdateProjectMembers(projectKey, projectMemberList))
                     .isInstanceOf(NotFoundException.class);
         }
     }
@@ -389,15 +390,15 @@ class ProjectServiceImplTest {
     class DeleteProjectMember {
         @Test
         void should_delete_project_member() {
-            // arrange
+            // Arrange
             ProjectEntity fakeProject = ProjectFaker.newProjectEntity();
             User fakeUser = UserFaker.newUser();
             when(userService.getUserByEmail(fakeUser.getEmail())).thenReturn(fakeUser);
 
-            // act
+            // Act
             projectService.deleteProjectMember(fakeProject.getKey(), fakeUser.getEmail());
 
-            // assert
+            // Assert
             @SuppressWarnings("unchecked")
             ArgumentCaptor<Collection<String>> argumentCaptor = ArgumentCaptor.forClass(Collection.class);
             verify(permissionService).revokeProjectPermission(eq(fakeProject.getKey()), argumentCaptor.capture());

@@ -116,7 +116,7 @@ class RunControllerTest {
         void initialize() {
             runToAdd = RunFaker.newRun();
 
-            when(projectService.getProject(projectKey)).thenReturn(Optional.of(project));
+            when(projectService.getProject(projectKey)).thenReturn(project);
         }
 
         @Test
