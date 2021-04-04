@@ -15,11 +15,13 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class UserEntity {
     @Email
+    @NotBlank
     @Indexed(unique = true) private String email;
     private String firstName;
     @Id private ObjectId id;
     private String lastName;
     @NotBlank
     private String nickName;
+    @NotBlank
     @Indexed(unique = true) private String userId;
 }

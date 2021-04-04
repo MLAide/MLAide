@@ -29,9 +29,9 @@ public class UserFaker {
 
         user.setEmail(faker.internet().emailAddress());
         user.setFirstName(faker.name().firstName());
-        user.setUserId(faker.internet().uuid());
         user.setLastName(faker.name().lastName());
         user.setNickName(faker.funnyName().name());
+        user.setUserId(faker.internet().uuid());
 
         return user;
     }
