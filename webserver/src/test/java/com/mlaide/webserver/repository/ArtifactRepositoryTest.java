@@ -7,6 +7,8 @@ import com.mlaide.webserver.integration.MongoDB;
 import com.mlaide.webserver.model.Stage;
 import com.mlaide.webserver.repository.entity.ArtifactEntity;
 import com.mlaide.webserver.repository.entity.ModelEntity;
+import org.bson.Document;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,11 @@ class ArtifactRepositoryTest {
 
     @Autowired
     public ArtifactRepository artifactRepository;
+
+    @BeforeEach
+    public void clearDatabase() {
+        mongo.getCollection(mongo.getCollectionName(ArtifactEntity.class)).deleteMany(new Document());
+    }
 
     @Nested
     class findFirstByProjectKeyAndNameOrderByVersionDesc {
