@@ -614,6 +614,38 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/artifacts/{artifactName}/latest:
+    get:
+      summary: Get the latest artifact with the specified name
+      operationId: getArtifact
+      tags:
+        - artifacts
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the artifacts belong to
+          schema:
+            type: string
+        - name: artifactName
+          in: path
+          required: true
+          description: The name of the artifact
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The artifact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Artifact"
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /projects/{projectKey}/artifacts/{artifactName}/{artifactVersion}:
     get:
       summary: Get a specific artifact

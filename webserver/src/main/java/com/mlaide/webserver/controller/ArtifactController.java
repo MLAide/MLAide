@@ -71,6 +71,17 @@ public class ArtifactController {
         return ResponseEntity.ok(artifact);
     }
 
+    @GetMapping(path = "{artifactName}/latest")
+    public ResponseEntity<Artifact> getLatestArtifact(
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("artifactName") @NotBlank String artifactName) {
+        logger.info("get latest artifact");
+
+        Artifact artifact = artifactService.getLatestArtifact(projectKey, artifactName);
+
+        return ResponseEntity.ok(artifact);
+    }
+
     @GetMapping(path = "{artifactName}/{artifactVersion}")
     public ResponseEntity<Artifact> getArtifact(
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,

@@ -125,6 +125,25 @@ class ArtifactControllerTest {
     }
 
     @Nested
+    class getLatestArtifact {
+        @Test
+        void specified_artifact_exists_should_return_200_with_artifact() {
+            // Arrange
+            Artifact artifact = ArtifactFaker.newArtifact();
+            when(artifactService.getLatestArtifact(projectKey, artifact.getName())).thenReturn(artifact);
+
+            // Act
+            ResponseEntity<Artifact>
+                    result = artifactController.getLatestArtifact(projectKey, artifact.getName());
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(result.getBody()).isSameAs(artifact);
+        }
+    }
+
+    @Nested
     class getArtifact {
         @Test
         void specified_artifact_exists_should_return_200_with_artifact() {

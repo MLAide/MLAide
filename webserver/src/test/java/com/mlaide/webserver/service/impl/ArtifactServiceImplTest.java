@@ -558,6 +558,45 @@ class ArtifactServiceImplTest {
     }
 
     @Nested
+    class getLatestArtifact {
+        @Test
+        void should_map_and_return_specified_artifact_from_repository() {
+            // Arrange
+            var project = ProjectFaker.newProject();
+            ArtifactEntity artifactEntity = ArtifactFaker.newArtifactEntity();
+            Artifact expectedArtifact = new Artifact();
+
+            when(artifactRepository.findFirstByProjectKeyAndNameOrderByVersionDesc(project.getKey(), artifactEntity.getName()))
+                    .thenReturn(artifactEntity);
+            when(artifactMapper.fromEntity(artifactEntity))
+                    .thenReturn(expectedArtifact);
+
+            // Act
+            Artifact artifact = artifactService.getLatestArtifact(project.getKey(), artifactEntity.getName());
+
+            // Assert
+            assertThat(artifact).isSameAs(expectedArtifact);
+        }
+
+        @Test
+        void specified_artifact_does_not_exist_should_throw_NotFoundException() {
+            // Arrange
+            var project = ProjectFaker.newProject();
+            ArtifactEntity artifactEntity = ArtifactFaker.newArtifactEntity();
+
+            String projectKey = project.getKey();
+            String artifactName = artifactEntity.getName();
+
+            when(artifactRepository.findFirstByProjectKeyAndNameOrderByVersionDesc(projectKey, artifactName))
+                    .thenReturn(null);
+
+            // Act + Assert
+            assertThatThrownBy(() -> artifactService.getLatestArtifact(projectKey, artifactName))
+                    .isInstanceOf(NotFoundException.class);
+        }
+    }
+
+    @Nested
     class getArtifact {
         @Test
         void should_map_and_return_specified_artifact_from_repository() {
@@ -593,7 +632,7 @@ class ArtifactServiceImplTest {
 
             // Act + Assert
             assertThatThrownBy(() -> artifactService.getArtifact(projectKey, artifactName, artifactVersion))
-                .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 

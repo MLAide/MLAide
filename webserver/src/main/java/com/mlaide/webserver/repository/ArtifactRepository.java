@@ -41,7 +41,7 @@ public interface ArtifactRepository extends MongoRepository<ArtifactEntity, Obje
 //    @PostAuthorize("hasPermission(returnObject, 'VIEWER') " +
 //            "or hasPermission(returnObject, 'CONTRIBUTOR') " +
 //            "or hasPermission(returnObject, 'OWNER')")
-    ArtifactEntity findFirstByProjectKeyAndNameOrderByVersion(String projectKey, String name);
+    ArtifactEntity findFirstByProjectKeyAndNameOrderByVersionDesc(String projectKey, String name);
 
     List<ArtifactEntity> findAllByProjectKeyAndModelNotNull(String projectKey, Sort by);
 }
