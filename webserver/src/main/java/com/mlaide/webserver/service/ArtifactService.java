@@ -32,7 +32,7 @@ public interface ArtifactService {
 
     ItemList<Artifact> getArtifactsByRunKeys(String projectKey, List<Integer> runKeys);
 
-    Artifact getLatestArtifact(String projectKey, String artifactName);
+    Artifact getLatestArtifact(String projectKey, String artifactName, Stage stage);
 
     Artifact getArtifact(String projectKey, String artifactName, Integer artifactVersion);
 

@@ -195,8 +195,15 @@ public class ArtifactServiceImpl implements ArtifactService {
     }
 
     @Override
-    public Artifact getLatestArtifact(String projectKey, String artifactName) {
-        ArtifactEntity artifactEntity = artifactRepository.findFirstByProjectKeyAndNameOrderByVersionDesc(projectKey, artifactName);
+    public Artifact getLatestArtifact(String projectKey, String artifactName, Stage stage) {
+        ArtifactEntity artifactEntity;
+
+        if (stage == null) {
+            artifactEntity = artifactRepository.findFirstByProjectKeyAndNameOrderByVersionDesc(projectKey, artifactName);
+        } else {
+            artifactEntity = artifactRepository.findFirstByProjectKeyAndNameAndModelStageOrderByVersionDesc(projectKey, artifactName, stage);
+        }
+
         if (artifactEntity == null) {
             throw new NotFoundException();
         }

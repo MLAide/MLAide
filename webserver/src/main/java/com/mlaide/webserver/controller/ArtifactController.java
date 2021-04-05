@@ -3,6 +3,7 @@ package com.mlaide.webserver.controller;
 import com.mlaide.webserver.model.Artifact;
 import com.mlaide.webserver.model.ArtifactFile;
 import com.mlaide.webserver.model.ItemList;
+import com.mlaide.webserver.model.Stage;
 import com.mlaide.webserver.service.ArtifactService;
 import com.mlaide.webserver.validation.ValidationRegEx;
 import org.slf4j.Logger;
@@ -74,10 +75,11 @@ public class ArtifactController {
     @GetMapping(path = "{artifactName}/latest")
     public ResponseEntity<Artifact> getLatestArtifact(
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
-            @PathVariable("artifactName") @NotBlank String artifactName) {
+            @PathVariable("artifactName") @NotBlank String artifactName,
+            @RequestParam(value = "model-stage", required = false) Stage stage) {
         logger.info("get latest artifact");
 
-        Artifact artifact = artifactService.getLatestArtifact(projectKey, artifactName);
+        Artifact artifact = artifactService.getLatestArtifact(projectKey, artifactName, stage);
 
         return ResponseEntity.ok(artifact);
     }

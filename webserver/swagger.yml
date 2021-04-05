@@ -633,6 +633,12 @@ paths:
           description: The name of the artifact
           schema:
             type: string
+        - name: model-stage
+          in: query
+          required: false
+          description: Filter artifacts by model stage.
+          schema:
+            $ref: "#/components/schemas/ModelStage"
       responses:
         '200':
           description: The artifact

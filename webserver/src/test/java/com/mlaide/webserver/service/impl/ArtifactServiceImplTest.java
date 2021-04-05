@@ -572,7 +572,26 @@ class ArtifactServiceImplTest {
                     .thenReturn(expectedArtifact);
 
             // Act
-            Artifact artifact = artifactService.getLatestArtifact(project.getKey(), artifactEntity.getName());
+            Artifact artifact = artifactService.getLatestArtifact(project.getKey(), artifactEntity.getName(), null);
+
+            // Assert
+            assertThat(artifact).isSameAs(expectedArtifact);
+        }
+
+        @Test
+        void stage_is_specified_should_filter_by_stage() {
+            // Arrange
+            var project = ProjectFaker.newProject();
+            ArtifactEntity artifactEntity = ArtifactFaker.newArtifactEntity();
+            Artifact expectedArtifact = new Artifact();
+
+            when(artifactRepository.findFirstByProjectKeyAndNameAndModelStageOrderByVersionDesc(project.getKey(), artifactEntity.getName(), Stage.PRODUCTION))
+                    .thenReturn(artifactEntity);
+            when(artifactMapper.fromEntity(artifactEntity))
+                    .thenReturn(expectedArtifact);
+
+            // Act
+            Artifact artifact = artifactService.getLatestArtifact(project.getKey(), artifactEntity.getName(), Stage.PRODUCTION);
 
             // Assert
             assertThat(artifact).isSameAs(expectedArtifact);
@@ -591,7 +610,7 @@ class ArtifactServiceImplTest {
                     .thenReturn(null);
 
             // Act + Assert
-            assertThatThrownBy(() -> artifactService.getLatestArtifact(projectKey, artifactName))
+            assertThatThrownBy(() -> artifactService.getLatestArtifact(projectKey, artifactName, null))
                     .isInstanceOf(NotFoundException.class);
         }
     }
