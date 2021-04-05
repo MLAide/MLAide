@@ -33,7 +33,7 @@ class ExtendedRunQueriesImplTest {
     }
 
     @Autowired
-    private MongoTemplate mongo;
+    public MongoTemplate mongo;
 
     @Test
     void findAllPredecessorRuns() {
@@ -124,15 +124,16 @@ class ExtendedRunQueriesImplTest {
         Collection<Integer> predecessorRunKeys = target.findAllPredecessorRunKeys(projectKey, usedArtifacts);
 
         // Assert
-        assertThat(predecessorRunKeys).hasSize(4);
-        assertThat(predecessorRunKeys).anyMatch(key -> key.equals(r0.getKey()));
-        assertThat(predecessorRunKeys).anyMatch(key -> key.equals(r1.getKey()));
-        assertThat(predecessorRunKeys).anyMatch(key -> key.equals(r3.getKey()));
-        assertThat(predecessorRunKeys).anyMatch(key -> key.equals(r4.getKey()));
+        assertThat(predecessorRunKeys).hasSize(4)
+                .anyMatch(key -> key.equals(r0.getKey()))
+                .anyMatch(key -> key.equals(r1.getKey()))
+                .anyMatch(key -> key.equals(r3.getKey()))
+                .anyMatch(key -> key.equals(r4.getKey()));
     }
 
     @Test
     void assignExperimentRefs() {
+        // arrange
         String projectKey = UUID.randomUUID().toString();
         RunEntity.ExperimentRefEntity exp1 = new RunEntity.ExperimentRefEntity("experiment1");
         RunEntity.ExperimentRefEntity exp2 = new RunEntity.ExperimentRefEntity("experiment2");
@@ -147,24 +148,35 @@ class ExtendedRunQueriesImplTest {
         var refs = asList(exp1, exp2);
 
         var target = new ExtendedRunQueriesImpl(mongo);
+
+        // act
         target.assignExperimentRefs(projectKey, runIds, refs);
 
+        // assert
         r1 = mongo.findById(r1.getId(), RunEntity.class);
         r2 = mongo.findById(r2.getId(), RunEntity.class);
         r3 = mongo.findById(r3.getId(), RunEntity.class);
         rAnother = mongo.findById(rAnother.getId(), RunEntity.class);
 
-        assertThat(r1.getExperimentRefs()).hasSize(2);
-        assertThat(r1.getExperimentRefs()).anyMatch(r -> r.getExperimentKey().equals(exp1.getExperimentKey()));
-        assertThat(r1.getExperimentRefs()).anyMatch(r -> r.getExperimentKey().equals(exp2.getExperimentKey()));
-        assertThat(r2.getExperimentRefs()).hasSize(2);
-        assertThat(r2.getExperimentRefs()).anyMatch(r -> r.getExperimentKey().equals(exp1.getExperimentKey()));
-        assertThat(r2.getExperimentRefs()).anyMatch(r -> r.getExperimentKey().equals(exp2.getExperimentKey()));
-        assertThat(r3.getExperimentRefs()).hasSize(2);
-        assertThat(r3.getExperimentRefs()).anyMatch(r -> r.getExperimentKey().equals(exp1.getExperimentKey()));
-        assertThat(r3.getExperimentRefs()).anyMatch(r -> r.getExperimentKey().equals(exp2.getExperimentKey()));
-        assertThat(rAnother.getExperimentRefs()).hasSize(1);
-        assertThat(rAnother.getExperimentRefs()).anyMatch(r -> r.getExperimentKey().equals(exp1.getExperimentKey()));
+        assertThat(r1).isNotNull();
+        assertThat(r2).isNotNull();
+        assertThat(r3).isNotNull();
+        assertThat(rAnother).isNotNull();
+
+        assertThat(r1.getExperimentRefs()).hasSize(2)
+                .anyMatch(r -> r.getExperimentKey().equals(exp1.getExperimentKey()))
+                .anyMatch(r -> r.getExperimentKey().equals(exp2.getExperimentKey()));
+
+        assertThat(r2.getExperimentRefs()).hasSize(2)
+                .anyMatch(r -> r.getExperimentKey().equals(exp1.getExperimentKey()))
+                .anyMatch(r -> r.getExperimentKey().equals(exp2.getExperimentKey()));
+
+        assertThat(r3.getExperimentRefs()).hasSize(2)
+                .anyMatch(r -> r.getExperimentKey().equals(exp1.getExperimentKey()))
+                .anyMatch(r -> r.getExperimentKey().equals(exp2.getExperimentKey()));
+
+        assertThat(rAnother.getExperimentRefs()).hasSize(1)
+                .anyMatch(r -> r.getExperimentKey().equals(exp1.getExperimentKey()));
     }
 
     private RunEntity createCustomRunEntityWithArtifactRefs(Integer key,
