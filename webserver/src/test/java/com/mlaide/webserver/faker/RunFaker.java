@@ -25,7 +25,7 @@ public class RunFaker {
         runEntity.setCreatedBy(FakerUtils.newUserRef());
         runEntity.setKey(faker.random().nextInt(50));
         runEntity.setName(faker.funnyName().name());
-        runEntity.setProjectKey(FakerUtils.validProjectKey());
+        runEntity.setProjectKey(ProjectFaker.validProjectKey());
         runEntity.setStartTime(FakerUtils.pastDate());
         runEntity.setStatus(faker.options().nextElement(RunStatus.values()).toString());
 

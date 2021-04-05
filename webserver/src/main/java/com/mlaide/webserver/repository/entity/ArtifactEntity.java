@@ -28,24 +28,37 @@ public class ArtifactEntity {
     @PastOrPresent
     @NotNull
     private OffsetDateTime createdAt;
+
     @NotNull
     private UserRef createdBy;
+
     private List<FileRefEntity> files;
-    @Id private ObjectId id;
+
+    @Id
+    private ObjectId id;
+
     private Map<String, String> metadata;
+
     private ModelEntity model;
+
     @NotBlank
     private String name;
+
     @Pattern(regexp = ValidationRegEx.projectKey)
     @NotBlank
     private String projectKey;
+
     @NotNull
     private Integer runKey;
+
     private String runName;
+
     @NotBlank
     private String type;
+
     @PastOrPresent
     private OffsetDateTime updatedAt;
+
     @NotNull
     private Integer version;
 }
