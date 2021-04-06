@@ -178,10 +178,11 @@ class RunControllerTest {
         void specified_run_does_not_exist_should_throw_NotFoundException() {
             // Arrange
             Run run = RunFaker.newRun();
-            when(runService.getRun(projectKey, run.getKey())).thenReturn(Optional.empty());
+            Integer runKey = run.getKey();
+            when(runService.getRun(projectKey, runKey)).thenReturn(Optional.empty());
 
             // Act + Assert
-            assertThatThrownBy(() -> runController.getRun(projectKey, run.getKey())).isInstanceOf(NotFoundException.class);
+            assertThatThrownBy(() -> runController.getRun(projectKey, runKey)).isInstanceOf(NotFoundException.class);
         }
     }
 
@@ -213,10 +214,11 @@ class RunControllerTest {
         void specified_run_does_not_exist_should_throw_NotFoundException() {
             // Arrange
             Run run = RunFaker.newRun();
-            when(runService.getRun(projectKey, run.getKey())).thenReturn(Optional.empty());
+            Integer runKey = run.getKey();
+            when(runService.getRun(projectKey, runKey)).thenReturn(Optional.empty());
 
             // Act + Assert
-            assertThatThrownBy(() -> runController.patchRun(projectKey, run.getKey(), null))
+            assertThatThrownBy(() -> runController.patchRun(projectKey, runKey, null))
                     .isInstanceOf(NotFoundException.class);
         }
 
@@ -246,10 +248,11 @@ class RunControllerTest {
         void specified_run_does_not_exist_should_throw_NotFoundException() {
             // Arrange
             Run run = RunFaker.newRun();
-            when(runService.getRun(projectKey, run.getKey())).thenReturn(Optional.empty());
+            Integer runKey = run.getKey();
+            when(runService.getRun(projectKey, runKey)).thenReturn(Optional.empty());
 
             // Act + Assert
-            assertThatThrownBy(() -> runController.patchRunParameters(projectKey, run.getKey(), null))
+            assertThatThrownBy(() -> runController.patchRunParameters(projectKey, runKey, null))
                     .isInstanceOf(NotFoundException.class);
         }
 
@@ -312,10 +315,11 @@ class RunControllerTest {
         void specified_run_does_not_exist_should_throw_NotFoundException() {
             // Arrange
             Run run = RunFaker.newRun();
+            Integer runKey = run.getKey();
             when(runService.getRun(projectKey, run.getKey())).thenReturn(Optional.empty());
 
             // Act + Assert
-            assertThatThrownBy(() -> runController.patchRunMetrics(projectKey, run.getKey(), null))
+            assertThatThrownBy(() -> runController.patchRunMetrics(projectKey, runKey, null))
                     .isInstanceOf(NotFoundException.class);
         }
 

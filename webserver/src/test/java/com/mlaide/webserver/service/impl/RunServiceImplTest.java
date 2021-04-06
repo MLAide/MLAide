@@ -56,12 +56,14 @@ class RunServiceImplTest {
     private @Mock UserService userService;
 
     private Project project;
+    private String projectKey;
     private final Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
     private final Faker faker = new Faker();
 
     @BeforeEach
     void initialize() {
         project = ProjectFaker.newProject();
+        projectKey = project.getKey();
 
         runService = new RunServiceImpl(
                 runRepository,
@@ -144,21 +146,12 @@ class RunServiceImplTest {
         }
 
         @Test
-        void experimentRefs_is_null_should_throw_InvalidInputException() {
-            // Arrange
-            runToAdd.setExperimentRefs(null);
-
-            // Act + Assert
-            assertThatThrownBy(() -> runService.addRun(project.getKey(), runToAdd)).isInstanceOf(InvalidInputException.class);
-        }
-
-        @Test
         void experimentRefs_is_empty_list_should_throw_InvalidInputException() {
             // Arrange
             runToAdd.setExperimentRefs(new ArrayList<>());
 
             // Act + Assert
-            assertThatThrownBy(() -> runService.addRun(project.getKey(), runToAdd)).isInstanceOf(InvalidInputException.class);
+            assertThatThrownBy(() -> runService.addRun(projectKey, runToAdd)).isInstanceOf(InvalidInputException.class);
         }
 
         @Test
@@ -171,7 +164,7 @@ class RunServiceImplTest {
                     .thenReturn(false);
 
             // Act + Assert
-            assertThatThrownBy(() -> runService.addRun(project.getKey(), runToAdd)).isInstanceOf(InvalidInputException.class);
+            assertThatThrownBy(() -> runService.addRun(projectKey, runToAdd)).isInstanceOf(InvalidInputException.class);
         }
 
         @Test
@@ -184,7 +177,7 @@ class RunServiceImplTest {
             when(validationService.checkAllArtifactsExist(project.getKey(), runToAdd.getUsedArtifacts())).thenReturn(false);
 
             // Act + Assert
-            assertThatThrownBy(() -> runService.addRun(project.getKey(), runToAdd)).isInstanceOf(InvalidInputException.class);
+            assertThatThrownBy(() -> runService.addRun(projectKey, runToAdd)).isInstanceOf(InvalidInputException.class);
         }
 
         @Nested
@@ -213,7 +206,7 @@ class RunServiceImplTest {
                 when(runMapper.toEntity(runToAdd)).thenReturn(savedRunEntity);
 
                 expectedRunKey = faker.random().nextInt(50);
-                when(counterRepository.getNextSequenceValue(eq(project.getKey() + ".run")))
+                when(counterRepository.getNextSequenceValue(project.getKey() + ".run"))
                         .thenReturn(expectedRunKey);
 
                 runEntityThatWasReturnedFromRepository = new RunEntity();
@@ -359,7 +352,7 @@ class RunServiceImplTest {
             when(runRepository.findOneByProjectKeyAndKey(project.getKey(), run.getKey())).thenReturn(null);
 
             // Act + Assert
-            assertThatThrownBy(() -> runService.updateRun(project.getKey(), run)).isInstanceOf(NotFoundException.class);
+            assertThatThrownBy(() -> runService.updateRun(projectKey, run)).isInstanceOf(NotFoundException.class);
         }
 
         @Test
@@ -370,10 +363,10 @@ class RunServiceImplTest {
             RunEntity existingRunEntity = new RunEntity();
             existingRunEntity.setStatus(RunStatus.COMPLETED.toString());
 
-            when(runRepository.findOneByProjectKeyAndKey(project.getKey(), run.getKey())).thenReturn(existingRunEntity);
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, run.getKey())).thenReturn(existingRunEntity);
 
             // Act + Assert
-            assertThatThrownBy(() -> runService.updateRun(project.getKey(), run)).isInstanceOf(ConflictException.class);
+            assertThatThrownBy(() -> runService.updateRun(projectKey, run)).isInstanceOf(ConflictException.class);
         }
 
         @Test
@@ -430,11 +423,12 @@ class RunServiceImplTest {
         void specified_run_does_not_exist_should_throw_NotFoundException() {
             // Arrange
             Run run = RunFaker.newRun();
+            Integer runKey = run.getKey();
 
-            when(runRepository.findOneByProjectKeyAndKey(project.getKey(), run.getKey())).thenReturn(null);
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey)).thenReturn(null);
 
             // Act + Assert
-            assertThatThrownBy(() -> runService.createOrUpdateNote(project.getKey(), run.getKey(), "the note"))
+            assertThatThrownBy(() -> runService.createOrUpdateNote(projectKey, runKey, "the note"))
                     .isInstanceOf(NotFoundException.class);
         }
 
@@ -458,8 +452,8 @@ class RunServiceImplTest {
             // Assert
             verify(runRepository).save(existingRun);
             assertThat(existingRun.getNote()).isEqualTo(note);
-            assertThat(result).isNotEmpty();
-            assertThat(result).isEqualTo(savedRun.getNote());
+            assertThat(result).isNotEmpty()
+                    .isEqualTo(savedRun.getNote());
         }
     }
 
@@ -470,11 +464,14 @@ class RunServiceImplTest {
             // Arrange
             Run run = RunFaker.newRun();
             Artifact artifact = ArtifactFaker.newArtifact();
+            Integer runKey = run.getKey();
+            String artifactName = artifact.getName();
+            Integer artifactVersion = artifact.getVersion();
 
-            when(runRepository.findOneByProjectKeyAndKey(project.getKey(), run.getKey())).thenReturn(null);
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey)).thenReturn(null);
 
             // Act + Assert
-            assertThatThrownBy(() -> runService.attachArtifactToRun(project.getKey(), run.getKey(), artifact.getName(), artifact.getVersion()))
+            assertThatThrownBy(() -> runService.attachArtifactToRun(projectKey, runKey, artifactName, artifactVersion))
                     .isInstanceOf(NotFoundException.class);
         }
 

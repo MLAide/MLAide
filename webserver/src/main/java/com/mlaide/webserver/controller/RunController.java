@@ -80,7 +80,7 @@ public class RunController {
         Project project = projectService.getProject(projectKey);
 
         List<ExperimentRef> experimentRefs = run.getExperimentRefs();
-        if (experimentRefs.isEmpty()) {
+        if (experimentRefs == null || experimentRefs.isEmpty()) {
             logger.info("run has no experiment ref defined; creating random experiment");
             Experiment experiment = randomGeneratorService.randomExperiment();
             experiment = experimentService.addExperiment(projectKey, experiment);
