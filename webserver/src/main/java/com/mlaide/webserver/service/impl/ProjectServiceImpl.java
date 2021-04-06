@@ -75,7 +75,6 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Project addProject(Project project) {
         ProjectEntity projectEntity = projectMapper.toEntity(project);
-        // TODO: validate project key (only characters, digits and hyphens allowed)
 
         projectEntity.setCreatedAt(OffsetDateTime.now(clock));
 

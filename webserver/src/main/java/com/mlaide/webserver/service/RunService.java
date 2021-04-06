@@ -11,6 +11,7 @@ public interface RunService {
     ItemList<Run> getRunsByKeys(String projectKey, List<Integer> runKeys);
     ItemList<Run> getRunsOfExperiment(String projectKey, String experimentKey);
     Run addRun(String projectKey, Run run);
+    // TODO: Remove optional
     Optional<Run> getRun(String projectKey, Integer runKey);
     void updateRun(String projectKey, Run run);
     String createOrUpdateNote(String projectKey, Integer runKey, String note);

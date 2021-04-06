@@ -3,7 +3,6 @@ package com.mlaide.webserver.controller;
 import com.mlaide.webserver.model.Experiment;
 import com.mlaide.webserver.model.ItemList;
 import com.mlaide.webserver.service.ExperimentService;
-import com.mlaide.webserver.service.NotFoundException;
 import com.mlaide.webserver.validation.ValidationRegEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +43,7 @@ public class ExperimentController {
             @PathVariable("experimentKey") String experimentKey) {
         logger.info("get run");
 
-        Experiment experiment = experimentService.getExperiment(projectKey, experimentKey)
-                .orElseThrow(NotFoundException::new);
+        Experiment experiment = experimentService.getExperiment(projectKey, experimentKey);
 
         return ResponseEntity.ok(experiment);
     }
@@ -71,7 +69,7 @@ public class ExperimentController {
         logger.info("patch experiment");
 
         // Get the already existing model
-        Experiment experiment = experimentService.getExperiment(projectKey, experimentKey).orElseThrow(NotFoundException::new);
+        Experiment experiment = experimentService.getExperiment(projectKey, experimentKey);
 
         patchSupport.patch(experiment, experimentToPatch);
 

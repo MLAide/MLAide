@@ -6,6 +6,7 @@ import com.mlaide.webserver.faker.ProjectFaker;
 import com.mlaide.webserver.model.Experiment;
 import com.mlaide.webserver.model.ExperimentStatus;
 import com.mlaide.webserver.model.ItemList;
+import com.mlaide.webserver.model.Project;
 import com.mlaide.webserver.repository.ExperimentRepository;
 import com.mlaide.webserver.repository.entity.ExperimentEntity;
 import com.mlaide.webserver.service.InvalidInputException;
@@ -102,36 +103,35 @@ class ExperimentServiceImplTest {
         @Test
         void specified_experiment_exists_should_invoke_experimentRepository_and_return_result() {
             // Arrange
-            var project = ProjectFaker.newProject();
-            var experiment = ExperimentFaker.newExperimentEntity();
-            var expectedResult = new Experiment();
+            Project project = ProjectFaker.newProject();
+            ExperimentEntity experiment = ExperimentFaker.newExperimentEntity();
+            Experiment expectedResult = new Experiment();
 
             when(experimentRepository.findOneByProjectKeyAndKey(project.getKey(), experiment.getKey()))
                     .thenReturn(experiment);
             when(experimentMapper.fromEntity(experiment)).thenReturn(expectedResult);
 
             // Act
-            var actualExperiment = experimentService.getExperiment(project.getKey(), experiment.getKey());
+            Experiment actualExperiment = experimentService.getExperiment(project.getKey(), experiment.getKey());
 
             // Assert
-            assertThat(actualExperiment).isNotEmpty();
-            assertThat(actualExperiment.get()).isSameAs(expectedResult);
+            assertThat(actualExperiment).isSameAs(expectedResult);
         }
 
         @Test
-        void specified_experiment_does_not_exist_should_return_empty_optional() {
+        void specified_experiment_does_not_exist_should_throw_NotFoundException() {
             // Arrange
             var project = ProjectFaker.newProject();
             var experiment = ExperimentFaker.newExperimentEntity();
+            String projectKey = project.getKey();
+            String experimentKey = experiment.getKey();
 
-            when(experimentRepository.findOneByProjectKeyAndKey(project.getKey(), experiment.getKey()))
+            when(experimentRepository.findOneByProjectKeyAndKey(projectKey, experimentKey))
                     .thenReturn(null);
 
-            // Act
-            Optional<Experiment> actualExperiment = experimentService.getExperiment(project.getKey(), experiment.getKey());
-
-            // Assert
-            assertThat(actualExperiment).isEmpty();
+            // Act + Assert
+            assertThatThrownBy(() -> experimentService.getExperiment(projectKey, experimentKey))
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 
@@ -157,8 +157,11 @@ class ExperimentServiceImplTest {
         @ParameterizedTest
         @MethodSource("invalidExperiments")
         void experiment_is_invalid_should_throw_InvalidInputException(Experiment experiment) {
-            // Act
-            assertThatThrownBy(() -> experimentService.addExperiment(ProjectFaker.newProject().getName(), experiment))
+            // Arrange
+            String projectName = ProjectFaker.newProject().getName();
+
+            // Act + Assert
+            assertThatThrownBy(() -> experimentService.addExperiment(projectName, experiment))
                     .isInstanceOf(InvalidInputException.class);
         }
     }

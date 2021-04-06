@@ -75,7 +75,7 @@ public class ExperimentControllerTest {
         @Test
         void specified_experiment_exists_should_return_200_with_experiment() {
             // Arrange
-            when(experimentService.getExperiment(projectKey, experiment.getKey())).thenReturn(Optional.of(experiment));
+            when(experimentService.getExperiment(projectKey, experiment.getKey())).thenReturn(experiment);
 
             // Act
             ResponseEntity<Experiment> result = experimentController.getExperiment(projectKey, experiment.getKey());
@@ -84,16 +84,6 @@ public class ExperimentControllerTest {
             assertThat(result).isNotNull();
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(result.getBody()).isSameAs(experiment);
-        }
-
-        @Test
-        void specified_experiment_does_not_exist_should_throw_NotFoundException() {
-            // Arrange
-            when(experimentService.getExperiment(projectKey, experiment.getKey())).thenReturn(Optional.empty());
-
-            // Act + Assert
-            assertThatThrownBy(() -> experimentController.getExperiment(projectKey, experiment.getKey()))
-                    .isInstanceOf(NotFoundException.class);
         }
     }
 
@@ -134,19 +124,10 @@ public class ExperimentControllerTest {
         }
 
         @Test
-        void specified_experiment_does_not_exist_should_throw_NotFoundException() {
-            // Arrange
-            when(experimentService.getExperiment(projectKey, experimentToPatch.getKey())).thenReturn(Optional.empty());
-
-            // Act + Assert
-            assertThatThrownBy(() -> experimentController.getExperiment(projectKey, experimentToPatch.getKey())).isInstanceOf(NotFoundException.class);
-        }
-
-        @Test
         void specify_some_values_of_experiment_to_patch_should_merge_values_into_existing_experiment_and_update_experiment() {
             // Arrange
             JsonMergePatch diff = createMergePatch(createValue("{\"name\":\"new-name\"}"));
-            when(experimentService.getExperiment(projectKey, experimentToPatch.getKey())).thenReturn(Optional.of(experimentToPatch));
+            when(experimentService.getExperiment(projectKey, experimentToPatch.getKey())).thenReturn(experimentToPatch);
 
             // Act
             ResponseEntity<Void> result = experimentController.patchExperiment(projectKey, experimentToPatch.getKey(), diff);
