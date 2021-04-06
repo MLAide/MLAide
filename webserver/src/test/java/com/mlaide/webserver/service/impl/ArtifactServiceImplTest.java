@@ -43,12 +43,9 @@ class ArtifactServiceImplTest {
     private @Mock ArtifactMapper artifactMapper;
     private @Mock ArtifactRepository artifactRepository;
     private @Mock CounterRepository counterRepository;
-    private @Mock
-    PermissionService permissionService;
-    private @Mock
-    RunService runService;
-    private @Mock
-    StorageService storageService;
+    private @Mock PermissionService permissionService;
+    private @Mock RunService runService;
+    private @Mock StorageService storageService;
     private @Mock UserService userService;
 
     private final Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
@@ -117,24 +114,26 @@ class ArtifactServiceImplTest {
         @Test
         void add_artifact_to_a_run_that_does_not_exist_should_throw_NotFoundException() {
             // Arrange
+            String projectKey = project.getKey();
             when(artifactMapper.toEntity(inputArtifact)).thenReturn(expectedArtifactToSave);
-            when(runService.getRun(project.getKey(), run.getKey())).thenReturn(Optional.empty());
+            when(runService.getRun(projectKey, run.getKey())).thenReturn(Optional.empty());
 
             // Act
-            assertThatThrownBy(() -> artifactService.addArtifact(project.getKey(), inputArtifact))
+            assertThatThrownBy(() -> artifactService.addArtifact(projectKey, inputArtifact))
                 .isInstanceOf(NotFoundException.class);
         }
 
         @Test
         void add_artifact_to_a_run_that_has_status_COMPLETED_should_throw_InvalidInputException() {
             // Arrange
+            String projectKey = project.getKey();
             run.setStatus(RunStatus.COMPLETED);
 
             when(artifactMapper.toEntity(inputArtifact)).thenReturn(expectedArtifactToSave);
-            when(runService.getRun(project.getKey(), run.getKey())).thenReturn(Optional.of(run));
+            when(runService.getRun(projectKey, run.getKey())).thenReturn(Optional.of(run));
 
             // Act
-            assertThatThrownBy(() -> artifactService.addArtifact(project.getKey(), inputArtifact))
+            assertThatThrownBy(() -> artifactService.addArtifact(projectKey, inputArtifact))
                     .isInstanceOf(InvalidInputException.class);
 
         }
@@ -156,15 +155,16 @@ class ArtifactServiceImplTest {
         @Test
         void granting_permission_fails_should_delete_saved_artifact_and_rethrow_exception() {
             // Arrange
+            String projectKey = project.getKey();
             when(artifactMapper.toEntity(inputArtifact)).thenReturn(expectedArtifactToSave);
             when(runService.getRun(project.getKey(), run.getKey())).thenReturn(Optional.of(run));
             when(artifactRepository.save(expectedArtifactToSave)).thenReturn(expectedArtifactToSave);
             doThrow(RuntimeException.class)
                     .when(permissionService)
-                    .grantPermissionBasedOnProject(project.getKey(), expectedArtifactToSave.getId(), ArtifactEntity.class);
+                    .grantPermissionBasedOnProject(projectKey, expectedArtifactToSave.getId(), ArtifactEntity.class);
 
             // Act
-            assertThatThrownBy(() -> artifactService.addArtifact(project.getKey(), inputArtifact))
+            assertThatThrownBy(() -> artifactService.addArtifact(projectKey, inputArtifact))
                 .isInstanceOf(RuntimeException.class);
 
             // Assert
@@ -233,12 +233,15 @@ class ArtifactServiceImplTest {
         @Test
         void specified_artifact_does_not_exist_should_throw_NotFoundException() {
             // Arrange
-            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(project.getKey(), artifact.getName(), artifact.getVersion()))
+            String projectKey = project.getKey();
+            String artifactName = artifact.getName();
+            Integer artifactVersion = artifact.getVersion();
+            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(projectKey, artifactName, artifactVersion))
                     .thenReturn(null);
 
             // Act + Assert
             assertThatThrownBy(() -> artifactService.uploadArtifactFile(
-                    project.getKey(), artifact.getName(), artifact.getVersion(), artifactStream, artifactFileName))
+                    projectKey, artifactName, artifactVersion, artifactStream, artifactFileName))
                 .isInstanceOf(NotFoundException.class);
         }
 
@@ -385,12 +388,15 @@ class ArtifactServiceImplTest {
             // Arrange
             var model = new CreateOrUpdateModel();
 
-            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(project.getKey(), artifact.getName(), artifact.getVersion()))
+            String projectKey = project.getKey();
+            String artifactName = artifact.getName();
+            Integer artifactVersion = artifact.getVersion();
+            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(projectKey, artifactName, artifactVersion))
                     .thenReturn(null);
 
             // Act + Assert
             assertThatThrownBy(
-                    () -> artifactService.createOrUpdateModel(project.getKey(), artifact.getName(), artifact.getVersion(), model))
+                    () -> artifactService.createOrUpdateModel(projectKey, artifactName, artifactVersion, model))
                     .isInstanceOf(NotFoundException.class);
         }
 
@@ -552,6 +558,64 @@ class ArtifactServiceImplTest {
     }
 
     @Nested
+    class getLatestArtifact {
+        @Test
+        void should_map_and_return_specified_artifact_from_repository() {
+            // Arrange
+            var project = ProjectFaker.newProject();
+            ArtifactEntity artifactEntity = ArtifactFaker.newArtifactEntity();
+            Artifact expectedArtifact = new Artifact();
+
+            when(artifactRepository.findFirstByProjectKeyAndNameOrderByVersionDesc(project.getKey(), artifactEntity.getName()))
+                    .thenReturn(artifactEntity);
+            when(artifactMapper.fromEntity(artifactEntity))
+                    .thenReturn(expectedArtifact);
+
+            // Act
+            Artifact artifact = artifactService.getLatestArtifact(project.getKey(), artifactEntity.getName(), null);
+
+            // Assert
+            assertThat(artifact).isSameAs(expectedArtifact);
+        }
+
+        @Test
+        void stage_is_specified_should_filter_by_stage() {
+            // Arrange
+            var project = ProjectFaker.newProject();
+            ArtifactEntity artifactEntity = ArtifactFaker.newArtifactEntity();
+            Artifact expectedArtifact = new Artifact();
+
+            when(artifactRepository.findFirstByProjectKeyAndNameAndModelStageOrderByVersionDesc(project.getKey(), artifactEntity.getName(), Stage.PRODUCTION))
+                    .thenReturn(artifactEntity);
+            when(artifactMapper.fromEntity(artifactEntity))
+                    .thenReturn(expectedArtifact);
+
+            // Act
+            Artifact artifact = artifactService.getLatestArtifact(project.getKey(), artifactEntity.getName(), Stage.PRODUCTION);
+
+            // Assert
+            assertThat(artifact).isSameAs(expectedArtifact);
+        }
+
+        @Test
+        void specified_artifact_does_not_exist_should_throw_NotFoundException() {
+            // Arrange
+            var project = ProjectFaker.newProject();
+            ArtifactEntity artifactEntity = ArtifactFaker.newArtifactEntity();
+
+            String projectKey = project.getKey();
+            String artifactName = artifactEntity.getName();
+
+            when(artifactRepository.findFirstByProjectKeyAndNameOrderByVersionDesc(projectKey, artifactName))
+                    .thenReturn(null);
+
+            // Act + Assert
+            assertThatThrownBy(() -> artifactService.getLatestArtifact(projectKey, artifactName, null))
+                    .isInstanceOf(NotFoundException.class);
+        }
+    }
+
+    @Nested
     class getArtifact {
         @Test
         void should_map_and_return_specified_artifact_from_repository() {
@@ -578,12 +642,16 @@ class ArtifactServiceImplTest {
             var project = ProjectFaker.newProject();
             ArtifactEntity artifactEntity = ArtifactFaker.newArtifactEntity();
 
-            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(project.getKey(), artifactEntity.getName(), artifactEntity.getVersion()))
+            String projectKey = project.getKey();
+            String artifactName = artifactEntity.getName();
+            Integer artifactVersion = artifactEntity.getVersion();
+
+            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(projectKey, artifactName, artifactVersion))
                     .thenReturn(null);
 
             // Act + Assert
-            assertThatThrownBy(() -> artifactService.getArtifact(project.getKey(), artifactEntity.getName(), artifactEntity.getVersion()))
-                .isInstanceOf(NotFoundException.class);
+            assertThatThrownBy(() -> artifactService.getArtifact(projectKey, artifactName, artifactVersion))
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 
@@ -595,12 +663,16 @@ class ArtifactServiceImplTest {
             var project = ProjectFaker.newProject();
             ArtifactEntity artifactEntity = ArtifactFaker.newArtifactEntity();
 
-            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(project.getKey(), artifactEntity.getName(), artifactEntity.getVersion()))
+            String projectKey = project.getKey();
+            String artifactName = artifactEntity.getName();
+            Integer artifactVersion = artifactEntity.getVersion();
+
+            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(projectKey, artifactName, artifactVersion))
                     .thenReturn(null);
 
             // Act + Assert
             assertThatThrownBy(
-                    () -> artifactService.getFileInfo(project.getKey(), artifactEntity.getName(), artifactEntity.getVersion(), "file id"))
+                    () -> artifactService.getFileInfo(projectKey, artifactName, artifactVersion, "file id"))
                     .isInstanceOf(NotFoundException.class);
         }
 
@@ -611,12 +683,15 @@ class ArtifactServiceImplTest {
             ArtifactEntity artifactEntity = ArtifactFaker.newArtifactEntity();
             artifactEntity.setFiles(new ArrayList<>());
 
-            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(project.getKey(), artifactEntity.getName(), artifactEntity.getVersion()))
+            String projectKey = project.getKey();
+            String artifactName = artifactEntity.getName();
+            Integer artifactVersion = artifactEntity.getVersion();
+            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(projectKey, artifactName, artifactVersion))
                     .thenReturn(artifactEntity);
 
             // Act + Assert
             assertThatThrownBy(
-                    () -> artifactService.getFileInfo(project.getKey(), artifactEntity.getName(), artifactEntity.getVersion(), "file id"))
+                    () -> artifactService.getFileInfo(projectKey, artifactName, artifactVersion, "file id"))
                     .isInstanceOf(NotFoundException.class);
         }
 
@@ -641,8 +716,7 @@ class ArtifactServiceImplTest {
             ArtifactFile file = artifactService.getFileInfo(project.getKey(), artifactEntity.getName(), artifactEntity.getVersion(), "EXISTING id");
 
             // Assert
-            assertThat(file).isNotNull();
-            assertThat(file).isSameAs(expectedFile);
+            assertThat(file).isNotNull().isSameAs(expectedFile);
         }
     }
 
@@ -654,12 +728,16 @@ class ArtifactServiceImplTest {
             var project = ProjectFaker.newProject();
             ArtifactEntity artifactEntity = ArtifactFaker.newArtifactEntity();
 
-            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(project.getKey(), artifactEntity.getName(), artifactEntity.getVersion()))
+            String projectKey = project.getKey();
+            String artifactName = artifactEntity.getName();
+            Integer artifactVersion = artifactEntity.getVersion();
+
+            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(projectKey, artifactName, artifactVersion))
                     .thenReturn(null);
 
             // Act + Assert
             assertThatThrownBy(
-                    () -> artifactService.downloadArtifact(project.getKey(), artifactEntity.getName(), artifactEntity.getVersion(), null))
+                    () -> artifactService.downloadArtifact(projectKey, artifactName, artifactVersion, null))
                     .isInstanceOf(NotFoundException.class);
         }
 

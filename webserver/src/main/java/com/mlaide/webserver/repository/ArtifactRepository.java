@@ -1,5 +1,6 @@
 package com.mlaide.webserver.repository;
 
+import com.mlaide.webserver.model.Stage;
 import com.mlaide.webserver.repository.entity.ArtifactEntity;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
@@ -41,7 +42,9 @@ public interface ArtifactRepository extends MongoRepository<ArtifactEntity, Obje
 //    @PostAuthorize("hasPermission(returnObject, 'VIEWER') " +
 //            "or hasPermission(returnObject, 'CONTRIBUTOR') " +
 //            "or hasPermission(returnObject, 'OWNER')")
-    ArtifactEntity findFirstByProjectKeyAndNameOrderByVersion(String projectKey, String name);
+    ArtifactEntity findFirstByProjectKeyAndNameOrderByVersionDesc(String projectKey, String name);
+
+    ArtifactEntity findFirstByProjectKeyAndNameAndModelStageOrderByVersionDesc(String projectKey, String artifactName, Stage stage);
 
     List<ArtifactEntity> findAllByProjectKeyAndModelNotNull(String projectKey, Sort by);
 }

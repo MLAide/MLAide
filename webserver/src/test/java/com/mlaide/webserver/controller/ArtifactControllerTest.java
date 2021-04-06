@@ -6,6 +6,7 @@ import com.mlaide.webserver.faker.ProjectFaker;
 import com.mlaide.webserver.model.Artifact;
 import com.mlaide.webserver.model.ArtifactFile;
 import com.mlaide.webserver.model.ItemList;
+import com.mlaide.webserver.model.Stage;
 import com.mlaide.webserver.service.ArtifactService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -125,6 +126,25 @@ class ArtifactControllerTest {
     }
 
     @Nested
+    class getLatestArtifact {
+        @Test
+        void specified_artifact_exists_should_return_200_with_artifact() {
+            // Arrange
+            Artifact artifact = ArtifactFaker.newArtifact();
+            when(artifactService.getLatestArtifact(projectKey, artifact.getName(), Stage.PRODUCTION)).thenReturn(artifact);
+
+            // Act
+            ResponseEntity<Artifact> result
+                    = artifactController.getLatestArtifact(projectKey, artifact.getName(), Stage.PRODUCTION);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(result.getBody()).isSameAs(artifact);
+        }
+    }
+
+    @Nested
     class getArtifact {
         @Test
         void specified_artifact_exists_should_return_200_with_artifact() {
@@ -133,8 +153,8 @@ class ArtifactControllerTest {
             when(artifactService.getArtifact(projectKey, artifact.getName(), artifact.getVersion())).thenReturn(artifact);
 
             // Act
-            ResponseEntity<Artifact>
-                    result = artifactController.getArtifact(projectKey, artifact.getName(), artifact.getVersion());
+            ResponseEntity<Artifact> result
+                    = artifactController.getArtifact(projectKey, artifact.getName(), artifact.getVersion());
 
             // Assert
             assertThat(result).isNotNull();
@@ -224,9 +244,11 @@ class ArtifactControllerTest {
         void specified_file_is_null_should_throw_IllegalArgumentException(){
             // Arrange
             Artifact artifact = ArtifactFaker.newArtifact();
+            String artifactName = artifact.getName();
+            Integer artifactVersion = artifact.getVersion();
 
             // Act + Assert
-            assertThatThrownBy(() -> artifactController.postFile(projectKey, artifact.getName(), artifact.getVersion(), null))
+            assertThatThrownBy(() -> artifactController.postFile(projectKey, artifactName, artifactVersion, null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("request body must contain artifact");
         }
