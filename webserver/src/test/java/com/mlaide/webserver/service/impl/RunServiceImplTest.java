@@ -309,17 +309,16 @@ class RunServiceImplTest {
     @Nested
     class getRun {
         @Test
-        void specified_run_does_not_exist_should_return_empty_optional() {
+        void specified_run_does_not_exist_should_throw_NotFoundException() {
             // Arrange
             int runKey = faker.random().nextInt(100);
+            String projectKey = project.getKey();
 
             when(runRepository.findOneByProjectKeyAndKey(project.getKey(), runKey)).thenReturn(null);
 
-            // Act
-            Optional<Run> result = runService.getRun(project.getKey(), runKey);
-
-            // Assert
-            assertThat(result).isEmpty();
+            // Act + Assert
+            assertThatThrownBy(() -> runService.getRun(projectKey, runKey))
+                    .isInstanceOf(NotFoundException.class);
         }
 
         @Test
@@ -334,11 +333,10 @@ class RunServiceImplTest {
             when(runMapper.fromEntity(runEntity)).thenReturn(run);
 
             // Act
-            Optional<Run> result = runService.getRun(project.getKey(), runKey);
+            Run result = runService.getRun(project.getKey(), runKey);
 
             // Assert
-            assertThat(result).isNotEmpty();
-            assertThat(result.get()).isSameAs(run);
+            assertThat(result).isSameAs(run);
         }
     }
 

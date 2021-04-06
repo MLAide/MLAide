@@ -280,9 +280,9 @@ public class ArtifactServiceImpl implements ArtifactService {
 
     private ArtifactEntity addArtifact(String projectKey, ArtifactEntity artifactEntity) {
 
-        Optional<Run> run = runService.getRun(projectKey, artifactEntity.getRunKey());
+        Run run = runService.getRun(projectKey, artifactEntity.getRunKey());
         throwIfRunNotFound(artifactEntity, run);
-        throwIfRunIsNotRunning(artifactEntity, run.get());
+        throwIfRunIsNotRunning(artifactEntity, run);
 
         // Define artifact metadata and link to uploaded file
         OffsetDateTime now = OffsetDateTime.now(clock);
@@ -290,7 +290,7 @@ public class ArtifactServiceImpl implements ArtifactService {
         artifactEntity.setCreatedAt(now);
         artifactEntity.setCreatedBy(userRef);
         artifactEntity.setProjectKey(projectKey);
-        artifactEntity.setRunName(run.get().getName());
+        artifactEntity.setRunName(run.getName());
         artifactEntity.setModel(null); // New artifacts can't contain any model
         artifactEntity.setUpdatedAt(now);
 
@@ -314,8 +314,8 @@ public class ArtifactServiceImpl implements ArtifactService {
         }
     }
 
-    private void throwIfRunNotFound(ArtifactEntity artifactEntity, Optional<Run> run) {
-        if (run.isEmpty()) {
+    private void throwIfRunNotFound(ArtifactEntity artifactEntity, Run run) {
+        if (run == null) {
             throw new NotFoundException("Artifact is attached to run " + artifactEntity.getRunKey() + ". No run with this ID exists");
         }
     }

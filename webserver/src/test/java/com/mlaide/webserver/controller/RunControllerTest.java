@@ -164,7 +164,7 @@ class RunControllerTest {
         void specified_run_exists_should_return_200_with_run() {
             // Arrange
             Run run = RunFaker.newRun();
-            when(runService.getRun(projectKey, run.getKey())).thenReturn(Optional.of(run));
+            when(runService.getRun(projectKey, run.getKey())).thenReturn(run);
 
             // Act
             ResponseEntity<Run> result = runController.getRun(projectKey, run.getKey());
@@ -172,17 +172,6 @@ class RunControllerTest {
             // Assert
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(result.getBody()).isSameAs(run);
-        }
-
-        @Test
-        void specified_run_does_not_exist_should_throw_NotFoundException() {
-            // Arrange
-            Run run = RunFaker.newRun();
-            Integer runKey = run.getKey();
-            when(runService.getRun(projectKey, runKey)).thenReturn(Optional.empty());
-
-            // Act + Assert
-            assertThatThrownBy(() -> runController.getRun(projectKey, runKey)).isInstanceOf(NotFoundException.class);
         }
     }
 
@@ -211,25 +200,13 @@ class RunControllerTest {
     @Nested
     class patchRun {
         @Test
-        void specified_run_does_not_exist_should_throw_NotFoundException() {
-            // Arrange
-            Run run = RunFaker.newRun();
-            Integer runKey = run.getKey();
-            when(runService.getRun(projectKey, runKey)).thenReturn(Optional.empty());
-
-            // Act + Assert
-            assertThatThrownBy(() -> runController.patchRun(projectKey, runKey, null))
-                    .isInstanceOf(NotFoundException.class);
-        }
-
-        @Test
         void specify_some_values_of_run_to_patch_should_merge_values_into_existing_run_and_update_run() {
             // Arrange
             Run existingRun = RunFaker.newRun();
 
             JsonMergePatch diff = createMergePatch(createValue("{\"name\":\"new-name\"}"));
 
-            when(runService.getRun(projectKey, existingRun.getKey())).thenReturn(Optional.of(existingRun));
+            when(runService.getRun(projectKey, existingRun.getKey())).thenReturn(existingRun);
 
             // Act
             ResponseEntity<Void> result = runController.patchRun(projectKey, existingRun.getKey(), diff);
@@ -244,17 +221,7 @@ class RunControllerTest {
 
     @Nested
     class patchRunParameters {
-        @Test
-        void specified_run_does_not_exist_should_throw_NotFoundException() {
-            // Arrange
-            Run run = RunFaker.newRun();
-            Integer runKey = run.getKey();
-            when(runService.getRun(projectKey, runKey)).thenReturn(Optional.empty());
 
-            // Act + Assert
-            assertThatThrownBy(() -> runController.patchRunParameters(projectKey, runKey, null))
-                    .isInstanceOf(NotFoundException.class);
-        }
 
         @Test
         void run_has_no_parameters_defined_yet_should_set_new_parameters_into_run() {
@@ -265,7 +232,7 @@ class RunControllerTest {
             Map<String, Object> newParams = new HashMap<>();
             newParams.put("param1", "value1");
 
-            when(runService.getRun(projectKey, existingRun.getKey())).thenReturn(Optional.of(existingRun));
+            when(runService.getRun(projectKey, existingRun.getKey())).thenReturn(existingRun);
 
             // Act
             ResponseEntity<Void> result = runController.patchRunParameters(projectKey, existingRun.getKey(), newParams);
@@ -292,7 +259,7 @@ class RunControllerTest {
             newParams.put("param1", "new-value");
             newParams.put("new-param", "value");
 
-            when(runService.getRun(projectKey, existingRun.getKey())).thenReturn(Optional.of(existingRun));
+            when(runService.getRun(projectKey, existingRun.getKey())).thenReturn(existingRun);
 
             // Act
             ResponseEntity<Void> result = runController.patchRunParameters(projectKey, existingRun.getKey(), newParams);
@@ -312,18 +279,6 @@ class RunControllerTest {
     @Nested
     class patchRunMetrics {
         @Test
-        void specified_run_does_not_exist_should_throw_NotFoundException() {
-            // Arrange
-            Run run = RunFaker.newRun();
-            Integer runKey = run.getKey();
-            when(runService.getRun(projectKey, run.getKey())).thenReturn(Optional.empty());
-
-            // Act + Assert
-            assertThatThrownBy(() -> runController.patchRunMetrics(projectKey, runKey, null))
-                    .isInstanceOf(NotFoundException.class);
-        }
-
-        @Test
         void run_has_no_metrics_defined_yet_should_set_new_metrics_into_run() {
             // Arrange
             Run existingRun = RunFaker.newRun();
@@ -332,7 +287,7 @@ class RunControllerTest {
             Map<String, Object> newMetrics = new HashMap<>();
             newMetrics.put("metric1", "value1");
 
-            when(runService.getRun(projectKey, existingRun.getKey())).thenReturn(Optional.of(existingRun));
+            when(runService.getRun(projectKey, existingRun.getKey())).thenReturn(existingRun);
 
             // Act
             ResponseEntity<Void> result = runController.patchRunMetrics(projectKey, existingRun.getKey(), newMetrics);
@@ -359,7 +314,7 @@ class RunControllerTest {
             newMetrics.put("metric1", "new-value");
             newMetrics.put("new-metric", "value");
 
-            when(runService.getRun(projectKey, existingRun.getKey())).thenReturn(Optional.of(existingRun));
+            when(runService.getRun(projectKey, existingRun.getKey())).thenReturn(existingRun);
 
             // Act
             ResponseEntity<Void> result = runController.patchRunMetrics(projectKey, existingRun.getKey(), newMetrics);

@@ -18,7 +18,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,14 +132,14 @@ public class RunServiceImpl implements RunService {
     }
 
     @Override
-    public Optional<Run> getRun(String projectKey, Integer runKey) {
+    public Run getRun(String projectKey, Integer runKey) {
         RunEntity runEntity = runRepository.findOneByProjectKeyAndKey(projectKey, runKey);
+
         if (runEntity == null) {
-            return Optional.empty();
-        } else {
-            Run run = runMapper.fromEntity(runEntity);
-            return Optional.of(run);
+            throw new NotFoundException();
         }
+
+        return runMapper.fromEntity(runEntity);
     }
 
     @Override

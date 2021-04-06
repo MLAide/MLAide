@@ -103,8 +103,7 @@ public class RunController {
             @PathVariable("runKey") @NotNull Integer runKey) {
         logger.info("get run");
 
-        Run run = runService.getRun(projectKey, runKey)
-                .orElseThrow(NotFoundException::new);
+        Run run = runService.getRun(projectKey, runKey);
 
         return ResponseEntity.ok(run);
     }
@@ -129,7 +128,7 @@ public class RunController {
         logger.info("patch run");
 
         // Get the already existing run
-        Run run = runService.getRun(projectKey, runKey).orElseThrow(NotFoundException::new);
+        Run run = runService.getRun(projectKey, runKey);
 
         // Patch the run with new values
         patchSupport.patch(run, runDiff);
@@ -148,7 +147,7 @@ public class RunController {
         logger.info("patch run parameters");
 
         // Get the already existing run
-        Run run = runService.getRun(projectKey, runKey).orElseThrow(NotFoundException::new);
+        Run run = runService.getRun(projectKey, runKey);
 
         Map<String, Object> runParameters = run.getParameters();
         if (runParameters == null) {
@@ -170,7 +169,7 @@ public class RunController {
         logger.info("patch run metrics");
 
         // Get the already existing run
-        Run run = runService.getRun(projectKey, runKey).orElseThrow(NotFoundException::new);
+        Run run = runService.getRun(projectKey, runKey);
 
         Map<String, Object> runMetrics = run.getMetrics();
         if (runMetrics == null) {
