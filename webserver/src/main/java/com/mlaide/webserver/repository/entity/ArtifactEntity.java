@@ -44,7 +44,7 @@ public class ArtifactEntity {
     @NotBlank
     private String name;
 
-    @Pattern(regexp = ValidationRegEx.projectKey)
+    @Pattern(regexp = ValidationRegEx.PROJECT_KEY)
     @NotBlank
     private String projectKey;
 

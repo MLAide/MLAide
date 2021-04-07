@@ -41,7 +41,7 @@ public class RunEntity {
     private String name;
     private String note;
     private Map<String, Object> parameters;
-    @Pattern(regexp = ValidationRegEx.projectKey)
+    @Pattern(regexp = ValidationRegEx.PROJECT_KEY)
     @NotBlank
     private String projectKey;
     @PastOrPresent

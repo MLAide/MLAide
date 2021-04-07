@@ -16,7 +16,7 @@ public class Project {
     @NotBlank
     private String name;
     @NotBlank
-    @Pattern(regexp = ValidationRegEx.projectKey)
+    @Pattern(regexp = ValidationRegEx.PROJECT_KEY)
     private String key;
     private OffsetDateTime createdAt;
 }

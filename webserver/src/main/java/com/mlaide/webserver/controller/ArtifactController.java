@@ -37,7 +37,7 @@ public class ArtifactController {
 
     @GetMapping
     public ResponseEntity<ItemList<Artifact>> getArtifacts(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @RequestParam(value = "isModel", defaultValue = "false") boolean isModel,
             @RequestParam(name = "runKeys", required = false) List<Integer> runKeys) {
         logger.info("get artifacts; isModel={}", isModel);
@@ -59,7 +59,7 @@ public class ArtifactController {
 
     @PostMapping
     public ResponseEntity<Artifact> postArtifact(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @Valid @RequestBody Artifact artifact) {
         logger.info("post artifact");
 
@@ -74,7 +74,7 @@ public class ArtifactController {
 
     @GetMapping(path = "{artifactName}/latest")
     public ResponseEntity<Artifact> getLatestArtifact(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("artifactName") @NotBlank String artifactName,
             @RequestParam(value = "model-stage", required = false) Stage stage) {
         logger.info("get latest artifact");
@@ -86,7 +86,7 @@ public class ArtifactController {
 
     @GetMapping(path = "{artifactName}/{artifactVersion}")
     public ResponseEntity<Artifact> getArtifact(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("artifactName") @NotBlank String artifactName,
             @PathVariable("artifactVersion") @NotNull Integer artifactVersion) {
         logger.info("get artifact");
@@ -98,7 +98,7 @@ public class ArtifactController {
 
     @GetMapping(path = "{artifactName}/{artifactVersion}/files", produces = "application/zip")
     public ResponseEntity<StreamingResponseBody> downloadArtifactAsZip(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("artifactName") @NotBlank String artifactName,
             @PathVariable("artifactVersion") @NotNull Integer artifactVersion) {
 
@@ -116,7 +116,7 @@ public class ArtifactController {
 
     @GetMapping(path = "{artifactName}/{artifactVersion}/files/{fileId}", produces = "application/octet-stream")
     public ResponseEntity<StreamingResponseBody> downloadFile(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("artifactName") @NotBlank String artifactName,
             @PathVariable("artifactVersion") @NotNull Integer artifactVersion,
             @PathVariable("fileId") @NotBlank String fileId) {
@@ -134,7 +134,7 @@ public class ArtifactController {
 
     @PostMapping(path = "{artifactName}/{artifactVersion}/files")
     public ResponseEntity<Void> postFile(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("artifactName") @NotBlank String artifactName,
             @PathVariable("artifactVersion") @NotNull Integer artifactVersion,
             @RequestParam("file") MultipartFile file) throws IOException {

@@ -25,7 +25,7 @@ public class ProjectEntity {
     private OffsetDateTime createdAt = OffsetDateTime.now();
     @Id private ObjectId id;
     @NotBlank
-    @Pattern(regexp = ValidationRegEx.projectKey)
+    @Pattern(regexp = ValidationRegEx.PROJECT_KEY)
     @Indexed(unique = true) private String key;
     @NotBlank
     private String name;

@@ -30,7 +30,7 @@ public class ModelController {
 
     @PutMapping
     public ResponseEntity<Void> putModel(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("artifactName") @NotBlank String artifactName,
             @PathVariable("artifactVersion") @NotNull int artifactVersion,
             @Valid @RequestBody(required = false) CreateOrUpdateModel model) throws NotFoundException {
