@@ -59,7 +59,8 @@ public class RunController {
             String projectKey, List<Integer> runKeys, String experimentKey) {
 
         if (runKeys != null) {
-            logger.info("get runs for keys: {}", runKeys.stream().map(Object::toString).collect(Collectors.joining(", ")));
+            String runKeysAsList = runKeys.stream().map(Object::toString).collect(Collectors.joining(", "));
+            logger.info("get runs for keys: {}", runKeysAsList);
             return runService.getRunsByKeys(projectKey, runKeys);
         }
 
