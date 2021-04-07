@@ -20,7 +20,7 @@ import java.util.*;
 
 @Service
 public class PermissionServiceImpl implements PermissionService {
-    private final Logger LOGGER = LoggerFactory.getLogger(ProjectServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(PermissionServiceImpl.class);
     private final MutableAclService aclService;
 
     @Autowired
@@ -40,7 +40,7 @@ public class PermissionServiceImpl implements PermissionService {
         acl.setParent(parentAcl);
         aclService.updateAcl(acl);
 
-        LOGGER.info("granted permissions for current user to " + objectType.getName() + "(" + objectId + ")");
+        logger.info("granted permissions for current user to {} ({})", objectType.getName(), objectId);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class PermissionServiceImpl implements PermissionService {
         acl.insertAce(0, permission, sid, true);
         aclService.updateAcl(acl);
 
-        LOGGER.info("granted permissions for current user to newly created project " + projectKey);
+        logger.info("granted permissions for current user to newly created project {}", projectKey);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class PermissionServiceImpl implements PermissionService {
         aclService.updateAcl(acl);
 
         String users = String.join(",", permissions.keySet());
-        LOGGER.info("granted permissions for user " + users + " on project " + projectKey);
+        logger.info("granted permissions for user {} on project {}", users, projectKey);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class PermissionServiceImpl implements PermissionService {
         String currentPrincipalName = SecurityContextHolder.getContext().getAuthentication().getName();
         Sid currentSid = new PrincipalSid(currentPrincipalName);
         if (entries.stream().noneMatch(e -> e.getSid().equals(currentSid))) {
-            throw new NotFoundException("Project " + projectKey + " does not exist");
+            throw new NotFoundException(String.format("Project %s does not exist", projectKey));
         }
 
         var permissions = new HashMap<String, MlAidePermission>();
@@ -124,13 +124,13 @@ public class PermissionServiceImpl implements PermissionService {
         aclService.updateAcl(acl);
 
         String users = String.join(",", userIds);
-        LOGGER.info("revoked permissions for user(s) " + users + " on project " + projectKey);
+        logger.info("revoked permissions for user(s) {} on project {}", users, projectKey);
     }
 
     private void throwIfCurrentUserIsNotAllowedToChangePermissionsOfProject(String projectKey) {
         Optional<MlAidePermission> permissionOfCurrentUser = getProjectPermissionOfCurrentUser(projectKey);
         if (permissionOfCurrentUser.isEmpty()) {
-            throw new NotFoundException("Project " + projectKey + " does not exist");
+            throw new NotFoundException(String.format("Project %s does not exist", projectKey));
         } else if (!permissionOfCurrentUser.get().equals(MlAidePermission.OWNER)) {
             throw new AccessDeniedException("User is not permitted to do any changes on this project");
         }
