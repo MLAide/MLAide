@@ -28,6 +28,8 @@ import static java.lang.String.format;
 @Service
 public class ArtifactServiceImpl implements ArtifactService {
     private final Logger logger = LoggerFactory.getLogger(ArtifactServiceImpl.class);
+    private static final String NAME = "name";
+    private static final String VERSION = "version";
 
     private final ArtifactMapper artifactMapper;
     private final ArtifactRepository artifactRepository;
@@ -37,9 +39,6 @@ public class ArtifactServiceImpl implements ArtifactService {
     private final RunService runService;
     private final StorageService storageService;
     private final UserService userService;
-
-    private static final String VERSION = "version";
-    private static final String NAME = "name";
 
     @Autowired
     public ArtifactServiceImpl(ArtifactMapper artifactMapper,
@@ -138,7 +137,7 @@ public class ArtifactServiceImpl implements ArtifactService {
             modelEntity.setModelRevisions(new ArrayList<>());
             modelEntity.setStage(Stage.NONE);
             modelEntity.setUpdatedAt(now);
-            logger.info("Creating new model for artifact {}:{}", artifactName, artifactVersion);
+            logger.info("Creating new model for artifact {}:{}", artifactName,artifactVersion);
         } else if (model == null) {
             logger.info("createOrUpdateModel will do nothing. Model already exists and request does not contain any model.");
             return;
@@ -281,9 +280,9 @@ public class ArtifactServiceImpl implements ArtifactService {
 
     private ArtifactEntity addArtifact(String projectKey, ArtifactEntity artifactEntity) {
 
-        Optional<Run> run = runService.getRun(projectKey, artifactEntity.getRunKey());
+        Run run = runService.getRun(projectKey, artifactEntity.getRunKey());
         throwIfRunNotFound(artifactEntity, run);
-        throwIfRunIsNotRunning(artifactEntity, run.get());
+        throwIfRunIsNotRunning(artifactEntity, run);
 
         // Define artifact metadata and link to uploaded file
         OffsetDateTime now = OffsetDateTime.now(clock);
@@ -291,7 +290,7 @@ public class ArtifactServiceImpl implements ArtifactService {
         artifactEntity.setCreatedAt(now);
         artifactEntity.setCreatedBy(userRef);
         artifactEntity.setProjectKey(projectKey);
-        artifactEntity.setRunName(run.get().getName());
+        artifactEntity.setRunName(run.getName());
         artifactEntity.setModel(null); // New artifacts can't contain any model
         artifactEntity.setUpdatedAt(now);
 
@@ -301,7 +300,7 @@ public class ArtifactServiceImpl implements ArtifactService {
         int artifactVersion = counterRepository.getNextSequenceValue(
                 format("%s.artifact.%s.%s", projectKey, artifactEntity.getType(), artifactEntity.getName()));
         artifactEntity.setVersion(artifactVersion);
-        logger.info("New artifact '{} ({}) got version {}", artifactEntity.getName(), artifactEntity.getType(), artifactVersion);
+        logger.info("New artifact '{}' ({})  got version {}", artifactEntity.getName(), artifactEntity.getType(), artifactVersion);
 
         return saveArtifact(projectKey, artifactEntity);
     }
@@ -315,8 +314,8 @@ public class ArtifactServiceImpl implements ArtifactService {
         }
     }
 
-    private void throwIfRunNotFound(ArtifactEntity artifactEntity, Optional<Run> run) {
-        if (run.isEmpty()) {
+    private void throwIfRunNotFound(ArtifactEntity artifactEntity, Run run) {
+        if (run == null) {
             throw new NotFoundException("Artifact is attached to run " + artifactEntity.getRunKey() + ". No run with this ID exists");
         }
     }

@@ -105,7 +105,7 @@ class PermissionServiceImplTest {
     class GrantPermissionToNewProject {
         @Test
         void grant_permission_should_create_new_acl_with_ace_for_current_user() {
-            // arrange
+            // Arrange
             var user = UserFaker.newUser();
             setupUserInSecurityContext(user.getUserId());
 
@@ -113,10 +113,10 @@ class PermissionServiceImplTest {
             var acl = createAcl(ProjectEntity.class, project.getKey());
             when(aclService.createAcl(withObjectIdentity(project))).thenReturn(acl);
 
-            // act
+            // Act
             permissionService.grantPermissionToNewProject(project.getKey(), MlAidePermission.OWNER);
 
-            // assert
+            // Assert
             ArgumentCaptor<ObjectIdentity> objectIdentityCaptor = ArgumentCaptor.forClass(ObjectIdentity.class);
             verify(aclService).createAcl(objectIdentityCaptor.capture());
             assertThat(objectIdentityCaptor.getValue().getIdentifier()).isEqualTo(project.getKey());
@@ -134,7 +134,7 @@ class PermissionServiceImplTest {
     class GrantPermissionsToExistingProject {
         @Test
         void grant_permission_should_add_new_ace_to_existing_acl_for_three_specified_users() {
-            // arrange
+            // Arrange
             var currentUser = UserFaker.newUser();
             setupUserInSecurityContext(currentUser.getUserId());
 
@@ -152,10 +152,10 @@ class PermissionServiceImplTest {
             permissionsToGrant.put(user2.getUserId(), MlAidePermission.CONTRIBUTOR);
             permissionsToGrant.put(user3.getUserId(), MlAidePermission.VIEWER);
 
-            // act
+            // Act
             permissionService.grantPermissionsToExistingProject(project.getKey(), permissionsToGrant);
 
-            // assert
+            // Assert
             verify(aclService, times(2)).updateAcl(acl);
             assertThat(acl.getEntries()).hasSize(4);
 
@@ -167,7 +167,7 @@ class PermissionServiceImplTest {
 
         @Test
         void grant_OWNER_permission_to_a_project_where_user_already_is_VIEWER_should_set_new_ace_with_OWNER_permission() {
-            // arrange
+            // Arrange
             var currentUser = UserFaker.newUser();
             setupUserInSecurityContext(currentUser.getUserId());
 
@@ -182,10 +182,10 @@ class PermissionServiceImplTest {
             var permissionsToGrant = new LinkedHashMap<String, MlAidePermission>();
             permissionsToGrant.put(user1.getUserId(), MlAidePermission.OWNER);
 
-            // act
+            // Act
             permissionService.grantPermissionsToExistingProject(project.getKey(), permissionsToGrant);
 
-            // assert
+            // Assert
             verify(aclService, times(2)).updateAcl(acl);
             assertThat(acl.getEntries()).hasSize(2);
 
@@ -195,7 +195,7 @@ class PermissionServiceImplTest {
 
         @Test
         void grant_VIEWER_permission_to_a_project_where_user_already_is_CONTRIBUTOR_should_set_new_ace_with_VIEWER_permission() {
-            // arrange
+            // Arrange
             var currentUser = UserFaker.newUser();
             setupUserInSecurityContext(currentUser.getUserId());
 
@@ -210,10 +210,10 @@ class PermissionServiceImplTest {
             var permissionsToGrant = new LinkedHashMap<String, MlAidePermission>();
             permissionsToGrant.put(user1.getUserId(), MlAidePermission.VIEWER);
 
-            // act
+            // Act
             permissionService.grantPermissionsToExistingProject(project.getKey(), permissionsToGrant);
 
-            // assert
+            // Assert
             verify(aclService, times(2)).updateAcl(acl);
             assertThat(acl.getEntries()).hasSize(2);
 
@@ -223,7 +223,7 @@ class PermissionServiceImplTest {
 
         @Test
         void grant_permission_to_a_project_where_current_user_has_no_permission_should_throw_NotFoundException() {
-            // arrange
+            // Arrange
             var currentUser = UserFaker.newUser();
             setupUserInSecurityContext(currentUser.getUserId());
 
@@ -238,17 +238,17 @@ class PermissionServiceImplTest {
 
             var projectKey = project.getKey();
 
-            // act
+            // Act
             assertThatThrownBy(() -> permissionService.grantPermissionsToExistingProject(projectKey, permissionsToGrant))
                     .isInstanceOf(NotFoundException.class);
 
-            // assert
+            // Assert
             verify(aclService, never()).updateAcl(acl);
         }
 
         @Test
         void grant_permission_to_a_project_where_current_user_has_CONTRIBUTOR_permission_should_throw_AccessDeniedException() {
-            // arrange
+            // Arrange
             var currentUser = UserFaker.newUser();
             setupUserInSecurityContext(currentUser.getUserId());
 
@@ -264,11 +264,11 @@ class PermissionServiceImplTest {
 
             var projectKey = project.getKey();
 
-            // act
+            // Act
             assertThatThrownBy(() -> permissionService.grantPermissionsToExistingProject(projectKey, permissionsToGrant))
                     .isInstanceOf(AccessDeniedException.class);
 
-            // assert
+            // Assert
             verify(aclService, never()).updateAcl(acl);
         }
     }
@@ -277,7 +277,7 @@ class PermissionServiceImplTest {
     class GetProjectPermissions {
         @Test
         void get_permissions_of_a_project_where_current_user_has_any_kind_of_permission_should_return_permissions_of_all_users() {
-            // arrange
+            // Arrange
             var currentUser = UserFaker.newUser();
             setupUserInSecurityContext(currentUser.getUserId());
 
@@ -291,10 +291,10 @@ class PermissionServiceImplTest {
             acl.insertAce(2, MlAidePermission.OWNER, new PrincipalSid(user2.getUserId()), true);
             when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
 
-            // act
+            // Act
             Map<String, MlAidePermission> actualPermissions = permissionService.getProjectPermissions(project.getKey());
 
-            // assert
+            // Assert
             verify(aclService).readAclById(withObjectIdentity(project));
             assertThat(actualPermissions).hasSize(3)
                     .containsEntry(currentUser.getUserId(), MlAidePermission.VIEWER)
@@ -304,7 +304,7 @@ class PermissionServiceImplTest {
 
         @Test
         void get_permissions_of_a_project_where_current_user_has_no_permission_should_throw_NotFoundException() {
-            // arrange
+            // Arrange
             var currentUser = UserFaker.newUser();
             setupUserInSecurityContext(currentUser.getUserId());
 
@@ -317,7 +317,7 @@ class PermissionServiceImplTest {
 
             var projectKey = project.getKey();
 
-            // act + assert
+            // Act + Assert
             assertThatThrownBy(() -> permissionService.getProjectPermissions(projectKey))
                 .isInstanceOf(NotFoundException.class);
         }
@@ -327,7 +327,7 @@ class PermissionServiceImplTest {
     class RevokeProjectPermission {
         @Test
         void revoke_permissions_for_two_of_three_users_should_remove_two_users_from_acl_and_keep_one() {
-            // arrange
+            // Arrange
             var currentUser = UserFaker.newUser();
             setupUserInSecurityContext(currentUser.getUserId());
 
@@ -343,10 +343,10 @@ class PermissionServiceImplTest {
 
             var permissionsToRevoke = asList(user1.getUserId(), user2.getUserId());
 
-            // act
+            // Act
             permissionService.revokeProjectPermission(project.getKey(), permissionsToRevoke);
 
-            // assert
+            // Assert
             verify(aclService).updateAcl(acl);
             assertThat(acl.getEntries()).hasSize(1);
             assertThatAceContainsExpectedPermissions(acl.getEntries().get(0), MlAidePermission.OWNER, currentUser.getUserId());
@@ -354,7 +354,7 @@ class PermissionServiceImplTest {
 
         @Test
         void revoke_permissions_on_project_where_current_user_has_no_permission_should_throw_NotFoundException() {
-            // arrange
+            // Arrange
             var currentUser = UserFaker.newUser();
             setupUserInSecurityContext(currentUser.getUserId());
 
@@ -371,7 +371,7 @@ class PermissionServiceImplTest {
 
             var projectKey = project.getKey();
 
-            // act + assert
+            // Act + Assert
             assertThatThrownBy(() -> permissionService.revokeProjectPermission(projectKey, permissionsToRevoke))
                     .isInstanceOf(NotFoundException.class);
         }
@@ -394,7 +394,7 @@ class PermissionServiceImplTest {
 
             var projectKey = project.getKey();
 
-            // act + assert
+            // Act + Assert
             assertThatThrownBy(() -> permissionService.revokeProjectPermission(projectKey, permissionsToRevoke))
                     .isInstanceOf(AccessDeniedException.class);
         }

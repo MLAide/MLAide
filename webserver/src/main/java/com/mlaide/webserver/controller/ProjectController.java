@@ -4,7 +4,6 @@ import com.mlaide.webserver.validation.ValidationRegEx;
 import com.mlaide.webserver.model.ItemList;
 import com.mlaide.webserver.model.Project;
 import com.mlaide.webserver.model.ProjectMember;
-import com.mlaide.webserver.service.NotFoundException;
 import com.mlaide.webserver.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,7 @@ public class ProjectController {
     public ResponseEntity<Project> getProject(
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey) {
         logger.info("get project by project key");
-        Project project = projectService.getProject(projectKey).orElseThrow(NotFoundException::new);
+        Project project = projectService.getProject(projectKey);
 
         return ResponseEntity.ok(project);
     }

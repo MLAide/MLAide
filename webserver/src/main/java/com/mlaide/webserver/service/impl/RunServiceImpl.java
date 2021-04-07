@@ -7,8 +7,6 @@ import com.mlaide.webserver.repository.entity.ArtifactRefEntity;
 import com.mlaide.webserver.repository.entity.RunEntity;
 import com.mlaide.webserver.service.*;
 import com.mlaide.webserver.service.mapper.RunMapper;
-import com.mlaide.webserver.model.*;
-import com.mlaide.webserver.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +18,11 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class RunServiceImpl implements RunService {
-    private final Logger LOGGER = LoggerFactory.getLogger(RunServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(RunServiceImpl.class);
 
     private final RunRepository runRepository;
     private final RunMapper runMapper;
@@ -100,10 +97,6 @@ public class RunServiceImpl implements RunService {
             run.setName(randomGeneratorService.randomRunName());
         }
 
-        // Validate run object
-        if (run.getExperimentRefs() == null || run.getExperimentRefs().size() == 0) {
-            throw new InvalidInputException("A run must reference at least one experiment");
-        }
         throwIfAnyExperimentRefDoesNotExist(projectKey, run.getExperimentRefs());
         throwIfAnyArtifactDoesNotExist(projectKey, run.getUsedArtifacts());
 
@@ -117,33 +110,18 @@ public class RunServiceImpl implements RunService {
         // Set values that are only available on database level
         runEntity.setProjectKey(projectKey);
 
-        // TODO: Can we remove this code block?
-        /*
-        runEntity.setExperimentRefs(
-            run.getExperimentRefs()
-                .stream()
-                .map(ref -> {
-                    RunEntity.ExperimentRefEntity refEntity = new RunEntity.ExperimentRefEntity();
-                    refEntity.setExperimentKey(ref.getExperimentKey());
-                    return refEntity;
-                })
-                .collect(Collectors.toList()
-            )
-        );
-        */
-
         // Retrieve the next available version number from database.
         // Even if this is the first version of this model.
         // Calculating/Defining model version in service is not thread safe or transactional.
         int runKey = counterRepository.getNextSequenceValue(
                 projectKey + ".run");
         runEntity.setKey(runKey);
-        LOGGER.info("New Run '" + run.getName() + "' got key " + runKey);
+        logger.info("New Run '{}' got key {}", run.getName(), runKey);
 
         runEntity = saveRun(runEntity);
 
         var usedArtifacts = runEntity.getUsedArtifacts();
-        if (usedArtifacts != null && usedArtifacts.size() > 0) {
+        if (usedArtifacts != null && !usedArtifacts.isEmpty()) {
             // If the run uses artifacts as input we have to add the predecessor runs to the current experiment.
             // Execute a graph search to find all predecessor runs and assign the experiment keys of this run to them
             Collection<Integer> predecessorRunKeys = runRepository.findAllPredecessorRunKeys(projectKey, usedArtifacts);
@@ -154,14 +132,14 @@ public class RunServiceImpl implements RunService {
     }
 
     @Override
-    public Optional<Run> getRun(String projectKey, Integer runKey) {
+    public Run getRun(String projectKey, Integer runKey) {
         RunEntity runEntity = runRepository.findOneByProjectKeyAndKey(projectKey, runKey);
+
         if (runEntity == null) {
-            return Optional.empty();
-        } else {
-            Run run = runMapper.fromEntity(runEntity);
-            return Optional.of(run);
+            throw new NotFoundException();
         }
+
+        return runMapper.fromEntity(runEntity);
     }
 
     @Override
@@ -190,7 +168,7 @@ public class RunServiceImpl implements RunService {
         }
 
         runRepository.save(runEntity);
-        LOGGER.info("updated existing run");
+        logger.info("updated existing run");
     }
 
     @Override
@@ -205,13 +183,13 @@ public class RunServiceImpl implements RunService {
 
         RunEntity savedEntity = runRepository.save(existingRunEntity);
 
-        LOGGER.info("updated note in existing run");
+        logger.info("updated note in existing run");
         return savedEntity.getNote();
     }
 
     @Override
     public void attachArtifactToRun(String projectKey, Integer runKey, String artifactName, Integer artifactVersion) {
-        LOGGER.info("Attaching artifact (" + artifactName + ":" + artifactVersion + ") to run " + runKey + " in project " + projectKey);
+        logger.info("Attaching artifact ({}:{}) to run {} in project {}", artifactName, artifactVersion, runKey, projectKey);
 
         RunEntity runEntity = runRepository.findOneByProjectKeyAndKey(projectKey, runKey);
         if (runEntity == null) {
@@ -233,13 +211,13 @@ public class RunServiceImpl implements RunService {
 
     private RunEntity saveRun(RunEntity runEntity) {
         runEntity = runRepository.save(runEntity);
-        LOGGER.info("Created new run");
+        logger.info("Created new run");
 
         try {
             permissionService.grantPermissionBasedOnProject(runEntity.getProjectKey(), runEntity.getId(), RunEntity.class);
         } catch (Exception e) {
             runRepository.deleteById(runEntity.getId());
-            LOGGER.info("Could not grant permissions on new run. Deleted run from database to avoid inconsistency.");
+            logger.info("Could not grant permissions on new run. Deleted run from database to avoid inconsistency.");
             throw e;
         }
 

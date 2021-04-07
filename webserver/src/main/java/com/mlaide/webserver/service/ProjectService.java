@@ -5,13 +5,11 @@ import com.mlaide.webserver.model.Project;
 import com.mlaide.webserver.model.ProjectMember;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ProjectService {
     ItemList<Project> getProjects();
 
-    // TODO: Remove Optional and fix tests
-    Optional<Project> getProject(String projectKey);
+    Project getProject(String projectKey);
 
     Project addProject(Project project);
 

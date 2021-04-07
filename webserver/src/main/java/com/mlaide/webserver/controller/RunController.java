@@ -17,7 +17,6 @@ import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -80,10 +79,7 @@ public class RunController {
         logger.info("post run");
 
         // TODO: Do not read project here; this is just done because we want to check if the user is permitted to the project; this should be done in the service
-        Optional<Project> project = projectService.getProject(projectKey);
-        if (project.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+        Project project = projectService.getProject(projectKey);
 
         List<ExperimentRef> experimentRefs = run.getExperimentRefs();
         if (experimentRefs == null || experimentRefs.isEmpty()) {
@@ -109,8 +105,7 @@ public class RunController {
             @PathVariable("runKey") @NotNull Integer runKey) {
         logger.info("get run");
 
-        Run run = runService.getRun(projectKey, runKey)
-                .orElseThrow(NotFoundException::new);
+        Run run = runService.getRun(projectKey, runKey);
 
         return ResponseEntity.ok(run);
     }
@@ -135,7 +130,7 @@ public class RunController {
         logger.info("patch run");
 
         // Get the already existing run
-        Run run = runService.getRun(projectKey, runKey).orElseThrow(NotFoundException::new);
+        Run run = runService.getRun(projectKey, runKey);
 
         // Patch the run with new values
         patchSupport.patch(run, runDiff);
@@ -154,7 +149,7 @@ public class RunController {
         logger.info("patch run parameters");
 
         // Get the already existing run
-        Run run = runService.getRun(projectKey, runKey).orElseThrow(NotFoundException::new);
+        Run run = runService.getRun(projectKey, runKey);
 
         Map<String, Object> runParameters = run.getParameters();
         if (runParameters == null) {
@@ -176,7 +171,7 @@ public class RunController {
         logger.info("patch run metrics");
 
         // Get the already existing run
-        Run run = runService.getRun(projectKey, runKey).orElseThrow(NotFoundException::new);
+        Run run = runService.getRun(projectKey, runKey);
 
         Map<String, Object> runMetrics = run.getMetrics();
         if (runMetrics == null) {

@@ -12,14 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
@@ -62,22 +60,21 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Optional<Project> getProject(String projectKey) {
+    public Project getProject(String projectKey) {
         ProjectEntity projectEntity;
 
-        try {
-            projectEntity = projectRepository.findByKey(projectKey);
-        } catch (AccessDeniedException e) {
-            return Optional.empty();
+        projectEntity = projectRepository.findByKey(projectKey);
+
+        if (projectEntity == null) {
+            throw new NotFoundException();
         }
 
-        return Optional.of(projectMapper.fromEntity(projectEntity));
+        return projectMapper.fromEntity(projectEntity);
     }
 
     @Override
     public Project addProject(Project project) {
         ProjectEntity projectEntity = projectMapper.toEntity(project);
-        // TODO: validate project key (only characters, digits and hyphens allowed)
 
         projectEntity.setCreatedAt(OffsetDateTime.now(clock));
 
