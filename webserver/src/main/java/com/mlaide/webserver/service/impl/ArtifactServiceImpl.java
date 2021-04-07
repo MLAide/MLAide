@@ -6,9 +6,6 @@ import com.mlaide.webserver.repository.CounterRepository;
 import com.mlaide.webserver.repository.entity.*;
 import com.mlaide.webserver.service.*;
 import com.mlaide.webserver.service.mapper.ArtifactMapper;
-import com.mlaide.webserver.model.*;
-import com.mlaide.webserver.repository.entity.*;
-import com.mlaide.webserver.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +27,7 @@ import static java.lang.String.format;
 
 @Service
 public class ArtifactServiceImpl implements ArtifactService {
-    private final Logger LOGGER = LoggerFactory.getLogger(ArtifactServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(ArtifactServiceImpl.class);
 
     private final ArtifactMapper artifactMapper;
     private final ArtifactRepository artifactRepository;
@@ -40,6 +37,9 @@ public class ArtifactServiceImpl implements ArtifactService {
     private final RunService runService;
     private final StorageService storageService;
     private final UserService userService;
+
+    private static final String VERSION = "version";
+    private static final String NAME = "name";
 
     @Autowired
     public ArtifactServiceImpl(ArtifactMapper artifactMapper,
@@ -138,9 +138,9 @@ public class ArtifactServiceImpl implements ArtifactService {
             modelEntity.setModelRevisions(new ArrayList<>());
             modelEntity.setStage(Stage.NONE);
             modelEntity.setUpdatedAt(now);
-            LOGGER.info("Creating new model for artifact " + artifactName + ":" + artifactVersion);
+            logger.info("Creating new model for artifact {}:{}", artifactName, artifactVersion);
         } else if (model == null) {
-            LOGGER.info("createOrUpdateModel will do nothing. Model already exists and request does not contain any model.");
+            logger.info("createOrUpdateModel will do nothing. Model already exists and request does not contain any model.");
             return;
         } else {
             ModelRevisionEntity revision = new ModelRevisionEntity();
@@ -153,7 +153,7 @@ public class ArtifactServiceImpl implements ArtifactService {
             modelEntity.getModelRevisions().add(revision);
             modelEntity.setUpdatedAt(now);
             modelEntity.setStage(model.getStage());
-            LOGGER.info("Updating model for artifact " + artifactName + ":" + artifactVersion);
+            logger.info("Updating model for artifact {}:{}", artifactName, artifactVersion);
         }
 
         artifactEntity.setModel(modelEntity);
@@ -164,7 +164,7 @@ public class ArtifactServiceImpl implements ArtifactService {
     public ItemList<Artifact> getArtifacts(String projectKey) {
         List<ArtifactEntity> artifactEntities = artifactRepository.findAllByProjectKey(
                 projectKey,
-                Sort.by(Sort.Direction.ASC, "name", "version"));
+                Sort.by(Sort.Direction.ASC, NAME, VERSION));
 
         List<Artifact> artifacts = artifactMapper.fromEntity(artifactEntities);
 
@@ -175,7 +175,7 @@ public class ArtifactServiceImpl implements ArtifactService {
     public ItemList<Artifact> getModels(String projectKey) {
         List<ArtifactEntity> artifactEntities = artifactRepository.findAllByProjectKeyAndModelNotNull(
                 projectKey,
-                Sort.by(Sort.Direction.ASC, "name", "version"));
+                Sort.by(Sort.Direction.ASC, NAME, VERSION));
 
         List<Artifact> artifacts = artifactMapper.fromEntity(artifactEntities);
 
@@ -187,7 +187,7 @@ public class ArtifactServiceImpl implements ArtifactService {
         List<ArtifactEntity> artifactEntities = artifactRepository.findAllByProjectKeyAndRunKeyIn(
                 projectKey,
                 runKeys,
-                Sort.by(Sort.Direction.ASC, "name", "version"));
+                Sort.by(Sort.Direction.ASC, NAME, VERSION));
 
         List<Artifact> artifacts = artifactMapper.fromEntity(artifactEntities);
 
@@ -243,15 +243,19 @@ public class ArtifactServiceImpl implements ArtifactService {
                 ZipEntry zipFile = new ZipEntry(file.getFileName());
                 zipOutputStream.putNextEntry(zipFile);
 
-                try (InputStream fileStream = storageService.download(projectKey, file.getInternalFileName())) {
-                    fileStream.transferTo(zipOutputStream);
-                } catch (Exception e) {
-                    LOGGER.error("Error while transferring file " + file.getInternalFileName() + " to ZIP for download", e);
-                    throw e;
-                }
+                transferFileToZip(projectKey, zipOutputStream, file);
             }
         } catch (IOException e) {
-            LOGGER.error("Error while creating ZIP for downloading artifact " + artifactName + " v" + artifactVersion + " for project " + projectKey, e);
+            logger.error("Error while creating ZIP for downloading artifact " + artifactName + " v" + artifactVersion + " for project " + projectKey, e);
+            throw e;
+        }
+    }
+
+    private void transferFileToZip(String projectKey, ZipOutputStream zipOutputStream, FileRefEntity file) throws IOException {
+        try (InputStream fileStream = storageService.download(projectKey, file.getInternalFileName())) {
+            fileStream.transferTo(zipOutputStream);
+        } catch (Exception e) {
+            logger.error("Error while transferring file " + file.getInternalFileName() + " to ZIP for download", e);
             throw e;
         }
     }
@@ -264,7 +268,7 @@ public class ArtifactServiceImpl implements ArtifactService {
         try (InputStream fileStream = storageService.download(projectKey, fileInfo.getInternalFileName(), fileId)) {
             fileStream.transferTo(outputStream);
         } catch (Exception e) {
-            LOGGER.error(
+            logger.error(
                     "Error while downloading file " + fileId + " of artifact " + artifactName + " v"
                             + artifactVersion + " for project " + projectKey, e);
             throw e;
@@ -297,7 +301,7 @@ public class ArtifactServiceImpl implements ArtifactService {
         int artifactVersion = counterRepository.getNextSequenceValue(
                 format("%s.artifact.%s.%s", projectKey, artifactEntity.getType(), artifactEntity.getName()));
         artifactEntity.setVersion(artifactVersion);
-        LOGGER.info("New artifact '" + artifactEntity.getName() + "' (" + artifactEntity.getType() + ") got version " + artifactVersion);
+        logger.info("New artifact '{} ({}) got version {}", artifactEntity.getName(), artifactEntity.getType(), artifactVersion);
 
         return saveArtifact(projectKey, artifactEntity);
     }
@@ -319,11 +323,11 @@ public class ArtifactServiceImpl implements ArtifactService {
 
     private ArtifactEntity saveArtifact(String projectKey, ArtifactEntity artifact) {
         artifact = artifactRepository.save(artifact);
-        LOGGER.info("created new artifact");
+        logger.info("created new artifact");
         try {
             permissionService.grantPermissionBasedOnProject(projectKey, artifact.getId(), artifact.getClass());
         } catch (Exception e) {
-            LOGGER.error("Failed to grant permission to newly created artifact", e);
+            logger.error("Failed to grant permission to newly created artifact", e);
             artifactRepository.deleteById(artifact.getId());
             throw e;
         }
