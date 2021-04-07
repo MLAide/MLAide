@@ -17,6 +17,8 @@ package com.mlaide.webserver.acl.mongodb;
 
 import com.mlaide.webserver.acl.mongodb.entity.DomainObjectPermission;
 import com.mlaide.webserver.acl.mongodb.entity.MongoAcl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -94,7 +96,10 @@ public class BasicMongoLookupStrategy implements LookupStrategy {
     /**
      * The number of ACLs retrieved at maximum in one go
      **/
-    private final int batchSize = 50;
+    private static final int BATCH_SIZE = 50;
+
+    private static final String INSTANCE_ID = "instanceId";
+    private final Logger logger = LoggerFactory.getLogger(BasicMongoLookupStrategy.class);
 
     /**
      * Used to add respective user permissions on a domain object to an ACL instance as the setter requires elevated
@@ -170,15 +175,13 @@ public class BasicMongoLookupStrategy implements LookupStrategy {
             }
 
             // Is it time to load from Mongo the currentBatchToLoad?
-            if ((currentBatchToLoad.size() == this.batchSize) || ((i + 1) == objects.size())) {
-                if (currentBatchToLoad.size() > 0) {
-                    Map<ObjectIdentity, Acl> loadedBatch = lookupObjectIdentities(currentBatchToLoad, sids);
+            if ((currentBatchToLoad.size() == BATCH_SIZE || (i + 1) == objects.size()) && !currentBatchToLoad.isEmpty()) {
+                Map<ObjectIdentity, Acl> loadedBatch = lookupObjectIdentities(currentBatchToLoad, sids);
 
-                    // Add loaded batch (all elements 100% initialized) to results
-                    result.putAll(loadedBatch);
+                // Add loaded batch (all elements 100% initialized) to results
+                result.putAll(loadedBatch);
 
-                    currentBatchToLoad.clear();
-                }
+                currentBatchToLoad.clear();
             }
         }
 
@@ -205,8 +208,8 @@ public class BasicMongoLookupStrategy implements LookupStrategy {
             objectIds.add(domainObject.getIdentifier());
             types.add(domainObject.getType());
         }
-        Criteria where = Criteria.where("instanceId").in(objectIds).and("className").in(types);
-        List<MongoAcl> foundAcls = mongoTemplate.find(query(where).with(Sort.by(Sort.Direction.ASC, "instanceId", "permissions.position")), MongoAcl.class);
+        Criteria where = Criteria.where(INSTANCE_ID).in(objectIds).and("className").in(types);
+        List<MongoAcl> foundAcls = mongoTemplate.find(query(where).with(Sort.by(Sort.Direction.ASC, INSTANCE_ID, "permissions.position")), MongoAcl.class);
 
         Map<ObjectIdentity, Acl> resultMap = new HashMap<>();
 
@@ -215,15 +218,13 @@ public class BasicMongoLookupStrategy implements LookupStrategy {
             try {
                 acl = convertToAcl(foundAcl, foundAcls);
             } catch (ClassNotFoundException cnfEx) {
-                // TODO: add exception logging
+                logger.error("Could not convert Mongo Acl to Acl: {}", cnfEx.getMessage());
             }
-            if (null != acl) {
-                // check if the ACL does define access rules for any of the sids available in the given list
-                // owners and parent owners have full access on the ACE/domain object while other users have to be looked up
-                // within the permissions
-                if (definesAccessPermissionsForSids(acl, sids)) {
-                    resultMap.put(acl.getObjectIdentity(), acl);
-                }
+            // check if the ACL does define access rules for any of the sids available in the given list
+            // owners and parent owners have full access on the ACE/domain object while other users have to be looked up
+            // within the permissions
+            if (null != acl && definesAccessPermissionsForSids(acl, sids)) {
+                resultMap.put(acl.getObjectIdentity(), acl);
             }
         }
 
@@ -252,7 +253,7 @@ public class BasicMongoLookupStrategy implements LookupStrategy {
             }
             // if the parent ACL was not loaded already, try to find it via its id
             if (null == parentAcl) {
-                Criteria where = Criteria.where("instanceId").is(mongoAcl.getParentId());
+                Criteria where = Criteria.where(INSTANCE_ID).is(mongoAcl.getParentId());
                 parentAcl = mongoTemplate.findOne(query(where), MongoAcl.class);
             }
             if (parentAcl != null) {
@@ -267,7 +268,7 @@ public class BasicMongoLookupStrategy implements LookupStrategy {
                     parent = cachedParent;
                 }
             } else {
-                // TODO: Log warning that no parent could be found
+                logger.warn("No parent acl could be found");
             }
         }
         ObjectIdentity objectIdentity = new ObjectIdentityImpl(Class.forName(mongoAcl.getClassName()), mongoAcl.getInstanceId());
