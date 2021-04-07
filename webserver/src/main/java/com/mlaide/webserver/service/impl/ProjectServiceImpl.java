@@ -26,7 +26,7 @@ import static java.util.Collections.singletonList;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
-    private final Logger LOGGER = LoggerFactory.getLogger(ProjectServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
     private final StorageService storageService;
@@ -138,7 +138,7 @@ public class ProjectServiceImpl implements ProjectService {
         } else if (MlAidePermission.OWNER.equals(permission)) {
             role = ProjectMemberRole.OWNER;
         } else {
-            LOGGER.error("Could not map project permission " + permission + " of project " + projectKey + " to member role");
+            logger.error("Could not map project permission {} of project {} to member role", permission, projectKey);
             throw new UnsupportedOperationException("Could not map project permission");
         }
         return role;
@@ -157,7 +157,7 @@ public class ProjectServiceImpl implements ProjectService {
                 permissionToGrant = MlAidePermission.VIEWER;
                 break;
             default:
-                LOGGER.error("Could not map project role " + role + " to project permission");
+                logger.error("Could not map project role {} to project permission", role);
                 throw new UnsupportedOperationException("Invalid project member role");
         }
         return permissionToGrant;
@@ -166,7 +166,7 @@ public class ProjectServiceImpl implements ProjectService {
     private ProjectEntity saveProjectAndGrantOwnerPermissionForCurrentUser(ProjectEntity projectEntity) {
         try {
             projectEntity = projectRepository.save(projectEntity);
-            LOGGER.info("created new project");
+            logger.info("created new project");
         } catch(DuplicateKeyException e) {
             if (e.getCause() instanceof MongoWriteException) {
                 MongoWriteException mongoWriteException = (MongoWriteException) e.getCause();
