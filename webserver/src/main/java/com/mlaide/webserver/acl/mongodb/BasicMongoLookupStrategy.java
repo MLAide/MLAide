@@ -218,7 +218,7 @@ public class BasicMongoLookupStrategy implements LookupStrategy {
             try {
                 acl = convertToAcl(foundAcl, foundAcls);
             } catch (ClassNotFoundException cnfEx) {
-                logger.error("Could not convert Mongo Acl to Acl: {}", cnfEx.getMessage());
+                logger.error("Could not convert Mongo Acl to Acl", cnfEx);
             }
             // check if the ACL does define access rules for any of the sids available in the given list
             // owners and parent owners have full access on the ACE/domain object while other users have to be looked up
