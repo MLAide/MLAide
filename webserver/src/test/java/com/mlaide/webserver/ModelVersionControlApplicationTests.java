@@ -8,6 +8,8 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest
 @Testcontainers
 class ModelVersionControlApplicationTests {
@@ -21,6 +23,7 @@ class ModelVersionControlApplicationTests {
 
 	@Test
 	void contextLoads() {
+		assertThat(mongoDB).isNotNull();
 	}
 
 }
