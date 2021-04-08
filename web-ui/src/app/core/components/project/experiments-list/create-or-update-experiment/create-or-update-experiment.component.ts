@@ -1,5 +1,5 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -10,7 +10,7 @@ import { Experiment, ExperimentStatus } from '../../../../models/experiment.mode
   templateUrl: './create-or-update-experiment.component.html',
   styleUrls: ['./create-or-update-experiment.component.scss']
 })
-export class CreateOrUpdateExperimentComponent implements OnInit {
+export class CreateOrUpdateExperimentComponent {
   public addOnBlur = true;
   public currentStatus;
   public experimentStatus = ExperimentStatus;
@@ -47,9 +47,6 @@ export class CreateOrUpdateExperimentComponent implements OnInit {
         this.form.get('key').setValue(newKey);
       }
     });
-  }
-
-  ngOnInit() {
   }
 
   public add(event: MatChipInputEvent): void {

@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { CreateOrUpdateExperimentComponent } from './create-or-update-experiment/create-or-update-experiment.component';
 import { Experiment, ExperimentListResponse, ExperimentStatus } from '../../../models/experiment.model';
 import { ExperimentsApiService, ListDataSource, SpinnerUiService } from '../../../services';
@@ -99,19 +99,7 @@ export class ExperimentsListComponent implements OnInit, OnDestroy, AfterViewIni
 
     const createExperimentObservable = this.experimentsApiService.addExperiment(this.projectKey, experiment);
 
-    const subscription = createExperimentObservable.subscribe(
-      (response: any) => {
-        subscription.unsubscribe();
-        this.spinnerUiService.stopSpinner();
-
-        this.experimentListDataSource.refresh();
-      },
-      (error) => {
-        console.error(error);
-        subscription.unsubscribe();
-        this.spinnerUiService.stopSpinner();
-      }
-    );
+    this.createOrEditExperiment(createExperimentObservable);
   }
 
   private editExperiment(experiment: Experiment) {
@@ -119,7 +107,11 @@ export class ExperimentsListComponent implements OnInit, OnDestroy, AfterViewIni
 
     const editExperimentObservable = this.experimentsApiService.patchExperiment(this.projectKey, experiment.key, experiment);
 
-    const subscription = editExperimentObservable.subscribe(
+    this.createOrEditExperiment(editExperimentObservable);
+  }
+
+  private createOrEditExperiment(observable: Observable<Experiment>) {
+    const subscription = observable.subscribe(
       (response: any) => {
         subscription.unsubscribe();
         this.spinnerUiService.stopSpinner();

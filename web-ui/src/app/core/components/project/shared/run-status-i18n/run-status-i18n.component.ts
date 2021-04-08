@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { RunStatus } from '../../../../models/run.model';
 
 @Component({
@@ -7,13 +7,7 @@ import { RunStatus } from '../../../../models/run.model';
   styleUrls: ['./run-status-i18n.component.scss']
 })
 // https://medium.com/@piotrl/angular-translate-enums-i18n-ec1bb1462181
-export class RunStatusI18nComponent implements OnInit {
+export class RunStatusI18nComponent {
   @Input()
   key: RunStatus;
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }

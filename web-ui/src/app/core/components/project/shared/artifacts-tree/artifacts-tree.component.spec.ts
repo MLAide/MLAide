@@ -347,7 +347,7 @@ describe("ArtifactsTreeComponent", () => {
         jasmine.any(Blob),
         "data.csv"
       );
-      const actualBlob = fileSaverServiceStub.save.calls.argsFor(0)[0] as Blob;
+      const actualBlob = fileSaverServiceStub.save.calls.argsFor(0)[0];
       expect(actualBlob.type).toBe("text/csv");
       actualBlob.arrayBuffer().then((buffer) => {
         expect(buffer).toEqual(returnBuffer);

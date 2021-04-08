@@ -4,7 +4,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { Observable, of, ReplaySubject, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { Artifact, ArtifactListResponse } from 'src/app/core/models/artifact.model';
 import { Experiment } from 'src/app/core/models/experiment.model';
 import { getRandomExperiment, getRandomProject, getRandomRuns } from 'src/app/mocks/fake-generator';

@@ -1,7 +1,6 @@
 import { SimpleChange } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import {
-  MatActionListHarness,
   MatListHarness,
 } from "@angular/material/list/testing";
 import { MatButtonModule } from "@angular/material/button";
@@ -13,7 +12,6 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { ActivatedRoute, Router } from "@angular/router";
 import { RouterTestingModule } from "@angular/router/testing";
 import { Project } from "src/app/core/models/project.model";
-import * as FileSaver from "file-saver";
 import { Run, RunListResponse } from "src/app/core/models/run.model";
 import { RunsApiService } from "src/app/core/services";
 import { ActivatedRouteStub } from "src/app/mocks/activated-route.stub";
@@ -42,7 +40,6 @@ import {
   MatChipHarness,
   MatChipListHarness,
 } from "@angular/material/chips/testing";
-import { toBase64String } from "@angular/compiler/src/output/source_map";
 import { FileSaverService } from "ngx-filesaver";
 
 describe("RunsListTableComponent", () => {
@@ -739,11 +736,7 @@ describe("RunsListTableComponent", () => {
             expect(row.runTime).toEqual(String(fakeRun.startTime));
             expect(row.metrics).toEqual(metricsString.trim());
             expect(row.createdBy).toEqual(fakeRun.createdBy.nickName);
-            chips.forEach(async (chip, index) => {
-              expect(await chip.getText()).toEqual(
-                fakeRun.experimentRefs[index].experimentKey
-              );
-            });
+            chipsEqualExperimentKeys(chips, fakeRun);
           });
         });
       });
@@ -863,11 +856,7 @@ describe("RunsListTableComponent", () => {
             expect(row.parameters).toEqual(parametersString.trim());
             expect(row.metrics).toEqual(metricsString.trim());
             expect(row.createdBy).toEqual(fakeRun.createdBy.nickName);
-            chips.forEach(async (chip, index) => {
-              expect(await chip.getText()).toEqual(
-                fakeRun.experimentRefs[index].experimentKey
-              );
-            });
+            chipsEqualExperimentKeys(chips, fakeRun);
           });
         });
       });
@@ -902,4 +891,14 @@ describe("RunsListTableComponent", () => {
       });
     });
   });
+
+  function chipsEqualExperimentKeys(chips: MatChipHarness[], run: Run) {
+    chips.forEach(async (chip, index) => {
+      expect(await chip.getText()).toEqual(
+        run.experimentRefs[index].experimentKey
+      );
+    });
+  }
 });
+
+

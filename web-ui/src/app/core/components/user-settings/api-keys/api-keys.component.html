@@ -16,9 +16,10 @@
     </div>
   </div>
   <div fxLayout="column" class="example-container mat-elevation-z2">
-    <table mat-table matSort [dataSource]="dataSource" aria-label="API Keys">
+    <table mat-table matSort [dataSource]="dataSource" aria-label="API keys overview">
       <ng-container matColumnDef="description">
         <th
+        id="description"
           mat-header-cell
           *matHeaderCellDef
           mat-sort-header
@@ -27,12 +28,13 @@
         >
           Description
         </th>
-        <td mat-cell *matCellDef="let element">
+        <td headers="description" mat-cell *matCellDef="let element">
           {{ element?.description }}
         </td>
       </ng-container>
       <ng-container matColumnDef="createdAt">
         <th
+        id="created-at"
           mat-header-cell
           *matHeaderCellDef
           mat-sort-header
@@ -41,12 +43,13 @@
         >
           Created at
         </th>
-        <td mat-cell *matCellDef="let element">
+        <td headers="created-at" mat-cell *matCellDef="let element">
           {{ element?.createdAt | date: "medium" }}
         </td>
       </ng-container>
       <ng-container matColumnDef="expiresAt">
         <th
+        id="expires-at"
           mat-header-cell
           *matHeaderCellDef
           mat-sort-header
@@ -55,12 +58,13 @@
         >
           Expires at
         </th>
-        <td mat-cell *matCellDef="let element">
+        <td headers="expires-at" mat-cell *matCellDef="let element">
           {{ element?.expiresAt ? (element?.expiresAt | date: "medium") : "-" }}
         </td>
       </ng-container>
       <ng-container matColumnDef="actions" [stickyEnd]="true">
         <th
+        id="actions"
           mat-header-cell
           *matHeaderCellDef
           mat-sort-header
@@ -69,7 +73,7 @@
         >
           Actions
         </th>
-        <td mat-cell *matCellDef="let element">
+        <td headers="actions" mat-cell *matCellDef="let element">
           <button
             mat-button
             (click)="deleteApiKey(element)"

@@ -86,17 +86,18 @@
       matSort
       class="mat-elevation-z2"
       [dataSource]="parametersDataSource"
+      aria-label="Run parameters overview"
     >
       <ng-container matColumnDef="parametersKey">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header i18n>Key</th>
-        <td mat-cell *matCellDef="let element">
+        <th id="parameter-key" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Key</th>
+        <td headers="parameter-key" mat-cell *matCellDef="let element">
           {{ element.key }}
         </td>
       </ng-container>
       <!-- https://angular.io/api/common/KeyValuePipe -->
       <ng-container matColumnDef="parametersValue">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header i18n>Value</th>
-        <td mat-cell *matCellDef="let element">
+        <th id="parameter-value" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Value</th>
+        <td headers="parameter-value" mat-cell *matCellDef="let element">
           {{ element.value }}
         </td>
       </ng-container>
@@ -117,17 +118,18 @@
       matSort
       class="mat-elevation-z2"
       [dataSource]="metricsDataSource"
+      aria-label="Run metrics overview"
     >
       <ng-container matColumnDef="metricsKey">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header i18n>Key</th>
-        <td mat-cell *matCellDef="let element">
+        <th id="metric-key" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Key</th>
+        <td headers="metric-key" mat-cell *matCellDef="let element">
           {{ element.key }}
         </td>
       </ng-container>
       <!-- https://angular.io/api/common/KeyValuePipe -->
       <ng-container matColumnDef="metricsValue">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header i18n>Value</th>
-        <td mat-cell *matCellDef="let element">
+        <th id="metric-value" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Value</th>
+        <td headers="metric-value" mat-cell *matCellDef="let element">
           {{ element.value }}
         </td>
       </ng-container>

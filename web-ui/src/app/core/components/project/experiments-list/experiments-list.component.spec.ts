@@ -209,8 +209,8 @@ describe('ExperimentsListComponent', () => {
           expect(row.key).toEqual(fakeExperiment.key);
           expect(row.name).toEqual(fakeExperiment.name);
           expect(row.status.toUpperCase().replace(' ', '_')).toEqual(fakeExperiment.status);
-          chips.forEach(async (chip, index) => {
-            expect(await chip.getText()).toEqual(fakeExperiment.tags[index]);
+          chips.forEach(async (chip, chipIndex) => {
+            expect(await chip.getText()).toEqual(fakeExperiment.tags[chipIndex]);
           });
           expect(row.actions).toBe('edit');
         });

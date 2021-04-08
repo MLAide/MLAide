@@ -38,7 +38,9 @@ export class MockOAuthService implements Partial<OAuthService> {
     return "";
   }
 
-  checkSession(): void {}
+  checkSession(): void {
+    // This is intentional
+  }
 
   createAndSaveNonce(): Promise<string> {
     return Promise.resolve("");
@@ -52,7 +54,9 @@ export class MockOAuthService implements Partial<OAuthService> {
     return 0;
   }
 
-  getCustomTokenResponseProperty(requestedProperty: string): any {}
+  getCustomTokenResponseProperty(requestedProperty: string): any {
+    // This is intentional
+  }
 
   getGrantedScopes(): object {
     return undefined;

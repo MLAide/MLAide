@@ -223,7 +223,6 @@ describe("RunParamsMetricsTableComponent", () => {
         rows.forEach(async (row, rowIndex) => {
           const cells = await row.getCells();
           cells.forEach(async (cell, cellIndex) => {
-            const expectedValue = String(expectedData[rowIndex][cellIndex]);
             expect(await cell.getText()).toEqual(
               String(expectedData[rowIndex][cellIndex])
             );

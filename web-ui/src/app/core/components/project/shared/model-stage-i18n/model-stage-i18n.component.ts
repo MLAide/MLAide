@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ModelStage } from '../../../../models/artifact.model';
 
 @Component({
@@ -7,13 +7,7 @@ import { ModelStage } from '../../../../models/artifact.model';
   styleUrls: ['./model-stage-i18n.component.scss']
 })
 // https://medium.com/@piotrl/angular-translate-enums-i18n-ec1bb1462181
-export class ModelStageI18nComponent implements OnInit {
+export class ModelStageI18nComponent {
   @Input()
   key: ModelStage;
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }

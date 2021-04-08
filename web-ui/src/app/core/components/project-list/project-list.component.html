@@ -13,20 +13,20 @@
 
     <div fxLayout="row">
         <div fxLayout="column" fxFlexFill>
-            <table mat-table class="mat-elevation-z2" [dataSource]="dataSource">
+            <table mat-table class="mat-elevation-z2" [dataSource]="dataSource" aria-label="Projects overview">
                 <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef i18n>Name</th>
-                    <td mat-cell *matCellDef="let element">
+                    <th id="name" mat-header-cell *matHeaderCellDef i18n>Name</th>
+                    <td headers="name" mat-cell *matCellDef="let element">
                         <a mat-button color="primary" (click)="goToProject(element)">{{element.name}}</a>
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="key">
-                    <th mat-header-cell *matHeaderCellDef i18n>Key</th>
-                    <td mat-cell *matCellDef="let element"> {{element.key}}</td>
+                    <th id="key" mat-header-cell *matHeaderCellDef i18n>Key</th>
+                    <td headers="key" mat-cell *matCellDef="let element"> {{element.key}}</td>
                 </ng-container>
                 <ng-container matColumnDef="createdAt">
-                    <th mat-header-cell *matHeaderCellDef i18n>Created at</th>
-                    <td mat-cell *matCellDef="let element"> {{element.createdAt | amTimeAgo}} </td>
+                    <th id="created-at" mat-header-cell *matHeaderCellDef i18n>Created at</th>
+                    <td headers="created-at" mat-cell *matCellDef="let element"> {{element.createdAt | amTimeAgo}} </td>
                 </ng-container>
 
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

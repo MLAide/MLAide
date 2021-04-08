@@ -3,7 +3,6 @@ import {
   Input,
   OnChanges,
   OnDestroy,
-  OnInit,
   SimpleChanges,
 } from "@angular/core";
 import {
@@ -51,7 +50,7 @@ export interface FlatTreeNode {
   templateUrl: "./artifacts-tree.component.html",
   styleUrls: ["./artifacts-tree.component.scss"],
 })
-export class ArtifactsTreeComponent implements OnInit, OnChanges, OnDestroy {
+export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
   @Input() artifactListDataSource: ListDataSource<ArtifactListResponse>;
   private artifactListSubscription: Subscription;
   @Input() projectKey: string;
@@ -83,8 +82,6 @@ export class ArtifactsTreeComponent implements OnInit, OnChanges, OnDestroy {
       this.treeFlattener
     );
   }
-
-  ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.artifactListDataSource) {

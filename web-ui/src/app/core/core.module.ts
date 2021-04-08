@@ -49,10 +49,7 @@ import { RunStatusI18nComponent } from './components/project/shared/run-status-i
 import { RunParamsMetricsTableComponent } from './components/project/shared/runs-list-table/runs-compare/run-params-metrics-table/run-params-metrics-table.component';
 import { RunsCompareComponent } from './components/project/shared/runs-list-table/runs-compare/runs-compare.component';
 import { RunsListComponent } from './components/project/runs-list/runs-list.component';
-import { ExperimentsApiService } from './services';
-import { ProjectsApiService } from './services';
-import { RunsApiService } from './services';
-import { ArtifactsApiService } from './services';
+import { ArtifactsApiService, ExperimentsApiService, ProjectsApiService, RunsApiService } from './services';
 import { ArtifactsListTableComponent } from './components/project/shared/artifacts-list-table/artifacts-list-table.component';
 import { RunsListTableComponent } from './components/project/shared/runs-list-table/runs-list-table.component';
 import { UserComponent } from './components/user-settings/user/user.component';

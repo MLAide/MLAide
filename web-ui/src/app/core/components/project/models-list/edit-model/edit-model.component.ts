@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Artifact, ModelStage } from '../../../../models/artifact.model';
@@ -8,7 +8,7 @@ import { Artifact, ModelStage } from '../../../../models/artifact.model';
   templateUrl: './edit-model.component.html',
   styleUrls: ['./edit-model.component.scss']
 })
-export class EditModelComponent implements OnInit {
+export class EditModelComponent {
   public currentStage;
   public form: FormGroup;
   public modelStage = ModelStage;
@@ -31,10 +31,6 @@ export class EditModelComponent implements OnInit {
   cancel() {
     this.dialogRef.close();
   }
-
-  ngOnInit(): void {
-  }
-
 
   update() {
     this.form.get('note').setValue(this.note);

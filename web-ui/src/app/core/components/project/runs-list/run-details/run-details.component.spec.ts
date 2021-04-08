@@ -181,9 +181,9 @@ describe("RunDetailsComponent", () => {
     describe("parameters, metrics and note are not set", async () => {
       it("should not push run's parameters into component's parameters variable if parameters are undefined", async () => {
         // arrange
-        const fakeRun = await getRandomRun();
-        fakeRun.parameters = undefined;
-        await setupStubsAndMocks(fakeRun);
+        const customFakeRun = await getRandomRun();
+        customFakeRun.parameters = undefined;
+        await setupStubsAndMocks(customFakeRun);
 
         // assert
         expect(component.parameters).toEqual([]);
@@ -191,9 +191,9 @@ describe("RunDetailsComponent", () => {
 
       it("should not push run's metrics into component's metrics variable if metrics are undefined", async () => {
         // arrange
-        const fakeRun = await getRandomRun();
-        fakeRun.metrics = undefined;
-        await setupStubsAndMocks(fakeRun);
+        const customFakeRun = await getRandomRun();
+        customFakeRun.metrics = undefined;
+        await setupStubsAndMocks(customFakeRun);
 
         // assert
         expect(component.metrics).toEqual([]);
@@ -201,9 +201,9 @@ describe("RunDetailsComponent", () => {
 
       it("should set note to component's note", async () => {
         // arrange
-        const fakeRun = await getRandomRun();
-        fakeRun.note = undefined;
-        await setupStubsAndMocks(fakeRun);
+        const customFakeRun = await getRandomRun();
+        customFakeRun.note = undefined;
+        await setupStubsAndMocks(customFakeRun);
 
         // assert
         // We can do this because the faker generates hard coded parameters
@@ -250,9 +250,9 @@ describe("RunDetailsComponent", () => {
 
       it("should set component's note to empty if run note is undefined", async () => {
         // arrange
-        const fakeRun = await getRandomRun();
-        fakeRun.note = undefined;
-        await setupStubsAndMocks(fakeRun);
+        const customFakeRun = await getRandomRun();
+        customFakeRun.note = undefined;
+        await setupStubsAndMocks(customFakeRun);
         component.note = "test note";
 
         // act
