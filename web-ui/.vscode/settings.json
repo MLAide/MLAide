@@ -1,6 +1,7 @@
 {
   "sonarlint.output.showAnalyzerLogs": true,
   "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "sonarlint.connectedMode.project": {
     "projectKey": "web-ui"
   }
