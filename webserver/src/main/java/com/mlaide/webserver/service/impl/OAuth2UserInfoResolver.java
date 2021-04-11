@@ -20,7 +20,7 @@ import java.util.Map;
 @Service
 @RequestScope
 public class OAuth2UserInfoResolver implements UserResolver {
-    private final Logger logger = LoggerFactory.getLogger(OAuth2UserInfoResolver.class);
+    private static final Logger logger = LoggerFactory.getLogger(OAuth2UserInfoResolver.class);
 
     private final RestTemplate restTemplate;
     private final String userInfoUri;
@@ -40,9 +40,9 @@ public class OAuth2UserInfoResolver implements UserResolver {
 
         ResponseEntity<Map<String, Object>> response = restTemplate.exchange(userInfoUri, HttpMethod.GET, null, responseType);
         if (response.getStatusCode() != HttpStatus.OK) {
-            // TODO: Throw exception
             logger.error("Could not read user details from user info endpoint");
             logger.debug("User info endpoint returned status {}", response.getStatusCode());
+            throw new ResolveUserException("Could not read user details from user info endpoint", response.getStatusCodeValue());
         }
 
         Map<String, Object> map = response.getBody();
