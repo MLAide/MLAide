@@ -244,9 +244,11 @@ class ArtifactControllerTest {
         void specified_file_is_null_should_throw_IllegalArgumentException(){
             // Arrange
             Artifact artifact = ArtifactFaker.newArtifact();
+            String artifactName = artifact.getName();
+            Integer artifactVersion = artifact.getVersion();
 
             // Act + Assert
-            assertThatThrownBy(() -> artifactController.postFile(projectKey, artifact.getName(), artifact.getVersion(), null))
+            assertThatThrownBy(() -> artifactController.postFile(projectKey, artifactName, artifactVersion, null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("request body must contain artifact");
         }

@@ -17,8 +17,6 @@ import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @Validated
@@ -27,19 +25,16 @@ public class RunController {
     private final Logger logger = LoggerFactory.getLogger(RunController.class);
     private final ExperimentService experimentService;
     private final RunService runService;
-    private final ProjectService projectService;
     private final RandomGeneratorService randomGeneratorService;
     private final PatchSupport patchSupport;
 
     @Autowired
     public RunController(ExperimentService experimentService,
                          RunService runService,
-                         ProjectService projectService,
                          RandomGeneratorService randomGeneratorService,
                          PatchSupport patchSupport) {
         this.experimentService = experimentService;
         this.runService = runService;
-        this.projectService = projectService;
         this.randomGeneratorService = randomGeneratorService;
         this.patchSupport = patchSupport;
     }
@@ -59,7 +54,7 @@ public class RunController {
             String projectKey, List<Integer> runKeys, String experimentKey) {
 
         if (runKeys != null) {
-            logger.info("get runs for keys: {}", runKeys.stream().map(Object::toString).collect(Collectors.joining(", ")));
+            logger.info("get runs for keys: {}", runKeys.stream().map(Object::toString));
             return runService.getRunsByKeys(projectKey, runKeys);
         }
 
@@ -77,12 +72,6 @@ public class RunController {
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
             @Valid @RequestBody Run run) {
         logger.info("post run");
-
-        // TODO: Do not read project here; this is just done because we want to check if the user is permitted to the project; this should be done in the service
-        Optional<Project> project = projectService.getProject(projectKey);
-        if (project.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
 
         List<ExperimentRef> experimentRefs = run.getExperimentRefs();
         if (experimentRefs == null || experimentRefs.isEmpty()) {
@@ -108,8 +97,7 @@ public class RunController {
             @PathVariable("runKey") @NotNull Integer runKey) {
         logger.info("get run");
 
-        Run run = runService.getRun(projectKey, runKey)
-                .orElseThrow(NotFoundException::new);
+        Run run = runService.getRun(projectKey, runKey);
 
         return ResponseEntity.ok(run);
     }
@@ -134,7 +122,7 @@ public class RunController {
         logger.info("patch run");
 
         // Get the already existing run
-        Run run = runService.getRun(projectKey, runKey).orElseThrow(NotFoundException::new);
+        Run run = runService.getRun(projectKey, runKey);
 
         // Patch the run with new values
         patchSupport.patch(run, runDiff);
@@ -153,7 +141,7 @@ public class RunController {
         logger.info("patch run parameters");
 
         // Get the already existing run
-        Run run = runService.getRun(projectKey, runKey).orElseThrow(NotFoundException::new);
+        Run run = runService.getRun(projectKey, runKey);
 
         Map<String, Object> runParameters = run.getParameters();
         if (runParameters == null) {
@@ -175,7 +163,7 @@ public class RunController {
         logger.info("patch run metrics");
 
         // Get the already existing run
-        Run run = runService.getRun(projectKey, runKey).orElseThrow(NotFoundException::new);
+        Run run = runService.getRun(projectKey, runKey);
 
         Map<String, Object> runMetrics = run.getMetrics();
         if (runMetrics == null) {

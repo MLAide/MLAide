@@ -8,9 +8,7 @@ import com.mlaide.webserver.service.NotFoundException;
 import com.mlaide.webserver.service.PermissionService;
 import com.mlaide.webserver.service.mapper.ExperimentMapper;
 import com.mlaide.webserver.model.Experiment;
-import com.mlaide.webserver.model.ExperimentStatus;
 import com.mlaide.webserver.model.ItemList;
-import com.mlaide.webserver.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,11 +16,10 @@ import org.springframework.stereotype.Service;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ExperimentServiceImpl implements ExperimentService {
-    private final Logger LOGGER = LoggerFactory.getLogger(ExperimentServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(ExperimentServiceImpl.class);
     private final ExperimentRepository experimentRepository;
     private final ExperimentMapper experimentMapper;
     private final PermissionService permissionService;
@@ -54,16 +51,14 @@ public class ExperimentServiceImpl implements ExperimentService {
     }
 
     @Override
-    // TODO: Remove optional and fix tests
-    public Optional<Experiment> getExperiment(String projectKey, String experimentKey) {
+    public Experiment getExperiment(String projectKey, String experimentKey) {
         ExperimentEntity experimentEntity = experimentRepository.findOneByProjectKeyAndKey(projectKey, experimentKey);
 
         if (experimentEntity == null) {
-            return Optional.empty();
+            throw new NotFoundException();
         }
 
-        Experiment experiment = experimentMapper.fromEntity(experimentEntity);
-        return Optional.of(experiment);
+        return experimentMapper.fromEntity(experimentEntity);
     }
 
     @Override
@@ -101,12 +96,12 @@ public class ExperimentServiceImpl implements ExperimentService {
         experimentEntity.setUpdatedAt(OffsetDateTime.now(clock));
 
         experimentRepository.save(experimentEntity);
-        LOGGER.info("updated existing experiment");
+        logger.info("updated existing experiment");
     }
 
     private ExperimentEntity saveExperiment(String projectKey, ExperimentEntity experimentEntity) {
         experimentEntity = experimentRepository.save(experimentEntity);
-        LOGGER.info("created new experiment");
+        logger.info("created new experiment");
         try {
             permissionService.grantPermissionBasedOnProject(projectKey, experimentEntity.getId(), ExperimentEntity.class);
         } catch (Exception e) {

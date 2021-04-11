@@ -24,7 +24,6 @@ import java.io.*;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -87,7 +86,7 @@ class ArtifactServiceImplTest {
 
             when(artifactMapper.toEntity(inputArtifact)).thenReturn(expectedArtifactToSave);
             when(artifactMapper.fromEntity(expectedArtifactToSave)).thenReturn(outputArtifact);
-            when(runService.getRun(project.getKey(), run.getKey())).thenReturn(Optional.of(run));
+            when(runService.getRun(project.getKey(), run.getKey())).thenReturn(run);
             when(userService.getCurrentUserRef()).thenReturn(currentUserRef);
             when(counterRepository.getNextSequenceValue(
                     format("%s.artifact.%s.%s", project.getKey(), expectedArtifactToSave.getType(), expectedArtifactToSave.getName())))
@@ -116,7 +115,7 @@ class ArtifactServiceImplTest {
             // Arrange
             String projectKey = project.getKey();
             when(artifactMapper.toEntity(inputArtifact)).thenReturn(expectedArtifactToSave);
-            when(runService.getRun(projectKey, run.getKey())).thenReturn(Optional.empty());
+            when(runService.getRun(projectKey, run.getKey())).thenReturn(null);
 
             // Act
             assertThatThrownBy(() -> artifactService.addArtifact(projectKey, inputArtifact))
@@ -130,7 +129,7 @@ class ArtifactServiceImplTest {
             run.setStatus(RunStatus.COMPLETED);
 
             when(artifactMapper.toEntity(inputArtifact)).thenReturn(expectedArtifactToSave);
-            when(runService.getRun(projectKey, run.getKey())).thenReturn(Optional.of(run));
+            when(runService.getRun(projectKey, run.getKey())).thenReturn(run);
 
             // Act
             assertThatThrownBy(() -> artifactService.addArtifact(projectKey, inputArtifact))
@@ -142,7 +141,7 @@ class ArtifactServiceImplTest {
         void valid_artifact_should_grant_permission_on_artifact_for_current_user() throws InvalidInputException {
             // Arrange
             when(artifactMapper.toEntity(inputArtifact)).thenReturn(expectedArtifactToSave);
-            when(runService.getRun(project.getKey(), run.getKey())).thenReturn(Optional.of(run));
+            when(runService.getRun(project.getKey(), run.getKey())).thenReturn(run);
             when(artifactRepository.save(expectedArtifactToSave)).thenReturn(expectedArtifactToSave);
 
             // Act
@@ -157,7 +156,7 @@ class ArtifactServiceImplTest {
             // Arrange
             String projectKey = project.getKey();
             when(artifactMapper.toEntity(inputArtifact)).thenReturn(expectedArtifactToSave);
-            when(runService.getRun(project.getKey(), run.getKey())).thenReturn(Optional.of(run));
+            when(runService.getRun(project.getKey(), run.getKey())).thenReturn(run);
             when(artifactRepository.save(expectedArtifactToSave)).thenReturn(expectedArtifactToSave);
             doThrow(RuntimeException.class)
                     .when(permissionService)
@@ -177,7 +176,7 @@ class ArtifactServiceImplTest {
             var artifactVersion = random.nextInt();
 
             when(artifactMapper.toEntity(inputArtifact)).thenReturn(expectedArtifactToSave);
-            when(runService.getRun(project.getKey(), run.getKey())).thenReturn(Optional.of(run));
+            when(runService.getRun(project.getKey(), run.getKey())).thenReturn(run);
             when(counterRepository.getNextSequenceValue(
                     format("%s.artifact.%s.%s", project.getKey(), expectedArtifactToSave.getType(), expectedArtifactToSave.getName())))
                     .thenReturn(artifactVersion);

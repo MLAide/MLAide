@@ -12,21 +12,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
-    private final Logger LOGGER = LoggerFactory.getLogger(ProjectServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
     private final StorageService storageService;
@@ -52,7 +50,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ItemList<Project> getProjects() {
-        // TODO: Add filter to get only projects where the user is allowed to get them
         List<ProjectEntity> projects = projectRepository.findAll();
 
         ItemList<Project> result = new ItemList<>();
@@ -62,22 +59,21 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Optional<Project> getProject(String projectKey) {
+    public Project getProject(String projectKey) {
         ProjectEntity projectEntity;
 
-        try {
-            projectEntity = projectRepository.findByKey(projectKey);
-        } catch (AccessDeniedException e) {
-            return Optional.empty();
+        projectEntity = projectRepository.findByKey(projectKey);
+
+        if (projectEntity == null) {
+            throw new NotFoundException();
         }
 
-        return Optional.of(projectMapper.fromEntity(projectEntity));
+        return projectMapper.fromEntity(projectEntity);
     }
 
     @Override
     public Project addProject(Project project) {
         ProjectEntity projectEntity = projectMapper.toEntity(project);
-        // TODO: validate project key (only characters, digits and hyphens allowed)
 
         projectEntity.setCreatedAt(OffsetDateTime.now(clock));
 
@@ -138,7 +134,7 @@ public class ProjectServiceImpl implements ProjectService {
         } else if (MlAidePermission.OWNER.equals(permission)) {
             role = ProjectMemberRole.OWNER;
         } else {
-            LOGGER.error("Could not map project permission " + permission + " of project " + projectKey + " to member role");
+            logger.error("Could not map project permission {} of project {} to member role", permission, projectKey);
             throw new UnsupportedOperationException("Could not map project permission");
         }
         return role;
@@ -157,7 +153,7 @@ public class ProjectServiceImpl implements ProjectService {
                 permissionToGrant = MlAidePermission.VIEWER;
                 break;
             default:
-                LOGGER.error("Could not map project role " + role + " to project permission");
+                logger.error("Could not map project role {} to project permission", role);
                 throw new UnsupportedOperationException("Invalid project member role");
         }
         return permissionToGrant;
@@ -166,7 +162,7 @@ public class ProjectServiceImpl implements ProjectService {
     private ProjectEntity saveProjectAndGrantOwnerPermissionForCurrentUser(ProjectEntity projectEntity) {
         try {
             projectEntity = projectRepository.save(projectEntity);
-            LOGGER.info("created new project");
+            logger.info("created new project");
         } catch(DuplicateKeyException e) {
             if (e.getCause() instanceof MongoWriteException) {
                 MongoWriteException mongoWriteException = (MongoWriteException) e.getCause();
