@@ -7,11 +7,11 @@
       <div fxLayout="row" fxFlex="100" fxLayoutAlign="space-between center">
         <div fxLayout="row">
           <div>
-            <a mat-button [routerLink]="['/']">ML Aide</a>
+            <a id="ml-aide-button" mat-button [routerLink]="['/']">ML Aide</a>
           </div>
           <div *ngIf="isAuthenticated$ | async">
             <a mat-button [matMenuTriggerFor]="projectsMenu" i18n>Projects</a>
-            <mat-menu #projectsMenu="matMenu">
+            <mat-menu #projectsMenu>
               <div *ngFor="let project of projects">
                 <a mat-menu-item [routerLink]="['/projects', project.key]">{{
                   project.name
@@ -24,12 +24,12 @@
         <div *ngIf="isAuthenticated$ | async">
           <a
             mat-button
-            [matMenuTriggerFor]="menu"
+            [matMenuTriggerFor]="userMenu"
             aria-label="User profile button with a menu"
           >
             {{ user?.nickName }}
           </a>
-          <mat-menu #menu="matMenu">
+          <mat-menu #userMenu>
             <a mat-menu-item [routerLink]="['/user-settings']">
               <mat-icon>settings</mat-icon><span i18n>Settings</span>
             </a>
@@ -40,6 +40,7 @@
         </div>
         <div *ngIf="(isAuthenticated$ | async) == false">
           <a
+          id="login-button"
             mat-flat-button
             color="primary"
             (click)="login()"
