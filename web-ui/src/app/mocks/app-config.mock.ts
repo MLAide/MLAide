@@ -14,6 +14,6 @@ export const appConfigMock: IAppConfig = {
     clientId: "27Z4KgE8vTuMo4VH0874o5C42M5scmNv",
     issuer: "https://mvc-dev.eu.auth0.com/",
     scope: "openid profile email offline_access",
-    disableSecurity: "false"
+    disableSecurity: "false",
   },
 };

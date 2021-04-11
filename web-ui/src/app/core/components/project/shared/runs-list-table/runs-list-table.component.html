@@ -1,39 +1,18 @@
 <div fxLayout="column" fxFlex="100">
   <div fxLayout="row" fxLayoutAlign="end center">
     <h3 class="mat-h3">
-      <a
-        id="compare-button"
-        mat-stroked-button
-        [disabled]="selectedLessThanTwoRows()"
-        (click)="goToRunCompareComponent()"
-        i18n
-      >
+      <a id="compare-button" mat-stroked-button [disabled]="selectedLessThanTwoRows()" (click)="goToRunCompareComponent()" i18n>
         <mat-icon class="padding-sm-r">compare</mat-icon>Compare
       </a>
       <span class="margin-right-sm"></span>
-      <button
-        id="export-button"
-        mat-stroked-button
-        [disabled]="selectedLessThanOneRow()"
-        (click)="exportSelectedRuns()"
-        i18n
-      >
+      <button id="export-button" mat-stroked-button [disabled]="selectedLessThanOneRow()" (click)="exportSelectedRuns()" i18n>
         <mat-icon class="padding-sm-r">cloud_download</mat-icon>Export
       </button>
       <span class="margin-right-sm"></span>
-      <button
-        id="show-or-hide-parameters-button"
-        mat-stroked-button
-        (click)="toggleParameters()"
-        i18n
-      >
-        <mat-icon class="padding-sm-r">{{
-          hideParameters ? "visibility" : "visibility_off"
-        }}</mat-icon>
-        {{
-          hideParameters ? "Show Parameters" : "Hide
-                Parameters"
-        }}
+      <button id="show-or-hide-parameters-button" mat-stroked-button (click)="toggleParameters()" i18n>
+        <mat-icon class="padding-sm-r">{{ hideParameters ? "visibility" : "visibility_off" }}</mat-icon>
+        {{ hideParameters ? "Show Parameters" : "Hide
+                Parameters" }}
       </button>
     </h3>
   </div>
@@ -64,11 +43,7 @@
       <ng-container matColumnDef="name">
         <th id="name" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Name</th>
         <td headers="name" mat-cell *matCellDef="let element">
-          <button
-            mat-button
-            color="primary"
-            [routerLink]="['/projects/' + projectKey + '/runs/' + element.key]"
-          >
+          <button mat-button color="primary" [routerLink]="['/projects/' + projectKey + '/runs/' + element.key]">
             {{ element.name }}
           </button>
         </td>
@@ -80,9 +55,7 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="startTime">
-        <th id="start-time" mat-header-cell *matHeaderCellDef mat-sort-header i18n>
-          Start time
-        </th>
+        <th id="start-time" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Start time</th>
         <td headers="start-time" mat-cell *matCellDef="let element">
           {{ element.startTime | amTimeAgo }}
         </td>
@@ -90,23 +63,14 @@
       <ng-container matColumnDef="runTime">
         <th id="run-time" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Run time</th>
         <td headers="run-time" mat-cell *matCellDef="let element">
-          {{
-            element.endTime
-              ? (element.startTime | duration: element.endTime)
-              : "-"
-          }}
+          {{ element.endTime ? (element.startTime | duration: element.endTime) : "-" }}
         </td>
       </ng-container>
       <ng-container matColumnDef="parameters">
-        <th id="parameters" mat-header-cell *matHeaderCellDef mat-sort-header i18n>
-          Parameters
-        </th>
+        <th id="parameters" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Parameters</th>
         <td headers="parameters" mat-cell *matCellDef="let element">
           <mat-list id="parameters-list" role="list">
-            <mat-list-item
-              role="listitem"
-              *ngFor="let item of element.parameters | keyvalue"
-            >
+            <mat-list-item role="listitem" *ngFor="let item of element.parameters | keyvalue">
               <mat-icon class="padding-sm-r">remove</mat-icon> {{ item.key }} :
               {{ item.value }}
             </mat-list-item>
@@ -118,10 +82,7 @@
         <th id="metrics" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Metrics</th>
         <td headers="metrics" mat-cell *matCellDef="let element">
           <mat-list id="metrics-list" role="list">
-            <mat-list-item
-              role="listitem"
-              *ngFor="let item of element.metrics | keyvalue"
-            >
+            <mat-list-item role="listitem" *ngFor="let item of element.metrics | keyvalue">
               <mat-icon class="padding-sm-r">remove</mat-icon> {{ item.key }} :
               {{ item.value }}
             </mat-list-item>
@@ -129,17 +90,13 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="createdBy">
-        <th id="created-by" mat-header-cell *matHeaderCellDef mat-sort-header i18n>
-          Created by
-        </th>
+        <th id="created-by" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Created by</th>
         <td headers="created-by" mat-cell *matCellDef="let element">
           {{ element.createdBy.nickName }}
         </td>
       </ng-container>
       <ng-container matColumnDef="experiments">
-        <th id="experiments" mat-header-cell *matHeaderCellDef mat-sort-header i18n>
-          Experiments
-        </th>
+        <th id="experiments" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Experiments</th>
         <td headers="experiments" mat-cell *matCellDef="let element">
           <mat-chip-list #tagList aria-label="Experiments">
             <mat-chip

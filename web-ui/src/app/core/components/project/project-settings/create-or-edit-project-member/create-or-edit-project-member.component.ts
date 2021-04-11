@@ -1,23 +1,24 @@
-import { ENTER } from '@angular/cdk/keycodes';
-import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ProjectMember, ProjectMemberRole } from '../../../../models/projectMember.model';
+import { ENTER } from "@angular/cdk/keycodes";
+import { Component, Inject, OnInit } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { ProjectMember, ProjectMemberRole } from "../../../../models/projectMember.model";
 
 @Component({
-  selector: 'app-create-or-edit-project-member',
-  templateUrl: './create-or-edit-project-member.component.html',
-  styleUrls: ['./create-or-edit-project-member.component.scss']
+  selector: "app-create-or-edit-project-member",
+  templateUrl: "./create-or-edit-project-member.component.html",
+  styleUrls: ["./create-or-edit-project-member.component.scss"],
 })
 export class CreateOrEditProjectMemberComponent implements OnInit {
-
   public currentRole;
   public form: FormGroup;
   public projectMemberRole = ProjectMemberRole;
 
-  constructor(private dialogRef: MatDialogRef<CreateOrEditProjectMemberComponent>,
+  constructor(
+    private dialogRef: MatDialogRef<CreateOrEditProjectMemberComponent>,
     private formBuilder: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: { projectMember: ProjectMember, title: string, create: boolean }) {
+    @Inject(MAT_DIALOG_DATA) public data: { projectMember: ProjectMember; title: string; create: boolean }
+  ) {
     this.currentRole = data.projectMember?.role;
 
     this.form = this.formBuilder.group({
@@ -33,8 +34,7 @@ export class CreateOrEditProjectMemberComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   public cancel() {
     this.dialogRef.close();
@@ -45,7 +45,7 @@ export class CreateOrEditProjectMemberComponent implements OnInit {
       if (this.form.valid) {
         this.save();
       } else {
-        Object.keys(this.form.controls).forEach(field => {
+        Object.keys(this.form.controls).forEach((field) => {
           const control = this.form.get(field);
           control.markAsTouched({ onlySelf: true });
         });
@@ -56,6 +56,4 @@ export class CreateOrEditProjectMemberComponent implements OnInit {
   public save() {
     this.dialogRef.close(this.form.value);
   }
-
-
 }

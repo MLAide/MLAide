@@ -14,21 +14,12 @@ import { CreateApiKeyComponent } from "./create-api-key/create-api-key.component
   styleUrls: ["./api-keys.component.scss"],
 })
 export class ApiKeysComponent implements OnInit, OnDestroy {
-  public displayedColumns: string[] = [
-    "description",
-    "createdAt",
-    "expiresAt",
-    "actions",
-  ];
+  public displayedColumns: string[] = ["description", "createdAt", "expiresAt", "actions"];
   public dataSource: MatTableDataSource<ApiKey> = new MatTableDataSource<ApiKey>();
   private apiKeysListDatasource: ListDataSource<ApiKeyListResponse>;
   private apiKeysListSubscription: Subscription;
 
-  constructor(
-    private userService: UsersApiService,
-    private dialog: MatDialog,
-    private snackBarService: SnackbarUiService,
-  ) { }
+  constructor(private userService: UsersApiService, private dialog: MatDialog, private snackBarService: SnackbarUiService) {}
 
   ngOnDestroy(): void {
     if (this.apiKeysListSubscription) {

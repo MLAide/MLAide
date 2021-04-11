@@ -5,11 +5,7 @@ import { Observable, Subscription } from "rxjs";
 import { ArtifactListResponse } from "src/app/core/models/artifact.model";
 import { SnackbarUiService } from "src/app/core/services/snackbar-ui.service";
 import { Run, RunMetrics, RunParameter } from "../../../../models/run.model";
-import {
-  ArtifactsApiService,
-  ListDataSource,
-  RunsApiService,
-} from "../../../../services";
+import { ArtifactsApiService, ListDataSource, RunsApiService } from "../../../../services";
 
 @Component({
   selector: "app-run-details",
@@ -44,33 +40,28 @@ export class RunDetailsComponent implements OnInit, OnDestroy {
       this.projectKey = params.projectKey;
       this.runKey = params.runKey;
 
-      this.runsApiService
-        .getRun(this.projectKey, this.runKey)
-        .subscribe((run) => {
-          this.run = run;
-          if (run.parameters) {
-            for (const [key, value] of Object.entries(run.parameters)) {
-              this.parameters.push({ key, value });
-            }
+      this.runsApiService.getRun(this.projectKey, this.runKey).subscribe((run) => {
+        this.run = run;
+        if (run.parameters) {
+          for (const [key, value] of Object.entries(run.parameters)) {
+            this.parameters.push({ key, value });
           }
-          if (run.metrics) {
-            for (const [key, value] of Object.entries(run.metrics)) {
-              this.metrics.push({ key, value });
-            }
+        }
+        if (run.metrics) {
+          for (const [key, value] of Object.entries(run.metrics)) {
+            this.metrics.push({ key, value });
           }
+        }
 
-          this.parametersDataSource.data = this.parameters;
-          this.metricsDataSource.data = this.metrics;
+        this.parametersDataSource.data = this.parameters;
+        this.metricsDataSource.data = this.metrics;
 
-          if (run.note) {
-            this.note = run.note;
-          }
+        if (run.note) {
+          this.note = run.note;
+        }
 
-          this.artifactListDataSource = this.artifactsApiService.getArtifactsByRunKeys(
-            this.projectKey,
-            [run.key]
-          );
-        });
+        this.artifactListDataSource = this.artifactsApiService.getArtifactsByRunKeys(this.projectKey, [run.key]);
+      });
     });
   }
 
@@ -104,9 +95,7 @@ export class RunDetailsComponent implements OnInit, OnDestroy {
 
       const subscription: Subscription = patchRunObservable.subscribe(
         (response: any) => {
-          this.snackBarUiService.showSuccesfulSnackbar(
-            "Successfully saved note!"
-          );
+          this.snackBarUiService.showSuccesfulSnackbar("Successfully saved note!");
           subscription.unsubscribe();
         },
         (error) => {

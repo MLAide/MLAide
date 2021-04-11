@@ -1,58 +1,80 @@
 <div fxLayout="column">
+  <div>
+    <h1 class="mat-display-2" mat-dialog-title i18n>{{ data.title }}</h1>
+  </div>
+  <mat-dialog-content [formGroup]="form" role="Form foor editing a model">
     <div>
-        <h1 class="mat-display-2" mat-dialog-title i18n>{{data.title}}</h1>
+      <mat-form-field fxFlex="100">
+        <mat-label i18n>Model name</mat-label>
+        <input matInput readonly="true" formControlName="modelName" placeholder="Model name" />
+      </mat-form-field>
     </div>
-    <mat-dialog-content [formGroup]="form" role="Form foor editing a model">
-        <div>
-            <mat-form-field fxFlex="100">
-                <mat-label i18n>Model name</mat-label>
-                <input matInput readonly="true" formControlName="modelName" placeholder="Model name">
-            </mat-form-field>
-        </div>
-        <div>
-            <mat-form-field fxFlex="100">
-                <mat-label i18n>Run name</mat-label>
-                <input matInput readonly="true" formControlName="runName" placeholder="Run name">
-            </mat-form-field>
-        </div>
-        <div>
-            <mat-form-field fxFlex="100">
-                <mat-label i18n>Model version</mat-label>
-                <input matInput readonly="true" formControlName="version" placeholder="Model version">
-            </mat-form-field>
-        </div>
-        <div>
-            <mat-form-field fxFlex="100">
-                <mat-label i18n>Model stage</mat-label>
-                <mat-select formControlName="stage" placeholder="Model stage" [(value)]="currentStage" cdkFocusInitial
-                    required>
-                    <mat-option *ngFor="let item of modelStage | keyvalue" [value]="item.key">
-                        <!--https://medium.com/@piotrl/angular-translate-enums-i18n-ec1bb1462181-->
+    <div>
+      <mat-form-field fxFlex="100">
+        <mat-label i18n>Run name</mat-label>
+        <input matInput readonly="true" formControlName="runName" placeholder="Run name" />
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field fxFlex="100">
+        <mat-label i18n>Model version</mat-label>
+        <input matInput readonly="true" formControlName="version" placeholder="Model version" />
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field fxFlex="100">
+        <mat-label i18n>Model stage</mat-label>
+        <mat-select formControlName="stage" placeholder="Model stage" [(value)]="currentStage" cdkFocusInitial required>
+          <mat-option *ngFor="let item of modelStage | keyvalue" [value]="item.key">
+            <!--https://medium.com/@piotrl/angular-translate-enums-i18n-ec1bb1462181-->
 
-                        <span i18n>
-                            <app-model-stage-i18n [key]="item.key"></app-model-stage-i18n>
-                        </span>
-                    </mat-option>
-                </mat-select>
-                <mat-error *ngIf="form.get('modelName').hasError('required')" i18n>
-                    Model stage is required.
-                </mat-error>
-            </mat-form-field>
-        </div>
-        <div>
-            <mat-form-field fxFlex="100" appearance="outline">
-                <mat-label i18n>Note</mat-label>
-                <textarea matInput cdkTextareaAutosize #notes #autosize="cdkTextareaAutosize"
-                    placeholder="Tell us why the stage changed" (input)="note=$event.target.value"
-                    [(value)]="note"></textarea>
-            </mat-form-field>
-        </div>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-        <button id="edit-model-cancel-button" mat-button (click)="cancel()" type="button"
-            aria-label="Button for canceling the update of a model" i18n>Cancel</button>
-        <span class="margin-right-sm"></span>
-        <button id="edit-model-update-button" mat-button (click)="update()" type="submit" [disabled]="!form.valid"
-            color="primary" cdkFocusInitial aria-label="Button for updating a model" i18n>Update</button>
-    </mat-dialog-actions>
+            <span i18n>
+              <app-model-stage-i18n [key]="item.key"></app-model-stage-i18n>
+            </span>
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('modelName').hasError('required')" i18n> Model stage is required. </mat-error>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field fxFlex="100" appearance="outline">
+        <mat-label i18n>Note</mat-label>
+        <textarea
+          matInput
+          cdkTextareaAutosize
+          #notes
+          #autosize="cdkTextareaAutosize"
+          placeholder="Tell us why the stage changed"
+          (input)="note = $event.target.value"
+          [(value)]="note"
+        ></textarea>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button
+      id="edit-model-cancel-button"
+      mat-button
+      (click)="cancel()"
+      type="button"
+      aria-label="Button for canceling the update of a model"
+      i18n
+    >
+      Cancel
+    </button>
+    <span class="margin-right-sm"></span>
+    <button
+      id="edit-model-update-button"
+      mat-button
+      (click)="update()"
+      type="submit"
+      [disabled]="!form.valid"
+      color="primary"
+      cdkFocusInitial
+      aria-label="Button for updating a model"
+      i18n
+    >
+      Update
+    </button>
+  </mat-dialog-actions>
 </div>

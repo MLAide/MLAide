@@ -1,53 +1,56 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { NgModule } from "@angular/core";
+import { RouterModule, Routes } from "@angular/router";
 
-import { AuthGuard } from '../auth/auth-guard.service';
-import { ArtifactsListComponent } from './components/project/artifacts-list/artifacts-list.component';
-import { ExperimentDetailsComponent } from './components/project/experiments-list/experiment-details/experiment-details.component';
-import { ExperimentsListComponent } from './components/project/experiments-list/experiments-list.component';
-import { HomeComponent } from './components/home/home.component';
-import { ModelsListComponent } from './components/project/models-list/models-list.component';
-import { ProjectListComponent } from './components/project-list/project-list.component';
-import { ProjectSettingsComponent } from './components/project/project-settings/project-settings.component';
-import { ProjectComponent } from './components/project/project.component';
-import { RunDetailsComponent } from './components/project/runs-list/run-details/run-details.component';
-import { RunsCompareComponent } from './components/project/shared/runs-list-table/runs-compare/runs-compare.component';
-import { RunsListComponent } from './components/project/runs-list/runs-list.component';
-import { UserSettingsComponent } from './components/user-settings/user-settings.component';
-import { UserComponent } from './components/user-settings/user/user.component';
-import { ApiKeysComponent } from './components/user-settings/api-keys/api-keys.component';
+import { AuthGuard } from "../auth/auth-guard.service";
+import { ArtifactsListComponent } from "./components/project/artifacts-list/artifacts-list.component";
+import { ExperimentDetailsComponent } from "./components/project/experiments-list/experiment-details/experiment-details.component";
+import { ExperimentsListComponent } from "./components/project/experiments-list/experiments-list.component";
+import { HomeComponent } from "./components/home/home.component";
+import { ModelsListComponent } from "./components/project/models-list/models-list.component";
+import { ProjectListComponent } from "./components/project-list/project-list.component";
+import { ProjectSettingsComponent } from "./components/project/project-settings/project-settings.component";
+import { ProjectComponent } from "./components/project/project.component";
+import { RunDetailsComponent } from "./components/project/runs-list/run-details/run-details.component";
+import { RunsCompareComponent } from "./components/project/shared/runs-list-table/runs-compare/runs-compare.component";
+import { RunsListComponent } from "./components/project/runs-list/runs-list.component";
+import { UserSettingsComponent } from "./components/user-settings/user-settings.component";
+import { UserComponent } from "./components/user-settings/user/user.component";
+import { ApiKeysComponent } from "./components/user-settings/api-keys/api-keys.component";
 
 export const routes: Routes = [
-  { path: 'home', component: HomeComponent },
-  { path: 'user-settings', component: UserSettingsComponent, canActivate: [AuthGuard],
-    children: [
-      { path: 'user', component: UserComponent, canActivate: [AuthGuard] },
-      { path: 'api-keys', component: ApiKeysComponent, canActivate: [AuthGuard] },
-      { path: '', redirectTo: 'user', pathMatch: 'full', canActivate: [AuthGuard]},
-    ]
-  },
-  { path: 'projects', component: ProjectListComponent, canActivate: [AuthGuard] },
+  { path: "home", component: HomeComponent },
   {
-    path: 'projects/:projectKey',
+    path: "user-settings",
+    component: UserSettingsComponent,
+    canActivate: [AuthGuard],
+    children: [
+      { path: "user", component: UserComponent, canActivate: [AuthGuard] },
+      { path: "api-keys", component: ApiKeysComponent, canActivate: [AuthGuard] },
+      { path: "", redirectTo: "user", pathMatch: "full", canActivate: [AuthGuard] },
+    ],
+  },
+  { path: "projects", component: ProjectListComponent, canActivate: [AuthGuard] },
+  {
+    path: "projects/:projectKey",
     component: ProjectComponent,
     canActivate: [AuthGuard],
     children: [
-      { path: 'artifacts', component: ArtifactsListComponent, canActivate: [AuthGuard] },
-      { path: 'experiments', component: ExperimentsListComponent, canActivate: [AuthGuard] },
-      { path: 'experiments/:experimentKey', component: ExperimentDetailsComponent, canActivate: [AuthGuard] },
-      { path: 'runs', component: RunsListComponent, canActivate: [AuthGuard] },
-      { path: 'runs/compare', component: RunsCompareComponent, canActivate: [AuthGuard] },
-      { path: 'runs/:runKey', component: RunDetailsComponent, canActivate: [AuthGuard] },
-      { path: 'models', component: ModelsListComponent, canActivate: [AuthGuard] },
-      { path: 'settings', component: ProjectSettingsComponent, canActivate: [AuthGuard] },
-      { path: '', redirectTo: 'experiments', pathMatch: 'full', canActivate: [AuthGuard]},
-    ]
+      { path: "artifacts", component: ArtifactsListComponent, canActivate: [AuthGuard] },
+      { path: "experiments", component: ExperimentsListComponent, canActivate: [AuthGuard] },
+      { path: "experiments/:experimentKey", component: ExperimentDetailsComponent, canActivate: [AuthGuard] },
+      { path: "runs", component: RunsListComponent, canActivate: [AuthGuard] },
+      { path: "runs/compare", component: RunsCompareComponent, canActivate: [AuthGuard] },
+      { path: "runs/:runKey", component: RunDetailsComponent, canActivate: [AuthGuard] },
+      { path: "models", component: ModelsListComponent, canActivate: [AuthGuard] },
+      { path: "settings", component: ProjectSettingsComponent, canActivate: [AuthGuard] },
+      { path: "", redirectTo: "experiments", pathMatch: "full", canActivate: [AuthGuard] },
+    ],
   },
-  { path: '**', redirectTo: 'projects' },
+  { path: "**", redirectTo: "projects" },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class CoreRoutingModule { }
+export class CoreRoutingModule {}

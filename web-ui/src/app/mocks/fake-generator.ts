@@ -1,17 +1,9 @@
 import mocker from "mocker-data-generator";
 import { ApiKey } from "../core/models/apiKey.model";
-import {
-  Artifact,
-  CreateOrUpdateModel,
-  ModelRevision,
-  ModelStage,
-} from "../core/models/artifact.model";
+import { Artifact, CreateOrUpdateModel, ModelRevision, ModelStage } from "../core/models/artifact.model";
 import { Experiment, ExperimentStatus } from "../core/models/experiment.model";
 import { Project } from "../core/models/project.model";
-import {
-  ProjectMember,
-  ProjectMemberRole,
-} from "../core/models/projectMember.model";
+import { ProjectMember, ProjectMemberRole } from "../core/models/projectMember.model";
 import { Run, RunStatus } from "../core/models/run.model";
 import { User } from "../core/models/user.model";
 
@@ -300,12 +292,8 @@ const userSchema = {
   },
 };
 
-export const getRandomApiKeys = async (
-  count: number = 1
-): Promise<ApiKey[]> => {
-  const mockerResult = await mocker()
-    .schema("fakeApiKeys", apiKeySchema, count)
-    .build();
+export const getRandomApiKeys = async (count: number = 1): Promise<ApiKey[]> => {
+  const mockerResult = await mocker().schema("fakeApiKeys", apiKeySchema, count).build();
 
   return mockerResult.fakeApiKeys;
 };
@@ -315,12 +303,8 @@ export const getRandomApiKey = async (): Promise<ApiKey> => {
   return apiKeys[0];
 };
 
-export const getRandomArtifacts = async (
-  count: number = 1
-): Promise<Artifact[]> => {
-  const mockerResult = await mocker()
-    .schema("fakeArtifacts", artifactSchema, count)
-    .build();
+export const getRandomArtifacts = async (count: number = 1): Promise<Artifact[]> => {
+  const mockerResult = await mocker().schema("fakeArtifacts", artifactSchema, count).build();
 
   return mockerResult.fakeArtifacts;
 };
@@ -330,12 +314,8 @@ export const getRandomArtifact = async (): Promise<Artifact> => {
   return artifacts[0];
 };
 
-export const getRandomCreateOrUpdateModels = async (
-  count: number = 1
-): Promise<CreateOrUpdateModel[]> => {
-  const mockerResult = await mocker()
-    .schema("fakeCreateOrUpdateModels", createOrUpdateModelSchema, count)
-    .build();
+export const getRandomCreateOrUpdateModels = async (count: number = 1): Promise<CreateOrUpdateModel[]> => {
+  const mockerResult = await mocker().schema("fakeCreateOrUpdateModels", createOrUpdateModelSchema, count).build();
 
   return mockerResult.fakeCreateOrUpdateModels;
 };
@@ -345,12 +325,8 @@ export const getRandomCreateOrUpdateModel = async (): Promise<CreateOrUpdateMode
   return createOrUpdateModels[0];
 };
 
-export const getRandomExperiments = async (
-  count: number = 1
-): Promise<Experiment[]> => {
-  const mockerResult = await mocker()
-    .schema("fakeExperiments", experimentSchema, count)
-    .build();
+export const getRandomExperiments = async (count: number = 1): Promise<Experiment[]> => {
+  const mockerResult = await mocker().schema("fakeExperiments", experimentSchema, count).build();
 
   return mockerResult.fakeExperiments;
 };
@@ -360,12 +336,8 @@ export const getRandomExperiment = async (): Promise<Experiment> => {
   return experiments[0];
 };
 
-export const getRandomModelRevisions = async (
-  count: number = 1
-): Promise<ModelRevision[]> => {
-  const mockerResult = await mocker()
-    .schema("fakeModelRevisions", modelRevisionSchema, count)
-    .build();
+export const getRandomModelRevisions = async (count: number = 1): Promise<ModelRevision[]> => {
+  const mockerResult = await mocker().schema("fakeModelRevisions", modelRevisionSchema, count).build();
 
   return mockerResult.fakeModelRevisions;
 };
@@ -376,9 +348,7 @@ export const getRandomModelRevision = async (): Promise<ModelRevision> => {
 };
 
 export const getRandomRuns = async (count: number = 1): Promise<Run[]> => {
-  const mockerResult = await mocker()
-    .schema("fakeRuns", runSchema, count)
-    .build();
+  const mockerResult = await mocker().schema("fakeRuns", runSchema, count).build();
 
   return mockerResult.fakeRuns;
 };
@@ -388,12 +358,8 @@ export const getRandomRun = async (): Promise<Run> => {
   return runs[0];
 };
 
-export const getRandomProjects = async (
-  count: number = 1
-): Promise<Project[]> => {
-  const mockerResult = await mocker()
-    .schema("fakeProjects", projectSchema, count)
-    .build();
+export const getRandomProjects = async (count: number = 1): Promise<Project[]> => {
+  const mockerResult = await mocker().schema("fakeProjects", projectSchema, count).build();
 
   return mockerResult.fakeProjects;
 };
@@ -403,12 +369,8 @@ export const getRandomProject = async (): Promise<Project> => {
   return projects[0];
 };
 
-export const getRandomProjectMembers = async (
-  count: number = 1
-): Promise<ProjectMember[]> => {
-  const mockerResult = await mocker()
-    .schema("fakeProjectMembers", projectMemberSchema, count)
-    .build();
+export const getRandomProjectMembers = async (count: number = 1): Promise<ProjectMember[]> => {
+  const mockerResult = await mocker().schema("fakeProjectMembers", projectMemberSchema, count).build();
 
   return mockerResult.fakeProjectMembers;
 };
@@ -419,9 +381,7 @@ export const getRandomProjectMember = async (): Promise<ProjectMember> => {
 };
 
 export const getRandomUsers = async (count: number = 1): Promise<User[]> => {
-  const mockerResult = await mocker()
-    .schema("fakeUsers", userSchema, count)
-    .build();
+  const mockerResult = await mocker().schema("fakeUsers", userSchema, count).build();
 
   return mockerResult.fakeUsers;
 };

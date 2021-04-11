@@ -8,9 +8,7 @@
   <div fxLayout="row" fxLayoutAlign="space-between end">
     <div fxLayout="column">
       <span id="author-label" class="mat-small" i18n>Author</span>
-      <span id="author-value" class="mat-body">{{
-        run?.createdBy.nickName
-      }}</span>
+      <span id="author-value" class="mat-body">{{ run?.createdBy.nickName }}</span>
     </div>
     <div fxLayout="column">
       <span id="status-label" class="mat-small" i18n>Status</span>
@@ -20,25 +18,17 @@
     </div>
     <div fxLayout="column">
       <span id="start-time-label" class="mat-small" i18n>Start Time</span>
-      <span id="start-time-value" class="mat-body">{{
-        run?.startTime | amTimeAgo
-      }}</span>
+      <span id="start-time-value" class="mat-body">{{ run?.startTime | amTimeAgo }}</span>
     </div>
     <div fxLayout="column">
       <span id="run-time-label" class="mat-small" i18n>Run Time</span>
-      <span id="run-time-value" class="mat-body">{{
-        run?.endTime ? (run?.startTime | duration: run?.endTime) : "-"
-      }}</span>
+      <span id="run-time-value" class="mat-body">{{ run?.endTime ? (run?.startTime | duration: run?.endTime) : "-" }}</span>
     </div>
     <div fxLayout="column">
       <span id="experiments-label" class="mat-small" i18n>Experiments</span>
       <span id="experiments-value">
         <mat-chip-list #tagList aria-label="Experiments">
-          <mat-chip
-            *ngFor="let experimentRef of run?.experimentRefs"
-            [selectable]="true"
-            [removable]="false"
-          >
+          <mat-chip *ngFor="let experimentRef of run?.experimentRefs" [selectable]="true" [removable]="false">
             {{ experimentRef.experimentKey }}
           </mat-chip>
         </mat-chip-list>
@@ -68,9 +58,7 @@
       <!-- // https://stackoverflow.com/questions/52037475/focusout-on-an-element-conflicting-with-click-on-other-in-angular -->
       <button mat-raised-button (mousedown)="cancel()" i18n>Cancel</button>
       <span class="margin-right-sm"></span>
-      <button mat-raised-button color="primary" (mousedown)="save()" i18n>
-        Save
-      </button>
+      <button mat-raised-button color="primary" (mousedown)="save()" i18n>Save</button>
     </div>
   </div>
 </div>
@@ -143,11 +131,7 @@
     <h3 id="artifacts-tree-title" class="mat-h3" i18n>Artifacts</h3>
   </div>
   <div>
-    <app-artifacts-tree
-      fxFlex="50"
-      [artifactListDataSource]="artifactListDataSource"
-      [projectKey]="projectKey"
-    >
+    <app-artifacts-tree fxFlex="50" [artifactListDataSource]="artifactListDataSource" [projectKey]="projectKey">
     </app-artifacts-tree>
   </div>
 </div>

@@ -14,13 +14,13 @@ describe("SpinnerUiService", () => {
   let positionStrategy: GlobalPositionStrategy;
 
   beforeEach(() => {
-    overlayRefStub = jasmine.createSpyObj('overlayRef', ['attach', 'detach']);
+    overlayRefStub = jasmine.createSpyObj("overlayRef", ["attach", "detach"]);
 
     positionStrategy = new GlobalPositionStrategy();
-    overlayPositionBuilderStub = jasmine.createSpyObj('overlayPositionBuilder', ['global']);
+    overlayPositionBuilderStub = jasmine.createSpyObj("overlayPositionBuilder", ["global"]);
     overlayPositionBuilderStub.global.and.returnValue(positionStrategy);
 
-    overlayStub = jasmine.createSpyObj('overlay', ['create', 'position']);
+    overlayStub = jasmine.createSpyObj("overlay", ["create", "position"]);
     overlayStub.position.and.returnValue(overlayPositionBuilderStub);
     overlayStub.create.and.returnValue(overlayRefStub);
 

@@ -1,8 +1,4 @@
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-  TestRequest,
-} from "@angular/common/http/testing";
+import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import { skip } from "rxjs/operators";
 import "jasmine";
@@ -12,11 +8,7 @@ import {
   getRandomCreateOrUpdateModel,
   getRandomProject,
 } from "src/app/mocks/fake-generator";
-import {
-  Artifact,
-  ArtifactListResponse,
-  CreateOrUpdateModel,
-} from "../models/artifact.model";
+import { Artifact, ArtifactListResponse, CreateOrUpdateModel } from "../models/artifact.model";
 
 import { ArtifactsApiService } from "./artifacts-api.service";
 import { Project } from "../models/project.model";
@@ -56,10 +48,7 @@ describe("ArtifactsApiService", () => {
       const dummyResponse: ArtifactListResponse = { items: fakeArtifacts };
 
       // act
-      const dataSource: ListDataSource<ArtifactListResponse> = service.getArtifacts(
-        fakeProject.key,
-        false
-      );
+      const dataSource: ListDataSource<ArtifactListResponse> = service.getArtifacts(fakeProject.key, false);
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
@@ -82,9 +71,7 @@ describe("ArtifactsApiService", () => {
       const dummyResponse: ArtifactListResponse = { items: fakeArtifacts };
 
       // act
-      const dataSource: ListDataSource<ArtifactListResponse> = service.getArtifacts(
-        fakeProject.key
-      );
+      const dataSource: ListDataSource<ArtifactListResponse> = service.getArtifacts(fakeProject.key);
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
@@ -107,10 +94,7 @@ describe("ArtifactsApiService", () => {
       const dummyResponse: ArtifactListResponse = { items: fakeArtifacts };
 
       // act
-      const dataSource: ListDataSource<ArtifactListResponse> = service.getArtifacts(
-        fakeProject.key,
-        true
-      );
+      const dataSource: ListDataSource<ArtifactListResponse> = service.getArtifacts(fakeProject.key, true);
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
@@ -118,9 +102,7 @@ describe("ArtifactsApiService", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/projects/${fakeProject.key}/artifacts?isModel=true`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/projects/${fakeProject.key}/artifacts?isModel=true`);
       expect(req.request.method).toBe("GET");
       expect(req.request.params.get("isModel")).toBe("true");
       req.flush(dummyResponse);
@@ -135,10 +117,7 @@ describe("ArtifactsApiService", () => {
       const dummyResponse: ArtifactListResponse = { items: fakeArtifacts };
 
       // act
-      const dataSource: ListDataSource<ArtifactListResponse> = service.getArtifactsByRunKeys(
-        fakeProject.key,
-        [1, 2, 3]
-      );
+      const dataSource: ListDataSource<ArtifactListResponse> = service.getArtifactsByRunKeys(fakeProject.key, [1, 2, 3]);
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
@@ -164,16 +143,9 @@ describe("ArtifactsApiService", () => {
       const createOrUpdateModel: CreateOrUpdateModel = await getRandomCreateOrUpdateModel();
 
       // act
-      service
-        .putModel(
-          fakeProject.key,
-          fakeArtifact.name,
-          fakeArtifact.version,
-          createOrUpdateModel
-        )
-        .subscribe(() => {
-          done();
-        });
+      service.putModel(fakeProject.key, fakeArtifact.name, fakeArtifact.version, createOrUpdateModel).subscribe(() => {
+        done();
+      });
 
       // assert
       const req: TestRequest = httpMock.expectOne(
@@ -238,8 +210,12 @@ describe("ArtifactsApiService", () => {
       req.flush(returnBuffer);
     });
   });
-  
-  function checkThatItemsLengthAndResponseMatch(response: ArtifactListResponse, fakeArtifacts: Artifact[], dummyResponse: ArtifactListResponse) {
+
+  function checkThatItemsLengthAndResponseMatch(
+    response: ArtifactListResponse,
+    fakeArtifacts: Artifact[],
+    dummyResponse: ArtifactListResponse
+  ) {
     expect(response.items.length).toBe(fakeArtifacts.length);
     expect(response).toEqual(dummyResponse);
   }

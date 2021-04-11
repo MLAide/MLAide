@@ -13,18 +13,12 @@ export class RunsApiService {
   public readonly API_URL;
   public readonly API_VERSION;
 
-  constructor(
-    @Inject(APP_CONFIG) appConfig: IAppConfig,
-    private http: HttpClient
-  ) {
+  constructor(@Inject(APP_CONFIG) appConfig: IAppConfig, private http: HttpClient) {
     this.API_URL = appConfig.apiServer.uri;
     this.API_VERSION = appConfig.apiServer.version;
   }
 
-  exportRunsByRunKeys(
-    projectKey: string,
-    runKeys: number[]
-  ): Observable<ArrayBuffer> {
+  exportRunsByRunKeys(projectKey: string, runKeys: number[]): Observable<ArrayBuffer> {
     let params = {};
     if (runKeys !== null) {
       const runKeysParam = runKeys.join(",");
@@ -34,14 +28,11 @@ export class RunsApiService {
     }
 
     return this.http
-      .get(
-        `${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/runs`,
-        {
-          observe: "body",
-          params,
-          responseType: "arraybuffer",
-        }
-      )
+      .get(`${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/runs`, {
+        observe: "body",
+        params,
+        responseType: "arraybuffer",
+      })
       .pipe(
         map((file: ArrayBuffer) => {
           return file;
@@ -50,78 +41,36 @@ export class RunsApiService {
   }
 
   getRun(projectKey: string, runKey: number): Observable<Run> {
-    return this.http.get<Run>(
-      `${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/runs/${runKey}`
-    );
+    return this.http.get<Run>(`${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/runs/${runKey}`);
   }
 
   getRuns(projectKey: string): ListDataSource<RunListResponse> {
-    return new RunListDataSource(
-      this.API_URL,
-      this.API_VERSION,
-      this.http,
-      projectKey
-    );
+    return new RunListDataSource(this.API_URL, this.API_VERSION, this.http, projectKey);
   }
 
-  getRunsByExperimentKey(
-    projectKey: string,
-    experimentKey: string
-  ): ListDataSource<RunListResponse> {
-    return new RunListDataSource(
-      this.API_URL,
-      this.API_VERSION,
-      this.http,
-      projectKey,
-      null,
-      experimentKey
-    );
+  getRunsByExperimentKey(projectKey: string, experimentKey: string): ListDataSource<RunListResponse> {
+    return new RunListDataSource(this.API_URL, this.API_VERSION, this.http, projectKey, null, experimentKey);
   }
 
-  getRunsByRunKeys(
-    projectKey: string,
-    runKeys: number[]
-  ): ListDataSource<RunListResponse> {
-    return new RunListDataSource(
-      this.API_URL,
-      this.API_VERSION,
-      this.http,
-      projectKey,
-      runKeys
-    );
+  getRunsByRunKeys(projectKey: string, runKeys: number[]): ListDataSource<RunListResponse> {
+    return new RunListDataSource(this.API_URL, this.API_VERSION, this.http, projectKey, runKeys);
   }
 
-  patchRun(
-    projectKey: string,
-    runKey: number,
-    runToPatch: {}
-  ): Observable<Run> {
-    return this.http.patch<Run>(
-      `${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/runs/${runKey}`,
-      runToPatch,
-      {
-        headers: {
-          "content-type": "application/merge-patch+json",
-        },
-      }
-    );
+  patchRun(projectKey: string, runKey: number, runToPatch: {}): Observable<Run> {
+    return this.http.patch<Run>(`${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/runs/${runKey}`, runToPatch, {
+      headers: {
+        "content-type": "application/merge-patch+json",
+      },
+    });
   }
 
-  updateNoteInRun(
-    projectKey: string,
-    runKey: number,
-    note: string
-  ): Observable<string> {
-    return this.http.put(
-      `${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/runs/${runKey}/note`,
-      note,
-      {
-        headers: {
-          "content-type": "text/plain",
-        },
-        responseType: "text",
-      }
-    );
+  updateNoteInRun(projectKey: string, runKey: number, note: string): Observable<string> {
+    return this.http.put(`${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/runs/${runKey}/note`, note, {
+      headers: {
+        "content-type": "text/plain",
+      },
+      responseType: "text",
+    });
   }
 }
 
@@ -157,10 +106,9 @@ export class RunListDataSource implements ListDataSource<RunListResponse> {
         experimentKey: this.experimentKey,
       };
     }
-    const runs = this.http.get<RunListResponse>(
-      `${this.apiUrl}/api/${this.apiVersion}/projects/${this.projectKey}/runs`,
-      { params }
-    );
+    const runs = this.http.get<RunListResponse>(`${this.apiUrl}/api/${this.apiVersion}/projects/${this.projectKey}/runs`, {
+      params,
+    });
 
     runs.subscribe(
       (result) => this.runsSubject$.next(result),

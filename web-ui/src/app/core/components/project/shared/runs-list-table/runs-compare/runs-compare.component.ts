@@ -26,54 +26,32 @@ export class RunsCompareComponent implements OnInit, OnDestroy {
   private uniqueMetricsList: string[];
   private uniqueParametersList: string[];
 
-  constructor(
-    private route: ActivatedRoute,
-    private runsApiService: RunsApiService
-  ) {}
+  constructor(private route: ActivatedRoute, private runsApiService: RunsApiService) {}
 
   ngOnInit() {
-    this.routeParamsSubscription = this.route.params.subscribe(
-      (routeParams) => {
-        this.projectKey = routeParams.projectKey;
+    this.routeParamsSubscription = this.route.params.subscribe((routeParams) => {
+      this.projectKey = routeParams.projectKey;
 
-        this.routeQueryParamsSub = this.route.queryParams.subscribe(
-          (queryParams) => {
-            this.runKeys = queryParams.runKeys;
+      this.routeQueryParamsSub = this.route.queryParams.subscribe((queryParams) => {
+        this.runKeys = queryParams.runKeys;
 
-            this.runListDataSource = this.runsApiService.getRunsByRunKeys(
-              this.projectKey,
-              this.runKeys
-            );
-            this.runListSubscription = this.runListDataSource.items$.subscribe(
-              (runs) => {
-                this.runs = runs.items;
-                this.runs.forEach((run) => {
-                  this.displayedMetricsColumns.push(`${run.name}-${run.key}`);
-                  this.displayedParametersColumns.push(
-                    `${run.name}-${run.key}`
-                  );
-                  this.displayedColumnsStartTime.push(run?.startTime);
-                });
-                this.uniqueMetricsList = this.createMetricsList(this.runs);
-                this.uniqueParametersList = this.createParametersList(
-                  this.runs
-                );
+        this.runListDataSource = this.runsApiService.getRunsByRunKeys(this.projectKey, this.runKeys);
+        this.runListSubscription = this.runListDataSource.items$.subscribe((runs) => {
+          this.runs = runs.items;
+          this.runs.forEach((run) => {
+            this.displayedMetricsColumns.push(`${run.name}-${run.key}`);
+            this.displayedParametersColumns.push(`${run.name}-${run.key}`);
+            this.displayedColumnsStartTime.push(run?.startTime);
+          });
+          this.uniqueMetricsList = this.createMetricsList(this.runs);
+          this.uniqueParametersList = this.createParametersList(this.runs);
 
-                this.dataSourceMetrics.data = this.createDatasourceForMetrics(
-                  this.runs,
-                  this.uniqueMetricsList
-                );
+          this.dataSourceMetrics.data = this.createDatasourceForMetrics(this.runs, this.uniqueMetricsList);
 
-                this.dataSourceParameters.data = this.createDatasourceForParameters(
-                  this.runs,
-                  this.uniqueParametersList
-                );
-              }
-            );
-          }
-        );
-      }
-    );
+          this.dataSourceParameters.data = this.createDatasourceForParameters(this.runs, this.uniqueParametersList);
+        });
+      });
+    });
   }
 
   ngOnDestroy() {
@@ -109,10 +87,7 @@ export class RunsCompareComponent implements OnInit, OnDestroy {
     return data;
   }
 
-  private createDatasourceForParameters(
-    runs: Run[],
-    uniqueParamsList: string[]
-  ) {
+  private createDatasourceForParameters(runs: Run[], uniqueParamsList: string[]) {
     const data = [];
 
     uniqueParamsList.forEach((param) => {

@@ -1,40 +1,39 @@
 <div fxLayout="column">
-    <h1 class="mat-display-2" i18n>Models</h1>
+  <h1 class="mat-display-2" i18n>Models</h1>
 </div>
 
 <div fxLayout="column" class="example-container mat-elevation-z2">
-    <table mat-table matSort [dataSource]="dataSource" aria-label="Models overview">
-        <ng-container matColumnDef="modelName">
-            <th id="model-name" mat-header-cell *matHeaderCellDef mat-sort-header i18n> Model name </th>
-            <td headers="model-name" mat-cell *matCellDef="let element"> {{element.name}} </td>
-        </ng-container>
-        <ng-container matColumnDef="version">
-            <th id="version" mat-header-cell *matHeaderCellDef mat-sort-header i18n> Version </th>
-            <td headers="version" mat-cell *matCellDef="let element"> {{element.version}} </td>
-        </ng-container>
-        <ng-container matColumnDef="stage">
-            <th id="stage" mat-header-cell *matHeaderCellDef mat-sort-header i18n> Stage</th>
-            <td headers="stage" mat-cell *matCellDef="let element">
-                <app-model-stage-i18n [key]="element.model.stage"></app-model-stage-i18n>
-            </td>
-        </ng-container>
-        <ng-container matColumnDef="runName">
-            <th id="run-name" mat-header-cell *matHeaderCellDef mat-sort-header i18n> Run name </th>
-            <td headers="run-name" mat-cell *matCellDef="let element"> {{element.runName}} </td>
-        </ng-container>
-        <ng-container matColumnDef="actions" [stickyEnd]="true">
-            <th id="actions" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Actions</th>
-            <td headers="actions" mat-cell *matCellDef="let element">
-                <button mat-button (click)="openEditModelDialog(element)" aria-label="Icon button to edit model">
-                    <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-button (click)="openModelStageLog(element)"
-                    aria-label="Icon button to show model stage log">
-                    <mat-icon>history</mat-icon>
-                </button>
-            </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
+  <table mat-table matSort [dataSource]="dataSource" aria-label="Models overview">
+    <ng-container matColumnDef="modelName">
+      <th id="model-name" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Model name</th>
+      <td headers="model-name" mat-cell *matCellDef="let element">{{ element.name }}</td>
+    </ng-container>
+    <ng-container matColumnDef="version">
+      <th id="version" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Version</th>
+      <td headers="version" mat-cell *matCellDef="let element">{{ element.version }}</td>
+    </ng-container>
+    <ng-container matColumnDef="stage">
+      <th id="stage" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Stage</th>
+      <td headers="stage" mat-cell *matCellDef="let element">
+        <app-model-stage-i18n [key]="element.model.stage"></app-model-stage-i18n>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="runName">
+      <th id="run-name" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Run name</th>
+      <td headers="run-name" mat-cell *matCellDef="let element">{{ element.runName }}</td>
+    </ng-container>
+    <ng-container matColumnDef="actions" [stickyEnd]="true">
+      <th id="actions" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Actions</th>
+      <td headers="actions" mat-cell *matCellDef="let element">
+        <button mat-button (click)="openEditModelDialog(element)" aria-label="Icon button to edit model">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-button (click)="openModelStageLog(element)" aria-label="Icon button to show model stage log">
+          <mat-icon>history</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
 </div>

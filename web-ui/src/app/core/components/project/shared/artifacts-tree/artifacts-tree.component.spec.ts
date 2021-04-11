@@ -12,23 +12,13 @@ import { MatTreeModule } from "@angular/material/tree";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { FileSaverService } from "ngx-filesaver";
 import { of } from "rxjs";
-import {
-  Artifact,
-  ArtifactListResponse,
-} from "src/app/core/models/artifact.model";
+import { Artifact, ArtifactListResponse } from "src/app/core/models/artifact.model";
 import { Project } from "src/app/core/models/project.model";
 import { ArtifactsApiService } from "src/app/core/services";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
-import {
-  getRandomArtifacts,
-  getRandomProject,
-} from "src/app/mocks/fake-generator";
+import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
 
-import {
-  ArtifactsTreeComponent,
-  FileNode,
-  FlatTreeNode,
-} from "./artifacts-tree.component";
+import { ArtifactsTreeComponent, FileNode, FlatTreeNode } from "./artifacts-tree.component";
 
 describe("ArtifactsTreeComponent", () => {
   let component: ArtifactsTreeComponent;
@@ -43,10 +33,7 @@ describe("ArtifactsTreeComponent", () => {
   let fileSaverServiceStub: jasmine.SpyObj<FileSaverService>;
 
   // data source mocks
-  let artifactListDataSourceMock: ListDataSourceMock<
-    Artifact,
-    ArtifactListResponse
-  > = new ListDataSourceMock();
+  let artifactListDataSourceMock: ListDataSourceMock<Artifact, ArtifactListResponse> = new ListDataSourceMock();
   fileSaverServiceStub = jasmine.createSpyObj("fileSaverServiceStub", ["save"]);
 
   beforeEach(async () => {
@@ -55,9 +42,7 @@ describe("ArtifactsTreeComponent", () => {
     fakeProject = await getRandomProject();
 
     // stub services
-    artifactsApiServiceStub = jasmine.createSpyObj("artifactsApiService", [
-      "download",
-    ]);
+    artifactsApiServiceStub = jasmine.createSpyObj("artifactsApiService", ["download"]);
 
     TestBed.configureTestingModule({
       declarations: [ArtifactsTreeComponent],
@@ -65,14 +50,7 @@ describe("ArtifactsTreeComponent", () => {
         { provide: ArtifactsApiService, useValue: artifactsApiServiceStub },
         { provide: FileSaverService, useValue: fileSaverServiceStub },
       ],
-      imports: [
-        BrowserAnimationsModule,
-        CdkTreeModule,
-        MatButtonModule,
-        MatCardModule,
-        MatIconModule,
-        MatTreeModule,
-      ],
+      imports: [BrowserAnimationsModule, CdkTreeModule, MatButtonModule, MatCardModule, MatIconModule, MatTreeModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ArtifactsTreeComponent);
@@ -109,11 +87,7 @@ describe("ArtifactsTreeComponent", () => {
       // act
       //directly call ngOnChanges
       component.ngOnChanges({
-        artifactListDataSource: new SimpleChange(
-          null,
-          artifactListDataSourceMock,
-          true
-        ),
+        artifactListDataSource: new SimpleChange(null, artifactListDataSourceMock, true),
       });
       fixture.detectChanges();
 
@@ -229,11 +203,7 @@ describe("ArtifactsTreeComponent", () => {
       // act
       // directly call ngOnChanges
       component.ngOnChanges({
-        artifactListDataSource: new SimpleChange(
-          null,
-          artifactListDataSourceMock,
-          true
-        ),
+        artifactListDataSource: new SimpleChange(null, artifactListDataSourceMock, true),
       });
       fixture.detectChanges();
 
@@ -308,11 +278,7 @@ describe("ArtifactsTreeComponent", () => {
       component.download(node);
 
       // assert
-      expect(artifactsApiServiceStub.download).toHaveBeenCalledWith(
-        fakeProject.key,
-        node.artifactName,
-        node.artifactVersion
-      );
+      expect(artifactsApiServiceStub.download).toHaveBeenCalledWith(fakeProject.key, node.artifactName, node.artifactVersion);
     });
 
     it("should call FileSaver saveAs with correct blob, filename and content disposition", async (done) => {
@@ -343,10 +309,7 @@ describe("ArtifactsTreeComponent", () => {
       component.download(node);
 
       // assert
-      expect(fileSaverServiceStub.save).toHaveBeenCalledWith(
-        jasmine.any(Blob),
-        "data.csv"
-      );
+      expect(fileSaverServiceStub.save).toHaveBeenCalledWith(jasmine.any(Blob), "data.csv");
       const actualBlob = fileSaverServiceStub.save.calls.argsFor(0)[0];
       expect(actualBlob.type).toBe("text/csv");
       actualBlob.arrayBuffer().then((buffer) => {
@@ -399,11 +362,7 @@ describe("ArtifactsTreeComponent", () => {
 
       artifactListDataSourceMock.emulate(fakeArtifacts);
       component.ngOnChanges({
-        artifactListDataSource: new SimpleChange(
-          null,
-          artifactListDataSourceMock,
-          true
-        ),
+        artifactListDataSource: new SimpleChange(null, artifactListDataSourceMock, true),
       });
       fixture.detectChanges();
     });
@@ -419,9 +378,7 @@ describe("ArtifactsTreeComponent", () => {
     it("should contain the artifacts tree nodes", async () => {
       // arrange + act also in beforeEach
       // expand whole tree
-      let buttons: MatButtonHarness[] = await loader.getAllHarnesses(
-        MatButtonHarness
-      );
+      let buttons: MatButtonHarness[] = await loader.getAllHarnesses(MatButtonHarness);
 
       await buttons[0].click(); // 1st-artifact
       await buttons[2].click(); // 2nd-artifact
@@ -433,49 +390,27 @@ describe("ArtifactsTreeComponent", () => {
       buttons = await loader.getAllHarnesses(MatButtonHarness);
       await buttons[3].click(); // subSubFolder
 
-      let treeNodes: HTMLElement[] = fixture.nativeElement.querySelectorAll(
-        "mat-tree-node"
-      );
+      let treeNodes: HTMLElement[] = fixture.nativeElement.querySelectorAll("mat-tree-node");
 
       // assert
       expect(treeNodes.length).toEqual(12);
-      expect(treeNodes[0].textContent.trim()).toEqual(
-        "folder  1st-Artifact cloud_download"
-      );
+      expect(treeNodes[0].textContent.trim()).toEqual("folder  1st-Artifact cloud_download");
       expect(treeNodes[1].textContent.trim()).toEqual("folder  subFolder");
       expect(treeNodes[2].textContent.trim()).toEqual("folder  subSubFolder");
-      expect(treeNodes[3].textContent.trim()).toEqual(
-        "description  file5 cloud_download"
-      );
-      expect(treeNodes[4].textContent.trim()).toEqual(
-        "description  file2 cloud_download"
-      );
-      expect(treeNodes[5].textContent.trim()).toEqual(
-        "description  file3 cloud_download"
-      );
+      expect(treeNodes[3].textContent.trim()).toEqual("description  file5 cloud_download");
+      expect(treeNodes[4].textContent.trim()).toEqual("description  file2 cloud_download");
+      expect(treeNodes[5].textContent.trim()).toEqual("description  file3 cloud_download");
       expect(treeNodes[6].textContent.trim()).toEqual("folder  subFolder2");
-      expect(treeNodes[7].textContent.trim()).toEqual(
-        "description  file4 cloud_download"
-      );
-      expect(treeNodes[8].textContent.trim()).toEqual(
-        "description  file1 cloud_download"
-      );
-      expect(treeNodes[9].textContent.trim()).toEqual(
-        "folder  2nd-Artifact cloud_download"
-      );
-      expect(treeNodes[10].textContent.trim()).toEqual(
-        "description  file1 cloud_download"
-      );
-      expect(treeNodes[11].textContent.trim()).toEqual(
-        "folder  3rd-Artifact cloud_download"
-      );
+      expect(treeNodes[7].textContent.trim()).toEqual("description  file4 cloud_download");
+      expect(treeNodes[8].textContent.trim()).toEqual("description  file1 cloud_download");
+      expect(treeNodes[9].textContent.trim()).toEqual("folder  2nd-Artifact cloud_download");
+      expect(treeNodes[10].textContent.trim()).toEqual("description  file1 cloud_download");
+      expect(treeNodes[11].textContent.trim()).toEqual("folder  3rd-Artifact cloud_download");
     });
 
     it("should call download without fileId when clicking on root folder", async () => {
       // arrange + act also in beforeEach
-      let buttons: MatButtonHarness[] = await loader.getAllHarnesses(
-        MatButtonHarness.with({ text: "cloud_download" })
-      );
+      let buttons: MatButtonHarness[] = await loader.getAllHarnesses(MatButtonHarness.with({ text: "cloud_download" }));
       const spy = spyOn(component, "download");
       const node: FlatTreeNode = {
         artifactFileId: undefined,
@@ -497,9 +432,7 @@ describe("ArtifactsTreeComponent", () => {
 
     it("should call download with fileId when clicking on file", async () => {
       // arrange + act also in beforeEach
-      let buttons: MatButtonHarness[] = await loader.getAllHarnesses(
-        MatButtonHarness
-      );
+      let buttons: MatButtonHarness[] = await loader.getAllHarnesses(MatButtonHarness);
       const spy = spyOn(component, "download");
       const node: FlatTreeNode = {
         artifactFileId: "1",

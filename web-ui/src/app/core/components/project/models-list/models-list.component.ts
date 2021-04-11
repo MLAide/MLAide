@@ -1,10 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
@@ -12,12 +6,7 @@ import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
 import { EditModelComponent } from "./edit-model/edit-model.component";
 import { ModelStageLogComponent } from "./model-stage-log/model-stage-log.component";
-import {
-  Artifact,
-  ArtifactListResponse,
-  CreateOrUpdateModel,
-  ModelStage,
-} from "../../../models/artifact.model";
+import { Artifact, ArtifactListResponse, CreateOrUpdateModel, ModelStage } from "../../../models/artifact.model";
 import { ArtifactsApiService } from "../../../services/artifacts-api.service";
 import { ListDataSource, SpinnerUiService } from "src/app/core/services";
 
@@ -28,13 +17,7 @@ import { ListDataSource, SpinnerUiService } from "src/app/core/services";
 })
 export class ModelsListComponent implements OnInit, OnDestroy, AfterViewInit {
   public dataSource: MatTableDataSource<Artifact> = new MatTableDataSource<Artifact>();
-  public displayedColumns: string[] = [
-    "modelName",
-    "version",
-    "stage",
-    "runName",
-    "actions",
-  ];
+  public displayedColumns: string[] = ["modelName", "version", "stage", "runName", "actions"];
   @ViewChild(MatSort) public sort: MatSort;
   public stages = ModelStage;
   private artifactListDataSource: ListDataSource<ArtifactListResponse>;
@@ -66,15 +49,10 @@ export class ModelsListComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.routeParamsSubscription = this.route.params.subscribe((params) => {
       this.projectKey = params.projectKey;
-      this.artifactListDataSource = this.artifactsApiService.getArtifacts(
-        this.projectKey,
-        true
-      );
-      this.artifactListSubscription = this.artifactListDataSource.items$.subscribe(
-        (artifacts) => {
-          this.dataSource.data = artifacts.items;
-        }
-      );
+      this.artifactListDataSource = this.artifactsApiService.getArtifacts(this.projectKey, true);
+      this.artifactListSubscription = this.artifactListDataSource.items$.subscribe((artifacts) => {
+        this.dataSource.data = artifacts.items;
+      });
     });
   }
 
@@ -104,13 +82,7 @@ export class ModelsListComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private editModel(result: {
-    modelName: string;
-    note: string;
-    runName: string;
-    stage: ModelStage;
-    version: number;
-  }) {
+  private editModel(result: { modelName: string; note: string; runName: string; stage: ModelStage; version: number }) {
     const createOrUpdateModel: CreateOrUpdateModel = {
       note: result.note,
       stage: result.stage,

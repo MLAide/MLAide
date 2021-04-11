@@ -90,24 +90,15 @@ export class MockOAuthService implements Partial<OAuthService> {
 
   initImplicitFlow(additionalState?: string, params?: string | object): void {}
 
-  initImplicitFlowInPopup(options?: {
-    height?: number;
-    width?: number;
-  }): Promise<unknown> {
+  initImplicitFlowInPopup(options?: { height?: number; width?: number }): Promise<unknown> {
     return Promise.resolve(undefined);
   }
 
-  initImplicitFlowInternal(
-    additionalState?: string,
-    params?: string | object
-  ): void {}
+  initImplicitFlowInternal(additionalState?: string, params?: string | object): void {}
 
   initLoginFlow(additionalState?: string, params?: {}): void {}
 
-  initLoginFlowInPopup(options?: {
-    height?: number;
-    width?: number;
-  }): Promise<unknown> {
+  initLoginFlowInPopup(options?: { height?: number; width?: number }): Promise<unknown> {
     return Promise.resolve(undefined);
   }
 
@@ -121,11 +112,7 @@ export class MockOAuthService implements Partial<OAuthService> {
 
   logOut(): void {}
 
-  processIdToken(
-    idToken: string,
-    accessToken: string,
-    skipNonceCheck?: boolean
-  ): Promise<ParsedIdToken> {
+  processIdToken(idToken: string, accessToken: string, skipNonceCheck?: boolean): Promise<ParsedIdToken> {
     return Promise.resolve(undefined);
   }
 
@@ -139,11 +126,7 @@ export class MockOAuthService implements Partial<OAuthService> {
     return Promise.resolve(undefined);
   }
 
-  setupAutomaticSilentRefresh(
-    params?: object,
-    listenTo?: "access_token" | "id_token" | "any",
-    noPrompt?: boolean
-  ): void {}
+  setupAutomaticSilentRefresh(params?: object, listenTo?: "access_token" | "id_token" | "any", noPrompt?: boolean): void {}
 
   stopAutomaticRefresh(): void {}
 

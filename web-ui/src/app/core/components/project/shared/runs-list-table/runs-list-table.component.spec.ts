@@ -1,8 +1,6 @@
 import { SimpleChange } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import {
-  MatListHarness,
-} from "@angular/material/list/testing";
+import { MatListHarness } from "@angular/material/list/testing";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCheckboxHarness } from "@angular/material/checkbox/testing";
 import { MatCheckboxModule } from "@angular/material/checkbox";
@@ -30,16 +28,8 @@ import { HarnessLoader, TestElement } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { MatButtonHarness } from "@angular/material/button/testing";
 import { MatIconHarness } from "@angular/material/icon/testing";
-import {
-  MatHeaderRowHarness,
-  MatRowHarness,
-  MatRowHarnessColumnsText,
-  MatTableHarness,
-} from "@angular/material/table/testing";
-import {
-  MatChipHarness,
-  MatChipListHarness,
-} from "@angular/material/chips/testing";
+import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
+import { MatChipHarness, MatChipListHarness } from "@angular/material/chips/testing";
 import { FileSaverService } from "ngx-filesaver";
 
 describe("RunsListTableComponent", () => {
@@ -51,10 +41,7 @@ describe("RunsListTableComponent", () => {
   let fakeRuns: Run[];
 
   // data source mocks
-  let runListDataSourceMock: ListDataSourceMock<
-    Run,
-    RunListResponse
-  > = new ListDataSourceMock();
+  let runListDataSourceMock: ListDataSourceMock<Run, RunListResponse> = new ListDataSourceMock();
 
   // router stubs
   const activatedRoute: ActivatedRoute = new ActivatedRouteStub() as any;
@@ -69,12 +56,8 @@ describe("RunsListTableComponent", () => {
     fakeProject = await getRandomProject();
     fakeRuns = await getRandomRuns(3);
 
-    runsApiServiceStub = jasmine.createSpyObj("runsApiService", [
-      "exportRunsByRunKeys",
-    ]);
-    fileSaverServiceStub = jasmine.createSpyObj("fileSaverServiceStub", [
-      "save",
-    ]);
+    runsApiServiceStub = jasmine.createSpyObj("runsApiService", ["exportRunsByRunKeys"]);
+    fileSaverServiceStub = jasmine.createSpyObj("fileSaverServiceStub", ["save"]);
 
     await TestBed.configureTestingModule({
       declarations: [
@@ -246,17 +229,13 @@ describe("RunsListTableComponent", () => {
       component.selection.selected.push(fakeRuns[0]);
 
       const returnBuffer: ArrayBufferLike = new Uint16Array([1, 2, 3]).buffer;
-      runsApiServiceStub.exportRunsByRunKeys
-        .withArgs(fakeProject.key, [fakeRuns[0].key])
-        .and.returnValue(of(returnBuffer));
+      runsApiServiceStub.exportRunsByRunKeys.withArgs(fakeProject.key, [fakeRuns[0].key]).and.returnValue(of(returnBuffer));
 
       // act
       component.exportSelectedRuns();
 
       // assert
-      expect(
-        runsApiServiceStub.exportRunsByRunKeys
-      ).toHaveBeenCalledWith(fakeProject.key, [fakeRuns[0].key]);
+      expect(runsApiServiceStub.exportRunsByRunKeys).toHaveBeenCalledWith(fakeProject.key, [fakeRuns[0].key]);
     });
 
     it("should call FileSavers saveAs for the information of selected fakeRuns", async () => {
@@ -265,9 +244,7 @@ describe("RunsListTableComponent", () => {
       jasmine.clock().install();
       jasmine.clock().mockDate(new Date(Date.now()));
       const returnBuffer: ArrayBufferLike = new Uint16Array([1, 2, 3]).buffer;
-      runsApiServiceStub.exportRunsByRunKeys
-        .withArgs(fakeProject.key, [fakeRuns[0].key])
-        .and.returnValue(of(returnBuffer));
+      runsApiServiceStub.exportRunsByRunKeys.withArgs(fakeProject.key, [fakeRuns[0].key]).and.returnValue(of(returnBuffer));
 
       // act
       component.exportSelectedRuns();
@@ -489,12 +466,8 @@ describe("RunsListTableComponent", () => {
     describe("compare button", () => {
       it("should have compare button with compare icon", async () => {
         // arrange + act also in beforeEach
-        const button: MatButtonHarness = await loader.getHarness(
-          MatButtonHarness.with({ selector: "#compare-button" })
-        );
-        const icon: MatIconHarness = await loader.getHarness(
-          MatIconHarness.with({ name: "compare" })
-        );
+        const button: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#compare-button" }));
+        const icon: MatIconHarness = await loader.getHarness(MatIconHarness.with({ name: "compare" }));
 
         // assert
         expect(button).toBeTruthy();
@@ -504,9 +477,7 @@ describe("RunsListTableComponent", () => {
 
       it("should have disabled compare button if less than two rows are selected", async () => {
         // arrange + act also in beforeEach
-        const button: MatButtonHarness = await loader.getHarness(
-          MatButtonHarness.with({ selector: "#compare-button" })
-        );
+        const button: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#compare-button" }));
 
         // assert
         expect(await button.isDisabled()).toBeTruthy();
@@ -516,9 +487,7 @@ describe("RunsListTableComponent", () => {
         // arrange + act also in beforeEach
         component.selection.selected.push(fakeRuns[0]);
         component.selection.selected.push(fakeRuns[1]);
-        const button: MatButtonHarness = await loader.getHarness(
-          MatButtonHarness.with({ selector: "#compare-button" })
-        );
+        const button: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#compare-button" }));
 
         // assert
         expect(await button.isDisabled()).toBeFalsy();
@@ -529,9 +498,7 @@ describe("RunsListTableComponent", () => {
         spyOn(component, "goToRunCompareComponent");
         component.selection.selected.push(fakeRuns[0]);
         component.selection.selected.push(fakeRuns[1]);
-        const button: MatButtonHarness = await loader.getHarness(
-          MatButtonHarness.with({ selector: "#compare-button" })
-        );
+        const button: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#compare-button" }));
 
         // act
         await button.click();
@@ -544,12 +511,8 @@ describe("RunsListTableComponent", () => {
     describe("export button", () => {
       it("should have export button with cloud_download icon", async () => {
         // arrange + act also in beforeEach
-        const button: MatButtonHarness = await loader.getHarness(
-          MatButtonHarness.with({ selector: "#export-button" })
-        );
-        const icon: MatIconHarness = await loader.getHarness(
-          MatIconHarness.with({ name: "cloud_download" })
-        );
+        const button: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#export-button" }));
+        const icon: MatIconHarness = await loader.getHarness(MatIconHarness.with({ name: "cloud_download" }));
 
         // assert
         expect(button).toBeTruthy();
@@ -559,9 +522,7 @@ describe("RunsListTableComponent", () => {
 
       it("should have disabled export button if less than one row is selected", async () => {
         // arrange + act also in beforeEach
-        const button: MatButtonHarness = await loader.getHarness(
-          MatButtonHarness.with({ selector: "#export-button" })
-        );
+        const button: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#export-button" }));
 
         // assert
         expect(await button.isDisabled()).toBeTruthy();
@@ -570,9 +531,7 @@ describe("RunsListTableComponent", () => {
       it("should have enabled export button if more than one row is selected", async () => {
         // arrange + act also in beforeEach
         component.selection.selected.push(fakeRuns[0]);
-        const button: MatButtonHarness = await loader.getHarness(
-          MatButtonHarness.with({ selector: "#export-button" })
-        );
+        const button: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#export-button" }));
 
         // assert
         expect(await button.isDisabled()).toBeFalsy();
@@ -582,9 +541,7 @@ describe("RunsListTableComponent", () => {
         // arrange + act also in beforeEach
         spyOn(component, "exportSelectedRuns");
         component.selection.selected.push(fakeRuns[0]);
-        const button: MatButtonHarness = await loader.getHarness(
-          MatButtonHarness.with({ selector: "#export-button" })
-        );
+        const button: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#export-button" }));
 
         // act
         await button.click();
@@ -601,9 +558,7 @@ describe("RunsListTableComponent", () => {
         const button: MatButtonHarness = await loader.getHarness(
           MatButtonHarness.with({ selector: "#show-or-hide-parameters-button" })
         );
-        const icon: MatIconHarness = await loader.getHarness(
-          MatIconHarness.with({ name: "visibility" })
-        );
+        const icon: MatIconHarness = await loader.getHarness(MatIconHarness.with({ name: "visibility" }));
 
         // assert
         expect(button).toBeTruthy();
@@ -617,16 +572,12 @@ describe("RunsListTableComponent", () => {
         const button: MatButtonHarness = await loader.getHarness(
           MatButtonHarness.with({ selector: "#show-or-hide-parameters-button" })
         );
-        const icon: MatIconHarness = await loader.getHarness(
-          MatIconHarness.with({ name: "visibility_off" })
-        );
+        const icon: MatIconHarness = await loader.getHarness(MatIconHarness.with({ name: "visibility_off" }));
 
         // assert
         expect(button).toBeTruthy();
         expect(icon).toBeTruthy();
-        expect(await button.getText()).toEqual(
-          "visibility_off Hide Parameters"
-        );
+        expect(await button.getText()).toEqual("visibility_off Hide Parameters");
       });
 
       it("should call toggleParameters() if clicked on show-or-hide-parameters-button", async () => {
@@ -656,14 +607,10 @@ describe("RunsListTableComponent", () => {
       describe("without parameters", () => {
         it("should have defined headers", async () => {
           // arrange + act also in beforeEach
-          const table: MatTableHarness = await loader.getHarness(
-            MatTableHarness
-          );
+          const table: MatTableHarness = await loader.getHarness(MatTableHarness);
           const headers: MatHeaderRowHarness[] = await table.getHeaderRows();
           const headerRow: MatRowHarnessColumnsText = await headers[0].getCellTextByColumnName();
-          const checkbox = await loader.getHarness(
-            MatCheckboxHarness.with({ selector: "#master-checkbox" })
-          );
+          const checkbox = await loader.getHarness(MatCheckboxHarness.with({ selector: "#master-checkbox" }));
 
           // assert
           expect(Object.keys(headerRow).length).toBe(8);
@@ -680,19 +627,11 @@ describe("RunsListTableComponent", () => {
 
         it("should show row for each run", async () => {
           // arrange + act also in beforeEach
-          const table: MatTableHarness = await loader.getHarness(
-            MatTableHarness
-          );
+          const table: MatTableHarness = await loader.getHarness(MatTableHarness);
           const rows: MatRowHarness[] = await table.getRows();
-          const chipLists: MatChipListHarness[] = await loader.getAllHarnesses(
-            MatChipListHarness
-          );
-          const checkboxes: MatCheckboxHarness[] = await loader.getAllHarnesses(
-            MatCheckboxHarness
-          );
-          const lists: MatListHarness[] = await loader.getAllHarnesses(
-            MatListHarness
-          );
+          const chipLists: MatChipListHarness[] = await loader.getAllHarnesses(MatChipListHarness);
+          const checkboxes: MatCheckboxHarness[] = await loader.getAllHarnesses(MatCheckboxHarness);
+          const lists: MatListHarness[] = await loader.getAllHarnesses(MatListHarness);
 
           // assert
           expect(rows.length).toBe(fakeRuns.length);
@@ -700,12 +639,8 @@ describe("RunsListTableComponent", () => {
           expect(checkboxes.length).toBe(fakeRuns.length + 1);
           expect(lists.length).toBe(fakeRuns.length);
           fakeRuns.forEach(async (fakeRun, fakeRunIndex) => {
-            const row: MatRowHarnessColumnsText = await rows[
-              fakeRunIndex
-            ].getCellTextByColumnName();
-            const chips: MatChipHarness[] = await chipLists[
-              fakeRunIndex
-            ].getChips();
+            const row: MatRowHarnessColumnsText = await rows[fakeRunIndex].getCellTextByColumnName();
+            const chips: MatChipHarness[] = await chipLists[fakeRunIndex].getChips();
 
             // material sorts the metrics list
             const orderedMetricsObject = Object.keys(fakeRun.metrics)
@@ -722,15 +657,11 @@ describe("RunsListTableComponent", () => {
 
               // assert metrics' list elements
               const items = await lists[fakeRunIndex].getItems();
-              expect(await items[keyIndex].getText()).toEqual(
-                keyValueString.trim()
-              );
+              expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
             });
 
             expect(row.name).toEqual(fakeRun.name);
-            expect(row.status.toUpperCase().replace(" ", "_")).toEqual(
-              fakeRun.status
-            );
+            expect(row.status.toUpperCase().replace(" ", "_")).toEqual(fakeRun.status);
             expect(row.startTime).toEqual(String(fakeRun.startTime));
             // We need to do this because the duration pipe's first argument is startTime
             expect(row.runTime).toEqual(String(fakeRun.startTime));
@@ -748,14 +679,10 @@ describe("RunsListTableComponent", () => {
 
         it("should have defined headers", async () => {
           // arrange + act also in beforeEach
-          const table: MatTableHarness = await loader.getHarness(
-            MatTableHarness
-          );
+          const table: MatTableHarness = await loader.getHarness(MatTableHarness);
           const headers: MatHeaderRowHarness[] = await table.getHeaderRows();
           const headerRow: MatRowHarnessColumnsText = await headers[0].getCellTextByColumnName();
-          const checkbox = await loader.getHarness(
-            MatCheckboxHarness.with({ selector: "#master-checkbox" })
-          );
+          const checkbox = await loader.getHarness(MatCheckboxHarness.with({ selector: "#master-checkbox" }));
 
           // assert
           expect(Object.keys(headerRow).length).toBe(9);
@@ -773,22 +700,14 @@ describe("RunsListTableComponent", () => {
 
         it("should show row for each run", async () => {
           // arrange + act also in beforeEach
-          const table: MatTableHarness = await loader.getHarness(
-            MatTableHarness
-          );
+          const table: MatTableHarness = await loader.getHarness(MatTableHarness);
           const rows: MatRowHarness[] = await table.getRows();
-          const chipLists: MatChipListHarness[] = await loader.getAllHarnesses(
-            MatChipListHarness
-          );
-          const checkboxes: MatCheckboxHarness[] = await loader.getAllHarnesses(
-            MatCheckboxHarness
-          );
+          const chipLists: MatChipListHarness[] = await loader.getAllHarnesses(MatChipListHarness);
+          const checkboxes: MatCheckboxHarness[] = await loader.getAllHarnesses(MatCheckboxHarness);
           const parametersLists: MatListHarness[] = await loader.getAllHarnesses(
             MatListHarness.with({ selector: "#parameters-list" })
           );
-          const metricsLists: MatListHarness[] = await loader.getAllHarnesses(
-            MatListHarness.with({ selector: "#metrics-list" })
-          );
+          const metricsLists: MatListHarness[] = await loader.getAllHarnesses(MatListHarness.with({ selector: "#metrics-list" }));
 
           // assert
           expect(rows.length).toBe(fakeRuns.length);
@@ -797,12 +716,8 @@ describe("RunsListTableComponent", () => {
           expect(parametersLists.length).toBe(fakeRuns.length);
           expect(metricsLists.length).toBe(fakeRuns.length);
           fakeRuns.forEach(async (fakeRun, fakeRunIndex) => {
-            const row: MatRowHarnessColumnsText = await rows[
-              fakeRunIndex
-            ].getCellTextByColumnName();
-            const chips: MatChipHarness[] = await chipLists[
-              fakeRunIndex
-            ].getChips();
+            const row: MatRowHarnessColumnsText = await rows[fakeRunIndex].getCellTextByColumnName();
+            const chips: MatChipHarness[] = await chipLists[fakeRunIndex].getChips();
 
             // material sorts the metrics list
             const orderedMetricsObject = Object.keys(fakeRun.metrics)
@@ -821,18 +736,14 @@ describe("RunsListTableComponent", () => {
               }, {});
 
             let parametersString = "";
-            Object.keys(orderedParametersObject).forEach(
-              async (key, keyIndex) => {
-                const keyValueString = ` remove ${key} : ${fakeRun.parameters[key]}`;
-                parametersString += keyValueString;
+            Object.keys(orderedParametersObject).forEach(async (key, keyIndex) => {
+              const keyValueString = ` remove ${key} : ${fakeRun.parameters[key]}`;
+              parametersString += keyValueString;
 
-                // assert metrics' list elements
-                const items = await parametersLists[fakeRunIndex].getItems();
-                expect(await items[keyIndex].getText()).toEqual(
-                  keyValueString.trim()
-                );
-              }
-            );
+              // assert metrics' list elements
+              const items = await parametersLists[fakeRunIndex].getItems();
+              expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
+            });
 
             let metricsString = "";
             Object.keys(orderedMetricsObject).forEach(async (key, keyIndex) => {
@@ -841,15 +752,11 @@ describe("RunsListTableComponent", () => {
 
               // assert metrics' list elements
               const items = await metricsLists[fakeRunIndex].getItems();
-              expect(await items[keyIndex].getText()).toEqual(
-                keyValueString.trim()
-              );
+              expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
             });
 
             expect(row.name).toEqual(fakeRun.name);
-            expect(row.status.toUpperCase().replace(" ", "_")).toEqual(
-              fakeRun.status
-            );
+            expect(row.status.toUpperCase().replace(" ", "_")).toEqual(fakeRun.status);
             expect(row.startTime).toEqual(String(fakeRun.startTime));
             // We need to do this because the duration pipe's first argument is startTime
             expect(row.runTime).toEqual(String(fakeRun.startTime));
@@ -867,24 +774,14 @@ describe("RunsListTableComponent", () => {
         // assert
         await Promise.all(
           fakeRuns.map(async (run) => {
-            const runLink: MatButtonHarness = await loader.getHarness(
-              MatButtonHarness.with({ text: run.name })
-            );
+            const runLink: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ text: run.name }));
             const aElement: TestElement = await runLink.host();
 
             expect(runLink).toBeTruthy();
             // Only take 27 characters because in travis the attribute will not be shortened automatically to 27 chars
-            expect(
-              (await aElement.getAttribute("ng-reflect-router-link")).substr(
-                0,
-                27
-              )
-            ).toEqual(
+            expect((await aElement.getAttribute("ng-reflect-router-link")).substr(0, 27)).toEqual(
               // Only take 27 characters because in the attribute will be shortened automatically to 27 chars
-              String(`/projects/${fakeProject.key}/runs/${run.key}`).substr(
-                0,
-                27
-              )
+              String(`/projects/${fakeProject.key}/runs/${run.key}`).substr(0, 27)
             );
           })
         );
@@ -894,11 +791,7 @@ describe("RunsListTableComponent", () => {
 
   function chipsEqualExperimentKeys(chips: MatChipHarness[], run: Run) {
     chips.forEach(async (chip, index) => {
-      expect(await chip.getText()).toEqual(
-        run.experimentRefs[index].experimentKey
-      );
+      expect(await chip.getText()).toEqual(run.experimentRefs[index].experimentKey);
     });
   }
 });
-
-

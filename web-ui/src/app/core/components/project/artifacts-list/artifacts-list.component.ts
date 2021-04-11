@@ -1,12 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ArtifactListResponse } from '../../../models/artifact.model';
-import { ArtifactsApiService, ListDataSource } from '../../../services';
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { ArtifactListResponse } from "../../../models/artifact.model";
+import { ArtifactsApiService, ListDataSource } from "../../../services";
 
 @Component({
-  selector: 'app-artifacts-list',
-  templateUrl: './artifacts-list.component.html',
-  styleUrls: ['./artifacts-list.component.scss']
+  selector: "app-artifacts-list",
+  templateUrl: "./artifacts-list.component.html",
+  styleUrls: ["./artifacts-list.component.scss"],
 })
 export class ArtifactsListComponent implements OnInit, OnDestroy {
   public artifactListDataSource: ListDataSource<ArtifactListResponse>;
@@ -14,8 +14,7 @@ export class ArtifactsListComponent implements OnInit, OnDestroy {
   public projectKey: string;
   private routeParamsSubscription: any;
 
-  constructor(private artifactsApiService: ArtifactsApiService,
-    private route: ActivatedRoute) { }
+  constructor(private artifactsApiService: ArtifactsApiService, private route: ActivatedRoute) {}
 
   ngOnDestroy(): void {
     if (this.routeParamsSubscription) {
@@ -24,7 +23,7 @@ export class ArtifactsListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.routeParamsSubscription = this.route.params.subscribe(params => {
+    this.routeParamsSubscription = this.route.params.subscribe((params) => {
       this.projectKey = params.projectKey;
       this.artifactListDataSource = this.artifactsApiService.getArtifacts(this.projectKey, false);
     });

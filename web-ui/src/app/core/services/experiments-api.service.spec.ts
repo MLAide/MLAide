@@ -1,8 +1,4 @@
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-  TestRequest,
-} from "@angular/common/http/testing";
+import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import { Observable } from "rxjs";
 import { skip } from "rxjs/operators";
@@ -11,11 +7,7 @@ import { appConfigMock } from "src/app/mocks/app-config.mock";
 import { Experiment, ExperimentListResponse } from "../models/experiment.model";
 import { Project } from "../models/project.model";
 
-import {
-  getRandomExperiment,
-  getRandomExperiments,
-  getRandomProject,
-} from "./../../mocks/fake-generator";
+import { getRandomExperiment, getRandomExperiments, getRandomProject } from "./../../mocks/fake-generator";
 
 import { ExperimentsApiService } from "./experiments-api.service";
 import { ListDataSource } from "./list-data-source";
@@ -49,10 +41,7 @@ describe("ExperimentsApiService", () => {
       const fakeExperiment: Experiment = await getRandomExperiment();
 
       // act
-      const experiment$: Observable<Experiment> = service.addExperiment(
-        fakeProject.key,
-        fakeExperiment
-      );
+      const experiment$: Observable<Experiment> = service.addExperiment(fakeProject.key, fakeExperiment);
 
       // assert
       experiment$.subscribe((response) => {
@@ -60,9 +49,7 @@ describe("ExperimentsApiService", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/projects/${fakeProject.key}/experiments`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/projects/${fakeProject.key}/experiments`);
       expect(req.request.method).toBe("POST");
       expect(req.request.body).toBe(fakeExperiment);
       req.flush(fakeExperiment);
@@ -76,10 +63,7 @@ describe("ExperimentsApiService", () => {
       const fakeExperiment: Experiment = await getRandomExperiment();
 
       // act
-      const experiment$ = service.getExperiment(
-        fakeProject.key,
-        fakeExperiment.key
-      );
+      const experiment$ = service.getExperiment(fakeProject.key, fakeExperiment.key);
 
       // assert
       experiment$.subscribe((response) => {
@@ -103,9 +87,7 @@ describe("ExperimentsApiService", () => {
       const dummyResponse: ExperimentListResponse = { items: fakeExperiments };
 
       // act
-      const dataSource: ListDataSource<ExperimentListResponse> = service.getExperiments(
-        fakeProject.key
-      );
+      const dataSource: ListDataSource<ExperimentListResponse> = service.getExperiments(fakeProject.key);
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
@@ -114,9 +96,7 @@ describe("ExperimentsApiService", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/projects/${fakeProject.key}/experiments`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/projects/${fakeProject.key}/experiments`);
       expect(req.request.method).toBe("GET");
       req.flush(dummyResponse);
     });
@@ -146,9 +126,7 @@ describe("ExperimentsApiService", () => {
       );
       expect(req.request.method).toBe("PATCH");
       expect(req.request.body).toEqual(fakeExperiment);
-      expect(req.request.headers.get("content-type")).toBe(
-        "application/merge-patch+json"
-      );
+      expect(req.request.headers.get("content-type")).toBe("application/merge-patch+json");
       req.flush(fakeExperiment);
     });
   });

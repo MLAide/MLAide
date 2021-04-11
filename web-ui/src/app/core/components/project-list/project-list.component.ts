@@ -1,29 +1,31 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { Project, ProjectListResponse } from '../../models/project.model';
-import { ListDataSource, ProjectsApiService, SpinnerUiService } from '../../services';
-import { CreateProjectComponent } from './create-project/create-project.component';
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
+import { MatTableDataSource } from "@angular/material/table";
+import { Router } from "@angular/router";
+import { Subscription } from "rxjs";
+import { Project, ProjectListResponse } from "../../models/project.model";
+import { ListDataSource, ProjectsApiService, SpinnerUiService } from "../../services";
+import { CreateProjectComponent } from "./create-project/create-project.component";
 
 @Component({
-  selector: 'app-project-list',
-  templateUrl: './project-list.component.html',
-  styleUrls: ['./project-list.component.scss']
+  selector: "app-project-list",
+  templateUrl: "./project-list.component.html",
+  styleUrls: ["./project-list.component.scss"],
 })
 export class ProjectListComponent implements OnInit, OnDestroy {
-  public title = 'Projects Overview'
+  public title = "Projects Overview";
   public dataSource: MatTableDataSource<Project> = new MatTableDataSource<Project>();
-  public displayedColumns: string[] = ['name', 'key', 'createdAt'];
+  public displayedColumns: string[] = ["name", "key", "createdAt"];
 
   private projectListDataSource: ListDataSource<ProjectListResponse>;
   private projectListSubscription: Subscription;
 
-  constructor(private dialog: MatDialog,
+  constructor(
+    private dialog: MatDialog,
     private projectsApiService: ProjectsApiService,
     private router: Router,
-    private spinnerService: SpinnerUiService) { }
+    private spinnerService: SpinnerUiService
+  ) {}
 
   goToProject(project: Project) {
     const projectUrl = `/projects/${project.key}`;
@@ -39,18 +41,20 @@ export class ProjectListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.projectListDataSource = this.projectsApiService.getProjects();
-    this.projectListSubscription = this.projectListDataSource.items$.subscribe(projects => this.dataSource.data = projects.items);
+    this.projectListSubscription = this.projectListDataSource.items$.subscribe(
+      (projects) => (this.dataSource.data = projects.items)
+    );
   }
 
   openCreateProjectDialog(): void {
     const dialogRef = this.dialog.open(CreateProjectComponent, {
       data: {
-        key: '',
-        name: ''
-      }
+        key: "",
+        name: "",
+      },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.createNewProject(result);
       }

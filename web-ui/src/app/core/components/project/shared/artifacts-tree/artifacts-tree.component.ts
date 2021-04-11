@@ -1,21 +1,9 @@
-import {
-  Component,
-  Input,
-  OnChanges,
-  OnDestroy,
-  SimpleChanges,
-} from "@angular/core";
-import {
-  MatTreeFlatDataSource,
-  MatTreeFlattener,
-} from "@angular/material/tree";
+import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from "@angular/core";
+import { MatTreeFlatDataSource, MatTreeFlattener } from "@angular/material/tree";
 import { FlatTreeControl } from "@angular/cdk/tree";
 import { ArtifactsApiService, ListDataSource } from "src/app/core/services";
 import { Observable, Subscription } from "rxjs";
-import {
-  Artifact,
-  ArtifactListResponse,
-} from "src/app/core/models/artifact.model";
+import { Artifact, ArtifactListResponse } from "src/app/core/models/artifact.model";
 import { HttpResponse } from "@angular/common/http";
 import { FileSaverService } from "ngx-filesaver";
 
@@ -65,22 +53,11 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
   /** The MatTreeFlatDataSource connects the control and flattener to provide data. */
   dataSource: MatTreeFlatDataSource<FileNode, FlatTreeNode>;
 
-  constructor(
-    private artifactsApiService: ArtifactsApiService,
-    private fileSaverService: FileSaverService
-  ) {
-    this.treeFlattener = new MatTreeFlattener(
-      this.transformer,
-      this.getLevel,
-      this.isExpandable,
-      this.getChildren
-    );
+  constructor(private artifactsApiService: ArtifactsApiService, private fileSaverService: FileSaverService) {
+    this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
 
     this.treeControl = new FlatTreeControl(this.getLevel, this.isExpandable);
-    this.dataSource = new MatTreeFlatDataSource(
-      this.treeControl,
-      this.treeFlattener
-    );
+    this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -89,15 +66,13 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
         this.artifactListSubscription.unsubscribe();
       }
 
-      this.artifactListSubscription = this.artifactListDataSource?.items$.subscribe(
-        (artifacts) => {
-          this.buildFileNodes(artifacts?.items);
-          if (this.artifactNodes) {
-            this.sortTree(this.artifactNodes);
-            this.dataSource.data = this.artifactNodes;
-          }
+      this.artifactListSubscription = this.artifactListDataSource?.items$.subscribe((artifacts) => {
+        this.buildFileNodes(artifacts?.items);
+        if (this.artifactNodes) {
+          this.sortTree(this.artifactNodes);
+          this.dataSource.data = this.artifactNodes;
         }
-      );
+      });
     }
   }
 
@@ -119,24 +94,16 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
         node.artifactFileId
       );
     } else {
-      observable = this.artifactsApiService.download(
-        this.projectKey,
-        node.artifactName,
-        node.artifactVersion
-      );
+      observable = this.artifactsApiService.download(this.projectKey, node.artifactName, node.artifactVersion);
     }
 
     observable.subscribe((response: any) => {
       const blob = new Blob([response], {
         type: response.headers.get("Content-Type"),
       });
-      const contentDisposition: string = response.headers.get(
-        "Content-Disposition"
-      );
+      const contentDisposition: string = response.headers.get("Content-Disposition");
       // https://stackoverflow.com/questions/23054475/javascript-regex-for-extracting-filename-from-content-disposition-header/23054920
-      const regEx = new RegExp(
-        /filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/gi
-      );
+      const regEx = new RegExp(/filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/gi);
 
       const fileName = regEx.exec(contentDisposition)[1];
       this.fileSaverService.save(blob, fileName);
@@ -203,10 +170,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
               type: "file",
             });
           } else {
-            let child: FileNode = this.checkIfChildNodeExists(
-              fileDirPart,
-              fileNode
-            );
+            let child: FileNode = this.checkIfChildNodeExists(fileDirPart, fileNode);
 
             if (child === undefined) {
               child = {

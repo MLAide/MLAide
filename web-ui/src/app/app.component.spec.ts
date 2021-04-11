@@ -1,29 +1,29 @@
-import { HarnessLoader, TestElement } from '@angular/cdk/testing';
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterTestingModule } from '@angular/router/testing';
-import { of, Subject } from 'rxjs';
-import { AppComponent } from './app.component';
-import { AuthService } from './auth/auth.service';
-import { Project, ProjectListResponse } from './core/models/project.model';
-import { User } from './core/models/user.model';
-import { ProjectsApiService, UsersApiService } from './core/services';
-import { ListDataSourceMock } from './mocks/data-source.mock';
-import { getRandomProjects, getRandomUser } from './mocks/fake-generator';
-import {MatToolbarHarness} from '@angular/material/toolbar/testing';
-import {MatMenuHarness, MatMenuItemHarness} from '@angular/material/menu/testing';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatIconModule } from '@angular/material/icon';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ngMocks } from 'ng-mocks';
-import { Router } from '@angular/router';
-import { MatButtonHarness } from '@angular/material/button/testing';
+import { HarnessLoader, TestElement } from "@angular/cdk/testing";
+import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { MatToolbarModule } from "@angular/material/toolbar";
+import { RouterTestingModule } from "@angular/router/testing";
+import { of, Subject } from "rxjs";
+import { AppComponent } from "./app.component";
+import { AuthService } from "./auth/auth.service";
+import { Project, ProjectListResponse } from "./core/models/project.model";
+import { User } from "./core/models/user.model";
+import { ProjectsApiService, UsersApiService } from "./core/services";
+import { ListDataSourceMock } from "./mocks/data-source.mock";
+import { getRandomProjects, getRandomUser } from "./mocks/fake-generator";
+import { MatToolbarHarness } from "@angular/material/toolbar/testing";
+import { MatMenuHarness, MatMenuItemHarness } from "@angular/material/menu/testing";
+import { MatMenuModule } from "@angular/material/menu";
+import { MatIconModule } from "@angular/material/icon";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { ngMocks } from "ng-mocks";
+import { Router } from "@angular/router";
+import { MatButtonHarness } from "@angular/material/button/testing";
 
-describe('AppComponent', () => {
+describe("AppComponent", () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
-  
+
   let authServiceIsAuthenticated$;
 
   // fakes
@@ -37,7 +37,7 @@ describe('AppComponent', () => {
 
   // data source mocks
   let projectListDataSourceMock: ListDataSourceMock<Project, ProjectListResponse> = new ListDataSourceMock();
-  
+
   beforeEach(async () => {
     authServiceIsAuthenticated$ = new Subject<boolean>();
 
@@ -57,23 +57,15 @@ describe('AppComponent', () => {
 
     // setup users api
     usersApiServiceStub.getCurrentUser.and.returnValue(of(fakeUser));
-    
+
     TestBed.configureTestingModule({
       providers: [
         { provide: AuthService, useValue: authServiceStub },
         { provide: ProjectsApiService, useValue: projectsApiServiceStub },
         { provide: UsersApiService, useValue: usersApiServiceStub },
       ],
-      imports: [
-        BrowserAnimationsModule,
-        MatIconModule,
-        MatMenuModule,
-        MatToolbarModule,
-        RouterTestingModule
-      ],
-      declarations: [
-        AppComponent
-      ],
+      imports: [BrowserAnimationsModule, MatIconModule, MatMenuModule, MatToolbarModule, RouterTestingModule],
+      declarations: [AppComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AppComponent);
@@ -91,9 +83,9 @@ describe('AppComponent', () => {
     projectListDataSourceMock.emulate([]);
   });
 
-  it('should create the app', () => {
-     const app = fixture.debugElement.componentInstance;
-     expect(app).toBeTruthy();
+  it("should create the app", () => {
+    const app = fixture.debugElement.componentInstance;
+    expect(app).toBeTruthy();
   });
 
   describe("constructor", () => {
@@ -147,35 +139,35 @@ describe('AppComponent', () => {
     it("should unsubscribe projectListSubscription", async () => {
       // arrange also in beforeEach
       authServiceIsAuthenticated$.next(true);
-      spyOn(component['projectListSubscription'], 'unsubscribe');
+      spyOn(component["projectListSubscription"], "unsubscribe");
 
       // act
       component.ngOnDestroy();
 
       // assert
-      expect(component['projectListSubscription'].unsubscribe).toHaveBeenCalled();
+      expect(component["projectListSubscription"].unsubscribe).toHaveBeenCalled();
     });
 
     it("should unsubscribe isAuthenticatedSubscription", async () => {
       // arrange also in beforeEach
-      spyOn(component['isAuthenticatedSubscription'], 'unsubscribe');
+      spyOn(component["isAuthenticatedSubscription"], "unsubscribe");
 
       // act
       component.ngOnDestroy();
 
       // assert
-      expect(component['isAuthenticatedSubscription'].unsubscribe).toHaveBeenCalled();
+      expect(component["isAuthenticatedSubscription"].unsubscribe).toHaveBeenCalled();
     });
 
     it("should unsubscribe isAuthenticatedSubscriptionForProjects", async () => {
       // arrange also in beforeEach
-      spyOn(component['isAuthenticatedSubscriptionForProjects'], 'unsubscribe');
+      spyOn(component["isAuthenticatedSubscriptionForProjects"], "unsubscribe");
 
       // act
       component.ngOnDestroy();
 
       // assert
-      expect(component['isAuthenticatedSubscriptionForProjects'].unsubscribe).toHaveBeenCalled();
+      expect(component["isAuthenticatedSubscriptionForProjects"].unsubscribe).toHaveBeenCalled();
     });
   });
 
@@ -199,23 +191,23 @@ describe('AppComponent', () => {
     });
   });
 
-  describe('component rendering', () => {
-    describe('tool bar', () => {
+  describe("component rendering", () => {
+    describe("tool bar", () => {
       let loader: HarnessLoader;
 
       beforeEach(() => {
         loader = TestbedHarnessEnvironment.loader(fixture);
-      })
+      });
 
-      it('should contain mat tool bar', async () => {
+      it("should contain mat tool bar", async () => {
         // arrange
         const toolbar: MatToolbarHarness = await loader.getHarness(MatToolbarHarness);
-        
+
         // assert
         expect(toolbar).toBeTruthy();
       });
 
-      it('should contain correct labels when not authenticated', async () => {
+      it("should contain correct labels when not authenticated", async () => {
         // arrange
         const toolbar: MatToolbarHarness = await loader.getHarness(MatToolbarHarness);
         authServiceIsAuthenticated$.next(false);
@@ -224,7 +216,7 @@ describe('AppComponent', () => {
         expect((await toolbar.getRowsAsText())[0]).toEqual("ML AideloginLogin");
       });
 
-      it('should contain correct labels when authenticated', async () => {
+      it("should contain correct labels when authenticated", async () => {
         // arrange
         const toolbar: MatToolbarHarness = await loader.getHarness(MatToolbarHarness);
         authServiceIsAuthenticated$.next(true);
@@ -233,38 +225,36 @@ describe('AppComponent', () => {
         expect((await toolbar.getRowsAsText())[0]).toEqual("ML AideProjects " + fakeUser.nickName);
       });
 
-      it('should contain ml aide button', async () => {
+      it("should contain ml aide button", async () => {
         // arrange
-        const mlAideButton: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: '#ml-aide-button' }));
+        const mlAideButton: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#ml-aide-button" }));
 
         // assert
         expect(mlAideButton).toBeTruthy();
       });
 
-      it('should have correct link for ml aide button', async () => {
+      it("should have correct link for ml aide button", async () => {
         // arrange + act also in beforeEach
-        const mlAideButton: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: '#ml-aide-button' }));
+        const mlAideButton: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#ml-aide-button" }));
 
         // assert
         const aElement: TestElement = await mlAideButton.host();
-        expect(await aElement.getAttribute("href")).toEqual(
-          "/"
-          );
+        expect(await aElement.getAttribute("href")).toEqual("/");
       });
 
-      it('should contain login button when not authenticated', async () => {
+      it("should contain login button when not authenticated", async () => {
         // arrange
         authServiceIsAuthenticated$.next(false);
-        const loginButton: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: '#login-button' }));
+        const loginButton: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#login-button" }));
 
         // assert
         expect(loginButton).toBeTruthy();
       });
 
-      it('should call login on clicking login button', async () => {
+      it("should call login on clicking login button", async () => {
         // arrange
         authServiceIsAuthenticated$.next(false);
-        const loginButton: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: '#login-button' }));
+        const loginButton: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#login-button" }));
         spyOn(component, "login");
 
         // act
@@ -274,7 +264,7 @@ describe('AppComponent', () => {
         expect(component.login).toHaveBeenCalled();
       });
 
-      it('should contain two menus when authenticated', async () => {
+      it("should contain two menus when authenticated", async () => {
         // arrange
         authServiceIsAuthenticated$.next(true);
         const menus: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
@@ -283,7 +273,7 @@ describe('AppComponent', () => {
         expect(menus.length).toBe(2);
       });
 
-      it('should contain projects and user menu when authenticated', async () => {
+      it("should contain projects and user menu when authenticated", async () => {
         // arrange
         authServiceIsAuthenticated$.next(true);
         const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
@@ -293,7 +283,7 @@ describe('AppComponent', () => {
         expect(await userMenu.getTriggerText()).toEqual(fakeUser.nickName);
       });
 
-      it('should not contain menus when not authenticated', async () => {
+      it("should not contain menus when not authenticated", async () => {
         // arrange
         authServiceIsAuthenticated$.next(false);
         const menus: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
@@ -302,11 +292,11 @@ describe('AppComponent', () => {
         expect(menus.length).toEqual(0);
       });
 
-      it('should open and close projects menu', async () => {
+      it("should open and close projects menu", async () => {
         // arrange
         authServiceIsAuthenticated$.next(true);
         const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
-        
+
         // act + assert
         expect(await projectsMenu.isOpen()).toBe(false);
         await projectsMenu.open();
@@ -315,11 +305,11 @@ describe('AppComponent', () => {
         expect(await projectsMenu.isOpen()).toBe(false);
       });
 
-      it('should open and close user menu', async () => {
+      it("should open and close user menu", async () => {
         // arrange
         authServiceIsAuthenticated$.next(true);
         const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
-        
+
         // act + assert
         expect(await userMenu.isOpen()).toBe(false);
         await userMenu.open();
@@ -328,7 +318,7 @@ describe('AppComponent', () => {
         expect(await userMenu.isOpen()).toBe(false);
       });
 
-      it('should contain all project menu items', async () => {
+      it("should contain all project menu items", async () => {
         // arrange
         authServiceIsAuthenticated$.next(true);
         const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
@@ -339,13 +329,13 @@ describe('AppComponent', () => {
 
         // assert
         expect((await projectsMenu.getItems()).length).toBe(fakeProjects.length + 1);
-        expect((await menuItems[0].getText())).toEqual(fakeProjects[0].name);
-        expect((await menuItems[1].getText())).toEqual(fakeProjects[1].name);
-        expect((await menuItems[2].getText())).toEqual(fakeProjects[2].name);
-        expect((await menuItems[3].getText())).toEqual("Show all");
+        expect(await menuItems[0].getText()).toEqual(fakeProjects[0].name);
+        expect(await menuItems[1].getText()).toEqual(fakeProjects[1].name);
+        expect(await menuItems[2].getText()).toEqual(fakeProjects[2].name);
+        expect(await menuItems[3].getText()).toEqual("Show all");
       });
 
-      it('should contain all user menu items', async () => {
+      it("should contain all user menu items", async () => {
         // arrange
         authServiceIsAuthenticated$.next(true);
         const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
@@ -356,11 +346,11 @@ describe('AppComponent', () => {
 
         // assert
         expect((await userMenu.getItems()).length).toBe(2);
-        expect((await menuItems[0].getText())).toEqual("settingsSettings");
-        expect((await menuItems[1].getText())).toEqual("exit_to_appLogout");
+        expect(await menuItems[0].getText()).toEqual("settingsSettings");
+        expect(await menuItems[1].getText()).toEqual("exit_to_appLogout");
       });
 
-      it('should have correct links for project menu entries', async (done) => {
+      it("should have correct links for project menu entries", async (done) => {
         // arrange + act also in beforeEach
         authServiceIsAuthenticated$.next(true);
         const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
@@ -373,20 +363,16 @@ describe('AppComponent', () => {
         menuItems.forEach(async (menuItem, index) => {
           const aElement: TestElement = await menuItem.host();
 
-          if (index < menuItems.length - 1){
-            expect(await aElement.getAttribute("href")).toEqual(
-            `/projects/${fakeProjects[index].key}`
-            );
+          if (index < menuItems.length - 1) {
+            expect(await aElement.getAttribute("href")).toEqual(`/projects/${fakeProjects[index].key}`);
           } else {
-            expect(await aElement.getAttribute("href")).toEqual(
-              "/projects"
-            );
+            expect(await aElement.getAttribute("href")).toEqual("/projects");
             done();
           }
         });
       });
 
-      it('should have correct links for user menu entries', async () => {
+      it("should have correct links for user menu entries", async () => {
         // arrange + act also in beforeEach
         authServiceIsAuthenticated$.next(true);
         const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
@@ -397,12 +383,10 @@ describe('AppComponent', () => {
 
         // assert
         const aElement: TestElement = await menuItems[0].host();
-        expect(await aElement.getAttribute("href")).toEqual(
-          "/user-settings"
-          );
+        expect(await aElement.getAttribute("href")).toEqual("/user-settings");
       });
 
-      it('should call logout on clicking logout button in user menu', async () => {
+      it("should call logout on clicking logout button in user menu", async () => {
         // arrange
         authServiceIsAuthenticated$.next(true);
         const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);

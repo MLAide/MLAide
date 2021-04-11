@@ -4,12 +4,7 @@ import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { DatePipe } from "@angular/common";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import {
-  AbstractControl,
-  FormBuilder,
-  FormsModule,
-  ReactiveFormsModule,
-} from "@angular/forms";
+import { AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonHarness } from "@angular/material/button/testing";
 import { MatDialogModule, MatDialogRef } from "@angular/material/dialog";
 import { MatDividerModule } from "@angular/material/divider";
@@ -23,11 +18,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MockPipe } from "ng-mocks";
 import { of } from "rxjs";
 import { ApiKey } from "src/app/core/models/apiKey.model";
-import {
-  SnackbarUiService,
-  SpinnerUiService,
-  UsersApiService,
-} from "src/app/core/services";
+import { SnackbarUiService, SpinnerUiService, UsersApiService } from "src/app/core/services";
 import { getRandomApiKey } from "src/app/mocks/fake-generator";
 
 import { CreateApiKeyComponent } from "./create-api-key.component";
@@ -62,17 +53,9 @@ describe("CreateApiKeyComponent", () => {
     fakeApiKey = await getRandomApiKey();
 
     // setup stubs
-    spinnerUiServiceStub = jasmine.createSpyObj("spinnerUiService", [
-      "showSpinner",
-      "stopSpinner",
-    ]);
-    snackbarUiServiceStub = jasmine.createSpyObj("snackBarUiService", [
-      "showSuccesfulSnackbar",
-      "showErrorSnackbar",
-    ]);
-    usersApiServiceStub = jasmine.createSpyObj("usersApiService", [
-      "createApiKey",
-    ]);
+    spinnerUiServiceStub = jasmine.createSpyObj("spinnerUiService", ["showSpinner", "stopSpinner"]);
+    snackbarUiServiceStub = jasmine.createSpyObj("snackBarUiService", ["showSuccesfulSnackbar", "showErrorSnackbar"]);
+    usersApiServiceStub = jasmine.createSpyObj("usersApiService", ["createApiKey"]);
 
     await TestBed.configureTestingModule({
       declarations: [CreateApiKeyComponent, MockPipe(DatePipe, (v) => v)],
@@ -157,9 +140,7 @@ describe("CreateApiKeyComponent", () => {
       component.copy();
 
       // assert
-      expect(snackbarUiServiceStub.showSuccesfulSnackbar).toHaveBeenCalledWith(
-        "Successfully copied to clipboard!"
-      );
+      expect(snackbarUiServiceStub.showSuccesfulSnackbar).toHaveBeenCalledWith("Successfully copied to clipboard!");
     });
   });
 
@@ -182,9 +163,7 @@ describe("CreateApiKeyComponent", () => {
 
       fakeApiKey.description = description;
       fakeApiKey.expiresAt = expiresAt;
-      usersApiServiceStub.createApiKey
-        .withArgs(apiKey)
-        .and.returnValue(of(fakeApiKey));
+      usersApiServiceStub.createApiKey.withArgs(apiKey).and.returnValue(of(fakeApiKey));
 
       // act
       component.create();
@@ -211,9 +190,7 @@ describe("CreateApiKeyComponent", () => {
       };
 
       fakeApiKey.description = description;
-      usersApiServiceStub.createApiKey
-        .withArgs(apiKey)
-        .and.returnValue(of(fakeApiKey));
+      usersApiServiceStub.createApiKey.withArgs(apiKey).and.returnValue(of(fakeApiKey));
 
       // act
       component.create();
@@ -301,9 +278,7 @@ describe("CreateApiKeyComponent", () => {
       describe("apiKey is not set", () => {
         it("should have 2 form fields with labels", async () => {
           // arrange + act also in beforeEach
-          const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(
-            MatFormFieldHarness
-          );
+          const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(MatFormFieldHarness);
 
           // assert
           expect(formFields.length).toBe(2);
@@ -318,9 +293,7 @@ describe("CreateApiKeyComponent", () => {
           const formField: MatFormFieldHarness = await loader.getHarness(
             MatFormFieldHarness.with({ floatingLabelText: "Description *" })
           );
-          const input: MatInputHarness = await loader.getHarness(
-            MatInputHarness.with({ selector: "#description-input" })
-          );
+          const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ selector: "#description-input" }));
 
           // assert
           expect(formField).not.toBeNull();
@@ -335,9 +308,7 @@ describe("CreateApiKeyComponent", () => {
           const formField: MatFormFieldHarness = await loader.getHarness(
             MatFormFieldHarness.with({ floatingLabelText: "Expires at" })
           );
-          const input: MatInputHarness = await loader.getHarness(
-            MatInputHarness.with({ selector: "#expires-at-input" })
-          );
+          const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ selector: "#expires-at-input" }));
 
           // assert
           expect(formField).not.toBeNull();
@@ -358,9 +329,7 @@ describe("CreateApiKeyComponent", () => {
           component.form.get("description").markAsTouched();
 
           // assert
-          expect((await formField.getTextErrors())[0]).toEqual(
-            "You must provide a description."
-          );
+          expect((await formField.getTextErrors())[0]).toEqual("You must provide a description.");
           expect(await formField.isControlValid()).not.toBeNull();
           expect(await formField.isControlValid()).toBeFalsy();
         });
@@ -462,9 +431,7 @@ describe("CreateApiKeyComponent", () => {
         it("should have 3 form fields with labels", async () => {
           // arrange + act also in beforeEach
           component.apiKey = fakeApiKey.apiKey;
-          const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(
-            MatFormFieldHarness
-          );
+          const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(MatFormFieldHarness);
 
           // assert
           expect(formFields.length).toBe(3);
@@ -487,9 +454,7 @@ describe("CreateApiKeyComponent", () => {
           const formField: MatFormFieldHarness = await loader.getHarness(
             MatFormFieldHarness.with({ floatingLabelText: "API Key" })
           );
-          const input: MatInputHarness = await loader.getHarness(
-            MatInputHarness.with({ value: fakeApiKey.apiKey })
-          );
+          const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeApiKey.apiKey }));
 
           // assert
           expect(formField).not.toBeNull();
@@ -503,9 +468,7 @@ describe("CreateApiKeyComponent", () => {
           const button: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({ selector: "#create-api-key-copy-button" })
           );
-          const icon: MatIconHarness = await loader.getHarness(
-            MatIconHarness.with({ name: "content_copy" })
-          );
+          const icon: MatIconHarness = await loader.getHarness(MatIconHarness.with({ name: "content_copy" }));
 
           // assert
           expect(button).toBeTruthy();
@@ -531,14 +494,10 @@ describe("CreateApiKeyComponent", () => {
           // arrange + act also in beforeEach
           component.apiKey = fakeApiKey.apiKey;
           fixture.detectChanges();
-          let matHint: HTMLElement = fixture.nativeElement.querySelector(
-            "mat-hint"
-          );
+          let matHint: HTMLElement = fixture.nativeElement.querySelector("mat-hint");
 
           // assert
-          expect(matHint.textContent).toEqual(
-            "Save this key - you won't be able to access it again."
-          );
+          expect(matHint.textContent).toEqual("Save this key - you won't be able to access it again.");
         });
 
         describe("close button", () => {

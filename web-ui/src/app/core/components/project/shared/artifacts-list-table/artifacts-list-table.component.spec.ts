@@ -6,25 +6,14 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatButtonModule } from "@angular/material/button";
 import { MatButtonHarness } from "@angular/material/button/testing";
 import { MatTableModule } from "@angular/material/table";
-import {
-  MatHeaderRowHarness,
-  MatRowHarness,
-  MatRowHarnessColumnsText,
-  MatTableHarness,
-} from "@angular/material/table/testing";
+import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouterTestingModule } from "@angular/router/testing";
 import { MockPipe } from "ng-mocks";
-import {
-  Artifact,
-  ArtifactListResponse,
-} from "src/app/core/models/artifact.model";
+import { Artifact, ArtifactListResponse } from "src/app/core/models/artifact.model";
 import { Project } from "src/app/core/models/project.model";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
-import {
-  getRandomArtifacts,
-  getRandomProject,
-} from "src/app/mocks/fake-generator";
+import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
 
 import { ArtifactsListTableComponent } from "./artifacts-list-table.component";
 
@@ -37,10 +26,7 @@ describe("ArtifactsListTableComponent", () => {
   let fakeProject: Project;
 
   // data source mocks
-  let artifactListDataSourceMock: ListDataSourceMock<
-    Artifact,
-    ArtifactListResponse
-  > = new ListDataSourceMock();
+  let artifactListDataSourceMock: ListDataSourceMock<Artifact, ArtifactListResponse> = new ListDataSourceMock();
 
   beforeEach(async () => {
     // setup fakes
@@ -49,12 +35,7 @@ describe("ArtifactsListTableComponent", () => {
 
     await TestBed.configureTestingModule({
       declarations: [ArtifactsListTableComponent, MockPipe(DatePipe, (v) => v)],
-      imports: [
-        BrowserAnimationsModule,
-        MatButtonModule,
-        MatTableModule,
-        RouterTestingModule,
-      ],
+      imports: [BrowserAnimationsModule, MatButtonModule, MatTableModule, RouterTestingModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ArtifactsListTableComponent);
@@ -93,11 +74,7 @@ describe("ArtifactsListTableComponent", () => {
 
       //directly call ngOnChanges
       component.ngOnChanges({
-        artifactListDataSource: new SimpleChange(
-          null,
-          artifactListDataSourceMock,
-          true
-        ),
+        artifactListDataSource: new SimpleChange(null, artifactListDataSourceMock, true),
       });
       fixture.detectChanges();
 
@@ -129,11 +106,7 @@ describe("ArtifactsListTableComponent", () => {
 
       artifactListDataSourceMock.emulate(fakeArtifacts);
       component.ngOnChanges({
-        artifactListDataSource: new SimpleChange(
-          null,
-          artifactListDataSourceMock,
-          true
-        ),
+        artifactListDataSource: new SimpleChange(null, artifactListDataSourceMock, true),
       });
       fixture.detectChanges();
     });
@@ -171,9 +144,7 @@ describe("ArtifactsListTableComponent", () => {
         // assert
         expect(rows.length).toBe(fakeArtifacts.length);
         fakeArtifacts.forEach(async (fakeArtifact, index) => {
-          const row: MatRowHarnessColumnsText = await rows[
-            index
-          ].getCellTextByColumnName();
+          const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
 
           expect(row.createdAt).toEqual(String(fakeArtifact.createdAt));
           expect(row.artifactName).toEqual(fakeArtifact.name);
@@ -189,17 +160,13 @@ describe("ArtifactsListTableComponent", () => {
 
         // assert
         fakeArtifacts.forEach(async (artifact, index) => {
-          const runLink: MatButtonHarness = await loader.getHarness(
-            MatButtonHarness.with({ text: artifact.runName })
-          );
+          const runLink: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ text: artifact.runName }));
           const aElement: TestElement = await runLink.host();
 
           expect(runLink).toBeTruthy();
-          expect(await aElement.getAttribute("href")).toEqual(
-            `/projects/${fakeProject.key}/runs/${artifact.runKey}`
-          );
+          expect(await aElement.getAttribute("href")).toEqual(`/projects/${fakeProject.key}/runs/${artifact.runKey}`);
 
-          if(index == fakeArtifacts.length -1 ) {
+          if (index == fakeArtifacts.length - 1) {
             done();
           }
         });
