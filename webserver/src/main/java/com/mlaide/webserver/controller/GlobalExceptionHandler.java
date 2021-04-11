@@ -98,10 +98,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
 
         Error error;
-        if (body instanceof Error) {
+        if (body == null) {
+            error = new Error(status.value());
+        } else if (body instanceof Error) {
             error = (Error) body;
         } else {
-            error = new Error(status.value(), body != null ? body.toString() : null);
+            error = new Error(status.value(), body.toString());
         }
 
         return super.handleExceptionInternal(ex, error, headers, status, request);
