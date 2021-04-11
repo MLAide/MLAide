@@ -59,7 +59,8 @@ public class RunController {
         }
 
         if (experimentKey != null) {
-            logger.info("get runs for experimentKey: {}", experimentKey);
+            String escapedExperimentKey = experimentKey.replaceAll("[^0-9A-Za-z-]", "_");
+            logger.info("get runs for experimentKey: {}", escapedExperimentKey);
             return runService.getRunsOfExperiment(projectKey, experimentKey);
         }
 
