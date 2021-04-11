@@ -1,5 +1,5 @@
 import { ENTER } from "@angular/cdk/keycodes";
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { ProjectMember, ProjectMemberRole } from "../../../../models/projectMember.model";
@@ -9,7 +9,7 @@ import { ProjectMember, ProjectMemberRole } from "../../../../models/projectMemb
   templateUrl: "./create-or-edit-project-member.component.html",
   styleUrls: ["./create-or-edit-project-member.component.scss"],
 })
-export class CreateOrEditProjectMemberComponent implements OnInit {
+export class CreateOrEditProjectMemberComponent {
   public currentRole;
   public form: FormGroup;
   public projectMemberRole = ProjectMemberRole;
@@ -33,8 +33,6 @@ export class CreateOrEditProjectMemberComponent implements OnInit {
       role: [this.currentRole, { validators: [Validators.required], updateOn: "change" }],
     });
   }
-
-  ngOnInit(): void {}
 
   public cancel() {
     this.dialogRef.close();

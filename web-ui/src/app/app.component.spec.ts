@@ -16,8 +16,6 @@ import { MatMenuHarness, MatMenuItemHarness } from "@angular/material/menu/testi
 import { MatMenuModule } from "@angular/material/menu";
 import { MatIconModule } from "@angular/material/icon";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { ngMocks } from "ng-mocks";
-import { Router } from "@angular/router";
 import { MatButtonHarness } from "@angular/material/button/testing";
 
 describe("AppComponent", () => {
@@ -295,7 +293,7 @@ describe("AppComponent", () => {
       it("should open and close projects menu", async () => {
         // arrange
         authServiceIsAuthenticated$.next(true);
-        const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
+        const [projectsMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act + assert
         expect(await projectsMenu.isOpen()).toBe(false);
@@ -308,7 +306,7 @@ describe("AppComponent", () => {
       it("should open and close user menu", async () => {
         // arrange
         authServiceIsAuthenticated$.next(true);
-        const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
+        const [, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act + assert
         expect(await userMenu.isOpen()).toBe(false);
@@ -321,7 +319,7 @@ describe("AppComponent", () => {
       it("should contain all project menu items", async () => {
         // arrange
         authServiceIsAuthenticated$.next(true);
-        const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
+        const [projectsMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act
         await projectsMenu.open();
@@ -338,7 +336,7 @@ describe("AppComponent", () => {
       it("should contain all user menu items", async () => {
         // arrange
         authServiceIsAuthenticated$.next(true);
-        const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
+        const [, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act
         await userMenu.open();
@@ -353,7 +351,7 @@ describe("AppComponent", () => {
       it("should have correct links for project menu entries", async (done) => {
         // arrange + act also in beforeEach
         authServiceIsAuthenticated$.next(true);
-        const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
+        const [projectsMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act
         await projectsMenu.open();
@@ -375,7 +373,7 @@ describe("AppComponent", () => {
       it("should have correct links for user menu entries", async () => {
         // arrange + act also in beforeEach
         authServiceIsAuthenticated$.next(true);
-        const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
+        const [, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act
         await userMenu.open();
@@ -389,7 +387,7 @@ describe("AppComponent", () => {
       it("should call logout on clicking logout button in user menu", async () => {
         // arrange
         authServiceIsAuthenticated$.next(true);
-        const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
+        const [, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
         spyOn(component, "logout");
 
         // act

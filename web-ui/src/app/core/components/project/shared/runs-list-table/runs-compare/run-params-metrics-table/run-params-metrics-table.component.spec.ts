@@ -259,7 +259,7 @@ describe("RunParamsMetricsTableComponent", () => {
       });
 
       async function assertHasDivergentCssClass(row: MatRowHarness, hasDivergentClass: boolean) {
-        (await row.getCells()).map(async (cell) => {
+        (await row.getCells()).forEach(async (cell) => {
           const cellTE: TestElement = await cell.host();
           expect(await cellTE.hasClass("make-bg-divergent")).toBe(hasDivergentClass);
         });
