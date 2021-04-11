@@ -91,7 +91,7 @@ class ArtifactRepositoryTest {
 
             ArtifactEntity artifactEntityV1 = createArtifactEntityWithModel(projectKey, artifact1Name, 1);
             ArtifactEntity artifactEntityV2 = createArtifactEntityWithModel(projectKey, artifact1Name, 2, Stage.STAGING);
-            ArtifactEntity artifactEntityV3 = createArtifactEntityWithModel(projectKey, artifact1Name, 3);
+            ArtifactEntity artifactEntityV3 = createArtifactEntityWithModel(projectKey, artifact1Name, 3, Stage.PRODUCTION);
             ArtifactEntity anotherArtifactEntityV1 = createArtifactEntityWithModel(projectKey, artifact2Name, 1);
             ArtifactEntity anotherArtifactEntityV4 = createArtifactEntityWithModel(projectKey, artifact2Name, 4, Stage.STAGING);
             ArtifactEntity artifactEntityWithSameNameButOtherProjectV4
