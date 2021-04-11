@@ -1,0 +1,7 @@
+{
+  "sonarlint.output.showAnalyzerLogs": true,
+  "editor.formatOnSave": true,
+  "sonarlint.connectedMode.project": {
+    "projectKey": "web-ui"
+  }
+}
