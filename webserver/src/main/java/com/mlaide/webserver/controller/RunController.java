@@ -25,19 +25,16 @@ public class RunController {
     private final Logger logger = LoggerFactory.getLogger(RunController.class);
     private final ExperimentService experimentService;
     private final RunService runService;
-    private final ProjectService projectService;
     private final RandomGeneratorService randomGeneratorService;
     private final PatchSupport patchSupport;
 
     @Autowired
     public RunController(ExperimentService experimentService,
                          RunService runService,
-                         ProjectService projectService,
                          RandomGeneratorService randomGeneratorService,
                          PatchSupport patchSupport) {
         this.experimentService = experimentService;
         this.runService = runService;
-        this.projectService = projectService;
         this.randomGeneratorService = randomGeneratorService;
         this.patchSupport = patchSupport;
     }
@@ -75,9 +72,6 @@ public class RunController {
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
             @Valid @RequestBody Run run) {
         logger.info("post run");
-
-        // TODO: Do not read project here; this is just done because we want to check if the user is permitted to the project; this should be done in the service
-        Project project = projectService.getProject(projectKey);
 
         List<ExperimentRef> experimentRefs = run.getExperimentRefs();
         if (experimentRefs == null || experimentRefs.isEmpty()) {
