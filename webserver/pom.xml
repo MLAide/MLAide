@@ -250,6 +250,12 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<excludes>
+						<exclude>**/mlaide/webserver/configuration/*Config</exclude>
+						<exclude>**/mlaide/webserver/model/*</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
