@@ -36,7 +36,9 @@ describe('EditModelComponent', () => {
     // prepare dialog mock object
     dialogMock = {
       open: () => ({ afterClosed: () => of(true) }),
-      close: () => { },
+      close: () => { 
+        // This is intentional 
+      },
     };
 
     // setup experiment fake

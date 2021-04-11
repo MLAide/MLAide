@@ -5,7 +5,6 @@ import {
   Input,
   OnChanges,
   OnDestroy,
-  OnInit,
   SimpleChanges,
   ViewChild,
 } from "@angular/core";
@@ -24,7 +23,7 @@ import { FileSaverService } from "ngx-filesaver";
   styleUrls: ["./runs-list-table.component.scss"],
 })
 export class RunsListTableComponent
-  implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+  implements AfterViewInit, OnChanges, OnDestroy {
   public dataSource: MatTableDataSource<Run> = new MatTableDataSource<Run>();
   public displayedColumns: string[] = [
     "select",
@@ -49,7 +48,6 @@ export class RunsListTableComponent
     private route: ActivatedRoute,
     private fileSaverService: FileSaverService
   ) {}
-  ngOnInit(): void {}
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;

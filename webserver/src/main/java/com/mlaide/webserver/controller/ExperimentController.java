@@ -32,14 +32,14 @@ public class ExperimentController {
 
     @GetMapping
     public ResponseEntity<ItemList<Experiment>> getExperiments(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey) {
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey) {
         logger.info("get experiments");
         return ResponseEntity.ok(experimentService.getExperiments(projectKey));
     }
 
     @GetMapping(path = "{experimentKey}")
     public ResponseEntity<Experiment> getExperiment(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("experimentKey") String experimentKey) {
         logger.info("get run");
 
@@ -50,7 +50,7 @@ public class ExperimentController {
 
     @PostMapping
     public ResponseEntity<Experiment> postExperiment(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @Valid @RequestBody Experiment experiment) {
         logger.info("post experiment");
 
@@ -63,7 +63,7 @@ public class ExperimentController {
 
     @PatchMapping(path = "{experimentKey}", consumes = "application/merge-patch+json")
     public ResponseEntity<Void> patchExperiment(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("experimentKey") @NotBlank String experimentKey,
             @RequestBody JsonMergePatch experimentToPatch) {
         logger.info("patch experiment");

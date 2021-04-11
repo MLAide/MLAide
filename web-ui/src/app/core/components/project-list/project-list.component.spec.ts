@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 import 'jasmine';
 import { MomentModule, TimeAgoPipe } from 'ngx-moment';
 import { ProjectsApiService } from '../../services/index';
-import { ListDataSourceMock, ProjectListDataSourceMock } from '../../../mocks/data-source.mock';
+import { ListDataSourceMock } from '../../../mocks/data-source.mock';
 import { ProjectListComponent } from './project-list.component';
 import { Project, ProjectListResponse } from '../../models/project.model';
 import { getRandomProjects } from 'src/app/mocks/fake-generator';

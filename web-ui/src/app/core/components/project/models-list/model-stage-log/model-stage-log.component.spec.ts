@@ -2,7 +2,6 @@ import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { DatePipe } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonHarness } from '@angular/material/button/testing';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -36,7 +35,9 @@ describe('ModelStageLogComponent', () => {
     // prepare dialog mock object
     dialogMock = {
       open: () => ({ afterClosed: () => of(true) }),
-      close: () => { },
+      close: () => { 
+        // This is intentional
+      },
     };
 
     // setup experiment fake

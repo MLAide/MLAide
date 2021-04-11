@@ -24,7 +24,6 @@ import { Observable } from "rxjs";
 import { HttpResponse } from "@angular/common/http";
 import { ListDataSource } from "./list-data-source";
 import { APP_CONFIG } from "src/app/config/app-config.model";
-import { MockProvider } from "ng-mocks";
 import { appConfigMock } from "src/app/mocks/app-config.mock";
 
 describe("ArtifactsApiService", () => {
@@ -64,8 +63,7 @@ describe("ArtifactsApiService", () => {
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
-        expect(response.items.length).toBe(fakeArtifacts.length);
-        expect(response).toEqual(dummyResponse);
+        checkThatItemsLengthAndResponseMatch(response, fakeArtifacts, dummyResponse);
         done();
       });
 
@@ -90,8 +88,7 @@ describe("ArtifactsApiService", () => {
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
-        expect(response.items.length).toBe(fakeArtifacts.length);
-        expect(response).toEqual(dummyResponse);
+        checkThatItemsLengthAndResponseMatch(response, fakeArtifacts, dummyResponse);
         done();
       });
 
@@ -117,8 +114,7 @@ describe("ArtifactsApiService", () => {
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
-        expect(response.items.length).toBe(fakeArtifacts.length);
-        expect(response).toEqual(dummyResponse);
+        checkThatItemsLengthAndResponseMatch(response, fakeArtifacts, dummyResponse);
         done();
       });
 
@@ -146,8 +142,7 @@ describe("ArtifactsApiService", () => {
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
-        expect(response.items.length).toBe(fakeArtifacts.length);
-        expect(response).toEqual(dummyResponse);
+        checkThatItemsLengthAndResponseMatch(response, fakeArtifacts, dummyResponse);
         done();
       });
 
@@ -243,4 +238,9 @@ describe("ArtifactsApiService", () => {
       req.flush(returnBuffer);
     });
   });
+  
+  function checkThatItemsLengthAndResponseMatch(response: ArtifactListResponse, fakeArtifacts: Artifact[], dummyResponse: ArtifactListResponse) {
+    expect(response.items.length).toBe(fakeArtifacts.length);
+    expect(response).toEqual(dummyResponse);
+  }
 });

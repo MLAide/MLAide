@@ -41,7 +41,7 @@ public class RunController {
 
     @GetMapping
     public ResponseEntity<ItemList<Run>> getRuns(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @RequestParam(name = "runKeys", required = false) List<Integer> runKeys,
             @RequestParam(name = "experimentKey", required = false) String experimentKey) {
 
@@ -69,7 +69,7 @@ public class RunController {
 
     @PostMapping
     public ResponseEntity<Run> postRun(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @Valid @RequestBody Run run) {
         logger.info("post run");
 
@@ -93,7 +93,7 @@ public class RunController {
 
     @GetMapping(path = "{runKey}")
     public ResponseEntity<Run> getRun(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("runKey") @NotNull Integer runKey) {
         logger.info("get run");
 
@@ -104,7 +104,7 @@ public class RunController {
 
     @PutMapping(path = "{runKey}/note", consumes = "text/plain")
     public ResponseEntity<String> createOrUpdateRunNote(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("runKey") @NotNull Integer runKey,
             @RequestBody String note) {
         logger.info("update note in run");
@@ -116,7 +116,7 @@ public class RunController {
 
     @PatchMapping(path = "{runKey}", consumes = "application/merge-patch+json")
     public ResponseEntity<Void> patchRun(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("runKey") @NotNull Integer runKey,
             @RequestBody JsonMergePatch runDiff) {
         logger.info("patch run");
@@ -135,7 +135,7 @@ public class RunController {
 
     @PatchMapping(path = "{runKey}/parameters", consumes = "application/merge-patch+json")
     public ResponseEntity<Void> patchRunParameters(
-             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
              @PathVariable("runKey") @NotNull Integer runKey,
              @RequestBody Map<String, Object> parametersToMerge) {
         logger.info("patch run parameters");
@@ -157,7 +157,7 @@ public class RunController {
 
     @PatchMapping(path = "{runKey}/metrics", consumes = "application/merge-patch+json")
     public ResponseEntity<Void> patchRunMetrics(
-            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.projectKey) String projectKey,
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("runKey") @NotNull Integer runKey,
             @RequestBody Map<String, Object> metricsToMerge) {
         logger.info("patch run metrics");

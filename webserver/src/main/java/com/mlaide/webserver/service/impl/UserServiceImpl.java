@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final UserResolver userResolver;
@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userMapper.toEntity(user);
         userRepository.save(userEntity);
 
-        LOGGER.info("Created new user with user id '" + userEntity.getUserId() + "'");
+        logger.info("Created new user with user id '{}'", userEntity.getUserId());
 
         return user;
     }

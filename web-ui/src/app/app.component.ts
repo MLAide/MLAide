@@ -1,19 +1,15 @@
 import {
   AfterViewInit,
-  Component,
-  Inject,
-  OnDestroy,
-  OnInit,
-} from "@angular/core";
-import {
   ChangeDetectorRef,
+  Component,
   ElementRef,
   HostListener,
+  OnDestroy,
+  OnInit,
   ViewChild,
 } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
-import { filter, flatMap, mergeMap } from "rxjs/operators";
-import { APP_CONFIG, IAppConfig } from "./config/app-config.model";
+import { filter, mergeMap } from "rxjs/operators";
 import { AuthService } from "./auth/auth.service";
 import { Project } from "./core/models/project.model";
 import { User } from "./core/models/user.model";
@@ -28,7 +24,6 @@ import { UsersApiService } from "./core/services/users-api.service";
 export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("tabBar") public elementView: ElementRef;
   public isAuthenticated$: Observable<boolean>;
-  public isDoneLoading$: Observable<boolean>;
   public projects: Project[];
   public user: User;
   public tabBarHeight: number;
@@ -44,7 +39,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     private userService: UsersApiService
   ) {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
-    this.isDoneLoading$ = this.authService.isDoneLoading$;
     this.isAuthenticatedSubscription = this.isAuthenticated$
       .pipe(
         filter((isAuthenticated) => isAuthenticated),
@@ -69,9 +63,15 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
-    this.projectListSubscription.unsubscribe();
-    this.isAuthenticatedSubscription.unsubscribe();
-    this.isAuthenticatedSubscriptionForProjects.unsubscribe();
+    if (this.projectListSubscription) {
+      this.projectListSubscription.unsubscribe();
+    }
+    if (this.isAuthenticatedSubscription) {
+      this.isAuthenticatedSubscription.unsubscribe();
+    }
+    if (this.isAuthenticatedSubscriptionForProjects) {
+      this.isAuthenticatedSubscriptionForProjects.unsubscribe();
+    }
   }
 
   ngOnInit() {

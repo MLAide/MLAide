@@ -112,8 +112,7 @@ describe("RunsApiService", () => {
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
-        expect(response.items.length).toBe(fakeRuns.length);
-        expect(response).toEqual(dummyResponse);
+        checkThatItemsLengthAndResponseMatch(response, fakeRuns, dummyResponse);
         done();
       });
 
@@ -125,6 +124,7 @@ describe("RunsApiService", () => {
     });
   });
 
+  
   describe("getRunsByExperimentKey", () => {
     it("should return data source that emits results from api response", async (done) => {
       // arrange
@@ -141,8 +141,7 @@ describe("RunsApiService", () => {
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
-        expect(response.items.length).toBe(fakeRuns.length);
-        expect(response).toEqual(dummyResponse);
+        checkThatItemsLengthAndResponseMatch(response, fakeRuns, dummyResponse);
         done();
       });
 
@@ -171,8 +170,7 @@ describe("RunsApiService", () => {
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
-        expect(response.items.length).toBe(fakeRuns.length);
-        expect(response).toEqual(dummyResponse);
+        checkThatItemsLengthAndResponseMatch(response, fakeRuns, dummyResponse);
         done();
       });
 
@@ -246,4 +244,10 @@ describe("RunsApiService", () => {
       req.flush(fakeRuns[1].note);
     });
   });
+
+  function checkThatItemsLengthAndResponseMatch(response: RunListResponse, fakeRuns: Run[], dummyResponse: RunListResponse) {
+    expect(response.items.length).toBe(fakeRuns.length);
+    expect(response).toEqual(dummyResponse);
+  }
+  
 });

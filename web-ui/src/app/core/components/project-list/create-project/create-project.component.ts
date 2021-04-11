@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Project } from "../../../models/project.model";
@@ -9,7 +9,7 @@ import { ENTER } from "@angular/cdk/keycodes";
   templateUrl: "./create-project.component.html",
   styleUrls: ["./create-project.component.scss"],
 })
-export class CreateProjectComponent implements OnInit {
+export class CreateProjectComponent {
   public form: FormGroup;
 
   constructor(
@@ -41,8 +41,6 @@ export class CreateProjectComponent implements OnInit {
       }
     });
   }
-
-  ngOnInit() {}
 
   public cancel() {
     this.dialogRef.close();

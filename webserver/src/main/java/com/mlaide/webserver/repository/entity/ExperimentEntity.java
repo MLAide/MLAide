@@ -17,7 +17,6 @@ import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @CompoundIndexes({
     @CompoundIndex(name = "key", def = "{'projectKey' : 1, 'key' : 1}", unique = true)
@@ -35,7 +34,7 @@ public class ExperimentEntity {
     private String key;
     @NotBlank
     private String name;
-    @Pattern(regexp = ValidationRegEx.projectKey)
+    @Pattern(regexp = ValidationRegEx.PROJECT_KEY)
     @NotBlank
     @Indexed private String projectKey;
     @NotNull

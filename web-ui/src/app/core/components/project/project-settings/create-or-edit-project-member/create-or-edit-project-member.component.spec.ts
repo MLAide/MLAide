@@ -38,7 +38,9 @@ describe('EditProjectMemberComponent', () => {
     // prepare dialog mock object
     dialogMock = {
       open: () => ({ afterClosed: () => of(true) }),
-      close: () => { },
+      close: () => { 
+        // This is intentional
+      },
     };
 
     // setup fakes

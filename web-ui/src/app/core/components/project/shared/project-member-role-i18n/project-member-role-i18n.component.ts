@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ProjectMemberRole } from '../../../../models/projectMember.model';
 
 @Component({
@@ -6,13 +6,7 @@ import { ProjectMemberRole } from '../../../../models/projectMember.model';
   templateUrl: './project-member-role-i18n.component.html',
   styleUrls: ['./project-member-role-i18n.component.scss']
 })
-export class ProjectMemberRoleI18nComponent implements OnInit {
+export class ProjectMemberRoleI18nComponent {
   @Input()
   key: ProjectMemberRole;
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }

@@ -1,4 +1,4 @@
-import { CdkCopyToClipboard, ClipboardModule } from "@angular/cdk/clipboard";
+import { ClipboardModule } from "@angular/cdk/clipboard";
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
@@ -53,7 +53,9 @@ describe("CreateApiKeyComponent", () => {
     // prepare dialog mock object
     dialogMock = {
       open: () => ({ afterClosed: () => of(true) }),
-      close: () => {},
+      close: () => {
+        // This is intentional
+      },
     };
 
     // setup fakes
@@ -492,7 +494,7 @@ describe("CreateApiKeyComponent", () => {
           // assert
           expect(formField).not.toBeNull();
           expect(await input.isRequired()).toBeFalsy();
-          expect(await input.isReadonly).toBeTruthy();
+          expect(await input.isReadonly()).toBeTruthy();
           expect(input).not.toBeNull();
         });
 

@@ -1,5 +1,5 @@
 import { TestBed } from "@angular/core/testing";
-import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { of } from "rxjs";
 
@@ -15,7 +15,9 @@ describe("SnackbarUiService", () => {
     // prepare dialog mock object
     snackBarMock = {
       open: () => ({ afterClosed: () => of(true) }),
-      close: () => {},
+      close: () => {
+        // This is intentional
+      },
     };
     TestBed.configureTestingModule({
       providers: [{ provide: MatSnackBar, useValue: snackBarMock }],

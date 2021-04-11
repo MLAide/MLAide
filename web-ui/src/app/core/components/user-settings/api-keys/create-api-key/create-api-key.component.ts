@@ -1,5 +1,5 @@
 import { ENTER } from "@angular/cdk/keycodes";
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef } from "@angular/material/dialog";
 import { ApiKey } from "src/app/core/models/apiKey.model";
@@ -14,7 +14,7 @@ import {
   templateUrl: "./create-api-key.component.html",
   styleUrls: ["./create-api-key.component.scss"],
 })
-export class CreateApiKeyComponent implements OnInit {
+export class CreateApiKeyComponent {
   public form: FormGroup;
   public apiKey: string = "";
   public today = new Date(Date.now());
@@ -60,8 +60,8 @@ export class CreateApiKeyComponent implements OnInit {
       id: undefined,
     };
     this.spinnerUiService.showSpinner();
-    this.usersApiService.createApiKey(apiKey).subscribe((apiKey) => {
-      this.apiKey = apiKey.apiKey;
+    this.usersApiService.createApiKey(apiKey).subscribe((returnedApiKey) => {
+      this.apiKey = returnedApiKey.apiKey;
       this.spinnerUiService.stopSpinner();
     });
   }

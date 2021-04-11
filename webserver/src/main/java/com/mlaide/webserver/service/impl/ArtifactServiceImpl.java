@@ -137,7 +137,7 @@ public class ArtifactServiceImpl implements ArtifactService {
             modelEntity.setModelRevisions(new ArrayList<>());
             modelEntity.setStage(Stage.NONE);
             modelEntity.setUpdatedAt(now);
-            logger.info("Creating new model for artifact {}:{}", artifactName ,artifactVersion);
+            logger.info("Creating new model for artifact {}:{}", artifactName, artifactVersion);
         } else if (model == null) {
             logger.info("createOrUpdateModel will do nothing. Model already exists and request does not contain any model.");
             return;

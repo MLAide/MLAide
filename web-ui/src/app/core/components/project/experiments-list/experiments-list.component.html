@@ -11,29 +11,29 @@
 </div>
 
 <div fxLayout="column" class="example-container mat-elevation-z2">
-    <table mat-table matSort [dataSource]="dataSource">
+    <table mat-table matSort [dataSource]="dataSource" aria-label="Experiments overview">
         <ng-container matColumnDef="key">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header i18n> Key </th>
-            <td mat-cell *matCellDef="let element">
+            <th id="key" mat-header-cell *matHeaderCellDef mat-sort-header i18n> Key </th>
+            <td headers="key" mat-cell *matCellDef="let element">
                 <a mat-button color="primary"
                     [routerLink]="['/projects/'+projectKey+'/experiments/'+element.key]">{{element.key}}</a>
             </td>
         </ng-container>
         <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header i18n> Name </th>
-            <td mat-cell *matCellDef="let element">
+            <th id="name" mat-header-cell *matHeaderCellDef mat-sort-header i18n> Name </th>
+            <td headers="name" mat-cell *matCellDef="let element">
                 {{element.name}}
             </td>
         </ng-container>
         <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header i18n> Status </th>
-            <td mat-cell *matCellDef="let element">
+            <th id="status" mat-header-cell *matHeaderCellDef mat-sort-header i18n> Status </th>
+            <td headers="status" mat-cell *matCellDef="let element">
                 <app-experiment-status-i18n [key]="element.status"></app-experiment-status-i18n>
             </td>
         </ng-container>
         <ng-container matColumnDef="tags">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header i18n>Tags </th>
-            <td mat-cell *matCellDef="let element">
+            <th id="tags" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Tags </th>
+            <td headers="tags" mat-cell *matCellDef="let element">
                 <mat-chip-list #tagList aria-label="Tags">
                     <mat-chip *ngFor="let tag of element.tags" [selectable]="true" [removable]="false">
                         {{tag}}
@@ -42,8 +42,8 @@
             </td>
         </ng-container>
         <ng-container matColumnDef="actions" [stickyEnd]="true">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header i18n>Actions </th>
-            <td mat-cell *matCellDef="let element">
+            <th id="actions" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Actions </th>
+            <td headers="actions" mat-cell *matCellDef="let element">
                 <button mat-button (click)="openEditExperimentDialog(element)"
                     aria-label="Icon button to edit experiment">
                     <mat-icon>edit</mat-icon>

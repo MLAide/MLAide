@@ -1,7 +1,6 @@
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
-import { map } from "rxjs/operators";
 import { APP_CONFIG, IAppConfig } from "src/app/config/app-config.model";
 import {
   ArtifactListResponse,

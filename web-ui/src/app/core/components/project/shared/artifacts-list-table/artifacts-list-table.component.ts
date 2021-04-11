@@ -4,7 +4,6 @@ import {
   Input,
   OnChanges,
   OnDestroy,
-  OnInit,
   SimpleChanges,
   ViewChild,
 } from "@angular/core";
@@ -22,8 +21,7 @@ import {
   templateUrl: "./artifacts-list-table.component.html",
   styleUrls: ["./artifacts-list-table.component.scss"],
 })
-export class ArtifactsListTableComponent
-  implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class ArtifactsListTableComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() artifactListDataSource: ListDataSource<ArtifactListResponse>;
   public dataSource: MatTableDataSource<Artifact> = new MatTableDataSource<Artifact>();
   public displayedColumns: string[] = [
@@ -37,8 +35,6 @@ export class ArtifactsListTableComponent
   @Input() projectKey: string;
   @ViewChild(MatSort) sort: MatSort;
   private artifactListSubscription: Subscription;
-
-  constructor() {}
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
@@ -64,6 +60,4 @@ export class ArtifactsListTableComponent
       this.artifactListSubscription = null;
     }
   }
-
-  ngOnInit(): void {}
 }

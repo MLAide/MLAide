@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { By } from "@angular/platform-browser";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { MockComponent } from "ng-mocks";
 import { Observable, Subscription } from "rxjs";
@@ -295,9 +294,8 @@ describe("RunsCompareComponent", () => {
     });
 
     const queryParamMapObservable = new Observable<ParamMap>();
-    const queryParamMapSubscription = new Subscription();
     unsubscriptionQueryParamsSpy = spyOn(
-      queryParamMapSubscription,
+      new Subscription(),
       "unsubscribe"
     ).and.callThrough();
     spyOn(queryParamMapObservable, "subscribe").and.callFake(function (

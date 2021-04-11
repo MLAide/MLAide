@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
 import { ActivatedRoute } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
 
@@ -16,6 +19,11 @@ describe('HomeComponent', () => {
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
         { provide: OAuthService, useValue: {} }
+      ],
+      imports: [
+        MatButtonModule,
+        MatCardModule,
+        MatDividerModule
       ]
     })
     .compileComponents();

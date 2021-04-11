@@ -1,7 +1,7 @@
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
-import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 import {
   AbstractControl,
   FormBuilder,
@@ -36,7 +36,6 @@ describe("CreateProjectComponent", () => {
 
   // fakes
   let fakeProject: Project;
-  let randomKeyReadonly: boolean;
 
   let formData: Project;
 
@@ -49,7 +48,6 @@ describe("CreateProjectComponent", () => {
 
     // setup fakes
     fakeProject = await getRandomProject();
-    randomKeyReadonly = Math.random() < 0.5;
 
     // setup formData
     formData = fakeProject;

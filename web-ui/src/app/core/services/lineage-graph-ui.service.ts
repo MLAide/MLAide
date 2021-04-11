@@ -6,7 +6,6 @@ import * as dagreD3 from 'dagre-d3';
   providedIn: 'root',
 })
 export class LineageGraphUiService {
-  constructor() { }
 
   public renderLineage(nodes: GraphNode[], edges: GraphEdge[], targetSvg: ElementRef) {
     var graph = new dagreD3.graphlib.Graph();

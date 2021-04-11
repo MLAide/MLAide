@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatTableDataSource } from "@angular/material/table";
 import { ActivatedRoute } from "@angular/router";
 import { Observable, Subscription } from "rxjs";
@@ -78,36 +78,26 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     const dialogRef = this.dialog.open(CreateOrEditProjectMemberComponent, {
       minWidth: "20%",
       data: {
-        // TODO: i18n
         title: `Add new member`,
         projectMember: null,
         create: true,
       },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.editProjectMemberDialog(result);
-      }
-    });
+    this.subscribeToAfterClosedAndCallEditProjectMemberDialogOnResult(dialogRef);
   }
 
   public openEditProjectMemberDialog(projectMember: ProjectMember): void {
     const dialogRef = this.dialog.open(CreateOrEditProjectMemberComponent, {
       minWidth: "20%",
       data: {
-        // TODO: i18n
         title: `Edit member: ${projectMember.nickName}`,
         projectMember,
         create: false,
       },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.editProjectMemberDialog(result);
-      }
-    });
+    this.subscribeToAfterClosedAndCallEditProjectMemberDialogOnResult(dialogRef);
   }
 
   public removeProjectMember(projectMember: ProjectMember): void {
@@ -166,5 +156,13 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
         this.spinnerService.stopSpinner();
       }
     );
+  }
+
+  private subscribeToAfterClosedAndCallEditProjectMemberDialogOnResult(dialogRef: MatDialogRef<CreateOrEditProjectMemberComponent, any>) {
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.editProjectMemberDialog(result);
+      }
+    });
   }
 }

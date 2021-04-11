@@ -78,7 +78,7 @@ public class ApiKeyAuthenticationManagerImplTest {
             // Assert
             assertThat(result.getPrincipal()).isEqualTo(principal);
             assertThat(result.getCredentials()).isEqualTo(credentials);
-            assertThat(result.isAuthenticated()).isEqualTo(true);
+            assertThat(result.isAuthenticated()).isTrue();
         }
 
         @Test
@@ -109,7 +109,7 @@ public class ApiKeyAuthenticationManagerImplTest {
             // Assert
             assertThat(result.getPrincipal()).isEqualTo(principal);
             assertThat(result.getCredentials()).isEqualTo(credentials);
-            assertThat(result.isAuthenticated()).isEqualTo(true);
+            assertThat(result.isAuthenticated()).isTrue();
         }
 
         @Test
@@ -251,13 +251,14 @@ public class ApiKeyAuthenticationManagerImplTest {
         void specified_api_key_does_not_exist_should_throw_NotFoundException() {
             // Arrange
             ObjectId apiKeyId = ObjectId.get();
+            String apiKeyIdAsHexString = apiKeyId.toHexString();
             when(apiKeysRepository.findById(apiKeyId)).thenReturn(Optional.empty());
 
             User currentUser = UserFaker.newUser();
             SecurityContextFaker.setupUserInSecurityContext(currentUser.getUserId());
 
             // Act + Assert
-            assertThatThrownBy(() -> apiKeyAuthenticationManager.deleteApiKey(apiKeyId.toHexString()))
+            assertThatThrownBy(() -> apiKeyAuthenticationManager.deleteApiKey(apiKeyIdAsHexString))
                 .isInstanceOf(NotFoundException.class);
         }
 
@@ -265,6 +266,7 @@ public class ApiKeyAuthenticationManagerImplTest {
         void specified_does_not_belong_to_current_user_should_throw_NotFoundException() {
             // Arrange
             ObjectId apiKeyId = ObjectId.get();
+            String apiKeyIdAsHexString = apiKeyId.toHexString();
             ApiKeyEntity apiKeyEntity = ApiKeyFaker.newApiKeyEntity();
             apiKeyEntity.setUserId("another-user-id");
             when(apiKeysRepository.findById(apiKeyId)).thenReturn(Optional.of(apiKeyEntity));
@@ -273,7 +275,7 @@ public class ApiKeyAuthenticationManagerImplTest {
             SecurityContextFaker.setupUserInSecurityContext(currentUser.getUserId());
 
             // Act + Assert
-            assertThatThrownBy(() -> apiKeyAuthenticationManager.deleteApiKey(apiKeyId.toHexString()))
+            assertThatThrownBy(() -> apiKeyAuthenticationManager.deleteApiKey(apiKeyIdAsHexString))
                     .isInstanceOf(NotFoundException.class);
         }
 

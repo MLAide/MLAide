@@ -9,7 +9,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { ActivatedRoute } from "@angular/router";
-import { Subject, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 import { EditModelComponent } from "./edit-model/edit-model.component";
 import { ModelStageLogComponent } from "./model-stage-log/model-stage-log.component";
 import {
@@ -82,7 +82,6 @@ export class ModelsListComponent implements OnInit, OnDestroy, AfterViewInit {
     const dialogRef = this.dialog.open(EditModelComponent, {
       minWidth: "20%",
       data: {
-        // TODO: i18n
         title: "Edit Model",
         artifact,
       },
@@ -99,7 +98,6 @@ export class ModelsListComponent implements OnInit, OnDestroy, AfterViewInit {
     this.dialog.open(ModelStageLogComponent, {
       minWidth: "80%",
       data: {
-        // TODO: i18n
         title: "Model Stage Log",
         modelRevisions: artifact.model.modelRevisions,
       },
