@@ -184,11 +184,11 @@ describe("ArtifactsListTableComponent", () => {
         });
       });
 
-      it("should have correct router link to details for each run", async () => {
+      it("should have correct router link to details for each run", async (done) => {
         // arrange + act also in beforeEach
 
         // assert
-        fakeArtifacts.forEach(async (artifact) => {
+        fakeArtifacts.forEach(async (artifact, index) => {
           const runLink: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({ text: artifact.runName })
           );
@@ -198,6 +198,10 @@ describe("ArtifactsListTableComponent", () => {
           expect(await aElement.getAttribute("href")).toEqual(
             `/projects/${fakeProject.key}/runs/${artifact.runKey}`
           );
+
+          if(index == fakeArtifacts.length -1 ) {
+            done();
+          }
         });
       });
     });

@@ -2,6 +2,7 @@ import { HarnessLoader, TestElement } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { DatePipe } from "@angular/common";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { MatDividerModule } from "@angular/material/divider";
 import { MatTableModule } from "@angular/material/table";
 import {
   MatHeaderRowHarness,
@@ -26,7 +27,7 @@ describe("RunParamsMetricsTableComponent", () => {
         RunParamsMetricsTableComponent,
         MockPipe(DatePipe, (v) => v),
       ],
-      imports: [BrowserAnimationsModule, MatTableModule],
+      imports: [BrowserAnimationsModule, MatDividerModule, MatTableModule],
     }).compileComponents();
   });
 
@@ -273,20 +274,19 @@ describe("RunParamsMetricsTableComponent", () => {
         fixture.detectChanges();
         const table: MatTableHarness = await loader.getHarness(MatTableHarness);
         const rows: MatRowHarness[] = await table.getRows();
-        const firstRowCells = await rows[0].getCells();
-        const secondRowCells = await rows[1].getCells();
 
         // assert
-        firstRowCells.forEach(async (cell) => {
-          const cellTE: TestElement = await cell.host();
-          expect(await cellTE.hasClass("make-bg-divergent")).toBeTruthy();
-        });
-
-        secondRowCells.forEach(async (cell) => {
-          const cellTE: TestElement = await cell.host();
-          expect(await cellTE.hasClass("make-bg-divergent")).toBeFalsy();
-        });
+        await assertHasDivergentCssClass(rows[0], true);
+        await assertHasDivergentCssClass(rows[1], false);
+      
       });
+
+      async function assertHasDivergentCssClass(row: MatRowHarness, hasDivergentClass: boolean) {
+        (await row.getCells()).map(async (cell) => {
+          const cellTE: TestElement = await cell.host();
+          expect(await cellTE.hasClass("make-bg-divergent")).toBe(hasDivergentClass);
+        });
+      }
     });
   });
 });
