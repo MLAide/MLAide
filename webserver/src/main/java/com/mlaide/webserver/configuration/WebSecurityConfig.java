@@ -34,7 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .addFilterBefore(apiKeyFilter, AbstractPreAuthenticatedProcessingFilter.class)
                 .authorizeRequests(authorize -> authorize
-                    .antMatchers("/actuator/**").permitAll() // TODO: Enable basic auth for actuator
+                    .antMatchers("/actuator/**").permitAll()
                     .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer().jwt();

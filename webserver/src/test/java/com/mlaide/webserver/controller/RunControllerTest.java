@@ -6,11 +6,8 @@ import com.mlaide.webserver.faker.RunFaker;
 import com.mlaide.webserver.model.Experiment;
 import com.mlaide.webserver.model.ExperimentRef;
 import com.mlaide.webserver.model.ItemList;
-import com.mlaide.webserver.model.Project;
 import com.mlaide.webserver.model.Run;
 import com.mlaide.webserver.service.ExperimentService;
-import com.mlaide.webserver.service.NotFoundException;
-import com.mlaide.webserver.service.ProjectService;
 import com.mlaide.webserver.service.RandomGeneratorService;
 import com.mlaide.webserver.service.RunService;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +26,6 @@ import static java.util.Collections.singletonList;
 import static javax.json.Json.createMergePatch;
 import static javax.json.Json.createValue;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,19 +36,16 @@ class RunControllerTest {
 
     private @Mock ExperimentService experimentService;
     private @Mock RunService runService;
-    private @Mock ProjectService projectService;
     private @Mock RandomGeneratorService randomGeneratorService;
     private @Mock PatchSupport patchSupport;
 
-    private Project project;
     private String projectKey;
 
     @BeforeEach
     void initialize() {
-        runController = new RunController(experimentService, runService, projectService, randomGeneratorService, patchSupport);
+        runController = new RunController(experimentService, runService, randomGeneratorService, patchSupport);
 
-        project = ProjectFaker.newProject();
-        projectKey = project.getKey();
+        projectKey = ProjectFaker.validProjectKey();
     }
 
     @Nested
@@ -115,8 +108,6 @@ class RunControllerTest {
         @BeforeEach
         void initialize() {
             runToAdd = RunFaker.newRun();
-
-            when(projectService.getProject(projectKey)).thenReturn(project);
         }
 
         @Test

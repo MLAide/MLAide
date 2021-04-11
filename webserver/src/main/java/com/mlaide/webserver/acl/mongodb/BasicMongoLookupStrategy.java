@@ -69,6 +69,7 @@ import static org.springframework.data.mongodb.core.query.Query.query;
  * @since 4.3
  */
 public class BasicMongoLookupStrategy implements LookupStrategy {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BasicMongoLookupStrategy.class);
 
     /**
      * Spring template for interacting with a MongoDB database
@@ -267,10 +268,9 @@ public class BasicMongoLookupStrategy implements LookupStrategy {
                 } else {
                     parent = cachedParent;
                 }
-            } else {
-                logger.warn("No parent acl could be found");
             }
         }
+
         ObjectIdentity objectIdentity = new ObjectIdentityImpl(Class.forName(mongoAcl.getClassName()), mongoAcl.getInstanceId());
         Sid owner;
         if (mongoAcl.getOwner().isPrincipal()) {
@@ -294,8 +294,6 @@ public class BasicMongoLookupStrategy implements LookupStrategy {
                             permission.isGranting(), permission.isAuditSuccess(), permission.isAuditFailure());
             // directly adding this permission entry to the Acl isn't possible as the returned list by acl.getEntries()
             // is a copy of the internal list and acl.insertAce(...) requires elevated security permissions
-            // acl.getEntries().add(ace);
-            // acl.insertAce(acl.getEntries().size(), permissions, user, permission.isGranting());
             List<AccessControlEntryImpl> aces = readAces(acl);
             aces.add(ace);
         }

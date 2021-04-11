@@ -18,6 +18,8 @@ package com.mlaide.webserver.acl.mongodb;
 import com.mlaide.webserver.acl.mongodb.entity.DomainObjectPermission;
 import com.mlaide.webserver.acl.mongodb.entity.MongoAcl;
 import com.mlaide.webserver.acl.mongodb.entity.MongoSid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.acls.domain.AccessControlEntryImpl;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.PrincipalSid;
@@ -55,6 +57,7 @@ import java.util.UUID;
  * @since 4.3
  */
 public class MongoDBMutableAclService extends MongoDBAclService implements MutableAclService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MongoDBMutableAclService.class);
 
     private final AclCache aclCache;
 
@@ -113,7 +116,7 @@ public class MongoDBMutableAclService extends MongoDBAclService implements Mutab
 
         Long numRemoved = aclRepository.deleteByInstanceId(objectIdentity.getIdentifier());
         if (null == numRemoved || numRemoved < 1) {
-            // TODO: log warning that no ACL was found for the domain object
+            LOGGER.warn("Could not find ACL");
         }
 
         // Clear the cache

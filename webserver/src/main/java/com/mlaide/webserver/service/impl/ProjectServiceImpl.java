@@ -50,7 +50,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ItemList<Project> getProjects() {
-        // TODO: Add filter to get only projects where the user is allowed to get them
         List<ProjectEntity> projects = projectRepository.findAll();
 
         ItemList<Project> result = new ItemList<>();
