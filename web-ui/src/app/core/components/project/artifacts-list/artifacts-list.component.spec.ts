@@ -1,17 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, ParamMap } from '@angular/router';
-import { MockComponent } from 'ng-mocks';
-import { Observable, Subscription } from 'rxjs';
-import { Artifact, ArtifactListResponse } from 'src/app/core/models/artifact.model';
-import { Project } from 'src/app/core/models/project.model';
-import { ArtifactsApiService } from 'src/app/core/services';
-import { ListDataSourceMock } from 'src/app/mocks/data-source.mock';
-import { getRandomProject } from 'src/app/mocks/fake-generator';
-import { ArtifactsListTableComponent } from '../shared/artifacts-list-table/artifacts-list-table.component';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { ActivatedRoute, ParamMap } from "@angular/router";
+import { MockComponent } from "ng-mocks";
+import { Observable, Subscription } from "rxjs";
+import { Artifact, ArtifactListResponse } from "src/app/core/models/artifact.model";
+import { Project } from "src/app/core/models/project.model";
+import { ArtifactsApiService } from "src/app/core/services";
+import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
+import { getRandomProject } from "src/app/mocks/fake-generator";
+import { ArtifactsListTableComponent } from "../shared/artifacts-list-table/artifacts-list-table.component";
 
-import { ArtifactsListComponent } from './artifacts-list.component';
+import { ArtifactsListComponent } from "./artifacts-list.component";
 
-describe('ArtifactsListComponent', () => {
+describe("ArtifactsListComponent", () => {
   let component: ArtifactsListComponent;
   let fixture: ComponentFixture<ArtifactsListComponent>;
 
@@ -31,14 +31,16 @@ describe('ArtifactsListComponent', () => {
     // mock active route params
     const paramMapObservable = new Observable<ParamMap>();
     const paramMapSubscription = new Subscription();
-    unsubscriptionSpy = spyOn(paramMapSubscription, 'unsubscribe').and.callThrough();
-    spyOn(paramMapObservable, 'subscribe').and.callFake((fn): Subscription => {
-      fn({ projectKey: fakeProject.key });
-      return paramMapSubscription;
-    });
+    unsubscriptionSpy = spyOn(paramMapSubscription, "unsubscribe").and.callThrough();
+    spyOn(paramMapObservable, "subscribe").and.callFake(
+      (fn): Subscription => {
+        fn({ projectKey: fakeProject.key });
+        return paramMapSubscription;
+      }
+    );
 
     // stub services
-    artifactsApiServiceStub = jasmine.createSpyObj('artifactsApiService', ['getArtifacts']);
+    artifactsApiServiceStub = jasmine.createSpyObj("artifactsApiService", ["getArtifacts"]);
 
     // arrange fakes & stubs
     // setup fakes
@@ -48,16 +50,12 @@ describe('ArtifactsListComponent', () => {
     artifactsApiServiceStub.getArtifacts.and.returnValue(artifactListDataSourceMock);
 
     await TestBed.configureTestingModule({
-      declarations: [
-        ArtifactsListComponent,
-        MockComponent(ArtifactsListTableComponent),
-      ],
+      declarations: [ArtifactsListComponent, MockComponent(ArtifactsListTableComponent)],
       providers: [
         { provide: ActivatedRoute, useValue: { params: paramMapObservable } },
         { provide: ArtifactsApiService, useValue: artifactsApiServiceStub },
-      ]
-    })
-      .compileComponents();
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -70,12 +68,12 @@ describe('ArtifactsListComponent', () => {
     artifactListDataSourceMock.emulate([]);
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 
-  describe('ngOnInit', () => {
-    it('should load artifacts with projectKey defined in active route', async () => {
+  describe("ngOnInit", () => {
+    it("should load artifacts with projectKey defined in active route", async () => {
       // arrange + act in beforeEach
 
       // assert
@@ -83,7 +81,7 @@ describe('ArtifactsListComponent', () => {
       expect(artifactsApiServiceStub.getArtifacts).toHaveBeenCalledWith(fakeProject.key, false);
     });
 
-    it('should load all artifacts of the current project', async () => {
+    it("should load all artifacts of the current project", async () => {
       // arrange + act in beforeEach
 
       // assert
@@ -91,8 +89,8 @@ describe('ArtifactsListComponent', () => {
     });
   });
 
-  describe('ngOnDestroy', () => {
-    it('should unsubscribe from routeParamsSubscription', async () => {
+  describe("ngOnDestroy", () => {
+    it("should unsubscribe from routeParamsSubscription", async () => {
       // arrange in beforeEach
 
       // act
@@ -103,24 +101,24 @@ describe('ArtifactsListComponent', () => {
     });
   });
 
-  describe('component rendering', () => {
-    it('should contain components title', async () => {
+  describe("component rendering", () => {
+    it("should contain components title", async () => {
       // arrange + act also in beforeEach
-      let h1: HTMLElement = fixture.nativeElement.querySelector('h1');
+      let h1: HTMLElement = fixture.nativeElement.querySelector("h1");
 
       // assert
-      expect(h1.textContent).toEqual('Artifacts');
+      expect(h1.textContent).toEqual("Artifacts");
     });
 
-    it('should contain child component - app-artifacts-list-table', async () => {
+    it("should contain child component - app-artifacts-list-table", async () => {
       // arrange
-      const childComponent: HTMLElement = fixture.nativeElement.querySelector('app-artifacts-list-table');
+      const childComponent: HTMLElement = fixture.nativeElement.querySelector("app-artifacts-list-table");
 
       // assert
       expect(childComponent).toBeTruthy();
-      expect(childComponent.getAttribute('ng-reflect-project-key')).toEqual(fakeProject.key);
-      expect(childComponent.getAttribute('ng-reflect-artifact-list-data-source')).not.toBeUndefined();
-      expect(childComponent.getAttribute('ng-reflect-artifact-list-data-source')).not.toBeNull();
+      expect(childComponent.getAttribute("ng-reflect-project-key")).toEqual(fakeProject.key);
+      expect(childComponent.getAttribute("ng-reflect-artifact-list-data-source")).not.toBeUndefined();
+      expect(childComponent.getAttribute("ng-reflect-artifact-list-data-source")).not.toBeNull();
     });
   });
 });

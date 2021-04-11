@@ -2,25 +2,12 @@ import { ENTER, COMMA } from "@angular/cdk/keycodes";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import {
-  AbstractControl,
-  FormBuilder,
-  FormsModule,
-  ReactiveFormsModule,
-} from "@angular/forms";
+import { AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonHarness } from "@angular/material/button/testing";
 import { MatChipInputEvent, MatChipsModule } from "@angular/material/chips";
-import {
-  MatChipHarness,
-  MatChipInputHarness,
-  MatChipListHarness,
-} from "@angular/material/chips/testing";
+import { MatChipHarness, MatChipInputHarness, MatChipListHarness } from "@angular/material/chips/testing";
 import { MatOptionHarness } from "@angular/material/core/testing";
-import {
-  MatDialogModule,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-} from "@angular/material/dialog";
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatFormFieldHarness } from "@angular/material/form-field/testing";
 import { MatIconModule } from "@angular/material/icon";
@@ -69,15 +56,8 @@ describe("CreateOrUpdateExperimentComponent", () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [
-        CreateOrUpdateExperimentComponent,
-        ExperimentStatusI18nComponent,
-      ],
-      providers: [
-        { provide: MatDialogRef, useValue: dialogMock },
-        FormBuilder,
-        { provide: MAT_DIALOG_DATA, useValue: formData },
-      ],
+      declarations: [CreateOrUpdateExperimentComponent, ExperimentStatusI18nComponent],
+      providers: [{ provide: MatDialogRef, useValue: dialogMock }, FormBuilder, { provide: MAT_DIALOG_DATA, useValue: formData }],
       imports: [
         BrowserAnimationsModule,
         FormsModule,
@@ -215,9 +195,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
   describe("add", () => {
     it("should add new tag and reset input value", async () => {
       // arrange in beforeEach
-      let chipListInput: HTMLInputElement = fixture.nativeElement.querySelector(
-        "#chiplist-input"
-      );
+      let chipListInput: HTMLInputElement = fixture.nativeElement.querySelector("#chiplist-input");
       const tag = "another-tag";
       const mockedInputEvent: MatChipInputEvent = {
         input: chipListInput,
@@ -236,9 +214,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
     it("should add tag in new array and reset input value if component tags are undefined", async () => {
       // arrange in beforeEach
       component.tags = [];
-      let chipListInput: HTMLInputElement = fixture.nativeElement.querySelector(
-        "#chiplist-input"
-      );
+      let chipListInput: HTMLInputElement = fixture.nativeElement.querySelector("#chiplist-input");
       const tag = "another-tag";
       const mockedInputEvent: MatChipInputEvent = {
         input: chipListInput,
@@ -256,9 +232,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
     it("should trim new tag before adding it", async () => {
       // arrange in beforeEach
       component.tags = [];
-      let chipListInput: HTMLInputElement = fixture.nativeElement.querySelector(
-        "#chiplist-input"
-      );
+      let chipListInput: HTMLInputElement = fixture.nativeElement.querySelector("#chiplist-input");
       const tag = "  another-tag   ";
       const mockedInputEvent: MatChipInputEvent = {
         input: chipListInput,
@@ -388,9 +362,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
       });
       it("should have 4 form fields with labels", async () => {
         // arrange
-        const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(
-          MatFormFieldHarness
-        );
+        const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(MatFormFieldHarness);
 
         // assert
         expect(formFields.length).toBe(4);
@@ -405,9 +377,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
         const formField: MatFormFieldHarness = await loader.getHarness(
           MatFormFieldHarness.with({ floatingLabelText: "Experiment name *" })
         );
-        const input: MatInputHarness = await loader.getHarness(
-          MatInputHarness.with({ value: fakeExperiment.name })
-        );
+        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.name }));
 
         // assert
         expect(formField).not.toBeNull();
@@ -422,9 +392,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
         const formField: MatFormFieldHarness = await loader.getHarness(
           MatFormFieldHarness.with({ floatingLabelText: "Experiment key *" })
         );
-        const input: MatInputHarness = await loader.getHarness(
-          MatInputHarness.with({ value: fakeExperiment.key })
-        );
+        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.key }));
 
         // assert
         expect(formField).not.toBeNull();
@@ -438,9 +406,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
         const formField: MatFormFieldHarness = await loader.getHarness(
           MatFormFieldHarness.with({ floatingLabelText: "Experiment tags" })
         );
-        const chipList: MatChipListHarness = await loader.getHarness(
-          MatChipListHarness
-        );
+        const chipList: MatChipListHarness = await loader.getHarness(MatChipListHarness);
         const chips: MatChipHarness[] = await chipList.getChips();
         const input: MatChipInputHarness = await chipList.getInput();
 
@@ -459,9 +425,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
         const formField: MatFormFieldHarness = await loader.getHarness(
           MatFormFieldHarness.with({ floatingLabelText: "Experiment status *" })
         );
-        const select: MatSelectHarness = await loader.getHarness(
-          MatSelectHarness
-        );
+        const select: MatSelectHarness = await loader.getHarness(MatSelectHarness);
         await select.open();
         const options: MatOptionHarness[] = await select.getOptions();
 
@@ -469,9 +433,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
         expect(formField).not.toBeNull();
         expect(await select.isRequired()).toBeTruthy();
         expect(select).not.toBeNull();
-        expect(
-          (await select.getValueText()).toUpperCase().replace(" ", "_")
-        ).toEqual(fakeExperiment.status);
+        expect((await select.getValueText()).toUpperCase().replace(" ", "_")).toEqual(fakeExperiment.status);
         expect(options.length).toBe(3);
       });
 
@@ -481,9 +443,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
         const formField: MatFormFieldHarness = await loader.getHarness(
           MatFormFieldHarness.with({ floatingLabelText: "Experiment name *" })
         );
-        const input: MatInputHarness = await loader.getHarness(
-          MatInputHarness.with({ value: fakeExperiment.name })
-        );
+        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.name }));
 
         // act
         await input.setValue("");
@@ -491,9 +451,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
         component.form.get("name").markAsTouched();
 
         // assert
-        expect((await formField.getTextErrors())[0]).toEqual(
-          "You must provide an experiment name."
-        );
+        expect((await formField.getTextErrors())[0]).toEqual("You must provide an experiment name.");
         expect(await formField.isControlValid()).not.toBeNull();
         expect(await formField.isControlValid()).toBeFalsy();
       });
@@ -504,9 +462,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
         const formField: MatFormFieldHarness = await loader.getHarness(
           MatFormFieldHarness.with({ floatingLabelText: "Experiment key *" })
         );
-        const input: MatInputHarness = await loader.getHarness(
-          MatInputHarness.with({ value: fakeExperiment.key })
-        );
+        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.key }));
 
         // act
         await input.setValue("");
@@ -514,9 +470,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
         component.form.get("key").markAsTouched();
 
         // assert
-        expect((await formField.getTextErrors())[0]).toEqual(
-          "You must provide an experiment key."
-        );
+        expect((await formField.getTextErrors())[0]).toEqual("You must provide an experiment key.");
         expect(await formField.isControlValid()).not.toBeNull();
         expect(await formField.isControlValid()).toBeFalsy();
       });
@@ -524,9 +478,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
       it("should have provided readonly value for experiment key input", async () => {
         // arrange
         // Have to add "*" to label because it is required
-        const input: MatInputHarness = await loader.getHarness(
-          MatInputHarness.with({ value: fakeExperiment.key })
-        );
+        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.key }));
 
         // assert
         expect(await input.isReadonly()).toEqual(formData.keyReadonly);
@@ -535,9 +487,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
       it("should set experiment key input to readonly if keyReadonly is true", async () => {
         // arrange
         // Have to add "*" to label because it is required
-        const input: MatInputHarness = await loader.getHarness(
-          MatInputHarness.with({ value: fakeExperiment.key })
-        );
+        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.key }));
 
         // act
         component.keyReadonly = true;
@@ -549,9 +499,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
       it("should set experiment key input not to readonly if keyReadonly is false", async () => {
         // arrange
         // Have to add "*" to label because it is required
-        const input: MatInputHarness = await loader.getHarness(
-          MatInputHarness.with({ value: fakeExperiment.key })
-        );
+        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.key }));
 
         // act
         component.keyReadonly = false;
@@ -603,9 +551,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
           fixture.detectChanges();
 
           // assert
-          expect(
-            await createOrUpdateExperimentButton.isDisabled()
-          ).toBeTruthy();
+          expect(await createOrUpdateExperimentButton.isDisabled()).toBeTruthy();
         });
 
         it("should have enabled save button if the form is valid", async () => {

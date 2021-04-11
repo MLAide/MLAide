@@ -1,61 +1,77 @@
 <div fxLayout="column">
-    <div>
-        <h1 class="mat-display-2" mat-dialog-title i18n>{{data.title}}</h1>
+  <div>
+    <h1 class="mat-display-2" mat-dialog-title i18n>{{ data.title }}</h1>
+  </div>
+  <mat-dialog-content [formGroup]="form" (keydown)="keyDown($event)">
+    <div *ngIf="!data.create">
+      <mat-form-field fxFlex="100">
+        <mat-label i18n>Nickname</mat-label>
+        <input matInput readonly="true" formControlName="nickName" placeholder="Nickname" />
+      </mat-form-field>
     </div>
-    <mat-dialog-content [formGroup]="form" (keydown)="keyDown($event)">
-        <div *ngIf="!data.create">
-            <mat-form-field fxFlex="100">
-                <mat-label i18n>Nickname</mat-label>
-                <input matInput readonly="true" formControlName="nickName" placeholder="Nickname">
-            </mat-form-field>
-        </div>
-        <div>
-            <mat-form-field fxFlex="100">
-                <mat-label i18n>Email</mat-label>
-                <input matInput *ngIf="data.create" [readonly]="!data.create" formControlName="email"
-                    placeholder="Email" cdkFocusInitial required>
-                <input matInput *ngIf="!data.create" [readonly]="!data.create" formControlName="email"
-                    placeholder="Email" required>
-                <mat-error *ngIf="form.get('email').hasError('email') && !form.get('email').hasError('required')" i18n>
-                    You must provide a valid email.
-                </mat-error>
-                <mat-error *ngIf="form.get('email').hasError('required')" i18n>
-                    You must provide an email.
-                </mat-error>
-            </mat-form-field>
-        </div>
-        <div>
-            <mat-form-field fxFlex="100">
-                <mat-label i18n>Role</mat-label>
-                <mat-select *ngIf="!data.create" formControlName="role" placeholder="Choose users role"
-                    [(value)]="currentRole" cdkFocusInitial required>
-                    <mat-option *ngFor="let item of projectMemberRole | keyvalue" [value]="item.key">
-                        <!--https://medium.com/@piotrl/angular-translate-enums-i18n-ec1bb1462181-->
-                        <span i18n>
-                            <app-project-member-role-i18n [key]="item.key"></app-project-member-role-i18n>
-                        </span>
-                    </mat-option>
-                </mat-select>
-                <mat-select *ngIf="data.create" formControlName="role" placeholder="Choose users role"
-                    [(value)]="currentRole" required>
-                    <mat-option *ngFor="let item of projectMemberRole | keyvalue" [value]="item.key">
-                        <!--https://medium.com/@piotrl/angular-translate-enums-i18n-ec1bb1462181-->
-                        <span i18n>
-                            <app-project-member-role-i18n [key]="item.key"></app-project-member-role-i18n>
-                        </span>
-                    </mat-option>
-                </mat-select>
-                <mat-error *ngIf="form.get('role').hasError('required')" i18n>
-                    Role is required.
-                </mat-error>
-            </mat-form-field>
-        </div>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-        <button id="create-or-edit-project-member-cancel-button" mat-button (click)="cancel()" type="button"
-            i18n>Cancel</button>
-        <span class="margin-right-sm"></span>
-        <button id="create-or-edit-project-member-save-button" mat-button (click)="save()" type="submit"
-            [disabled]="!form.valid" color="primary" cdkFocusInitial i18n>{{data.create? 'Create' : 'Update'}}</button>
-    </mat-dialog-actions>
+    <div>
+      <mat-form-field fxFlex="100">
+        <mat-label i18n>Email</mat-label>
+        <input
+          matInput
+          *ngIf="data.create"
+          [readonly]="!data.create"
+          formControlName="email"
+          placeholder="Email"
+          cdkFocusInitial
+          required
+        />
+        <input matInput *ngIf="!data.create" [readonly]="!data.create" formControlName="email" placeholder="Email" required />
+        <mat-error *ngIf="form.get('email').hasError('email') && !form.get('email').hasError('required')" i18n>
+          You must provide a valid email.
+        </mat-error>
+        <mat-error *ngIf="form.get('email').hasError('required')" i18n> You must provide an email. </mat-error>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field fxFlex="100">
+        <mat-label i18n>Role</mat-label>
+        <mat-select
+          *ngIf="!data.create"
+          formControlName="role"
+          placeholder="Choose users role"
+          [(value)]="currentRole"
+          cdkFocusInitial
+          required
+        >
+          <mat-option *ngFor="let item of projectMemberRole | keyvalue" [value]="item.key">
+            <!--https://medium.com/@piotrl/angular-translate-enums-i18n-ec1bb1462181-->
+            <span i18n>
+              <app-project-member-role-i18n [key]="item.key"></app-project-member-role-i18n>
+            </span>
+          </mat-option>
+        </mat-select>
+        <mat-select *ngIf="data.create" formControlName="role" placeholder="Choose users role" [(value)]="currentRole" required>
+          <mat-option *ngFor="let item of projectMemberRole | keyvalue" [value]="item.key">
+            <!--https://medium.com/@piotrl/angular-translate-enums-i18n-ec1bb1462181-->
+            <span i18n>
+              <app-project-member-role-i18n [key]="item.key"></app-project-member-role-i18n>
+            </span>
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('role').hasError('required')" i18n> Role is required. </mat-error>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button id="create-or-edit-project-member-cancel-button" mat-button (click)="cancel()" type="button" i18n>Cancel</button>
+    <span class="margin-right-sm"></span>
+    <button
+      id="create-or-edit-project-member-save-button"
+      mat-button
+      (click)="save()"
+      type="submit"
+      [disabled]="!form.valid"
+      color="primary"
+      cdkFocusInitial
+      i18n
+    >
+      {{ data.create ? "Create" : "Update" }}
+    </button>
+  </mat-dialog-actions>
 </div>

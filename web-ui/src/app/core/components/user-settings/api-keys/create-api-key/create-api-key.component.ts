@@ -3,11 +3,7 @@ import { Component } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef } from "@angular/material/dialog";
 import { ApiKey } from "src/app/core/models/apiKey.model";
-import {
-  SnackbarUiService,
-  SpinnerUiService,
-  UsersApiService,
-} from "src/app/core/services";
+import { SnackbarUiService, SpinnerUiService, UsersApiService } from "src/app/core/services";
 
 @Component({
   selector: "app-create-api-key",
@@ -44,9 +40,7 @@ export class CreateApiKeyComponent {
   }
 
   public copy() {
-    this.snackbarUiService.showSuccesfulSnackbar(
-      "Successfully copied to clipboard!"
-    );
+    this.snackbarUiService.showSuccesfulSnackbar("Successfully copied to clipboard!");
   }
 
   public create() {
@@ -54,9 +48,7 @@ export class CreateApiKeyComponent {
       apiKey: undefined,
       createdAt: undefined,
       description: this.form.value.description,
-      expiresAt: this.form.value.expiresAt
-        ? new Date(this.form.value.expiresAt)
-        : undefined,
+      expiresAt: this.form.value.expiresAt ? new Date(this.form.value.expiresAt) : undefined,
       id: undefined,
     };
     this.spinnerUiService.showSpinner();

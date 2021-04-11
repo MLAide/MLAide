@@ -1,56 +1,61 @@
 <div fxLayout="row" fxLayoutAlign="space-between center">
-    <div>
-        <h1 class="mat-display-2" i18n>Experiments</h1>
-    </div>
-    <div>
-        <button mat-raised-button color="primary" aria-label="Button to open dialog for adding an experiment"
-            (click)="openCreateExperimentDialog()" i18n>
-            Add Experiment
-        </button>
-    </div>
+  <div>
+    <h1 class="mat-display-2" i18n>Experiments</h1>
+  </div>
+  <div>
+    <button
+      mat-raised-button
+      color="primary"
+      aria-label="Button to open dialog for adding an experiment"
+      (click)="openCreateExperimentDialog()"
+      i18n
+    >
+      Add Experiment
+    </button>
+  </div>
 </div>
 
 <div fxLayout="column" class="example-container mat-elevation-z2">
-    <table mat-table matSort [dataSource]="dataSource" aria-label="Experiments overview">
-        <ng-container matColumnDef="key">
-            <th id="key" mat-header-cell *matHeaderCellDef mat-sort-header i18n> Key </th>
-            <td headers="key" mat-cell *matCellDef="let element">
-                <a mat-button color="primary"
-                    [routerLink]="['/projects/'+projectKey+'/experiments/'+element.key]">{{element.key}}</a>
-            </td>
-        </ng-container>
-        <ng-container matColumnDef="name">
-            <th id="name" mat-header-cell *matHeaderCellDef mat-sort-header i18n> Name </th>
-            <td headers="name" mat-cell *matCellDef="let element">
-                {{element.name}}
-            </td>
-        </ng-container>
-        <ng-container matColumnDef="status">
-            <th id="status" mat-header-cell *matHeaderCellDef mat-sort-header i18n> Status </th>
-            <td headers="status" mat-cell *matCellDef="let element">
-                <app-experiment-status-i18n [key]="element.status"></app-experiment-status-i18n>
-            </td>
-        </ng-container>
-        <ng-container matColumnDef="tags">
-            <th id="tags" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Tags </th>
-            <td headers="tags" mat-cell *matCellDef="let element">
-                <mat-chip-list #tagList aria-label="Tags">
-                    <mat-chip *ngFor="let tag of element.tags" [selectable]="true" [removable]="false">
-                        {{tag}}
-                    </mat-chip>
-                </mat-chip-list>
-            </td>
-        </ng-container>
-        <ng-container matColumnDef="actions" [stickyEnd]="true">
-            <th id="actions" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Actions </th>
-            <td headers="actions" mat-cell *matCellDef="let element">
-                <button mat-button (click)="openEditExperimentDialog(element)"
-                    aria-label="Icon button to edit experiment">
-                    <mat-icon>edit</mat-icon>
-                </button>
-            </td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
+  <table mat-table matSort [dataSource]="dataSource" aria-label="Experiments overview">
+    <ng-container matColumnDef="key">
+      <th id="key" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Key</th>
+      <td headers="key" mat-cell *matCellDef="let element">
+        <a mat-button color="primary" [routerLink]="['/projects/' + projectKey + '/experiments/' + element.key]">{{
+          element.key
+        }}</a>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="name">
+      <th id="name" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Name</th>
+      <td headers="name" mat-cell *matCellDef="let element">
+        {{ element.name }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th id="status" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Status</th>
+      <td headers="status" mat-cell *matCellDef="let element">
+        <app-experiment-status-i18n [key]="element.status"></app-experiment-status-i18n>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="tags">
+      <th id="tags" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Tags</th>
+      <td headers="tags" mat-cell *matCellDef="let element">
+        <mat-chip-list #tagList aria-label="Tags">
+          <mat-chip *ngFor="let tag of element.tags" [selectable]="true" [removable]="false">
+            {{ tag }}
+          </mat-chip>
+        </mat-chip-list>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="actions" [stickyEnd]="true">
+      <th id="actions" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Actions</th>
+      <td headers="actions" mat-cell *matCellDef="let element">
+        <button mat-button (click)="openEditExperimentDialog(element)" aria-label="Icon button to edit experiment">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
 </div>

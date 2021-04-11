@@ -27,8 +27,7 @@ export class DurationPipe implements PipeTransform {
     }
 
     if (Math.floor(valueAsMoment.asMilliseconds()) > 0) {
-      durationString +=
-        (Math.floor(valueAsMoment.asMilliseconds()) % 100) + "ms ";
+      durationString += (Math.floor(valueAsMoment.asMilliseconds()) % 100) + "ms ";
     }
 
     if (durationString.slice(-1) === " ") {

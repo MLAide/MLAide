@@ -1,14 +1,14 @@
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatChipInputEvent } from '@angular/material/chips';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Experiment, ExperimentStatus } from '../../../../models/experiment.model';
+import { COMMA, ENTER } from "@angular/cdk/keycodes";
+import { Component, Inject } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { MatChipInputEvent } from "@angular/material/chips";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { Experiment, ExperimentStatus } from "../../../../models/experiment.model";
 
 @Component({
-  selector: 'app-create-or-update-experiment',
-  templateUrl: './create-or-update-experiment.component.html',
-  styleUrls: ['./create-or-update-experiment.component.scss']
+  selector: "app-create-or-update-experiment",
+  templateUrl: "./create-or-update-experiment.component.html",
+  styleUrls: ["./create-or-update-experiment.component.scss"],
 })
 export class CreateOrUpdateExperimentComponent {
   public addOnBlur = true;
@@ -23,11 +23,11 @@ export class CreateOrUpdateExperimentComponent {
   public tags: string[];
   public visible = true;
 
-
   constructor(
     private dialogRef: MatDialogRef<CreateOrUpdateExperimentComponent>,
     private formBuilder: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: { experiment: Experiment, keyReadonly: boolean, title: string, }) {
+    @Inject(MAT_DIALOG_DATA) public data: { experiment: Experiment; keyReadonly: boolean; title: string }
+  ) {
     // We need to do this, otherwise the changes in the dialog are also visible in the table
     this.tags = Object.assign([], data.experiment.tags);
     this.currentStatus = data.experiment.status;
@@ -40,11 +40,10 @@ export class CreateOrUpdateExperimentComponent {
       status: [this.currentStatus, { validators: [Validators.required], updateOn: "change" }],
     });
 
-
-    this.form.get('name').valueChanges.subscribe((newName: string) => {
+    this.form.get("name").valueChanges.subscribe((newName: string) => {
       if (newName && !this.keyReadonly) {
-        const newKey = newName.split(' ').join('-').toLowerCase();
-        this.form.get('key').setValue(newKey);
+        const newKey = newName.split(" ").join("-").toLowerCase();
+        this.form.get("key").setValue(newKey);
       }
     });
   }
@@ -58,13 +57,13 @@ export class CreateOrUpdateExperimentComponent {
     }
 
     // Add our tag
-    if ((value || '').trim()) {
+    if ((value || "").trim()) {
       this.tags.push(value.trim());
     }
 
     // Reset the input value
     if (input) {
-      input.value = '';
+      input.value = "";
     }
   }
 
@@ -85,7 +84,7 @@ export class CreateOrUpdateExperimentComponent {
       if (this.form.valid) {
         this.save();
       } else {
-        Object.keys(this.form.controls).forEach(field => {
+        Object.keys(this.form.controls).forEach((field) => {
           const control = this.form.get(field);
           control.markAsTouched({ onlySelf: true });
         });
@@ -94,7 +93,7 @@ export class CreateOrUpdateExperimentComponent {
   }
 
   public save() {
-    this.form.get('tags').setValue(this.tags);
+    this.form.get("tags").setValue(this.tags);
     this.dialogRef.close(this.form.value);
   }
 }

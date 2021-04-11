@@ -15,15 +15,8 @@ describe("AuthService", () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule.withRoutes([
-          { path: "home", component: FakeComponent },
-        ]),
-      ],
-      providers: [
-        AuthService,
-        { provide: OAuthService, useClass: MockOAuthService },
-      ],
+      imports: [RouterTestingModule.withRoutes([{ path: "home", component: FakeComponent }])],
+      providers: [AuthService, { provide: OAuthService, useClass: MockOAuthService }],
     });
 
     service = TestBed.inject(AuthService);
@@ -53,9 +46,7 @@ describe("AuthService", () => {
     window.dispatchEvent(new StorageEvent("storage", { key: "access_token" }));
 
     expect(router.navigateByUrl).toHaveBeenCalledWith(loginUrl);
-    service.isAuthenticated$.subscribe((isAuthenticated) =>
-      expect(isAuthenticated).toBe(false)
-    );
+    service.isAuthenticated$.subscribe((isAuthenticated) => expect(isAuthenticated).toBe(false));
   });
 
   describe("runInitialLoginSequence", () => {
@@ -67,9 +58,7 @@ describe("AuthService", () => {
         mockService.updateTokenValidity(true);
 
         service.runInitialLoginSequence().then(() => {
-          expect(
-            mockService.loadDiscoveryDocumentAndTryLogin
-          ).toHaveBeenCalled();
+          expect(mockService.loadDiscoveryDocumentAndTryLogin).toHaveBeenCalled();
           expect(mockService.silentRefresh).not.toHaveBeenCalled();
         });
       })
@@ -83,9 +72,7 @@ describe("AuthService", () => {
         mockService.state = "/some/url";
 
         service.runInitialLoginSequence().then(() => {
-          expect(
-            mockService.loadDiscoveryDocumentAndTryLogin
-          ).toHaveBeenCalled();
+          expect(mockService.loadDiscoveryDocumentAndTryLogin).toHaveBeenCalled();
           expect(mockService.setupAutomaticSilentRefresh).toHaveBeenCalled();
           expect(router.navigateByUrl).toHaveBeenCalledWith("/some/url");
         });
@@ -99,9 +86,7 @@ describe("AuthService", () => {
         spyOn(mockService, "setupAutomaticSilentRefresh");
 
         service.runInitialLoginSequence().then(() => {
-          expect(
-            mockService.loadDiscoveryDocumentAndTryLogin
-          ).toHaveBeenCalled();
+          expect(mockService.loadDiscoveryDocumentAndTryLogin).toHaveBeenCalled();
           expect(mockService.setupAutomaticSilentRefresh).toHaveBeenCalled();
           expect(router.navigateByUrl).not.toHaveBeenCalled();
         });

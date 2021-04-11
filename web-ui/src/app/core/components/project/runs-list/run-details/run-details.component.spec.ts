@@ -3,42 +3,23 @@ import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatButtonModule } from "@angular/material/button";
 import { MatChipsModule } from "@angular/material/chips";
-import {
-  MatChipHarness,
-  MatChipListHarness,
-} from "@angular/material/chips/testing";
+import { MatChipHarness, MatChipListHarness } from "@angular/material/chips/testing";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatSortModule } from "@angular/material/sort";
 import { MatTableModule } from "@angular/material/table";
-import {
-  MatHeaderRowHarness,
-  MatRowHarness,
-  MatRowHarnessColumnsText,
-  MatTableHarness,
-} from "@angular/material/table/testing";
+import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { MockComponent, MockPipe } from "ng-mocks";
 import { TimeAgoPipe } from "ngx-moment";
 import { EMPTY, Observable, of, Subject, Subscription } from "rxjs";
-import {
-  Artifact,
-  ArtifactListResponse,
-} from "src/app/core/models/artifact.model";
+import { Artifact, ArtifactListResponse } from "src/app/core/models/artifact.model";
 import { Project } from "src/app/core/models/project.model";
 import { Run } from "src/app/core/models/run.model";
-import {
-  ArtifactsApiService,
-  RunsApiService,
-  SnackbarUiService,
-} from "src/app/core/services";
+import { ArtifactsApiService, RunsApiService, SnackbarUiService } from "src/app/core/services";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
-import {
-  getRandomArtifacts,
-  getRandomProject,
-  getRandomRun,
-} from "src/app/mocks/fake-generator";
+import { getRandomArtifacts, getRandomProject, getRandomRun } from "src/app/mocks/fake-generator";
 
 import { DurationPipe } from "../../../../../pipes/duration.pipe";
 import { ArtifactsTreeComponent } from "../../shared/artifacts-tree/artifacts-tree.component";
@@ -63,10 +44,7 @@ describe("RunDetailsComponent", () => {
   let snackBarUiServiceStub: jasmine.SpyObj<SnackbarUiService>;
 
   // data source mocks
-  let artifactListDataSourceMock: ListDataSourceMock<
-    Artifact,
-    ArtifactListResponse
-  > = new ListDataSourceMock();
+  let artifactListDataSourceMock: ListDataSourceMock<Artifact, ArtifactListResponse> = new ListDataSourceMock();
 
   afterEach(() => {
     artifactListDataSourceMock.emulate([]);
@@ -97,10 +75,7 @@ describe("RunDetailsComponent", () => {
 
         // assert
         expect(component.run).toBe(fakeRun);
-        expect(runsApiServiceStub.getRun).toHaveBeenCalledWith(
-          fakeProject.key,
-          fakeRun.key
-        );
+        expect(runsApiServiceStub.getRun).toHaveBeenCalledWith(fakeProject.key, fakeRun.key);
       });
 
       it("should push run's parameters into component's parameter variable", async () => {
@@ -115,9 +90,7 @@ describe("RunDetailsComponent", () => {
         expect(component.parameters[2].key).toEqual("rmse");
         expect(component.parameters[2].value).toEqual(fakeRun.parameters.rmse);
         expect(component.parameters[3].key).toEqual("number");
-        expect(component.parameters[3].value).toEqual(
-          fakeRun.parameters.number
-        );
+        expect(component.parameters[3].value).toEqual(fakeRun.parameters.number);
         expect(component.parameters[4].key).toEqual("bool");
         expect(component.parameters[4].value).toEqual(fakeRun.parameters.bool);
       });
@@ -144,9 +117,7 @@ describe("RunDetailsComponent", () => {
 
         // assert
         // We can do this because the faker generates hard coded parameters
-        expect(component.parametersDataSource.data).toEqual(
-          component.parameters
-        );
+        expect(component.parametersDataSource.data).toEqual(component.parameters);
       });
 
       it("should set metrics to metricsDataSource data", async () => {
@@ -169,12 +140,8 @@ describe("RunDetailsComponent", () => {
         // arrange + act in beforeEach
 
         // assert
-        expect(component.artifactListDataSource).toBe(
-          artifactListDataSourceMock
-        );
-        expect(
-          artifactsApiServiceStub.getArtifactsByRunKeys
-        ).toHaveBeenCalledWith(fakeProject.key, [fakeRun.key]);
+        expect(component.artifactListDataSource).toBe(artifactListDataSourceMock);
+        expect(artifactsApiServiceStub.getArtifactsByRunKeys).toHaveBeenCalledWith(fakeProject.key, [fakeRun.key]);
       });
     });
 
@@ -289,49 +256,35 @@ describe("RunDetailsComponent", () => {
           component.save();
 
           // assert
-          expect(runsApiServiceStub.updateNoteInRun).toHaveBeenCalledWith(
-            fakeProject.key,
-            fakeRun.key,
-            fakeRun.note
-          );
+          expect(runsApiServiceStub.updateNoteInRun).toHaveBeenCalledWith(fakeProject.key, fakeRun.key, fakeRun.note);
         });
 
         it("should display snackbar with success message if note was saved", async () => {
           // arrange + act also in beforeEach
           component.note = "test note";
           const subject = new Subject<string>();
-          runsApiServiceStub.updateNoteInRun.and.returnValue(
-            subject.asObservable()
-          );
+          runsApiServiceStub.updateNoteInRun.and.returnValue(subject.asObservable());
 
           // act
           component.save();
           subject.next();
 
           // assert
-          expect(
-            snackBarUiServiceStub.showSuccesfulSnackbar
-          ).toHaveBeenCalledWith("Successfully saved note!");
+          expect(snackBarUiServiceStub.showSuccesfulSnackbar).toHaveBeenCalledWith("Successfully saved note!");
         });
 
         it("should display snackbar with error message if note could not be saved", async () => {
           // arrange + act also in beforeEach
           component.note = "test note";
           const subject = new Subject<string>();
-          runsApiServiceStub.updateNoteInRun.and.returnValue(
-            subject.asObservable()
-          );
+          runsApiServiceStub.updateNoteInRun.and.returnValue(subject.asObservable());
 
           // act
           component.save();
-          subject.error(
-            "This is a test error thrown in run-details.component.spec.ts"
-          );
+          subject.error("This is a test error thrown in run-details.component.spec.ts");
 
           // assert
-          expect(snackBarUiServiceStub.showErrorSnackbar).toHaveBeenCalledWith(
-            "Error while saving note."
-          );
+          expect(snackBarUiServiceStub.showErrorSnackbar).toHaveBeenCalledWith("Error while saving note.");
         });
       });
       describe("without new note or undefined", () => {
@@ -344,12 +297,8 @@ describe("RunDetailsComponent", () => {
 
           // assert
           expect(runsApiServiceStub.updateNoteInRun).not.toHaveBeenCalled();
-          expect(
-            snackBarUiServiceStub.showSuccesfulSnackbar
-          ).not.toHaveBeenCalled();
-          expect(
-            snackBarUiServiceStub.showErrorSnackbar
-          ).not.toHaveBeenCalled();
+          expect(snackBarUiServiceStub.showSuccesfulSnackbar).not.toHaveBeenCalled();
+          expect(snackBarUiServiceStub.showErrorSnackbar).not.toHaveBeenCalled();
         });
 
         it("should not not call updateNoteInRun, showSuccesfulSnackbar and showErrorSnackbar if component's note is undefined", async () => {
@@ -362,12 +311,8 @@ describe("RunDetailsComponent", () => {
 
           // assert
           expect(runsApiServiceStub.updateNoteInRun).not.toHaveBeenCalled();
-          expect(
-            snackBarUiServiceStub.showSuccesfulSnackbar
-          ).not.toHaveBeenCalled();
-          expect(
-            snackBarUiServiceStub.showErrorSnackbar
-          ).not.toHaveBeenCalled();
+          expect(snackBarUiServiceStub.showSuccesfulSnackbar).not.toHaveBeenCalled();
+          expect(snackBarUiServiceStub.showErrorSnackbar).not.toHaveBeenCalled();
         });
 
         it("should not not call updateNoteInRun, showSuccesfulSnackbar and showErrorSnackbar if component's note is null", async () => {
@@ -380,12 +325,8 @@ describe("RunDetailsComponent", () => {
 
           // assert
           expect(runsApiServiceStub.updateNoteInRun).not.toHaveBeenCalled();
-          expect(
-            snackBarUiServiceStub.showSuccesfulSnackbar
-          ).not.toHaveBeenCalled();
-          expect(
-            snackBarUiServiceStub.showErrorSnackbar
-          ).not.toHaveBeenCalled();
+          expect(snackBarUiServiceStub.showSuccesfulSnackbar).not.toHaveBeenCalled();
+          expect(snackBarUiServiceStub.showErrorSnackbar).not.toHaveBeenCalled();
         });
       });
     });
@@ -465,12 +406,8 @@ describe("RunDetailsComponent", () => {
 
         it("should contain author label and value", async () => {
           // arrange + act also in beforeEach
-          let label: HTMLElement = fixture.nativeElement.querySelector(
-            "#author-label"
-          );
-          let value: HTMLElement = fixture.nativeElement.querySelector(
-            "#author-value"
-          );
+          let label: HTMLElement = fixture.nativeElement.querySelector("#author-label");
+          let value: HTMLElement = fixture.nativeElement.querySelector("#author-value");
 
           // assert
           expect(label.textContent).toEqual("Author");
@@ -479,28 +416,18 @@ describe("RunDetailsComponent", () => {
 
         it("should contain status label and value", async () => {
           // arrange + act also in beforeEach
-          let label: HTMLElement = fixture.nativeElement.querySelector(
-            "#status-label"
-          );
-          let value: HTMLElement = fixture.nativeElement.querySelector(
-            "#status-value"
-          );
+          let label: HTMLElement = fixture.nativeElement.querySelector("#status-label");
+          let value: HTMLElement = fixture.nativeElement.querySelector("#status-value");
 
           // assert
           expect(label.textContent).toEqual("Status");
-          expect(
-            value.textContent.toUpperCase().trim().replace(" ", "_")
-          ).toEqual(fakeRun.status);
+          expect(value.textContent.toUpperCase().trim().replace(" ", "_")).toEqual(fakeRun.status);
         });
 
         it("should contain start time label and value", async () => {
           // arrange + act also in beforeEach
-          let label: HTMLElement = fixture.nativeElement.querySelector(
-            "#start-time-label"
-          );
-          let value: HTMLElement = fixture.nativeElement.querySelector(
-            "#start-time-value"
-          );
+          let label: HTMLElement = fixture.nativeElement.querySelector("#start-time-label");
+          let value: HTMLElement = fixture.nativeElement.querySelector("#start-time-value");
 
           // assert
           expect(label.textContent).toEqual("Start Time");
@@ -509,12 +436,8 @@ describe("RunDetailsComponent", () => {
 
         it("should contain run time label and value", async () => {
           // arrange + act also in beforeEach
-          let label: HTMLElement = fixture.nativeElement.querySelector(
-            "#run-time-label"
-          );
-          let value: HTMLElement = fixture.nativeElement.querySelector(
-            "#run-time-value"
-          );
+          let label: HTMLElement = fixture.nativeElement.querySelector("#run-time-label");
+          let value: HTMLElement = fixture.nativeElement.querySelector("#run-time-value");
 
           // assert
           expect(label.textContent).toEqual("Run Time");
@@ -526,12 +449,8 @@ describe("RunDetailsComponent", () => {
           // arrange + act also in beforeEach
           fakeRun.endTime = undefined;
           fixture.detectChanges();
-          let label: HTMLElement = fixture.nativeElement.querySelector(
-            "#run-time-label"
-          );
-          let value: HTMLElement = fixture.nativeElement.querySelector(
-            "#run-time-value"
-          );
+          let label: HTMLElement = fixture.nativeElement.querySelector("#run-time-label");
+          let value: HTMLElement = fixture.nativeElement.querySelector("#run-time-value");
 
           // assert
           expect(label.textContent).toEqual("Run Time");
@@ -542,12 +461,8 @@ describe("RunDetailsComponent", () => {
           // arrange + act also in beforeEach
           fakeRun.endTime = null;
           fixture.detectChanges();
-          let label: HTMLElement = fixture.nativeElement.querySelector(
-            "#run-time-label"
-          );
-          let value: HTMLElement = fixture.nativeElement.querySelector(
-            "#run-time-value"
-          );
+          let label: HTMLElement = fixture.nativeElement.querySelector("#run-time-label");
+          let value: HTMLElement = fixture.nativeElement.querySelector("#run-time-value");
 
           // assert
           expect(label.textContent).toEqual("Run Time");
@@ -556,29 +471,21 @@ describe("RunDetailsComponent", () => {
 
         it("should contain experiments label and value", async () => {
           // arrange + act also in beforeEach
-          let label: HTMLElement = fixture.nativeElement.querySelector(
-            "#experiments-label"
-          );
-          const chipLists: MatChipListHarness[] = await loader.getAllHarnesses(
-            MatChipListHarness
-          );
+          let label: HTMLElement = fixture.nativeElement.querySelector("#experiments-label");
+          const chipLists: MatChipListHarness[] = await loader.getAllHarnesses(MatChipListHarness);
           const chips: MatChipHarness[] = await chipLists[0].getChips();
 
           // assert
           expect(label.textContent).toEqual("Experiments");
           chips.forEach(async (chip, index) => {
-            expect(await chip.getText()).toEqual(
-              fakeRun.experimentRefs[index].experimentKey
-            );
+            expect(await chip.getText()).toEqual(fakeRun.experimentRefs[index].experimentKey);
           });
         });
       });
       describe("parameters", () => {
         it("should contain parameters title", async () => {
           // arrange + act also in beforeEach
-          let title: HTMLElement = fixture.nativeElement.querySelector(
-            "#parameters-title"
-          );
+          let title: HTMLElement = fixture.nativeElement.querySelector("#parameters-title");
 
           // assert
           expect(title.textContent).toEqual("Parameters");
@@ -586,9 +493,7 @@ describe("RunDetailsComponent", () => {
 
         it("should contain the parameters table", () => {
           // arrange + act also in beforeEach
-          let table: HTMLElement = fixture.nativeElement.querySelector(
-            "#parameters-table"
-          );
+          let table: HTMLElement = fixture.nativeElement.querySelector("#parameters-table");
 
           // assert
           expect(table.textContent).toBeTruthy();
@@ -596,9 +501,7 @@ describe("RunDetailsComponent", () => {
 
         it("should have defined headers", async () => {
           // arrange + act also in beforeEach
-          const table: MatTableHarness = await loader.getHarness(
-            MatTableHarness.with({ selector: "#parameters-table" })
-          );
+          const table: MatTableHarness = await loader.getHarness(MatTableHarness.with({ selector: "#parameters-table" }));
           const headers: MatHeaderRowHarness[] = await table.getHeaderRows();
           const headerRow: MatRowHarnessColumnsText = await headers[0].getCellTextByColumnName();
 
@@ -610,17 +513,13 @@ describe("RunDetailsComponent", () => {
 
         it("should show row for each parameter", async () => {
           // arrange + act also in beforeEach
-          const table: MatTableHarness = await loader.getHarness(
-            MatTableHarness.with({ selector: "#parameters-table" })
-          );
+          const table: MatTableHarness = await loader.getHarness(MatTableHarness.with({ selector: "#parameters-table" }));
           const rows: MatRowHarness[] = await table.getRows();
 
           // assert
           expect(rows.length).toBe(component.parameters.length);
           component.parameters.forEach(async (parameter, index) => {
-            const row: MatRowHarnessColumnsText = await rows[
-              index
-            ].getCellTextByColumnName();
+            const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
 
             expect(row.parametersKey).toEqual(parameter.key);
             expect(row.parametersValue).toEqual(String(parameter.value));
@@ -630,9 +529,7 @@ describe("RunDetailsComponent", () => {
       describe("metrics", () => {
         it("should contain metrics title", async () => {
           // arrange + act also in beforeEach
-          let title: HTMLElement = fixture.nativeElement.querySelector(
-            "#metrics-title"
-          );
+          let title: HTMLElement = fixture.nativeElement.querySelector("#metrics-title");
 
           // assert
           expect(title.textContent).toEqual("Metrics");
@@ -640,9 +537,7 @@ describe("RunDetailsComponent", () => {
 
         it("should contain the metrics table", () => {
           // arrange + act also in beforeEach
-          let table: HTMLElement = fixture.nativeElement.querySelector(
-            "#metrics-table"
-          );
+          let table: HTMLElement = fixture.nativeElement.querySelector("#metrics-table");
 
           // assert
           expect(table.textContent).toBeTruthy();
@@ -650,9 +545,7 @@ describe("RunDetailsComponent", () => {
 
         it("should have defined headers", async () => {
           // arrange + act also in beforeEach
-          const table: MatTableHarness = await loader.getHarness(
-            MatTableHarness.with({ selector: "#metrics-table" })
-          );
+          const table: MatTableHarness = await loader.getHarness(MatTableHarness.with({ selector: "#metrics-table" }));
           const headers: MatHeaderRowHarness[] = await table.getHeaderRows();
           const headerRow: MatRowHarnessColumnsText = await headers[0].getCellTextByColumnName();
 
@@ -664,17 +557,13 @@ describe("RunDetailsComponent", () => {
 
         it("should show row for each metric", async () => {
           // arrange + act also in beforeEach
-          const table: MatTableHarness = await loader.getHarness(
-            MatTableHarness.with({ selector: "#metrics-table" })
-          );
+          const table: MatTableHarness = await loader.getHarness(MatTableHarness.with({ selector: "#metrics-table" }));
           const rows: MatRowHarness[] = await table.getRows();
 
           // assert
           expect(rows.length).toBe(component.metrics.length);
           component.metrics.forEach(async (metric, index) => {
-            const row: MatRowHarnessColumnsText = await rows[
-              index
-            ].getCellTextByColumnName();
+            const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
 
             expect(row.metricsKey).toEqual(metric.key);
             expect(row.metricsValue).toEqual(String(metric.value));
@@ -684,30 +573,20 @@ describe("RunDetailsComponent", () => {
       describe("artifacts tree", () => {
         it("should contain artifacts tree title", async () => {
           // arrange + act also in beforeEach
-          let title: HTMLElement = fixture.nativeElement.querySelector(
-            "#artifacts-tree-title"
-          );
+          let title: HTMLElement = fixture.nativeElement.querySelector("#artifacts-tree-title");
 
           // assert
           expect(title.textContent).toEqual("Artifacts");
         });
         it("should contain child component - app-artifacts-tree ", async () => {
           // arrange
-          const childComponent: HTMLElement = fixture.nativeElement.querySelector(
-            "app-artifacts-tree"
-          );
+          const childComponent: HTMLElement = fixture.nativeElement.querySelector("app-artifacts-tree");
 
           // assert
           expect(childComponent).toBeTruthy();
-          expect(childComponent.getAttribute("ng-reflect-project-key")).toEqual(
-            fakeProject.key
-          );
-          expect(
-            childComponent.getAttribute("ng-reflect-artifact-list-data-source")
-          ).not.toBeUndefined();
-          expect(
-            childComponent.getAttribute("ng-reflect-artifact-list-data-source")
-          ).not.toBeNull();
+          expect(childComponent.getAttribute("ng-reflect-project-key")).toEqual(fakeProject.key);
+          expect(childComponent.getAttribute("ng-reflect-artifact-list-data-source")).not.toBeUndefined();
+          expect(childComponent.getAttribute("ng-reflect-artifact-list-data-source")).not.toBeNull();
         });
       });
     });
@@ -718,10 +597,7 @@ describe("RunDetailsComponent", () => {
     // mock active route params
     const paramMapObservable = new Observable<ParamMap>();
     const paramMapSubscription = new Subscription();
-    unsubscriptionSpy = spyOn(
-      paramMapSubscription,
-      "unsubscribe"
-    ).and.callThrough();
+    unsubscriptionSpy = spyOn(paramMapSubscription, "unsubscribe").and.callThrough();
     spyOn(paramMapObservable, "subscribe").and.callFake(
       (fn): Subscription => {
         fn({ projectKey: fakeProject.key, runKey: fakeRun.key });
@@ -730,17 +606,9 @@ describe("RunDetailsComponent", () => {
     );
 
     // stub services
-    artifactsApiServiceStub = jasmine.createSpyObj("artifactsApiService", [
-      "getArtifactsByRunKeys",
-    ]);
-    runsApiServiceStub = jasmine.createSpyObj("runsApiService", [
-      "getRun",
-      "updateNoteInRun",
-    ]);
-    snackBarUiServiceStub = jasmine.createSpyObj("snackBarUiService", [
-      "showSuccesfulSnackbar",
-      "showErrorSnackbar",
-    ]);
+    artifactsApiServiceStub = jasmine.createSpyObj("artifactsApiService", ["getArtifactsByRunKeys"]);
+    runsApiServiceStub = jasmine.createSpyObj("runsApiService", ["getRun", "updateNoteInRun"]);
+    snackBarUiServiceStub = jasmine.createSpyObj("snackBarUiService", ["showSuccesfulSnackbar", "showErrorSnackbar"]);
 
     // setup experiments fakes
     fakeArtifacts = await getRandomArtifacts(3);
@@ -753,9 +621,7 @@ describe("RunDetailsComponent", () => {
     } else {
       runsApiServiceStub.getRun.and.returnValue(of(fakeRun));
     }
-    artifactsApiServiceStub.getArtifactsByRunKeys.and.returnValue(
-      artifactListDataSourceMock
-    );
+    artifactsApiServiceStub.getArtifactsByRunKeys.and.returnValue(artifactListDataSourceMock);
     artifactListDataSourceMock.emulate(fakeArtifacts);
 
     await TestBed.configureTestingModule({

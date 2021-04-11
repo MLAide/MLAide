@@ -5,11 +5,7 @@ import { ActivatedRoute } from "@angular/router";
 import { Observable, Subscription } from "rxjs";
 import { CreateOrEditProjectMemberComponent } from "./create-or-edit-project-member/create-or-edit-project-member.component";
 import { Project } from "../../../models/project.model";
-import {
-  ProjectMember,
-  ProjectMemberListResponse,
-  ProjectMemberRole,
-} from "../../../models/projectMember.model";
+import { ProjectMember, ProjectMemberListResponse, ProjectMemberRole } from "../../../models/projectMember.model";
 import { ListDataSource, ProjectsApiService, SnackbarUiService, SpinnerUiService } from "../../../services";
 import { MatSort } from "@angular/material/sort";
 
@@ -35,7 +31,7 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     private snackBarService: SnackbarUiService,
     private projectApiService: ProjectsApiService,
     private spinnerService: SpinnerUiService
-  ) { }
+  ) {}
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
@@ -58,19 +54,13 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
   ngOnInit() {
     this.routeParamsSubscription = this.route.params.subscribe((params) => {
       this.projectKey = params.projectKey;
-      this.projectSub = this.projectApiService
-        .getProject(this.projectKey)
-        .subscribe((project) => {
-          this.project = project;
-        });
-      this.projectMembersListDatasource = this.projectApiService.getProjectMembers(
-        this.projectKey
-      );
-      this.projectMembersListSubscription = this.projectMembersListDatasource.items$.subscribe(
-        (projectMembers) => {
-          this.dataSource.data = projectMembers.items;
-        }
-      );
+      this.projectSub = this.projectApiService.getProject(this.projectKey).subscribe((project) => {
+        this.project = project;
+      });
+      this.projectMembersListDatasource = this.projectApiService.getProjectMembers(this.projectKey);
+      this.projectMembersListSubscription = this.projectMembersListDatasource.items$.subscribe((projectMembers) => {
+        this.dataSource.data = projectMembers.items;
+      });
     });
   }
 
@@ -102,19 +92,11 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
 
   public removeProjectMember(projectMember: ProjectMember): void {
     this.executeOperationAndReloadProjectMembers(() =>
-      this.projectApiService.deleteProjectMember(
-        this.projectKey,
-        projectMember.email
-      )
+      this.projectApiService.deleteProjectMember(this.projectKey, projectMember.email)
     );
   }
 
-  private editProjectMemberDialog(result: {
-    email: string;
-    nickName: string;
-    role: ProjectMemberRole;
-  }): void {
-
+  private editProjectMemberDialog(result: { email: string; nickName: string; role: ProjectMemberRole }): void {
     const projectMember: ProjectMember = {
       email: result.email,
       nickName: undefined,
@@ -122,17 +104,11 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
       userId: undefined,
     };
     this.executeOperationAndReloadProjectMembers(() =>
-      this.projectApiService.createOrUpdateProjectMembers(
-        this.projectKey,
-        projectMember
-      )
+      this.projectApiService.createOrUpdateProjectMembers(this.projectKey, projectMember)
     );
   }
 
-  private executeOperationAndReloadProjectMembers<T>(
-    operation: () => Observable<T>,
-    successCallback: () => void = null
-  ) {
+  private executeOperationAndReloadProjectMembers<T>(operation: () => Observable<T>, successCallback: () => void = null) {
     this.spinnerService.showSpinner();
 
     const observable = operation();
@@ -158,7 +134,9 @@ export class ProjectSettingsComponent implements OnInit, OnDestroy, AfterViewIni
     );
   }
 
-  private subscribeToAfterClosedAndCallEditProjectMemberDialogOnResult(dialogRef: MatDialogRef<CreateOrEditProjectMemberComponent, any>) {
+  private subscribeToAfterClosedAndCallEditProjectMemberDialogOnResult(
+    dialogRef: MatDialogRef<CreateOrEditProjectMemberComponent, any>
+  ) {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.editProjectMemberDialog(result);

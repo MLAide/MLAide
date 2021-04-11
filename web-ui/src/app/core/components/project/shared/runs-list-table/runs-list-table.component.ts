@@ -1,13 +1,5 @@
 import { SelectionModel } from "@angular/cdk/collections";
-import {
-  AfterViewInit,
-  Component,
-  Input,
-  OnChanges,
-  OnDestroy,
-  SimpleChanges,
-  ViewChild,
-} from "@angular/core";
+import { AfterViewInit, Component, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild } from "@angular/core";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -22,19 +14,9 @@ import { FileSaverService } from "ngx-filesaver";
   templateUrl: "./runs-list-table.component.html",
   styleUrls: ["./runs-list-table.component.scss"],
 })
-export class RunsListTableComponent
-  implements AfterViewInit, OnChanges, OnDestroy {
+export class RunsListTableComponent implements AfterViewInit, OnChanges, OnDestroy {
   public dataSource: MatTableDataSource<Run> = new MatTableDataSource<Run>();
-  public displayedColumns: string[] = [
-    "select",
-    "name",
-    "status",
-    "startTime",
-    "runTime",
-    "metrics",
-    "createdBy",
-    "experiments",
-  ];
+  public displayedColumns: string[] = ["select", "name", "status", "startTime", "runTime", "metrics", "createdBy", "experiments"];
   public hideParameters = true;
   @Input() projectKey: string;
   @Input() runListDataSource: ListDataSource<RunListResponse>;
@@ -55,11 +37,9 @@ export class RunsListTableComponent
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.runListDataSource) {
-      this.runListSubscription = this.runListDataSource?.items$.subscribe(
-        (runs) => {
-          this.dataSource.data = runs.items;
-        }
-      );
+      this.runListSubscription = this.runListDataSource?.items$.subscribe((runs) => {
+        this.dataSource.data = runs.items;
+      });
     }
   }
   ngOnDestroy(): void {
@@ -74,9 +54,7 @@ export class RunsListTableComponent
     if (!row) {
       return `${this.isAllSelected() ? "select" : "deselect"} all`;
     }
-    return `${this.selection.isSelected(row) ? "deselect" : "select"} row ${
-      row.key
-    }`;
+    return `${this.selection.isSelected(row) ? "deselect" : "select"} row ${row.key}`;
   }
 
   public experimentClicked(experimentRef): void {
@@ -88,13 +66,11 @@ export class RunsListTableComponent
     const runKeys = [];
     this.selection.selected.forEach((run) => runKeys.push(run.key));
 
-    this.runsApiService
-      .exportRunsByRunKeys(this.projectKey, runKeys)
-      .subscribe((data: any) => {
-        const blob = new Blob([data], { type: "application/octet-stream" });
-        const fileName = `ExportedRuns_${new Date().toISOString()}.json`;
-        this.fileSaverService.save(blob, fileName);
-      });
+    this.runsApiService.exportRunsByRunKeys(this.projectKey, runKeys).subscribe((data: any) => {
+      const blob = new Blob([data], { type: "application/octet-stream" });
+      const fileName = `ExportedRuns_${new Date().toISOString()}.json`;
+      this.fileSaverService.save(blob, fileName);
+    });
   }
 
   public goToRunCompareComponent(): void {
@@ -118,9 +94,7 @@ export class RunsListTableComponent
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   public masterToggle(): void {
-    this.isAllSelected()
-      ? this.selection.clear()
-      : this.dataSource.data.forEach((row) => this.selection.select(row));
+    this.isAllSelected() ? this.selection.clear() : this.dataSource.data.forEach((row) => this.selection.select(row));
   }
 
   public selectedLessThanOneRow(): boolean {
@@ -140,16 +114,7 @@ export class RunsListTableComponent
   public toggleParameters(): void {
     this.hideParameters = !this.hideParameters;
     if (this.hideParameters) {
-      this.displayedColumns = [
-        "select",
-        "name",
-        "status",
-        "startTime",
-        "runTime",
-        "metrics",
-        "createdBy",
-        "experiments",
-      ];
+      this.displayedColumns = ["select", "name", "status", "startTime", "runTime", "metrics", "createdBy", "experiments"];
     } else {
       this.displayedColumns = [
         "select",

@@ -2,10 +2,7 @@ import { HttpClient, HttpResponse } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { APP_CONFIG, IAppConfig } from "src/app/config/app-config.model";
-import {
-  ArtifactListResponse,
-  CreateOrUpdateModel,
-} from "../models/artifact.model";
+import { ArtifactListResponse, CreateOrUpdateModel } from "../models/artifact.model";
 import { ListDataSource } from "./list-data-source";
 
 @Injectable({
@@ -15,39 +12,17 @@ export class ArtifactsApiService {
   public readonly API_URL;
   public readonly API_VERSION;
 
-  constructor(
-    @Inject(APP_CONFIG) appConfig: IAppConfig,
-    private http: HttpClient
-  ) {
+  constructor(@Inject(APP_CONFIG) appConfig: IAppConfig, private http: HttpClient) {
     this.API_URL = appConfig.apiServer.uri;
     this.API_VERSION = appConfig.apiServer.version;
   }
 
-  getArtifacts(
-    projectKey: string,
-    onlyModels = false
-  ): ListDataSource<ArtifactListResponse> {
-    return new ArtifactsListDataSource(
-      this.API_URL,
-      this.API_VERSION,
-      this.http,
-      projectKey,
-      onlyModels
-    );
+  getArtifacts(projectKey: string, onlyModels = false): ListDataSource<ArtifactListResponse> {
+    return new ArtifactsListDataSource(this.API_URL, this.API_VERSION, this.http, projectKey, onlyModels);
   }
 
-  getArtifactsByRunKeys(
-    projectKey: string,
-    runKeys: number[]
-  ): ListDataSource<ArtifactListResponse> {
-    return new ArtifactsListDataSource(
-      this.API_URL,
-      this.API_VERSION,
-      this.http,
-      projectKey,
-      false,
-      runKeys
-    );
+  getArtifactsByRunKeys(projectKey: string, runKeys: number[]): ListDataSource<ArtifactListResponse> {
+    return new ArtifactsListDataSource(this.API_URL, this.API_VERSION, this.http, projectKey, false, runKeys);
   }
 
   putModel(
@@ -88,12 +63,9 @@ export class ArtifactsApiService {
   }
 }
 
-export class ArtifactsListDataSource
-  implements ListDataSource<ArtifactListResponse> {
+export class ArtifactsListDataSource implements ListDataSource<ArtifactListResponse> {
   public items$: Observable<ArtifactListResponse>;
-  private artifactsSubject$: Subject<ArtifactListResponse> = new BehaviorSubject(
-    { items: [] }
-  );
+  private artifactsSubject$: Subject<ArtifactListResponse> = new BehaviorSubject({ items: [] });
 
   constructor(
     private apiUrl: string,

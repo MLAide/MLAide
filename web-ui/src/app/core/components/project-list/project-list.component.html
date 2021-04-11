@@ -1,37 +1,36 @@
 <div class="container">
-    <div fxLayout="row" fxLayoutAlign="space-between center">
-        <div>
-            <h1 class="mat-display-2" i18n>{{title}}</h1>
-        </div>
-        <div>
-            <button mat-raised-button color="primary" aria-label="Add new project" (click)="openCreateProjectDialog()"
-                i18n>
-                Add Project
-            </button>
-        </div>
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <div>
+      <h1 class="mat-display-2" i18n>{{ title }}</h1>
     </div>
-
-    <div fxLayout="row">
-        <div fxLayout="column" fxFlexFill>
-            <table mat-table class="mat-elevation-z2" [dataSource]="dataSource" aria-label="Projects overview">
-                <ng-container matColumnDef="name">
-                    <th id="name" mat-header-cell *matHeaderCellDef i18n>Name</th>
-                    <td headers="name" mat-cell *matCellDef="let element">
-                        <a mat-button color="primary" (click)="goToProject(element)">{{element.name}}</a>
-                    </td>
-                </ng-container>
-                <ng-container matColumnDef="key">
-                    <th id="key" mat-header-cell *matHeaderCellDef i18n>Key</th>
-                    <td headers="key" mat-cell *matCellDef="let element"> {{element.key}}</td>
-                </ng-container>
-                <ng-container matColumnDef="createdAt">
-                    <th id="created-at" mat-header-cell *matHeaderCellDef i18n>Created at</th>
-                    <td headers="created-at" mat-cell *matCellDef="let element"> {{element.createdAt | amTimeAgo}} </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
-        </div>
+    <div>
+      <button mat-raised-button color="primary" aria-label="Add new project" (click)="openCreateProjectDialog()" i18n>
+        Add Project
+      </button>
     </div>
+  </div>
+
+  <div fxLayout="row">
+    <div fxLayout="column" fxFlexFill>
+      <table mat-table class="mat-elevation-z2" [dataSource]="dataSource" aria-label="Projects overview">
+        <ng-container matColumnDef="name">
+          <th id="name" mat-header-cell *matHeaderCellDef i18n>Name</th>
+          <td headers="name" mat-cell *matCellDef="let element">
+            <a mat-button color="primary" (click)="goToProject(element)">{{ element.name }}</a>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="key">
+          <th id="key" mat-header-cell *matHeaderCellDef i18n>Key</th>
+          <td headers="key" mat-cell *matCellDef="let element">{{ element.key }}</td>
+        </ng-container>
+        <ng-container matColumnDef="createdAt">
+          <th id="created-at" mat-header-cell *matHeaderCellDef i18n>Created at</th>
+          <td headers="created-at" mat-cell *matCellDef="let element">{{ element.createdAt | amTimeAgo }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  </div>
 </div>

@@ -1,11 +1,11 @@
-import { TestBed } from '@angular/core/testing';
-import { Router, UrlTree } from '@angular/router';
-import { Subject } from 'rxjs';
+import { TestBed } from "@angular/core/testing";
+import { Router, UrlTree } from "@angular/router";
+import { Subject } from "rxjs";
 
-import { AuthGuard } from './auth-guard.service';
-import { AuthService } from './auth.service';
+import { AuthGuard } from "./auth-guard.service";
+import { AuthService } from "./auth.service";
 
-describe('AuthGuardService', () => {
+describe("AuthGuardService", () => {
   let authGuard: AuthGuard;
 
   let routerStub: jasmine.SpyObj<Router>;
@@ -13,34 +13,34 @@ describe('AuthGuardService', () => {
   let authServiceCanActivateProtectedRoutes$;
 
   beforeEach(() => {
-    routerStub = jasmine.createSpyObj('router', ['parseUrl']);
+    routerStub = jasmine.createSpyObj("router", ["parseUrl"]);
 
     authServiceCanActivateProtectedRoutes$ = new Subject<boolean>();
     authServiceStub = {
-      canActivateProtectedRoutes$: authServiceCanActivateProtectedRoutes$
+      canActivateProtectedRoutes$: authServiceCanActivateProtectedRoutes$,
     };
 
     TestBed.configureTestingModule({
       providers: [
         { provide: Router, useValue: routerStub },
-        { provide: AuthService, useValue: authServiceStub }
-      ]
+        { provide: AuthService, useValue: authServiceStub },
+      ],
     }).compileComponents();
 
     authGuard = TestBed.inject(AuthGuard);
   });
 
-  describe('canActivate', () => {
-    it('should return UrlTree directing to /home if user is not authenticated', (done) => {
+  describe("canActivate", () => {
+    it("should return UrlTree directing to /home if user is not authenticated", (done) => {
       // arrange
       const expectedResult = new UrlTree();
-      routerStub.parseUrl.withArgs('/home').and.returnValue(expectedResult);
+      routerStub.parseUrl.withArgs("/home").and.returnValue(expectedResult);
 
       // act
       const canActivate = authGuard.canActivate(undefined, undefined);
 
       // assert
-      canActivate.subscribe(result => {
+      canActivate.subscribe((result) => {
         expect(result).toBe(expectedResult);
         done();
       });
@@ -48,7 +48,7 @@ describe('AuthGuardService', () => {
       authServiceCanActivateProtectedRoutes$.next(false);
     });
 
-    it('should return true if user is authenticated', (done) => {
+    it("should return true if user is authenticated", (done) => {
       // act
       const canActivate = authGuard.canActivate(undefined, undefined);
 

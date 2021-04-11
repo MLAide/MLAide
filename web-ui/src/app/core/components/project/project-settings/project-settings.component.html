@@ -4,13 +4,7 @@
       <h1 class="mat-display-2" i18n>Project Members</h1>
     </div>
     <div>
-      <button
-        mat-raised-button
-        color="primary"
-        aria-label="Add Project Member"
-        (click)="openAddProjectMemberDialog()"
-        i18n
-      >
+      <button mat-raised-button color="primary" aria-label="Add Project Member" (click)="openAddProjectMemberDialog()" i18n>
         Add Project Member
       </button>
     </div>
@@ -28,9 +22,7 @@
       <ng-container matColumnDef="role">
         <th id="role" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Role</th>
         <td headers="role" mat-cell *matCellDef="let element">
-          <app-project-member-role-i18n
-            [key]="element.role"
-          ></app-project-member-role-i18n>
+          <app-project-member-role-i18n [key]="element.role"></app-project-member-role-i18n>
         </td>
       </ng-container>
       <ng-container matColumnDef="actions" [stickyEnd]="true">
@@ -43,11 +35,7 @@
           >
             <mat-icon>edit</mat-icon>
           </button>
-          <button
-            mat-button
-            (click)="removeProjectMember(element)"
-            aria-label="Icon button to delete user from project"
-          >
+          <button mat-button (click)="removeProjectMember(element)" aria-label="Icon button to delete user from project">
             <mat-icon>delete</mat-icon>
           </button>
         </td>

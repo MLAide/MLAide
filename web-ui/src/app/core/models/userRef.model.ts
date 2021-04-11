@@ -1,4 +1,4 @@
 export interface UserRef {
-    id: string;
-    nickName: string;
-  }
+  id: string;
+  nickName: string;
+}

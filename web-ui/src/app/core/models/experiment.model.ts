@@ -7,9 +7,9 @@ export interface Experiment {
 }
 
 export enum ExperimentStatus {
-  TODO = 'TODO',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
+  TODO = "TODO",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
 }
 
 export interface ExperimentListResponse {

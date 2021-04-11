@@ -20,10 +20,7 @@ describe("RunsCompareComponent", () => {
   let fakeRuns: Run[];
 
   // data source mocks
-  let runListDataSourceMock: ListDataSourceMock<
-    Run,
-    RunListResponse
-  > = new ListDataSourceMock();
+  let runListDataSourceMock: ListDataSourceMock<Run, RunListResponse> = new ListDataSourceMock();
 
   // router stubs
   let unsubscriptionSpy: jasmine.Spy<() => void>;
@@ -183,9 +180,7 @@ describe("RunsCompareComponent", () => {
     it("should have title for run-params-metrics-table - Metrics", async () => {
       // arrange
       await setupStubsAndMocks();
-      let title: HTMLElement = fixture.nativeElement.querySelector(
-        "#metrics-title"
-      );
+      let title: HTMLElement = fixture.nativeElement.querySelector("#metrics-title");
 
       // assert
       expect(title.textContent).toEqual("Metrics");
@@ -194,30 +189,20 @@ describe("RunsCompareComponent", () => {
     it("should contain child component - app-run-params-metrics-table for metrics", async () => {
       // arrange
       await setupStubsAndMocks();
-      const childComponent: HTMLElement = fixture.nativeElement.querySelector(
-        "#run-metrics-table"
-      );
+      const childComponent: HTMLElement = fixture.nativeElement.querySelector("#run-metrics-table");
 
       // assert
       expect(childComponent).toBeTruthy();
-      expect(
-        childComponent.getAttribute("ng-reflect-data-source")
-      ).not.toBeUndefined();
-      expect(
-        childComponent.getAttribute("ng-reflect-data-source")
-      ).not.toBeNull();
-      expect(
-        childComponent.getAttribute("ng-reflect-displayed-columns-name")
-      ).not.toBeUndefined();
+      expect(childComponent.getAttribute("ng-reflect-data-source")).not.toBeUndefined();
+      expect(childComponent.getAttribute("ng-reflect-data-source")).not.toBeNull();
+      expect(childComponent.getAttribute("ng-reflect-displayed-columns-name")).not.toBeUndefined();
       // ng-reflect-displayed-columns-name is too long, thus return null
     });
 
     it("should have title for run-params-metrics-table - Parameters", async () => {
       // arrange
       await setupStubsAndMocks();
-      let title: HTMLElement = fixture.nativeElement.querySelector(
-        "#parameters-title"
-      );
+      let title: HTMLElement = fixture.nativeElement.querySelector("#parameters-title");
 
       // assert
       expect(title.textContent).toEqual("Parameters");
@@ -226,21 +211,13 @@ describe("RunsCompareComponent", () => {
     it("should contain child component - app-run-params-metrics-table for parameters", async () => {
       // arrange
       await setupStubsAndMocks();
-      const childComponent: HTMLElement = fixture.nativeElement.querySelector(
-        "#run-parameters-table"
-      );
+      const childComponent: HTMLElement = fixture.nativeElement.querySelector("#run-parameters-table");
 
       // assert
       expect(childComponent).toBeTruthy();
-      expect(
-        childComponent.getAttribute("ng-reflect-data-source")
-      ).not.toBeUndefined();
-      expect(
-        childComponent.getAttribute("ng-reflect-data-source")
-      ).not.toBeNull();
-      expect(
-        childComponent.getAttribute("ng-reflect-displayed-columns-name")
-      ).not.toBeUndefined();
+      expect(childComponent.getAttribute("ng-reflect-data-source")).not.toBeUndefined();
+      expect(childComponent.getAttribute("ng-reflect-data-source")).not.toBeNull();
+      expect(childComponent.getAttribute("ng-reflect-displayed-columns-name")).not.toBeUndefined();
       // ng-reflect-displayed-columns-name is too long, thus return null
     });
   });
@@ -253,9 +230,7 @@ describe("RunsCompareComponent", () => {
     let fakeRunKeys: number[] = [];
 
     // setup api
-    runsApiServiceStub = jasmine.createSpyObj("runsApiService", [
-      "getRunsByRunKeys",
-    ]);
+    runsApiServiceStub = jasmine.createSpyObj("runsApiService", ["getRunsByRunKeys"]);
 
     if (runs) {
       runs.forEach((fakeRun) => {
@@ -263,9 +238,7 @@ describe("RunsCompareComponent", () => {
       });
 
       // setup runs api
-      runsApiServiceStub.getRunsByRunKeys
-        .withArgs(fakeProject.key, fakeRunKeys)
-        .and.returnValue(runListDataSourceMock);
+      runsApiServiceStub.getRunsByRunKeys.withArgs(fakeProject.key, fakeRunKeys).and.returnValue(runListDataSourceMock);
       runListDataSourceMock.emulate(runs);
     } else {
       fakeRuns.forEach((fakeRun) => {
@@ -273,43 +246,28 @@ describe("RunsCompareComponent", () => {
       });
 
       // setup runs api
-      runsApiServiceStub.getRunsByRunKeys
-        .withArgs(fakeProject.key, fakeRunKeys)
-        .and.returnValue(runListDataSourceMock);
+      runsApiServiceStub.getRunsByRunKeys.withArgs(fakeProject.key, fakeRunKeys).and.returnValue(runListDataSourceMock);
       runListDataSourceMock.emulate(fakeRuns);
     }
 
     // mock active route params
     const paramMapObservable = new Observable<ParamMap>();
     const paramMapSubscription = new Subscription();
-    unsubscriptionSpy = spyOn(
-      paramMapSubscription,
-      "unsubscribe"
-    ).and.callThrough();
-    spyOn(paramMapObservable, "subscribe").and.callFake(function (
-      fn
-    ): Subscription {
+    unsubscriptionSpy = spyOn(paramMapSubscription, "unsubscribe").and.callThrough();
+    spyOn(paramMapObservable, "subscribe").and.callFake(function (fn): Subscription {
       fn({ projectKey: fakeProject.key });
       return paramMapSubscription;
     });
 
     const queryParamMapObservable = new Observable<ParamMap>();
-    unsubscriptionQueryParamsSpy = spyOn(
-      new Subscription(),
-      "unsubscribe"
-    ).and.callThrough();
-    spyOn(queryParamMapObservable, "subscribe").and.callFake(function (
-      fn
-    ): Subscription {
+    unsubscriptionQueryParamsSpy = spyOn(new Subscription(), "unsubscribe").and.callThrough();
+    spyOn(queryParamMapObservable, "subscribe").and.callFake(function (fn): Subscription {
       fn({ runKeys: fakeRunKeys });
       return paramMapSubscription;
     });
 
     await TestBed.configureTestingModule({
-      declarations: [
-        RunsCompareComponent,
-        MockComponent(RunParamsMetricsTableComponent),
-      ],
+      declarations: [RunsCompareComponent, MockComponent(RunParamsMetricsTableComponent)],
       providers: [
         {
           provide: ActivatedRoute,

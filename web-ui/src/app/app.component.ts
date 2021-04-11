@@ -42,9 +42,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isAuthenticatedSubscription = this.isAuthenticated$
       .pipe(
         filter((isAuthenticated) => isAuthenticated),
-        mergeMap(() => this.userService.getCurrentUser() )
+        mergeMap(() => this.userService.getCurrentUser())
       )
-      .subscribe((user) => { this.user = user; });
+      .subscribe((user) => {
+        this.user = user;
+      });
 
     this.authService.runInitialLoginSequence();
   }
@@ -78,9 +80,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isAuthenticatedSubscriptionForProjects = this.isAuthenticated$.subscribe((isAuthenticated) => {
       if (isAuthenticated) {
         const projectListDataSource = this.projectsApiService.getProjects();
-        this.projectListSubscription = projectListDataSource.items$.subscribe(
-          (projects) => (this.projects = projects.items)
-        );
+        this.projectListSubscription = projectListDataSource.items$.subscribe((projects) => (this.projects = projects.items));
       }
     });
   }

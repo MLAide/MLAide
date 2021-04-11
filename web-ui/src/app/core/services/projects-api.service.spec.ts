@@ -1,18 +1,11 @@
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-  TestRequest,
-} from "@angular/common/http/testing";
+import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import { Observable } from "rxjs";
 import { skip } from "rxjs/operators";
 import { APP_CONFIG } from "src/app/config/app-config.model";
 import { appConfigMock } from "src/app/mocks/app-config.mock";
 import { Project, ProjectListResponse } from "../models/project.model";
-import {
-  ProjectMember,
-  ProjectMemberListResponse,
-} from "../models/projectMember.model";
+import { ProjectMember, ProjectMemberListResponse } from "../models/projectMember.model";
 
 import {
   getRandomProject,
@@ -60,9 +53,7 @@ describe("ProjectsApiService", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/projects`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/projects`);
       expect(req.request.method).toBe("POST");
       expect(req.request.body).toEqual(fakeProject);
       req.flush(fakeProject);
@@ -83,9 +74,7 @@ describe("ProjectsApiService", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/projects/${fakeProject.key}`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/projects/${fakeProject.key}`);
       expect(req.request.method).toBe("GET");
       req.flush(fakeProject);
     });
@@ -107,9 +96,7 @@ describe("ProjectsApiService", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/projects`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/projects`);
       expect(req.request.method).toBe("GET");
       req.flush(dummyResponse);
     });
@@ -119,17 +106,13 @@ describe("ProjectsApiService", () => {
     it("should return data source that emits results from api response", async (done) => {
       // arrange
       const fakeProject: Project = await getRandomProject();
-      const fakeProjectMembers: ProjectMember[] = await getRandomProjectMembers(
-        5
-      );
+      const fakeProjectMembers: ProjectMember[] = await getRandomProjectMembers(5);
       const dummyResponse: ProjectMemberListResponse = {
         items: fakeProjectMembers,
       };
 
       // act
-      const dataSource: ListDataSource<ProjectMemberListResponse> = service.getProjectMembers(
-        fakeProject.key
-      );
+      const dataSource: ListDataSource<ProjectMemberListResponse> = service.getProjectMembers(fakeProject.key);
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
@@ -138,9 +121,7 @@ describe("ProjectsApiService", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/projects/${fakeProject.key}/members`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/projects/${fakeProject.key}/members`);
       expect(req.request.method).toBe("GET");
       req.flush(dummyResponse);
     });
@@ -164,15 +145,11 @@ describe("ProjectsApiService", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/projects/${fakeProject.key}/members`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/projects/${fakeProject.key}/members`);
       expect(req.request.method).toBe("PATCH");
 
       expect(req.request.body).toEqual([fakeProjectMember]);
-      expect(req.request.headers.get("content-type")).toBe(
-        "application/merge-patch+json"
-      );
+      expect(req.request.headers.get("content-type")).toBe("application/merge-patch+json");
       req.flush(fakeProjectMember);
     });
   });
@@ -184,11 +161,9 @@ describe("ProjectsApiService", () => {
       const fakeProjectMember: ProjectMember = await getRandomProjectMember();
 
       // act
-      service
-        .deleteProjectMember(fakeProject.key, fakeProjectMember.email)
-        .subscribe(() => {
-          done();
-        });
+      service.deleteProjectMember(fakeProject.key, fakeProjectMember.email).subscribe(() => {
+        done();
+      });
 
       // assert
       const req: TestRequest = httpMock.expectOne(

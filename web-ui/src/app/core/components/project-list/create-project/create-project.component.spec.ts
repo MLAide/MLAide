@@ -2,18 +2,9 @@ import { COMMA, ENTER } from "@angular/cdk/keycodes";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import {
-  AbstractControl,
-  FormBuilder,
-  FormsModule,
-  ReactiveFormsModule,
-} from "@angular/forms";
+import { AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonHarness } from "@angular/material/button/testing";
-import {
-  MatDialogModule,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-} from "@angular/material/dialog";
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatFormFieldHarness } from "@angular/material/form-field/testing";
 import { MatInputModule } from "@angular/material/input";
@@ -54,19 +45,8 @@ describe("CreateProjectComponent", () => {
 
     TestBed.configureTestingModule({
       declarations: [CreateProjectComponent],
-      providers: [
-        { provide: MatDialogRef, useValue: dialogMock },
-        FormBuilder,
-        { provide: MAT_DIALOG_DATA, useValue: formData },
-      ],
-      imports: [
-        BrowserAnimationsModule,
-        FormsModule,
-        MatDialogModule,
-        MatFormFieldModule,
-        MatInputModule,
-        ReactiveFormsModule,
-      ],
+      providers: [{ provide: MatDialogRef, useValue: dialogMock }, FormBuilder, { provide: MAT_DIALOG_DATA, useValue: formData }],
+      imports: [BrowserAnimationsModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
     }).compileComponents();
   });
 
@@ -223,9 +203,7 @@ describe("CreateProjectComponent", () => {
 
       it("should have 2 form fields with labels", async () => {
         // arrange
-        const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(
-          MatFormFieldHarness
-        );
+        const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(MatFormFieldHarness);
 
         // assert
         expect(formFields.length).toBe(2);
@@ -240,9 +218,7 @@ describe("CreateProjectComponent", () => {
         const formField: MatFormFieldHarness = await loader.getHarness(
           MatFormFieldHarness.with({ floatingLabelText: "Project name *" })
         );
-        const input: MatInputHarness = await loader.getHarness(
-          MatInputHarness.with({ value: fakeProject.name })
-        );
+        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeProject.name }));
 
         // assert
         expect(formField).not.toBeNull();
@@ -257,9 +233,7 @@ describe("CreateProjectComponent", () => {
         const formField: MatFormFieldHarness = await loader.getHarness(
           MatFormFieldHarness.with({ floatingLabelText: "Project key *" })
         );
-        const input: MatInputHarness = await loader.getHarness(
-          MatInputHarness.with({ value: fakeProject.key })
-        );
+        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeProject.key }));
 
         // assert
         expect(formField).not.toBeNull();
@@ -274,9 +248,7 @@ describe("CreateProjectComponent", () => {
         const formField: MatFormFieldHarness = await loader.getHarness(
           MatFormFieldHarness.with({ floatingLabelText: "Project name *" })
         );
-        const input: MatInputHarness = await loader.getHarness(
-          MatInputHarness.with({ value: fakeProject.name })
-        );
+        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeProject.name }));
 
         // act
         await input.setValue("");
@@ -284,9 +256,7 @@ describe("CreateProjectComponent", () => {
         component.form.get("name").markAsTouched();
 
         // assert
-        expect((await formField.getTextErrors())[0]).toEqual(
-          "You must provide a project name."
-        );
+        expect((await formField.getTextErrors())[0]).toEqual("You must provide a project name.");
         expect(await formField.isControlValid()).not.toBeNull();
         expect(await formField.isControlValid()).toBeFalsy();
       });
@@ -297,9 +267,7 @@ describe("CreateProjectComponent", () => {
         const formField: MatFormFieldHarness = await loader.getHarness(
           MatFormFieldHarness.with({ floatingLabelText: "Project key *" })
         );
-        const input: MatInputHarness = await loader.getHarness(
-          MatInputHarness.with({ value: fakeProject.key })
-        );
+        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeProject.key }));
 
         // act
         await input.setValue("");
@@ -307,9 +275,7 @@ describe("CreateProjectComponent", () => {
         component.form.get("key").markAsTouched();
 
         // assert
-        expect((await formField.getTextErrors())[0]).toEqual(
-          "You must provide a project key."
-        );
+        expect((await formField.getTextErrors())[0]).toEqual("You must provide a project key.");
         expect(await formField.isControlValid()).not.toBeNull();
         expect(await formField.isControlValid()).toBeFalsy();
       });
@@ -363,9 +329,7 @@ describe("CreateProjectComponent", () => {
               selector: "#create-project-create-button",
             })
           );
-          const input: MatInputHarness = await loader.getHarness(
-            MatInputHarness.with({ value: fakeProject.name })
-          );
+          const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeProject.name }));
           await input.setValue("");
           // this is required to make mat-error visible
           component.form.get("key").markAsTouched();

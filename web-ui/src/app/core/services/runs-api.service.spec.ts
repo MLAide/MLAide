@@ -1,8 +1,4 @@
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-  TestRequest,
-} from "@angular/common/http/testing";
+import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import { Observable } from "rxjs";
 import { skip } from "rxjs/operators";
@@ -12,12 +8,7 @@ import { Experiment } from "../models/experiment.model";
 import { Project } from "../models/project.model";
 import { Run, RunListResponse } from "../models/run.model";
 
-import {
-  getRandomExperiment,
-  getRandomProject,
-  getRandomRun,
-  getRandomRuns,
-} from "./../../mocks/fake-generator";
+import { getRandomExperiment, getRandomProject, getRandomRun, getRandomRuns } from "./../../mocks/fake-generator";
 import { ListDataSource } from "./list-data-source";
 
 import { RunsApiService } from "./runs-api.service";
@@ -52,10 +43,7 @@ describe("RunsApiService", () => {
       const returnBuffer = new Uint16Array([1, 2, 3]).buffer;
 
       // act
-      const run$: Observable<ArrayBuffer> = service.exportRunsByRunKeys(
-        fakeProject.key,
-        [fakeRun.key]
-      );
+      const run$: Observable<ArrayBuffer> = service.exportRunsByRunKeys(fakeProject.key, [fakeRun.key]);
 
       // assert
       run$.subscribe((response) => {
@@ -79,10 +67,7 @@ describe("RunsApiService", () => {
       const fakeRun: Run = await getRandomRun();
 
       // act
-      const run$: Observable<Run> = service.getRun(
-        fakeProject.key,
-        fakeRun.key
-      );
+      const run$: Observable<Run> = service.getRun(fakeProject.key, fakeRun.key);
 
       // assert
       run$.subscribe((response) => {
@@ -90,9 +75,7 @@ describe("RunsApiService", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/projects/${fakeProject.key}/runs/${fakeRun.key}`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/projects/${fakeProject.key}/runs/${fakeRun.key}`);
       expect(req.request.method).toBe("GET");
       req.flush(fakeRun);
     });
@@ -106,9 +89,7 @@ describe("RunsApiService", () => {
       const dummyResponse: RunListResponse = { items: fakeRuns };
 
       // act
-      const dataSource: ListDataSource<RunListResponse> = service.getRuns(
-        fakeProject.key
-      );
+      const dataSource: ListDataSource<RunListResponse> = service.getRuns(fakeProject.key);
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
@@ -116,15 +97,12 @@ describe("RunsApiService", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/projects/${fakeProject.key}/runs`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/projects/${fakeProject.key}/runs`);
       expect(req.request.method).toBe("GET");
       req.flush(dummyResponse);
     });
   });
 
-  
   describe("getRunsByExperimentKey", () => {
     it("should return data source that emits results from api response", async (done) => {
       // arrange
@@ -134,10 +112,7 @@ describe("RunsApiService", () => {
       const dummyResponse: RunListResponse = { items: fakeRuns };
 
       // act
-      const dataSource: ListDataSource<RunListResponse> = service.getRunsByExperimentKey(
-        fakeProject.key,
-        fakeExperiment.key
-      );
+      const dataSource: ListDataSource<RunListResponse> = service.getRunsByExperimentKey(fakeProject.key, fakeExperiment.key);
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
@@ -163,10 +138,7 @@ describe("RunsApiService", () => {
       const dummyResponse: RunListResponse = { items: fakeRuns };
 
       // act
-      const dataSource: ListDataSource<RunListResponse> = service.getRunsByRunKeys(
-        fakeProject.key,
-        runKeys
-      );
+      const dataSource: ListDataSource<RunListResponse> = service.getRunsByRunKeys(fakeProject.key, runKeys);
 
       // assert
       dataSource.items$.pipe(skip(1)).subscribe((response) => {
@@ -190,11 +162,7 @@ describe("RunsApiService", () => {
       const fakeRuns: Run[] = await getRandomRuns(2);
 
       // act
-      const patchedRun$: Observable<Run> = service.patchRun(
-        fakeProject.key,
-        fakeRuns[0].key,
-        fakeRuns[1]
-      );
+      const patchedRun$: Observable<Run> = service.patchRun(fakeProject.key, fakeRuns[0].key, fakeRuns[1]);
 
       // assert
       patchedRun$.subscribe((response) => {
@@ -207,9 +175,7 @@ describe("RunsApiService", () => {
       );
       expect(req.request.method).toBe("PATCH");
       expect(req.request.body).toEqual(fakeRuns[1]);
-      expect(req.request.headers.get("content-type")).toBe(
-        "application/merge-patch+json"
-      );
+      expect(req.request.headers.get("content-type")).toBe("application/merge-patch+json");
       req.flush(fakeRuns[1]);
     });
   });
@@ -221,11 +187,7 @@ describe("RunsApiService", () => {
       const fakeRuns: Run[] = await getRandomRuns(2);
 
       // act
-      const patchedRun$: Observable<string> = service.updateNoteInRun(
-        fakeProject.key,
-        fakeRuns[0].key,
-        fakeRuns[1].note
-      );
+      const patchedRun$: Observable<string> = service.updateNoteInRun(fakeProject.key, fakeRuns[0].key, fakeRuns[1].note);
 
       // assert
       patchedRun$.subscribe((response) => {
@@ -249,5 +211,4 @@ describe("RunsApiService", () => {
     expect(response.items.length).toBe(fakeRuns.length);
     expect(response).toEqual(dummyResponse);
   }
-  
 });

@@ -7,9 +7,7 @@
       </td>
     </ng-container>
     <ng-container matColumnDef="artifactName">
-      <th id="artifact-name" mat-header-cell *matHeaderCellDef mat-sort-header i18n>
-        Artifact name
-      </th>
+      <th id="artifact-name" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Artifact name</th>
       <td headers="artifact-name" mat-cell *matCellDef="let element">{{ element.name }}</td>
     </ng-container>
     <ng-container matColumnDef="version">
@@ -19,12 +17,9 @@
     <ng-container matColumnDef="runName">
       <th id="run-name" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Run name</th>
       <td headers="run-name" mat-cell *matCellDef="let element">
-        <a
-          mat-button
-          color="primary"
-          [routerLink]="['/projects/' + projectKey + '/runs/' + element.runKey]"
-          >{{ element.runName }}</a
-        >
+        <a mat-button color="primary" [routerLink]="['/projects/' + projectKey + '/runs/' + element.runKey]">{{
+          element.runName
+        }}</a>
       </td>
     </ng-container>
     <ng-container matColumnDef="runKey">

@@ -1,15 +1,7 @@
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-  TestRequest,
-} from "@angular/common/http/testing";
+import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@angular/common/http/testing";
 import { skip } from "rxjs/operators";
 import { TestBed } from "@angular/core/testing";
-import {
-  getRandomApiKey,
-  getRandomApiKeys,
-  getRandomUser,
-} from "./../../mocks/fake-generator";
+import { getRandomApiKey, getRandomApiKeys, getRandomUser } from "./../../mocks/fake-generator";
 
 import { UsersApiService } from "./users-api.service";
 import { ApiKey, ApiKeyListResponse } from "../models/apiKey.model";
@@ -55,9 +47,7 @@ describe("UsersApiService", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/users/current`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/users/current`);
       expect(req.request.method).toBe("GET");
       req.flush(fakeUser);
     });
@@ -74,9 +64,7 @@ describe("UsersApiService", () => {
       });
 
       // assert
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/users/current`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/users/current`);
       expect(req.request.method).toBe("PUT");
       expect(req.request.body).toBe(fakeUser);
       req.flush(null);
@@ -95,9 +83,7 @@ describe("UsersApiService", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/users/current`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/users/current`);
       req.flush(null);
     });
   });
@@ -118,9 +104,7 @@ describe("UsersApiService", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/users/current/api-keys`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/users/current/api-keys`);
       expect(req.request.method).toBe("GET");
       req.flush(dummyResponse);
     });
@@ -140,9 +124,7 @@ describe("UsersApiService", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/users/current/api-keys`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/users/current/api-keys`);
       expect(req.request.method).toBe("POST");
       expect(req.request.body).toEqual(fakeApiKey);
       req.flush(fakeApiKey);
@@ -160,9 +142,7 @@ describe("UsersApiService", () => {
       });
 
       // assert
-      const req: TestRequest = httpMock.expectOne(
-        `${service.API_URL}/api/v1/users/current/api-keys/${fakeApiKey.id}`
-      );
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/users/current/api-keys/${fakeApiKey.id}`);
       expect(req.request.method).toBe("DELETE");
       req.flush(null);
     });

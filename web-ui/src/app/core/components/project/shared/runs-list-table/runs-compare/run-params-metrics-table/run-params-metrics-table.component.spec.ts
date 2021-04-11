@@ -4,12 +4,7 @@ import { DatePipe } from "@angular/common";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatTableModule } from "@angular/material/table";
-import {
-  MatHeaderRowHarness,
-  MatRowHarness,
-  MatRowHarnessColumnsText,
-  MatTableHarness,
-} from "@angular/material/table/testing";
+import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MockPipe } from "ng-mocks";
 import { Run } from "src/app/core/models/run.model";
@@ -23,10 +18,7 @@ describe("RunParamsMetricsTableComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        RunParamsMetricsTableComponent,
-        MockPipe(DatePipe, (v) => v),
-      ],
+      declarations: [RunParamsMetricsTableComponent, MockPipe(DatePipe, (v) => v)],
       imports: [BrowserAnimationsModule, MatDividerModule, MatTableModule],
     }).compileComponents();
   });
@@ -99,9 +91,7 @@ describe("RunParamsMetricsTableComponent", () => {
     describe("legend", () => {
       it("should contain legend square - equal values", async () => {
         // arrange + act also in beforeEach
-        let legend: HTMLElement = fixture.nativeElement.querySelector(
-          ".equal-values"
-        );
+        let legend: HTMLElement = fixture.nativeElement.querySelector(".equal-values");
 
         // assert
         expect(legend).toBeTruthy();
@@ -109,9 +99,7 @@ describe("RunParamsMetricsTableComponent", () => {
 
       it("should contain legend label - equal values", async () => {
         // arrange + act also in beforeEach
-        let legend: HTMLElement = fixture.nativeElement.querySelector(
-          "#equal-values-legend"
-        );
+        let legend: HTMLElement = fixture.nativeElement.querySelector("#equal-values-legend");
 
         // assert
         expect(legend).toBeTruthy();
@@ -120,9 +108,7 @@ describe("RunParamsMetricsTableComponent", () => {
 
       it("should contain legend square - divergent values", async () => {
         // arrange + act also in beforeEach
-        let legend: HTMLElement = fixture.nativeElement.querySelector(
-          ".divergent-values"
-        );
+        let legend: HTMLElement = fixture.nativeElement.querySelector(".divergent-values");
 
         // assert
         expect(legend).toBeTruthy();
@@ -130,9 +116,7 @@ describe("RunParamsMetricsTableComponent", () => {
 
       it("should contain legend label - divergent values", async () => {
         // arrange + act also in beforeEach
-        let legend: HTMLElement = fixture.nativeElement.querySelector(
-          "#divergent-values-legend"
-        );
+        let legend: HTMLElement = fixture.nativeElement.querySelector("#divergent-values-legend");
 
         // assert
         expect(legend).toBeTruthy();
@@ -188,9 +172,7 @@ describe("RunParamsMetricsTableComponent", () => {
 
         // assert
         Object.keys(firstHeaderRow).forEach((key, index) => {
-          expect(firstHeaderRow[key]).toEqual(
-            parametersAndMetricsColumns[index]
-          );
+          expect(firstHeaderRow[key]).toEqual(parametersAndMetricsColumns[index]);
         });
 
         Object.keys(secondHeaderRow).forEach((key, index) => {
@@ -224,9 +206,7 @@ describe("RunParamsMetricsTableComponent", () => {
         rows.forEach(async (row, rowIndex) => {
           const cells = await row.getCells();
           cells.forEach(async (cell, cellIndex) => {
-            expect(await cell.getText()).toEqual(
-              String(expectedData[rowIndex][cellIndex])
-            );
+            expect(await cell.getText()).toEqual(String(expectedData[rowIndex][cellIndex]));
           });
         });
       });
@@ -254,9 +234,7 @@ describe("RunParamsMetricsTableComponent", () => {
             if (expectedValue === "undefined") {
               expect(await cell.getText()).toEqual("-");
             } else {
-              expect(await cell.getText()).toEqual(
-                String(expectedData[rowIndex][cellIndex])
-              );
+              expect(await cell.getText()).toEqual(String(expectedData[rowIndex][cellIndex]));
             }
           });
         });
@@ -278,7 +256,6 @@ describe("RunParamsMetricsTableComponent", () => {
         // assert
         await assertHasDivergentCssClass(rows[0], true);
         await assertHasDivergentCssClass(rows[1], false);
-      
       });
 
       async function assertHasDivergentCssClass(row: MatRowHarness, hasDivergentClass: boolean) {

@@ -1,16 +1,6 @@
 import { HttpClientModule } from "@angular/common/http";
-import {
-  ModuleWithProviders,
-  NgModule,
-  Optional,
-  SkipSelf,
-} from "@angular/core";
-import {
-  AuthConfig,
-  OAuthModule,
-  OAuthModuleConfig,
-  OAuthStorage,
-} from "angular-oauth2-oidc";
+import { ModuleWithProviders, NgModule, Optional, SkipSelf } from "@angular/core";
+import { AuthConfig, OAuthModule, OAuthModuleConfig, OAuthStorage } from "angular-oauth2-oidc";
 import { APP_CONFIG, IAppConfig } from "./../config/app-config.model";
 import { AuthGuard } from "./auth-guard.service";
 import { AuthService } from "./auth.service";
@@ -48,15 +38,13 @@ export class AuthModule {
 
   constructor(@Optional() @SkipSelf() parentModule: AuthModule) {
     if (parentModule) {
-      throw new Error(
-        "AuthModule is already loaded. Import it in the AppModule only"
-      );
+      throw new Error("AuthModule is already loaded. Import it in the AppModule only");
     }
   }
 }
 
 export function authConfigFactory(appConfig: IAppConfig): AuthConfig {
-  const isSecurityDisabled = appConfig.auth.disableSecurity === 'true';
+  const isSecurityDisabled = appConfig.auth.disableSecurity === "true";
 
   return {
     // Url of the Identity Provider
@@ -85,19 +73,17 @@ export function authConfigFactory(appConfig: IAppConfig): AuthConfig {
 
     sessionChecksEnabled: false,
     clearHashAfterLogin: false, // https://github.com/manfredsteyer/angular-oauth2-oidc/issues/457#issuecomment-431807040,
-    
+
     customQueryParams: {
       audience: appConfig.auth.audience !== "" ? appConfig.auth.audience : undefined,
     },
     strictDiscoveryDocumentValidation: !isSecurityDisabled,
     skipIssuerCheck: isSecurityDisabled,
-    requireHttps: !isSecurityDisabled
+    requireHttps: !isSecurityDisabled,
   };
 }
 
-export function authModuleConfigFactory(
-  appConfig: IAppConfig
-): OAuthModuleConfig {
+export function authModuleConfigFactory(appConfig: IAppConfig): OAuthModuleConfig {
   return {
     resourceServer: {
       allowedUrls: appConfig.auth.allowedUrls.split(","),

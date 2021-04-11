@@ -16,10 +16,7 @@ export class UsersApiService {
   private currentUserSubject$ = new BehaviorSubject<User>(null);
   public readonly currentUser$ = this.currentUserSubject$.asObservable();
 
-  constructor(
-    @Inject(APP_CONFIG) appConfig: IAppConfig,
-    private http: HttpClient
-  ) {
+  constructor(@Inject(APP_CONFIG) appConfig: IAppConfig, private http: HttpClient) {
     this.API_URL = appConfig.apiServer.uri;
     this.API_VERSION = appConfig.apiServer.version;
   }
@@ -44,39 +41,27 @@ export class UsersApiService {
   }
 
   createApiKey(apiKey: ApiKey): Observable<ApiKey> {
-    return this.http.post<ApiKey>(
-      `${this.API_URL}/api/${this.API_VERSION}/users/current/api-keys`,
-      apiKey
-    );
+    return this.http.post<ApiKey>(`${this.API_URL}/api/${this.API_VERSION}/users/current/api-keys`, apiKey);
   }
 
   deleteApiKey(apiKey: ApiKey): Observable<void> {
-    return this.http.delete<void>(
-      `${this.API_URL}/api/${this.API_VERSION}/users/current/api-keys/${apiKey.id}`
-    );
+    return this.http.delete<void>(`${this.API_URL}/api/${this.API_VERSION}/users/current/api-keys/${apiKey.id}`);
   }
 }
 
-export class ApiKeysListDataSource
-  implements ListDataSource<ApiKeyListResponse> {
+export class ApiKeysListDataSource implements ListDataSource<ApiKeyListResponse> {
   public items$: Observable<ApiKeyListResponse>;
   private apiKeysSubject$: Subject<ApiKeyListResponse> = new BehaviorSubject({
     items: [],
   });
 
-  constructor(
-    private apiUrl: string,
-    private apiVersion: string,
-    private http: HttpClient
-  ) {
+  constructor(private apiUrl: string, private apiVersion: string, private http: HttpClient) {
     this.items$ = this.apiKeysSubject$.asObservable();
     this.refresh();
   }
 
   public refresh(): void {
-    const apiKeys = this.http.get<ApiKeyListResponse>(
-      `${this.apiUrl}/api/${this.apiVersion}/users/current/api-keys`
-    );
+    const apiKeys = this.http.get<ApiKeyListResponse>(`${this.apiUrl}/api/${this.apiVersion}/users/current/api-keys`);
 
     apiKeys.subscribe(
       (result) => this.apiKeysSubject$.next(result),

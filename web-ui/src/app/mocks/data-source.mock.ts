@@ -1,10 +1,10 @@
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { Project, ProjectListResponse } from '../core/models/project.model';
-import { ListDataSource } from '../core/services';
+import { BehaviorSubject, Observable, Subject } from "rxjs";
+import { Project, ProjectListResponse } from "../core/models/project.model";
+import { ListDataSource } from "../core/services";
 
 export class ListDataSourceMock<TEntity, TListResponse> implements ListDataSource<TListResponse> {
   private itemsToEmulate: TEntity[] = [];
-  private itemsSubject$ = new BehaviorSubject({ items: this.itemsToEmulate});
+  private itemsSubject$ = new BehaviorSubject({ items: this.itemsToEmulate });
   public items$: Observable<TListResponse> = (this.itemsSubject$ as any).asObservable();
 
   constructor() {
@@ -16,7 +16,7 @@ export class ListDataSourceMock<TEntity, TListResponse> implements ListDataSourc
       items: this.itemsToEmulate,
       refresh: () => {
         // This is intentional
-      }
+      },
     };
     this.itemsSubject$.next(response);
   }
