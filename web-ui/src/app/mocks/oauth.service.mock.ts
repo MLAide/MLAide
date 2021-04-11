@@ -86,17 +86,25 @@ export class MockOAuthService implements Partial<OAuthService> {
     return false;
   }
 
-  initCodeFlow(additionalState?: string, params?: {}): void {}
+  initCodeFlow(additionalState?: string, params?: {}): void {
+    // This is intentional
+  }
 
-  initImplicitFlow(additionalState?: string, params?: string | object): void {}
+  initImplicitFlow(additionalState?: string, params?: string | object): void {
+    // This is intentional
+  }
 
   initImplicitFlowInPopup(options?: { height?: number; width?: number }): Promise<unknown> {
     return Promise.resolve(undefined);
   }
 
-  initImplicitFlowInternal(additionalState?: string, params?: string | object): void {}
+  initImplicitFlowInternal(additionalState?: string, params?: string | object): void {
+    // This is intentional
+  }
 
-  initLoginFlow(additionalState?: string, params?: {}): void {}
+  initLoginFlow(additionalState?: string, params?: {}): void {
+    // This is intentional
+  }
 
   initLoginFlowInPopup(options?: { height?: number; width?: number }): Promise<unknown> {
     return Promise.resolve(undefined);
@@ -110,7 +118,9 @@ export class MockOAuthService implements Partial<OAuthService> {
     return Promise.resolve(undefined);
   }
 
-  logOut(): void {}
+  logOut(): void {
+    // This is intentional
+  }
 
   processIdToken(idToken: string, accessToken: string, skipNonceCheck?: boolean): Promise<ParsedIdToken> {
     return Promise.resolve(undefined);
@@ -126,9 +136,13 @@ export class MockOAuthService implements Partial<OAuthService> {
     return Promise.resolve(undefined);
   }
 
-  setupAutomaticSilentRefresh(params?: object, listenTo?: "access_token" | "id_token" | "any", noPrompt?: boolean): void {}
+  setupAutomaticSilentRefresh(params?: object, listenTo?: "access_token" | "id_token" | "any", noPrompt?: boolean): void {
+    // This is intentional
+  }
 
-  stopAutomaticRefresh(): void {}
+  stopAutomaticRefresh(): void {
+    // This is intentional
+  }
 
   tryLogin(options?: LoginOptions): Promise<boolean> {
     return Promise.resolve(false);
