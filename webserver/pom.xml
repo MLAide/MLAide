@@ -252,7 +252,7 @@
 				</executions>
 				<configuration>
 					<excludes>
-						<exclude>**/mlaide/webserver/configuration/*Config</exclude>
+						<exclude>**/mlaide/webserver/configuration/*</exclude>
 						<exclude>**/mlaide/webserver/model/*</exclude>
 					</excludes>
 				</configuration>
