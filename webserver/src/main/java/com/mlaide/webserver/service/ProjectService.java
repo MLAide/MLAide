@@ -15,6 +15,8 @@ public interface ProjectService {
 
     ItemList<ProjectMember> getProjectMembers(String projectKey);
 
+    ProjectMember getProjectMemberForCurrentUser(String projectKey);
+
     void deleteProjectMember(String projectKey, String email);
 
     void addOrUpdateProjectMembers(String projectKey, List<ProjectMember> projectMembers);
