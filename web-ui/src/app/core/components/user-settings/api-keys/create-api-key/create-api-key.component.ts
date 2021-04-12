@@ -33,8 +33,6 @@ export class CreateApiKeyComponent {
     });
   }
 
-  ngOnInit(): void {}
-
   public close() {
     this.dialogRef.close();
   }

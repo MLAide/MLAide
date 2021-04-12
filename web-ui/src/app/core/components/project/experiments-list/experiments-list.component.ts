@@ -58,7 +58,6 @@ export class ExperimentsListComponent implements OnInit, OnDestroy, AfterViewIni
     const dialogRef = this.dialog.open(CreateOrUpdateExperimentComponent, {
       minWidth: "20%",
       data: {
-        // TODO: i18n
         title: "Add Experiment",
         experiment: {
           name: "",
@@ -81,7 +80,6 @@ export class ExperimentsListComponent implements OnInit, OnDestroy, AfterViewIni
     const dialogRef = this.dialog.open(CreateOrUpdateExperimentComponent, {
       minWidth: "20%",
       data: {
-        // TODO: i18n
         title: "Edit Experiment",
         experiment,
         keyReadonly: true,

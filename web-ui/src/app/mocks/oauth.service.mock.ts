@@ -130,7 +130,9 @@ export class MockOAuthService implements Partial<OAuthService> {
     return Promise.resolve(undefined);
   }
 
-  resetImplicitFlow(): void {}
+  resetImplicitFlow(): void {
+    // This is intentional
+  }
 
   silentRefresh(params?: object, noPrompt?: boolean): Promise<OAuthEvent> {
     return Promise.resolve(undefined);

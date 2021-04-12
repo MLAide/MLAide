@@ -1,5 +1,4 @@
-import { BehaviorSubject, Observable, Subject } from "rxjs";
-import { Project, ProjectListResponse } from "../core/models/project.model";
+import { BehaviorSubject, Observable } from "rxjs";
 import { ListDataSource } from "../core/services";
 
 export class ListDataSourceMock<TEntity, TListResponse> implements ListDataSource<TListResponse> {
