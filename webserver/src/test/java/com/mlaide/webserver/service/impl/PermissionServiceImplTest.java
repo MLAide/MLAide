@@ -3,6 +3,8 @@ package com.mlaide.webserver.service.impl;
 import com.mlaide.webserver.faker.ExperimentFaker;
 import com.mlaide.webserver.faker.ProjectFaker;
 import com.mlaide.webserver.faker.UserFaker;
+import com.mlaide.webserver.model.Project;
+import com.mlaide.webserver.model.User;
 import com.mlaide.webserver.repository.entity.ExperimentEntity;
 import com.mlaide.webserver.repository.entity.MlAidePermission;
 import com.mlaide.webserver.repository.entity.ProjectEntity;
@@ -320,6 +322,53 @@ class PermissionServiceImplTest {
             // Act + Assert
             assertThatThrownBy(() -> permissionService.getProjectPermissions(projectKey))
                 .isInstanceOf(NotFoundException.class);
+        }
+    }
+
+    @Nested
+    class GetProjectPermissionOfCurrentUser {
+        @Test
+        void get_permission_of_current_user_for_project_where_current_user_has_any_kind_of_permission_should_return_permission() {
+            // Arrange
+            User currentUser = UserFaker.newUser();
+            setupUserInSecurityContext(currentUser.getUserId());
+
+            ProjectEntity project = ProjectFaker.newProjectEntity();
+            MutableAcl acl = createAcl(ProjectEntity.class, project.getKey());
+            acl.insertAce(0, MlAidePermission.VIEWER, new PrincipalSid(currentUser.getUserId()), true);
+
+            when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
+
+            // Act
+            MlAidePermission permission = permissionService.getProjectPermissionOfCurrentUser(project.getKey());
+
+            // Assert
+            verify(aclService).readAclById(withObjectIdentity(project));
+            assertThat(permission).isEqualTo(MlAidePermission.VIEWER);
+        }
+
+        @Test
+        void get_permission_of_current_user_for_project_where_current_user_has_no_permission_should_throw_NotFoundException() {
+            // Arrange
+            var currentUser = UserFaker.newUser();
+            setupUserInSecurityContext(currentUser.getUserId());
+
+            var user1 = UserFaker.newUser();
+            var user2 = UserFaker.newUser();
+
+            var project = ProjectFaker.newProjectEntity();
+            var acl = createAcl(ProjectEntity.class, project.getKey());
+            acl.insertAce(0, MlAidePermission.CONTRIBUTOR, new PrincipalSid(user1.getUserId()), true);
+            acl.insertAce(1, MlAidePermission.OWNER, new PrincipalSid(user2.getUserId()), true);
+            when(aclService.readAclById(withObjectIdentity(project))).thenReturn(acl);
+
+            var permissionsToRevoke = asList(user1.getUserId(), user2.getUserId());
+
+            var projectKey = project.getKey();
+
+            // Act + Assert
+            assertThatThrownBy(() -> permissionService.getProjectPermissionOfCurrentUser(projectKey))
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 
