@@ -35,6 +35,10 @@ export class ProjectsApiService {
     return new ProjectMemberListDataSource(this.API_URL, this.API_VERSION, this.http, projectKey);
   }
 
+  getProjectMemberForCurrentUser(projectKey: string): Observable<ProjectMember> {
+    return this.http.get<ProjectMember>(`${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/members/current`);
+  }
+
   createOrUpdateProjectMembers(projectKey: string, ...projectMembers: ProjectMember[]): Observable<ProjectMember> {
     return this.http.patch<ProjectMember>(
       `${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/members`,
