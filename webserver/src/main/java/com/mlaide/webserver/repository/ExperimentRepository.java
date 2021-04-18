@@ -22,8 +22,8 @@ public interface ExperimentRepository extends MongoRepository<ExperimentEntity, 
             "or hasPermission(#entity.projectKey, 'com.mlaide.webserver.repository.entity.ProjectEntity', 'OWNER')")
     <S extends ExperimentEntity> S save(S entity);
 
-    @PostAuthorize("hasPermission(returnObject, 'VIEWER') " +
-            "or hasPermission(returnObject, 'CONTRIBUTOR') " +
-            "or hasPermission(returnObject, 'OWNER')")
+    @PreAuthorize("hasPermission(#projectKey, 'com.mlaide.webserver.repository.entity.ProjectEntity', 'VIEWER') " +
+            "or hasPermission(#projectKey, 'com.mlaide.webserver.repository.entity.ProjectEntity', 'CONTRIBUTOR') " +
+            "or hasPermission(#projectKey, 'com.mlaide.webserver.repository.entity.ProjectEntity', 'OWNER')")
     ExperimentEntity findOneByProjectKeyAndKey(String projectKey, String key);
 }
