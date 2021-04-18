@@ -233,8 +233,6 @@ describe("ProjectSettingsComponent", () => {
         expect(snackBarUiServiceStub.showErrorSnackbar).toHaveBeenCalledWith("Error while updating project members.");
       });
 
-      // TODO: Raman - Fix this test
-      /*
       it("should navigate to projects overview if deleted current project member", async () => {
         // arrange + act in beforeEach
         const subject = new Subject<void>();
@@ -244,12 +242,13 @@ describe("ProjectSettingsComponent", () => {
 
         // act
         component.removeProjectMember(fakeProjectMemberForCurrentUser);
+        subject.next();
         const spy = routerSpy.navigateByUrl as jasmine.Spy;
 
         // assert
         //expect(spy.calls.count()).toBe(1, "expected navigation router to be called once");
         expect(spy.calls.first().args[0]).toBe("/projects");
-      });*/
+      });
     });
   });
 
