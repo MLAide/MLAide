@@ -103,6 +103,22 @@ public class PermissionServiceImpl implements PermissionService {
         return permissions;
     }
 
+    @Override
+    public MlAidePermission getProjectPermissionOfCurrentUser(String projectKey) {
+        String principalName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Sid sid = new PrincipalSid(principalName);
+
+        ObjectIdentity objectIdentity = new ObjectIdentityImpl(ProjectEntity.class, projectKey);
+        Acl acl = readAclById(objectIdentity);
+        Optional<AccessControlEntry> entry = acl.getEntries().stream().filter(e -> e.getSid().equals(sid)).findFirst();
+
+        if (entry.isEmpty()) {
+            throw new NotFoundException(String.format("Project %s does not exist", projectKey));
+        }
+
+        return (MlAidePermission) entry.get().getPermission();
+    }
+
     public void revokeProjectPermission(String projectKey, Collection<String> userIds) {
         throwIfCurrentUserIsNotAllowedToChangePermissionsOfProject(projectKey);
 
@@ -128,27 +144,14 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     private void throwIfCurrentUserIsNotAllowedToChangePermissionsOfProject(String projectKey) {
-        Optional<MlAidePermission> permissionOfCurrentUser = getProjectPermissionOfCurrentUser(projectKey);
-        if (permissionOfCurrentUser.isEmpty()) {
-            throw new NotFoundException(String.format("Project %s does not exist", projectKey));
-        } else if (!permissionOfCurrentUser.get().equals(MlAidePermission.OWNER)) {
-            throw new AccessDeniedException("User is not permitted to do any changes on this project");
-        }
+        MlAidePermission permissionOfCurrentUser = getProjectPermissionOfCurrentUser(projectKey);
+        throwIfCurrentUserIsNotOwnerOfProject(permissionOfCurrentUser);
     }
 
-    private Optional<MlAidePermission> getProjectPermissionOfCurrentUser(String projectKey) {
-        String principalName = SecurityContextHolder.getContext().getAuthentication().getName();
-        Sid sid = new PrincipalSid(principalName);
-
-        ObjectIdentity objectIdentity = new ObjectIdentityImpl(ProjectEntity.class, projectKey);
-        Acl acl = readAclById(objectIdentity);
-        Optional<AccessControlEntry> entry = acl.getEntries().stream().filter(e -> e.getSid().equals(sid)).findFirst();
-
-        if (entry.isEmpty()) {
-            return Optional.empty();
+    private void throwIfCurrentUserIsNotOwnerOfProject(MlAidePermission permissionOfCurrentUser) {
+        if (!permissionOfCurrentUser.equals(MlAidePermission.OWNER)) {
+            throw new AccessDeniedException("User is not permitted to do any changes on this project");
         }
-
-        return Optional.of((MlAidePermission) entry.get().getPermission());
     }
 
     private MutableAcl readAclById(ObjectIdentity objectIdentity) {

@@ -62,6 +62,14 @@ public class ProjectController {
         return ResponseEntity.ok(projectMembers);
     }
 
+    @GetMapping(path = "{projectKey}/members/current")
+    public ResponseEntity<ProjectMember> getProjectMemberForCurrentUser(
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey) {
+        ProjectMember projectMember = projectService.getProjectMemberForCurrentUser(projectKey);
+
+        return ResponseEntity.ok(projectMember);
+    }
+
     @PatchMapping(path = "{projectKey}/members", consumes = "application/merge-patch+json")
     public ResponseEntity<Void> addOrUpdateProjectMembers(
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,

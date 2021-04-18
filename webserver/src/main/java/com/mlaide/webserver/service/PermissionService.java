@@ -15,5 +15,7 @@ public interface PermissionService {
 
     Map<String, MlAidePermission> getProjectPermissions(String projectKey);
 
+    MlAidePermission getProjectPermissionOfCurrentUser(String projectKey);
+
     void revokeProjectPermission(String projectKey, Collection<String> userIds);
 }

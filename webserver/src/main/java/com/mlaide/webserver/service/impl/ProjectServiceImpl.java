@@ -89,7 +89,7 @@ public class ProjectServiceImpl implements ProjectService {
         Map<String, MlAidePermission> permissions = permissionService.getProjectPermissions(projectKey);
         List<ProjectMember> projectMembers = permissions.entrySet().stream().map(entry -> {
             // Get user
-            var user = userService.getUser(entry.getKey());
+            User user = userService.getUser(entry.getKey());
 
             // Map permission to member role
             MlAidePermission permission = entry.getValue();
@@ -99,6 +99,15 @@ public class ProjectServiceImpl implements ProjectService {
         }).collect(Collectors.toList());
 
         return new ItemList<>(projectMembers);
+    }
+
+    @Override
+    public ProjectMember getProjectMemberForCurrentUser(String projectKey) {
+        MlAidePermission permission = permissionService.getProjectPermissionOfCurrentUser(projectKey);
+        User user = userService.getCurrentUser();
+        ProjectMemberRole role = mapPermissionToMemberRole(projectKey, permission);
+
+        return new ProjectMember(user.getUserId(), user.getEmail(), user.getNickName(), role);
     }
 
     @Override

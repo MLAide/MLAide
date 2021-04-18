@@ -1,6 +1,7 @@
 package com.mlaide.webserver.controller;
 
 import com.mlaide.webserver.faker.ProjectFaker;
+import com.mlaide.webserver.faker.ProjectMemberFaker;
 import com.mlaide.webserver.model.ItemList;
 import com.mlaide.webserver.model.Project;
 import com.mlaide.webserver.model.ProjectMember;
@@ -105,7 +106,7 @@ public class ProjectControllerTest {
     @Nested
     class getProjectMembers {
         @Test
-        void get_project_members_by_project_key_should_return_all_project_mebers_of_project() {
+        void get_project_members_by_project_key_should_return_all_project_members_of_project() {
             // Arrange
             ItemList<ProjectMember> projectMembers = new ItemList<>();
             when(projectService.getProjectMembers(projectKey)).thenReturn(projectMembers);
@@ -117,6 +118,24 @@ public class ProjectControllerTest {
             assertThat(result).isNotNull();
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(result.getBody()).isSameAs(projectMembers);
+        }
+    }
+
+    @Nested
+    class getProjectMemberForCurrentUser {
+        @Test
+        void get_project_member_for_current_user_by_project_key_should_return_project_member_for_current_user_of_project() {
+            // Arrange
+            ProjectMember projectMember = ProjectMemberFaker.newProjectMember();
+            when(projectService.getProjectMemberForCurrentUser(projectKey)).thenReturn(projectMember);
+
+            // Act
+            ResponseEntity<ProjectMember> result = projectController.getProjectMemberForCurrentUser(projectKey);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(result.getBody()).isSameAs(projectMember);
         }
     }
 

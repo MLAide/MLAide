@@ -139,6 +139,34 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /projects/{projectKey}/members/current:
+    get:
+      summary: Get project member for current user
+      operationId: getProjectMembersForCurrentUser
+      tags:
+        - projects
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The project member
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectMember"
+        '404':
+          description: The requested project does not exist
+        '500':
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /projects/{projectKey}/members/{email}:
     delete:
       summary: Delete a member of a project
@@ -617,7 +645,7 @@ paths:
   /projects/{projectKey}/artifacts/{artifactName}/latest:
     get:
       summary: Get the latest artifact with the specified name
-      operationId: getArtifact
+      operationId: getLatestArtifact
       tags:
         - artifacts
       parameters:

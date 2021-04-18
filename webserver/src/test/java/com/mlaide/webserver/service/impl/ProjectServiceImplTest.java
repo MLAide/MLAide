@@ -293,6 +293,29 @@ class ProjectServiceImplTest {
     }
 
     @Nested
+    class GetProjectMemberForCurrentUser {
+        @Test
+        void should_return_project_member_for_current_user() {
+            // Arrange
+            ProjectEntity fakeProject = ProjectFaker.newProjectEntity();
+            User fakeUser1 = UserFaker.newUser();
+            MlAidePermission definedPermission = MlAidePermission.OWNER;
+            when(permissionService.getProjectPermissionOfCurrentUser(fakeProject.getKey())).thenReturn(definedPermission);
+            when(userService.getCurrentUser()).thenReturn(fakeUser1);
+
+            // Act
+            ProjectMember projectMember = projectService.getProjectMemberForCurrentUser(fakeProject.getKey());
+
+            // Assert
+            assertThat(projectMember).isNotNull();
+            assertThat(projectMember.getEmail()).isEqualTo(fakeUser1.getEmail());
+            assertThat(projectMember.getNickName()).isEqualTo(fakeUser1.getNickName());
+            assertThat(projectMember.getRole()).isEqualTo(ProjectMemberRole.OWNER);
+            assertThat(projectMember.getUserId()).isEqualTo(fakeUser1.getUserId());
+        }
+    }
+
+    @Nested
     class AddOrUpdateProjectMembers {
         @Test
         void add_three_members_with_all_possible_roles_should_grant_permission_on_project_using_PermissionService() {

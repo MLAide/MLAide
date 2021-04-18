@@ -127,6 +127,27 @@ describe("ProjectsApiService", () => {
     });
   });
 
+  describe("getProjectMemberForCurrentUser", () => {
+    it("should return a project member as observable from api response", async (done) => {
+      // arrange
+      const fakeProject: Project = await getRandomProject();
+      const fakeProjectMember: ProjectMember = await getRandomProjectMember();
+
+      // act
+      const run$: Observable<ProjectMember> = service.getProjectMemberForCurrentUser(fakeProject.key);
+
+      // assert
+      run$.subscribe((response) => {
+        expect(response).toEqual(fakeProjectMember);
+        done();
+      });
+
+      const req: TestRequest = httpMock.expectOne(`${service.API_URL}/api/v1/projects/${fakeProject.key}/members/current`);
+      expect(req.request.method).toBe("GET");
+      req.flush(fakeProjectMember);
+    });
+  });
+
   describe("createOrUpdateProjectMembers", () => {
     it("should call patch on project members and return patched run as observable from api response", async (done) => {
       // arrange
