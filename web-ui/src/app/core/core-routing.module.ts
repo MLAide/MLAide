@@ -16,9 +16,15 @@ import { RunsListComponent } from "./components/project/runs-list/runs-list.comp
 import { UserSettingsComponent } from "./components/user-settings/user-settings.component";
 import { UserComponent } from "./components/user-settings/user/user.component";
 import { ApiKeysComponent } from "./components/user-settings/api-keys/api-keys.component";
+import { NotFoundErrorComponent } from "./components/error/not-found-error/not-found-error.component";
+import { ForbiddenErrorComponent } from "./components/error/forbidden-error/forbidden-error.component";
+import { InternalServerErrorComponent } from "./components/error/internal-server-error/internal-server-error.component";
 
 export const routes: Routes = [
   { path: "home", component: HomeComponent },
+  { path: "not-found", component: NotFoundErrorComponent },
+  { path: "forbidden", component: ForbiddenErrorComponent },
+  { path: "server-error", component: InternalServerErrorComponent },
   {
     path: "user-settings",
     component: UserSettingsComponent,
@@ -46,7 +52,7 @@ export const routes: Routes = [
       { path: "", redirectTo: "experiments", pathMatch: "full", canActivate: [AuthGuard] },
     ],
   },
-  { path: "**", redirectTo: "projects" },
+  { path: "**", redirectTo: "not-found" },
 ];
 
 @NgModule({

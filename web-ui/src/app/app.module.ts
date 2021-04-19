@@ -1,6 +1,6 @@
 import { CdkTableModule } from "@angular/cdk/table";
 import { HttpClientModule } from "@angular/common/http";
-import { NgModule } from "@angular/core";
+import { ErrorHandler, NgModule } from "@angular/core";
 import { FlexLayoutModule } from "@angular/flex-layout";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
@@ -25,6 +25,7 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { AuthModule } from "./auth/auth.module";
 import { CoreModule } from "./core/core.module";
+import { GlobalErrorHandler } from "./core/global-error-handler";
 
 @NgModule({
   declarations: [AppComponent],
@@ -56,7 +57,12 @@ import { CoreModule } from "./core/core.module";
     AuthModule.forRoot(),
     CoreModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

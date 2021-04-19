@@ -60,6 +60,9 @@ import { ApiKeysComponent } from "./components/user-settings/api-keys/api-keys.c
 import { CreateApiKeyComponent } from "./components/user-settings/api-keys/create-api-key/create-api-key.component";
 import { ArtifactsTreeComponent } from "./components/project/shared/artifacts-tree/artifacts-tree.component";
 import { MatTreeModule } from "@angular/material/tree";
+import { NotFoundErrorComponent } from "./components/error/not-found-error/not-found-error.component";
+import { ForbiddenErrorComponent } from "./components/error/forbidden-error/forbidden-error.component";
+import { InternalServerErrorComponent } from "./components/error/internal-server-error/internal-server-error.component";
 
 @NgModule({
   declarations: [
@@ -92,6 +95,9 @@ import { MatTreeModule } from "@angular/material/tree";
     ApiKeysComponent,
     CreateApiKeyComponent,
     ArtifactsTreeComponent,
+    NotFoundErrorComponent,
+    ForbiddenErrorComponent,
+    InternalServerErrorComponent,
   ],
   imports: [
     BrowserModule,
