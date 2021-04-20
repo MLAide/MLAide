@@ -56,7 +56,7 @@ export const routes: Routes = [
       { path: "settings", component: ProjectSettingsComponent, outlet: "project-outlet", canActivate: [AuthGuard] },
       {
         path: "",
-        redirectTo: "(project-outlet:experiments)",
+        redirectTo: "/projects/:projectKey/(project-outlet:experiments)",
         pathMatch: "full",
         canActivate: [AuthGuard],
       },
