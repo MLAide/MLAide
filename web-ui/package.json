@@ -42,7 +42,7 @@
     "moment": "^2.29.1",
     "ngx-filesaver": "^11.0.0",
     "ngx-moment": "^5.0.0",
-    "rxjs": "^6.6.3",
+    "rxjs": "^6.6.7",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"
   },
@@ -64,7 +64,7 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
     "mocker-data-generator": "^2.10.0",
-    "ng-mocks": "^11.4.0",
+    "ng-mocks": "^11.10.1",
     "protractor": "~7.0.0",
     "ts-node": "~7.0.0",
     "typescript": "^4.0.5"
