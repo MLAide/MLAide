@@ -8,31 +8,31 @@
           </span>
         </div>
         <mat-divider></mat-divider>
-        <a mat-list-item [routerLink]="['/projects/' + project?.key + '/experiments']">
+        <a mat-list-item [routerLink]="[{ outlets: { 'project-outlet': ['experiments'] } }]">
           <div fxLayout="row" fxLayoutAlign="center center">
             <mat-icon matListIcon class="padding">science</mat-icon>
             <span matLine i18n>Experiments</span>
           </div>
         </a>
-        <a mat-list-item [routerLink]="['/projects/' + project?.key + '/runs']">
+        <a mat-list-item [routerLink]="[{ outlets: { 'project-outlet': ['runs'] } }]">
           <div fxLayout="row" fxLayoutAlign="center center">
             <mat-icon matListIcon class="padding">play_for_work</mat-icon>
             <span matLine i18n>Runs</span>
           </div>
         </a>
-        <a mat-list-item [routerLink]="['/projects/' + project?.key + '/models']">
+        <a mat-list-item [routerLink]="[{ outlets: { 'project-outlet': ['models'] } }]">
           <div fxLayout="row" fxLayoutAlign="center center">
             <mat-icon matListIcon class="padding">model_training</mat-icon>
             <span matLine i18n>Models</span>
           </div>
         </a>
-        <a mat-list-item [routerLink]="['/projects/' + project?.key + '/artifacts']">
+        <a mat-list-item [routerLink]="[{ outlets: { 'project-outlet': ['artifacts'] } }]">
           <div fxLayout="row" fxLayoutAlign="center center">
             <mat-icon matListIcon class="padding">text_snippet</mat-icon>
             <span matLine i18n>Artifacts</span>
           </div>
         </a>
-        <a mat-list-item [routerLink]="['/projects/' + project?.key + '/settings']">
+        <a mat-list-item [routerLink]="[{ outlets: { 'project-outlet': ['settings'] } }]">
           <div fxLayout="row" fxLayoutAlign="center center">
             <mat-icon matListIcon class="padding">settings</mat-icon>
             <span matLine i18n>Settings</span>
@@ -48,7 +48,7 @@
           </button>
         </div>
         <div class="container" fxFlex="99">
-          <router-outlet></router-outlet>
+          <router-outlet name="project-outlet"></router-outlet>
         </div>
       </div>
     </mat-drawer-content>
