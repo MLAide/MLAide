@@ -10,7 +10,7 @@
             <a mat-button [matMenuTriggerFor]="projectsMenu" i18n>Projects</a>
             <mat-menu #projectsMenu>
               <div *ngFor="let project of projects">
-                <a mat-menu-item [routerLink]="['/projects', project.key, {outlets: {'project-outlet': ['experiments']}}]">{{ project.name }}</a>
+                <a mat-menu-item [routerLink]="['/projects', project.key]">{{ project.name }}</a>
               </div>
               <a mat-menu-item [routerLink]="['/projects']" i18n>Show all</a>
             </mat-menu>

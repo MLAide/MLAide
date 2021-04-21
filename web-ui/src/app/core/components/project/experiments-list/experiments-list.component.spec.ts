@@ -85,7 +85,7 @@ describe("ExperimentsListComponent", () => {
         BrowserAnimationsModule,
         // To prevent Error: 'Can't bind to 'routerLink' since it isn't a known property of 'a'.'
         // https://ng-mocks.github.io/how-to-test-a-component.html
-        MockModule(RouterModule.forRoot([])),
+        MockModule(RouterModule.forRoot([], { relativeLinkResolution: 'legacy' })),
       ],
     }).compileComponents();
   });

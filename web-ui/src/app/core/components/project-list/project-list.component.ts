@@ -28,7 +28,7 @@ export class ProjectListComponent implements OnInit, OnDestroy {
   ) {}
 
   goToProject(project: Project) {
-    const projectUrl = `/projects/${project.key}/(project-outlet:experiments)`;
+    const projectUrl = `/projects/${project.key}`;
     this.router.navigateByUrl(projectUrl);
   }
 
