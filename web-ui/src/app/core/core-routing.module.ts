@@ -32,7 +32,7 @@ export const routes: Routes = [
     children: [
       { path: "user", component: UserComponent, canActivate: [AuthGuard] },
       { path: "api-keys", component: ApiKeysComponent, canActivate: [AuthGuard] },
-      { path: "", redirectTo: "user", pathMatch: "full", canActivate: [AuthGuard] },
+      { path: "", redirectTo: "user", pathMatch: "full" },
     ],
   },
   { path: "projects", component: ProjectListComponent, canActivate: [AuthGuard] },
@@ -58,7 +58,6 @@ export const routes: Routes = [
         path: "",
         redirectTo: "/projects/:projectKey/(project-outlet:experiments)",
         pathMatch: "full",
-        canActivate: [AuthGuard],
       },
     ],
   },

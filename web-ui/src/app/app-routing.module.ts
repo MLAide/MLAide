@@ -6,12 +6,11 @@ const ROUTES: Routes = [{ path: "", redirectTo: "projects", pathMatch: "full" }]
 @NgModule({
   imports: [
     RouterModule.forRoot(ROUTES, {
-    scrollPositionRestoration: "enabled",
-    anchorScrolling: "enabled",
-    onSameUrlNavigation: "reload",
-    paramsInheritanceStrategy: "always",
-    relativeLinkResolution: 'legacy'
-}),
+      scrollPositionRestoration: "enabled",
+      anchorScrolling: "enabled",
+      onSameUrlNavigation: "reload",
+      paramsInheritanceStrategy: "always",
+    }),
   ],
   exports: [RouterModule],
 })
