@@ -10,7 +10,6 @@ const ROUTES: Routes = [{ path: "", redirectTo: "projects", pathMatch: "full" }]
     anchorScrolling: "enabled",
     onSameUrlNavigation: "reload",
     paramsInheritanceStrategy: "always",
-    relativeLinkResolution: 'legacy'
 }),
   ],
   exports: [RouterModule],

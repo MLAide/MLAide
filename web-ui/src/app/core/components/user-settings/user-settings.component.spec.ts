@@ -6,7 +6,7 @@ import { MatDividerModule } from "@angular/material/divider";
 import { MatListModule } from "@angular/material/list";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatDrawerHarness } from "@angular/material/sidenav/testing";
-import { MatIconTestingModule } from "@angular/material/icon/testing";
+import { MatIconHarness, MatIconTestingModule } from "@angular/material/icon/testing";
 
 import { UserSettingsComponent } from "./user-settings.component";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
@@ -80,11 +80,13 @@ describe("UserSettingsComponent", () => {
       const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
       const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
       const profileLink: MatNavListItemHarness = sideNavLinks[0];
+      const icons: MatIconHarness[] = await loader.getAllHarnesses(MatIconHarness);
+      const firstIcon: MatIconHarness = icons[0];
 
       // assert
       expect(await profileLink.getHref()).toEqual("/user-settings/user");
       expect(await profileLink.hasIcon()).toBeTruthy();
-      expect(await profileLink.getText()).toContain("face");
+      expect(await firstIcon.getName()).toEqual("face");
       expect((await profileLink.getLinesText()).length).toEqual(1);
       expect((await profileLink.getLinesText())[0]).toContain("Profile");
     });
@@ -94,11 +96,13 @@ describe("UserSettingsComponent", () => {
       const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
       const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
       const apiKeysLink: MatNavListItemHarness = sideNavLinks[1];
+      const icons: MatIconHarness[] = await loader.getAllHarnesses(MatIconHarness);
+      const secondIcon: MatIconHarness = icons[1];
 
       // assert
       expect(await apiKeysLink.getHref()).toEqual("/user-settings/api-keys");
       expect(await apiKeysLink.hasIcon()).toBeTruthy();
-      expect(await apiKeysLink.getText()).toContain("vpn_key");
+      expect(await secondIcon.getName()).toEqual("vpn_key");
       expect((await apiKeysLink.getLinesText()).length).toEqual(1);
       expect((await apiKeysLink.getLinesText())[0]).toEqual("API Keys");
     });
