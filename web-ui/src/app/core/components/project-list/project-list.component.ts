@@ -6,6 +6,7 @@ import { Subscription } from "rxjs";
 import { Project, ProjectListResponse } from "../../models/project.model";
 import { ListDataSource, ProjectsApiService, SpinnerUiService } from "../../services";
 import { CreateProjectComponent } from "./create-project/create-project.component";
+import { ErrorService } from "../../services/error.service";
 
 @Component({
   selector: "app-project-list",
@@ -22,6 +23,7 @@ export class ProjectListComponent implements OnInit, OnDestroy {
 
   constructor(
     private dialog: MatDialog,
+    private errorService: ErrorService,
     private projectsApiService: ProjectsApiService,
     private router: Router,
     private spinnerService: SpinnerUiService
@@ -42,7 +44,8 @@ export class ProjectListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.projectListDataSource = this.projectsApiService.getProjects();
     this.projectListSubscription = this.projectListDataSource.items$.subscribe(
-      (projects) => (this.dataSource.data = projects.items)
+      (projects) => (this.dataSource.data = projects.items),
+      (error) => this.errorService.navigateToErrorPage(error)
     );
   }
 
@@ -67,7 +70,7 @@ export class ProjectListComponent implements OnInit, OnDestroy {
     const createProjectObservable = this.projectsApiService.addProject(project);
 
     const subscription = createProjectObservable.subscribe(
-      (response: any) => {
+      () => {
         subscription.unsubscribe();
         this.spinnerService.stopSpinner();
 
