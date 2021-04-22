@@ -7,7 +7,7 @@ import { MatDividerModule } from "@angular/material/divider";
 import { MatListModule } from "@angular/material/list";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatDrawerHarness } from "@angular/material/sidenav/testing";
-import { MatIconTestingModule } from "@angular/material/icon/testing";
+import { MatIconHarness, MatIconTestingModule } from "@angular/material/icon/testing";
 import "jasmine";
 
 import { getRandomProject } from "../../../mocks/fake-generator";
@@ -120,10 +120,12 @@ describe("ProjectComponent", () => {
         const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
         const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
         const link: MatNavListItemHarness = sideNavLinks[0];
+        const icons: MatIconHarness[] = await loader.getAllHarnesses(MatIconHarness);
+        const icon: MatIconHarness = icons[0];
 
         expect(await link.getHref()).toEqual(`/projects/${fakeProject.key}/experiments`);
         expect(await link.hasIcon()).toBeTruthy();
-        expect(await link.getText()).toContain("science");
+        expect(await icon.getName()).toEqual("science");
         expect((await link.getLinesText()).length).toEqual(1);
         expect((await link.getLinesText())[0]).toContain("Experiments");
       });
@@ -132,10 +134,12 @@ describe("ProjectComponent", () => {
         const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
         const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
         const link: MatNavListItemHarness = sideNavLinks[1];
+        const icons: MatIconHarness[] = await loader.getAllHarnesses(MatIconHarness);
+        const icon: MatIconHarness = icons[1];
 
         expect(await link.getHref()).toEqual(`/projects/${fakeProject.key}/runs`);
         expect(await link.hasIcon()).toBeTruthy();
-        expect(await link.getText()).toContain("play_for_work");
+        expect(await icon.getName()).toEqual("play_for_work");
         expect((await link.getLinesText()).length).toEqual(1);
         expect((await link.getLinesText())[0]).toContain("Runs");
       });
@@ -144,10 +148,12 @@ describe("ProjectComponent", () => {
         const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
         const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
         const link: MatNavListItemHarness = sideNavLinks[2];
+        const icons: MatIconHarness[] = await loader.getAllHarnesses(MatIconHarness);
+        const icon: MatIconHarness = icons[2];
 
         expect(await link.getHref()).toEqual(`/projects/${fakeProject.key}/models`);
         expect(await link.hasIcon()).toBeTruthy();
-        expect(await link.getText()).toContain("model_training");
+        expect(await icon.getName()).toEqual("model_training");
         expect((await link.getLinesText()).length).toEqual(1);
         expect((await link.getLinesText())[0]).toContain("Models");
       });
@@ -156,10 +162,12 @@ describe("ProjectComponent", () => {
         const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
         const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
         const link: MatNavListItemHarness = sideNavLinks[3];
+        const icons: MatIconHarness[] = await loader.getAllHarnesses(MatIconHarness);
+        const icon: MatIconHarness = icons[3];
 
         expect(await link.getHref()).toEqual(`/projects/${fakeProject.key}/artifacts`);
         expect(await link.hasIcon()).toBeTruthy();
-        expect(await link.getText()).toContain("text_snippet");
+        expect(await icon.getName()).toEqual("text_snippet");
         expect((await link.getLinesText()).length).toEqual(1);
         expect((await link.getLinesText())[0]).toContain("Artifacts");
       });
@@ -168,10 +176,12 @@ describe("ProjectComponent", () => {
         const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
         const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
         const link: MatNavListItemHarness = sideNavLinks[4];
+        const icons: MatIconHarness[] = await loader.getAllHarnesses(MatIconHarness);
+        const icon: MatIconHarness = icons[4];
 
         expect(await link.getHref()).toEqual(`/projects/${fakeProject.key}/settings`);
         expect(await link.hasIcon()).toBeTruthy();
-        expect(await link.getText()).toContain("settings");
+        expect(await icon.getName()).toEqual("settings");
         expect((await link.getLinesText()).length).toEqual(1);
         expect((await link.getLinesText())[0]).toContain("Settings");
       });
