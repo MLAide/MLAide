@@ -23,7 +23,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
       const projectKey = params.projectKey;
       this.projectApiService.getProject(projectKey).subscribe((project) => {
         this.project = project;
-      }, (error) => this.errorService.navigateToErrorPage(error));
+      });
     });
   }
 

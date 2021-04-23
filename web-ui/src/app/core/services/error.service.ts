@@ -1,12 +1,12 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, NgZone } from "@angular/core";
 import { Router } from "@angular/router";
 
 @Injectable({
   providedIn: "root",
 })
 export class ErrorService {
-  constructor(private router: Router) {}
+  constructor(private router: Router, private ngZone: NgZone) {}
 
   getClientErrorMessage(error: Error): string {
     return error.message ? error.message : error.toString();
@@ -23,16 +23,16 @@ export class ErrorService {
   navigateToErrorPage(error: HttpErrorResponse): void {
     switch (error.status) {
       case 403: {
-        this.router.navigateByUrl("/forbidden");
+        this.ngZone.run(() => this.router.navigateByUrl("/forbidden"));
         break;
       }
       case 404: {
-        this.router.navigateByUrl("/not-found");
+        this.ngZone.run(() => this.router.navigateByUrl("/not-found"));
         break;
       }
       // all others = 500
       default: {
-        this.router.navigateByUrl("/server-error");
+        this.ngZone.run(() => this.router.navigateByUrl("/server-error"));
         break;
       }
     }

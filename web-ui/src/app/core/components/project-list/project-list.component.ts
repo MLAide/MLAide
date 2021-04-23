@@ -45,7 +45,6 @@ export class ProjectListComponent implements OnInit, OnDestroy {
     this.projectListDataSource = this.projectsApiService.getProjects();
     this.projectListSubscription = this.projectListDataSource.items$.subscribe(
       (projects) => (this.dataSource.data = projects.items),
-      (error) => this.errorService.navigateToErrorPage(error)
     );
   }
 
