@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 public class ExperimentServiceImpl implements ExperimentService {
-    private final Logger logger = LoggerFactory.getLogger(ExperimentServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExperimentServiceImpl.class);
     private final ExperimentRepository experimentRepository;
     private final ExperimentMapper experimentMapper;
     private final PermissionService permissionService;
@@ -55,6 +55,7 @@ public class ExperimentServiceImpl implements ExperimentService {
         ExperimentEntity experimentEntity = experimentRepository.findOneByProjectKeyAndKey(projectKey, experimentKey);
 
         if (experimentEntity == null) {
+            LOGGER.info("Experiment does not exist");
             throw new NotFoundException();
         }
 
@@ -96,12 +97,12 @@ public class ExperimentServiceImpl implements ExperimentService {
         experimentEntity.setUpdatedAt(OffsetDateTime.now(clock));
 
         experimentRepository.save(experimentEntity);
-        logger.info("updated existing experiment");
+        LOGGER.info("updated existing experiment");
     }
 
     private ExperimentEntity saveExperiment(String projectKey, ExperimentEntity experimentEntity) {
         experimentEntity = experimentRepository.save(experimentEntity);
-        logger.info("created new experiment");
+        LOGGER.info("created new experiment");
         try {
             permissionService.grantPermissionBasedOnProject(projectKey, experimentEntity.getId(), ExperimentEntity.class);
         } catch (Exception e) {
