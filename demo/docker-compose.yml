@@ -100,6 +100,12 @@ services:
       - $DATA_PATH/mongodb/data:/data/db/
       - $DATA_PATH/mongodb/log:/var/log/mongodb/
       - $MONGO_INITDB_SCRIPTS_HOST_PATH:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
     command: ["--bind_ip", "0.0.0.0"]
 
   keycloak.mlaide:
@@ -153,6 +159,8 @@ services:
     image: mlaide/web-ui
     container_name: mlaide-web-ui
     restart: on-failure
+    depends_on:
+      - keycloak.mlaide
     ports:
       - $UI_PORT:80
     environment:
