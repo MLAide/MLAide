@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -17,7 +16,6 @@ public class ProjectMember {
     private String userId;
     @Email
     private String email;
-    @NotBlank
     private String nickName;
     @NotNull
     private ProjectMemberRole role;
