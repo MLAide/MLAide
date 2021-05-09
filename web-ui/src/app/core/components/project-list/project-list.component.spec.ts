@@ -10,12 +10,13 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
 import "jasmine";
 import { MomentModule, TimeAgoPipe } from "ngx-moment";
-import { ProjectsApiService } from "../../services/index";
+import { ProjectsApiService } from "../../services";
 import { ListDataSourceMock } from "../../../mocks/data-source.mock";
 import { ProjectListComponent } from "./project-list.component";
 import { Project, ProjectListResponse } from "../../models/project.model";
 import { getRandomProjects } from "src/app/mocks/fake-generator";
 import { MockPipe } from "ng-mocks";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 describe("ProjectListComponent", () => {
   let component: ProjectListComponent;
@@ -52,7 +53,7 @@ describe("ProjectListComponent", () => {
         { provide: ProjectsApiService, useValue: projectsApiServiceStub },
         { provide: Router, useValue: routerSpy },
       ],
-      imports: [BrowserAnimationsModule, MatButtonModule, MatDialogModule, MatTableModule, MomentModule],
+      imports: [BrowserAnimationsModule, MatButtonModule, MatDialogModule, MatSnackBarModule, MatTableModule, MomentModule],
     }).compileComponents();
   });
 
