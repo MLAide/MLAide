@@ -4,9 +4,10 @@ import { MatTableDataSource } from "@angular/material/table";
 import { Router } from "@angular/router";
 import { Subscription } from "rxjs";
 import { Project, ProjectListResponse } from "../../models/project.model";
-import { ListDataSource, ProjectsApiService, SpinnerUiService } from "../../services";
+import { ListDataSource, ProjectsApiService, SnackbarUiService, SpinnerUiService } from "../../services";
 import { CreateProjectComponent } from "./create-project/create-project.component";
 import { ErrorService } from "../../services/error.service";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: "app-project-list",
@@ -26,7 +27,8 @@ export class ProjectListComponent implements OnInit, OnDestroy {
     private errorService: ErrorService,
     private projectsApiService: ProjectsApiService,
     private router: Router,
-    private spinnerService: SpinnerUiService
+    private snackbarUiService: SnackbarUiService,
+    private spinnerUiService: SpinnerUiService,
   ) {}
 
   goToProject(project: Project) {
@@ -64,21 +66,25 @@ export class ProjectListComponent implements OnInit, OnDestroy {
   }
 
   private createNewProject(project: Project) {
-    this.spinnerService.showSpinner();
+    this.spinnerUiService.showSpinner();
 
     const createProjectObservable = this.projectsApiService.addProject(project);
 
     const subscription = createProjectObservable.subscribe(
       () => {
         subscription.unsubscribe();
-        this.spinnerService.stopSpinner();
+        this.spinnerUiService.stopSpinner();
 
         this.projectListDataSource.refresh();
       },
       (error) => {
-        console.error(error);
+        if (error instanceof HttpErrorResponse) {
+          if (error.status === 409) {
+            this.snackbarUiService.showErrorSnackbar("A project with this key already exists. Please choose a different project key.");
+          }
+        }
         subscription.unsubscribe();
-        this.spinnerService.stopSpinner();
+        this.spinnerUiService.stopSpinner();
       }
     );
   }
