@@ -59,5 +59,5 @@ docker exec minio mc admin trace --verbose local
 ### Build the docker image
 ```
 mvn package
-docker build mlaide/webserver -t latest -t {version} .
+docker build -t mlaide/webserver:latest .
 ```

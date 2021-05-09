@@ -41,7 +41,7 @@ public class ExperimentController {
     public ResponseEntity<Experiment> getExperiment(
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("experimentKey") String experimentKey) {
-        logger.info("get run");
+        logger.info("get experiment");
 
         Experiment experiment = experimentService.getExperiment(projectKey, experimentKey);
 
