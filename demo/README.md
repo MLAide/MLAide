@@ -29,8 +29,3 @@ provides three pre-defined users:
 - adam (password = adam1, email = adam@demo.mlaide.com)
 - bob (password = bob1, email = bob@demo.mlaide.com)
 - eve (password = eve1, email = eve@demo.mlaide.com)
-
-Now you can start writing your machine learning app with Python. Use the following snippet to create a connection from your Python app to MLAide.
-
-```python
-```
