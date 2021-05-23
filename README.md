@@ -1,8 +1,7 @@
-# :construction: Work in Progress :construction:
-# MLAide 
-
-## CI
 [![Web UI CI](https://github.com/MLAide/MLAide/actions/workflows/web-ui.yml/badge.svg)](https://github.com/MLAide/MLAide/actions/workflows/web-ui.yml) [![Webserver CI](https://github.com/MLAide/MLAide/actions/workflows/webserver.yml/badge.svg)](https://github.com/MLAide/MLAide/actions/workflows/webserver.yml) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=web-ui&metric=alert_status)](https://sonarcloud.io/dashboard?id=web-ui) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=webserver&metric=alert_status)](https://sonarcloud.io/dashboard?id=webserver)
+
+# MLAide 
+![MLAide Logo](./mlaide-logo.png)
 
 ## Purpose
 
