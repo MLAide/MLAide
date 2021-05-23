@@ -34,7 +34,7 @@ jobs:
         run: |
           npm ci
           npm run test-headless
-          npm run build
+          npm run build-production
           
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
