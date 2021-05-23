@@ -58,14 +58,15 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - uses: actions/download-artifact@v2
+        id: download-dist
         with:
           name: dist
 
       - name: Display structure of downloaded files
         run: ls -R
-        
+
       - name: 'Echo download path'
-        run: echo ${{steps.download.outputs.download-path}}
+        run: echo ${{steps.download-dist.outputs.download-path}}
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
