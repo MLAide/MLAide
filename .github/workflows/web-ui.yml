@@ -41,6 +41,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_WEB_UI }}
+          
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: web-ui/dist/
   publish:
     runs-on: ubuntu-latest
 
@@ -48,6 +53,14 @@ jobs:
       - build
 
     steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: dist
+
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -58,6 +71,6 @@ jobs:
         uses: docker/build-push-action@v2
         # if: github.ref == 'refs/heads/master'
         with:
-          path: ./web-ui
+          context: ./web-ui
           push: true
           tags: mlaide/web-ui:latest
