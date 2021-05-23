@@ -24,14 +24,6 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
-      - name: Cache node modules
-        uses: actions/cache@v1
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Node ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -49,3 +41,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_WEB_UI }}
+
+      - name: Build and push docker image
+        uses: docker/build-push-action@v2
+        if: github.ref == 'refs/heads/master'
+        with:
+          push: true
+          tags: mlaide/web-ui:latest
