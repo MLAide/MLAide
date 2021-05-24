@@ -29,12 +29,17 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           
-      - name: npm install and npm run build
+      - name: install npm packages
         working-directory: ./web-ui
-        run: |
-          npm ci
-          npm run test-headless
-          npm run build-production
+        run: npm ci
+          
+      - name: run tests
+        working-directory: ./web-ui
+        run: npm run test-headless
+          
+      - name: build
+        working-directory: ./web-ui
+        run: npm run build-production
           
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
@@ -52,6 +57,8 @@ jobs:
     needs:
       - build
 
+    if: github.ref == 'refs/heads/master'
+
     steps:
       - uses: actions/checkout@v2
         with:
@@ -63,15 +70,6 @@ jobs:
           name: dist
           path: ./web-ui/dist/
 
-      - name: Print working directory
-        run: pwd
-
-      - name: Display structure of downloaded files
-        run: ls -R
-
-      - name: 'Echo download path'
-        run: echo ${{steps.download-dist.outputs.download-path}}
-
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -80,7 +78,6 @@ jobs:
 
       - name: Build and push docker image
         uses: docker/build-push-action@v2
-        # if: github.ref == 'refs/heads/master'
         with:
           context: ./web-ui
           push: true
