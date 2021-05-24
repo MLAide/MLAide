@@ -38,8 +38,11 @@ class ApiKeyFilterTest {
             // Arrange
             when(request.getHeader("x-api-key")).thenReturn("Zm9vYmFy"); // equals "foobar" in base64
 
-            // Act + Assert
-            assertThatThrownBy(() -> filter.getPreAuthenticatedPrincipal(request)).isInstanceOf(AccessDeniedException.class);
+            // Act
+            Object result = filter.getPreAuthenticatedPrincipal(request);
+
+            // Assert
+            assertThat(result).isNull();;
         }
 
         @Test
@@ -70,12 +73,15 @@ class ApiKeyFilterTest {
         }
 
         @Test
-        void request_contains_invalid_api_key_should_throw_AccessDeniedException() {
+        void request_contains_invalid_api_key_should_return_null() {
             // Arrange
             when(request.getHeader("x-api-key")).thenReturn("Zm9vYmFy"); // equals "foobar" in base64
 
-            // Act + Assert
-            assertThatThrownBy(() -> filter.getPreAuthenticatedCredentials(request)).isInstanceOf(AccessDeniedException.class);
+            // Act
+            Object result = filter.getPreAuthenticatedCredentials(request);
+
+            // Assert
+            assertThat(result).isNull();;
         }
 
         @Test
