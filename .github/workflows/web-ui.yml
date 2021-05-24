@@ -29,22 +29,56 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           
-      - name: npm install and npm run build
+      - name: install npm packages
         working-directory: ./web-ui
-        run: |
-          npm ci
-          npm run test-headless
-          npm run build-production
+        run: npm ci
+          
+      - name: run tests
+        working-directory: ./web-ui
+        run: npm run test-headless
+          
+      - name: build
+        working-directory: ./web-ui
+        run: npm run build-production
           
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_WEB_UI }}
+          
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: ./web-ui/dist/
+  publish:
+    runs-on: ubuntu-latest
+
+    needs:
+      - build
+
+    if: github.ref == 'refs/heads/master'
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - uses: actions/download-artifact@v2
+        id: download-dist
+        with:
+          name: dist
+          path: ./web-ui/dist/
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push docker image
         uses: docker/build-push-action@v2
-        if: github.ref == 'refs/heads/master'
         with:
+          context: ./web-ui
           push: true
           tags: mlaide/web-ui:latest
