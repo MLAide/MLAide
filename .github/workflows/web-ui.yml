@@ -61,6 +61,10 @@ jobs:
         id: download-dist
         with:
           name: dist
+          path: ./web-ui/dist/
+
+      - name: Print working directory
+        run: pwd
 
       - name: Display structure of downloaded files
         run: ls -R
