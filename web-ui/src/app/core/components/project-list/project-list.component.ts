@@ -79,6 +79,10 @@ export class ProjectListComponent implements OnInit, OnDestroy {
       },
       (error) => {
         if (error instanceof HttpErrorResponse) {
+          if (error.status === 400) {
+            // alert(JSON.stringify(error.error.violations));
+            this.snackbarUiService.showErrorSnackbar("The project could not be created, because of invalid input data. Please try again with valid input data.");
+          }
           if (error.status === 409) {
             this.snackbarUiService.showErrorSnackbar("A project with this key already exists. Please choose a different project key.");
           }
