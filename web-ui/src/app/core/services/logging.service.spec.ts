@@ -35,7 +35,7 @@ describe("LoggingService", () => {
       let url: string = "localhost/test-uri";
       let stack: string = "Test stack in LoggingService test";
       let logMessage = `LoggingService: ERROR - ${new Date()} - ${url} - ${message} -
-      ${stack}`;
+    ${stack}`;
       let spy = spyOn(console, "log");
 
       // act
