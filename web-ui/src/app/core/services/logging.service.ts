@@ -6,6 +6,7 @@ import { Injectable } from "@angular/core";
 export class LoggingService {
   logError(message: string, url: string, stack: string = null) {
     // Send errors to server here
-    console.log(`LoggingService: ERROR - ${new Date()} - ${url} - ${message}`);
+    console.log(`LoggingService: ERROR - ${new Date()} - ${url} - ${message} -
+    ${stack}`);
   }
 }

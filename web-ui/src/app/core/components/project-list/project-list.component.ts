@@ -8,6 +8,8 @@ import { ListDataSource, ProjectsApiService, SnackbarUiService, SpinnerUiService
 import { CreateProjectComponent } from "./create-project/create-project.component";
 import { ErrorService } from "../../services/error.service";
 import { HttpErrorResponse } from "@angular/common/http";
+import { LoggingService } from "../../services/logging.service";
+import { LocationStrategy } from "@angular/common";
 
 @Component({
   selector: "app-project-list",
@@ -25,6 +27,8 @@ export class ProjectListComponent implements OnInit, OnDestroy {
   constructor(
     private dialog: MatDialog,
     private errorService: ErrorService,
+    private loggingService: LoggingService,
+    private locationStrategy: LocationStrategy,
     private projectsApiService: ProjectsApiService,
     private router: Router,
     private snackbarUiService: SnackbarUiService,
@@ -79,6 +83,10 @@ export class ProjectListComponent implements OnInit, OnDestroy {
       },
       (error) => {
         if (error instanceof HttpErrorResponse) {
+          if (error.status === 400) {
+            this.loggingService.logError(error.message, this.locationStrategy.path(), JSON.stringify(error));
+            this.snackbarUiService.showErrorSnackbar("The project could not be created, because of invalid input data. Please try again with valid input data.");
+          }
           if (error.status === 409) {
             this.snackbarUiService.showErrorSnackbar("A project with this key already exists. Please choose a different project key.");
           }

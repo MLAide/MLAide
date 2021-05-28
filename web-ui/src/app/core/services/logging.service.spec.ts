@@ -31,13 +31,15 @@ describe("LoggingService", () => {
 
     it("should log to console", () => {
       // arrange
-      var message: string = "Test error in LoggingService test";
-      var url: string = "localhost/test-uri";
-      var logMessage = `LoggingService: ERROR - ${new Date()} - localhost/test-uri - Test error in LoggingService test`;
-      var spy = spyOn(console, "log");
+      let message: string = "Test error in LoggingService test";
+      let url: string = "localhost/test-uri";
+      let stack: string = "Test stack in LoggingService test";
+      let logMessage = `LoggingService: ERROR - ${new Date()} - ${url} - ${message} -
+    ${stack}`;
+      let spy = spyOn(console, "log");
 
       // act
-      service.logError(message, url);
+      service.logError(message, url, stack);
 
       // assert
       expect(spy).toHaveBeenCalledTimes(1);
