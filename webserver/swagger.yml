@@ -22,12 +22,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Projects"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
     post:
       summary: Create a project
       operationId: createProject
@@ -46,12 +44,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Project"
-        '500':
-          description: unexpected error
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Project already exists
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        '500':
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}:
     get:
       summary: Info for a specific project
@@ -72,14 +76,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Project"
-        '404':
-          description: The requested project does not exist
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/members:
     get:
       summary: Get members of a project
@@ -100,14 +104,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProjectMembers"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: The requested project does not exist
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
     patch:
       summary: Create a new or update an existing project member
       operationId: addOrUpdateProjectMember
@@ -131,14 +135,14 @@ paths:
       responses:
         '204':
           description: Project members were created/updated successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: The requested project does not exist
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/members/current:
     get:
       summary: Get project member for current user
@@ -159,14 +163,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProjectMember"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: The requested project does not exist
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/members/{email}:
     delete:
       summary: Delete a member of a project
@@ -189,14 +193,14 @@ paths:
       responses:
         '204':
           description: Project member created or updated successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: The requested project does not exist
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/runs:
     get:
       summary: List all runs of a project
@@ -231,12 +235,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Runs"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
     post:
       summary: Create a new run
       operationId: createRun
@@ -262,12 +266,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Run"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/runs/{runKey}:
     get:
       summary: Get single run by runKey
@@ -295,12 +301,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Run"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
     patch:
       summary: Partial update an existing run
       operationId: partialUpdateRun
@@ -334,12 +342,14 @@ paths:
       responses:
         '204':
           description: The update was successful
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/runs/{runKey}/note:
     put:
       summary: Create a new or update the existing note for an existing run
@@ -374,12 +384,14 @@ paths:
               schema:
                 type: string
                 example: This was an awesome run!
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/runs/{runKey}/parameters:
     patch:
       summary: Merge/Patch a parameter object into the existing parameter object
@@ -408,12 +420,14 @@ paths:
       responses:
         '204':
           description: The operation was successful
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/runs/{runKey}/metrics:
     patch:
       summary: Merge/Patch a metrics object into the existing metrics object
@@ -442,12 +456,14 @@ paths:
       responses:
         '204':
           description: The operation was successful
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/experiments:
     get:
       summary: List all experiments of a project
@@ -468,12 +484,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Experiments"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
     post:
       summary: Create a new experiment
       operationId: createExperiment
@@ -499,12 +515,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Experiment"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/experiments/{experimentKey}:
     get:
       summary: Get single experiment by experimentKey
@@ -532,12 +550,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Experiment"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
     patch:
       summary: Merge/Patch a experiment object into the existing experiment object
       operationId: updateExperiment
@@ -565,12 +585,16 @@ paths:
       responses:
         '204':
           description: The operation was successful
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/artifacts:
     get:
       summary: Get all artifacts of this project
@@ -605,12 +629,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Artifacts"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
     post:
       summary: Create a new artifact
       operationId: createArtifact
@@ -636,12 +660,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Artifact"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/artifacts/{artifactName}/latest:
     get:
       summary: Get the latest artifact with the specified name
@@ -674,12 +700,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Artifact"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/artifacts/{artifactName}/{artifactVersion}:
     get:
       summary: Get a specific artifact
@@ -712,12 +740,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Artifact"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/artifacts/{artifactName}/{artifactVersion}/files:
     get:
       summary: Download all files of the artifact as a ZIP file
@@ -751,12 +781,14 @@ paths:
               schema:
                 type: string
                 format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
     post:
       summary: Upload a new file
       operationId: uploadFile
@@ -791,12 +823,12 @@ paths:
       responses:
         '204':
           description: File uploaded successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/artifacts/{artifactName}/{artifactVersion}/files/{fileId}:
     get:
       summary: Download a single file of an artifact
@@ -836,12 +868,14 @@ paths:
               schema:
                 type: string
                 format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/artifacts/{artifactName}/{artifactVersion}/model:
     put:
       summary: Create or update a model
@@ -876,12 +910,14 @@ paths:
       responses:
         '204':
           description: Model created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /users/current:
     get:
       summary: Get current user
@@ -895,12 +931,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
     put:
       summary: Update current user
       operationId: updateCurrentUser
@@ -915,12 +949,12 @@ paths:
       responses:
         '204':
           description: User updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /users/current/api-keys:
     get:
       summary: Get API keys of current user
@@ -934,12 +968,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiKeys"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
     post:
       summary: Create a new API key
       operationId: createApiKey
@@ -958,12 +990,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiKey"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
   /users/current/api-keys/{apiKeyId}:
     delete:
       summary: Delete API key
@@ -980,14 +1012,39 @@ paths:
       responses:
         '204':
           description: Delete was successful
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/UnexpectedError'
 
 components:
+  responses:
+    BadRequest:
+      description: Bad request - Invalid Data
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationError"
+    Forbidden:
+      description: Forbidden - Ressource does not exist, or you have no acccess to it.
+    NotFound:
+      description: Ressource was not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Unauthorized
+    UnexpectedError:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
   schemas:
     ApiKey:
       type: object
@@ -1368,7 +1425,7 @@ components:
       properties:
         email:
           type: string
-          readOnly: true
+          readOnly: false
           example: adam-test@mlaide.com
         firstName:
           type: string
@@ -1401,7 +1458,41 @@ components:
           type: string
           readOnly: true
           example: 5def26a1-a932-404a-998c-aabf84994dd0
-
+    ValidationError:
+      type: object
+      readOnly: true
+      required:
+        - code
+        - message
+        - violations
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 400
+        message:
+          type: string
+          example: Validation failed for argument [0] in public org.springframework...
+        violations:
+          type: array
+          readOnly: true
+          items:
+            $ref: "#/components/schemas/ViolationRef"
+    ViolationRef:
+      type: object
+      readOnly: true
+      required:
+        - fieldName
+        - message
+      properties:
+        fieldName:
+          type: string
+          readOnly: true
+          example: key
+        message:
+          type: string
+          readOnly: true
+          example: muss mit \"^[a-zA-Z0-9-]+(?<!-)$\" übereinstimmen
   securitySchemes:
     oauth2:
       type: oauth2
