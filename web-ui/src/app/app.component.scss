@@ -23,3 +23,16 @@
   @include mat-elevation-transition;
   @include mat-elevation(8);
 }
+
+.img-logo {
+  width: auto;
+  height: 30px;
+}
+
+.home-button {
+  padding-left: 8px;
+  padding-bottom: 0;
+  padding-top: 0;
+  margin-bottom: 0;
+  margin-top: 0;
+}
