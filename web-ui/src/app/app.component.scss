@@ -1,4 +1,4 @@
-@import "~@angular/material/theming";
+@use '~@angular/material' as mat;
 
 .app-toolbar {
   position: fixed;
@@ -12,7 +12,7 @@
 
 .app-toolbar-inactive {
   // color: white;
-  @include mat-elevation(4);
+  @include mat.elevation(4);
   // background-color: rgba(32, 35, 44, 0.9); //transparent;
 }
 
@@ -20,8 +20,8 @@
   // background-color: white;
   background-color: rgba(32, 35, 44, 0.9);
   color: white;
-  @include mat-elevation-transition;
-  @include mat-elevation(8);
+  @include mat.elevation-transition;
+  @include mat.elevation(8);
 }
 
 .img-logo {
