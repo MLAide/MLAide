@@ -65,7 +65,7 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
     "mocker-data-generator": "^2.10.0",
-    "ng-mocks": "^11.10.1",
+    "ng-mocks": "^12.0.2",
     "protractor": "~7.0.0",
     "ts-node": "~7.0.0",
     "typescript": "^4.2.4"
