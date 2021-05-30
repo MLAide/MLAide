@@ -26,6 +26,11 @@ import { AppComponent } from "./app.component";
 import { AuthModule } from "./auth/auth.module";
 import { CoreModule } from "./core/core.module";
 import { GlobalErrorHandler } from "./core/global-error-handler";
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { EntityDataModule } from '@ngrx/data';
+import { entityConfig } from './entity-metadata';
 
 @NgModule({
   declarations: [AppComponent],
@@ -56,6 +61,10 @@ import { GlobalErrorHandler } from "./core/global-error-handler";
     OAuthModule.forRoot(),
     AuthModule.forRoot(),
     CoreModule,
+    StoreModule.forRoot({}, {}),
+    EffectsModule.forRoot([]),
+    StoreRouterConnectingModule.forRoot(),
+    EntityDataModule.forRoot(entityConfig),
   ],
   providers: [
     {
