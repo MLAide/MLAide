@@ -83,7 +83,6 @@ class RunServiceImplTest {
         void default_should_return_all_runs_from_repository() {
             // Arrange
             List<RunEntity> runEntities = new ArrayList<>();
-            runEntities.add(RunFaker.newRunEntity());
             when(runRepository.findAllByProjectKey(project.getKey())).thenReturn(runEntities);
 
             List<Run> runs = new ArrayList<>();
@@ -95,17 +94,6 @@ class RunServiceImplTest {
             // Assert
             assertThat(result.getItems()).isSameAs(runs);
         }
-
-        @Test
-        void default_runs_do_not_exist_should_throw_NotFoundException() {
-            // Arrange
-
-            when(runRepository.findAllByProjectKey(projectKey)).thenReturn(new ArrayList<>());
-
-            // Act + Assert
-            assertThatThrownBy(() -> runService.getRuns(projectKey))
-                    .isInstanceOf(NotFoundException.class);
-        }
     }
 
     @Nested
@@ -115,7 +103,6 @@ class RunServiceImplTest {
             // Arrange
             List<Integer> runKeys = new ArrayList<>();
             List<RunEntity> runEntities = new ArrayList<>();
-            runEntities.add(RunFaker.newRunEntity());
             when(runRepository.findAllByProjectKeyAndKeyIn(project.getKey(), runKeys)).thenReturn(runEntities);
 
             List<Run> runs = new ArrayList<>();
@@ -127,17 +114,6 @@ class RunServiceImplTest {
             // Assert
             assertThat(result.getItems()).isSameAs(runs);
         }
-
-        @Test
-        void default_runs_do_not_exist_should_throw_NotFoundException() {
-            // Arrange
-            List<Integer> runKeys = new ArrayList<>();
-            when(runRepository.findAllByProjectKeyAndKeyIn(projectKey, runKeys)).thenReturn(new ArrayList<>());
-
-            // Act + Assert
-            assertThatThrownBy(() -> runService.getRunsByKeys(projectKey, runKeys))
-                    .isInstanceOf(NotFoundException.class);
-        }
     }
 
     @Nested
@@ -147,7 +123,6 @@ class RunServiceImplTest {
             // Arrange
             String experimentKey = UUID.randomUUID().toString();
             List<RunEntity> runEntities = new ArrayList<>();
-            runEntities.add(RunFaker.newRunEntity());
             when(runRepository.findAllByProjectKeyAndExperimentRefsExperimentKeyIn(project.getKey(), experimentKey)).thenReturn(runEntities);
 
             List<Run> runs = new ArrayList<>();
@@ -158,17 +133,6 @@ class RunServiceImplTest {
 
             // Assert
             assertThat(result.getItems()).isSameAs(runs);
-        }
-
-        @Test
-        void default_runs_do_not_exist_should_throw_NotFoundException() {
-            // Arrange
-            String experimentKey = UUID.randomUUID().toString();
-            when(runRepository.findAllByProjectKeyAndExperimentRefsExperimentKeyIn(projectKey, experimentKey)).thenReturn(new ArrayList<>());
-
-            // Act + Assert
-            assertThatThrownBy(() -> runService.getRunsOfExperiment(projectKey, experimentKey))
-                    .isInstanceOf(NotFoundException.class);
         }
     }
 
