@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.json.JsonMergePatch;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +41,7 @@ public class RunController {
     @GetMapping
     public ResponseEntity<ItemList<Run>> getRuns(
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
-            @RequestParam(name = "runKeys", required = false) List<Integer> runKeys,
+            @RequestParam(name = "runKeys", required = false) List<@Positive Integer> runKeys,
             @RequestParam(name = "experimentKey", required = false) String experimentKey) {
 
         var runList = getRunsInternal(projectKey, runKeys, experimentKey);
