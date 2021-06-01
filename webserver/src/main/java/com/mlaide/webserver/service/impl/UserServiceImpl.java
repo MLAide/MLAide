@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
         if (currentUserEntity.isEmpty()) {
             throw new NotFoundException();
         }
-
+        user.setEmail(currentUserEntity.get().getEmail());
         UserEntity userEntity = userMapper.toEntity(user);
 
         userEntity.setId(currentUserEntity.get().getId());
