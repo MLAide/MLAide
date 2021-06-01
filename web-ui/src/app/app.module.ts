@@ -21,16 +21,27 @@ import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatTableModule } from "@angular/material/table";
 import { MatToolbarModule } from "@angular/material/toolbar";
 
+import { CoreModule } from "@mlaide/core/core.module";
+import { GlobalErrorHandler } from "@mlaide/core/global-error-handler";
+import { ExperimentsModule } from "@mlaide/experiments/experiments.module";
+import { SharedModule } from "@mlaide/shared/shared.module";
+import { RunsModule } from "@mlaide/runs/runs.module";
+import { ProjectSettingsModule } from "@mlaide/project-settings/project-settings.module";
+import { UserSettingsModule } from "@mlaide/user-settings/user-settings.module";
+import { ArtifactsModule } from "@mlaide/artifacts/artifacts.module";
+import { ModelsModule } from "@mlaide/models/models.module";
+import { ArtifactsApiService, ProjectsApiService, RunsApiService, SnackbarUiService } from "@mlaide/services";
+import { ErrorsModule } from "@mlaide/errors/errors.module";
+
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { AuthModule } from "./auth/auth.module";
-import { CoreModule } from "./core/core.module";
-import { GlobalErrorHandler } from "./core/global-error-handler";
-import { StoreModule } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
-import { StoreRouterConnectingModule } from '@ngrx/router-store';
-import { EntityDataModule } from '@ngrx/data';
-import { entityConfig } from './entity-metadata';
+import { entityConfig } from "./entity-metadata";
+
+import { StoreModule } from "@ngrx/store";
+import { EffectsModule } from "@ngrx/effects";
+import { StoreRouterConnectingModule } from "@ngrx/router-store";
+import { EntityDataModule } from "@ngrx/data";
 
 @NgModule({
   declarations: [AppComponent],
@@ -44,6 +55,7 @@ import { entityConfig } from './entity-metadata';
     ReactiveFormsModule,
     HttpClientModule,
 
+    // material design: TODO: remove?
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
@@ -59,8 +71,20 @@ import { entityConfig } from './entity-metadata';
     MatToolbarModule,
 
     OAuthModule.forRoot(),
+
+    // mlaide modules
+    CoreModule, // core module must be the first mlaide module
+    ErrorsModule, // errors module must be the second mlaide module
     AuthModule.forRoot(),
-    CoreModule,
+    ArtifactsModule,
+    ExperimentsModule,
+    ModelsModule,
+    ProjectSettingsModule,
+    RunsModule,
+    SharedModule,
+    UserSettingsModule,
+
+    // ngrx
     StoreModule.forRoot({}, {}),
     EffectsModule.forRoot([]),
     StoreRouterConnectingModule.forRoot(),
@@ -71,6 +95,12 @@ import { entityConfig } from './entity-metadata';
       provide: ErrorHandler,
       useClass: GlobalErrorHandler,
     },
+
+    ArtifactsApiService,
+    ProjectsApiService,
+    RunsApiService,
+
+    SnackbarUiService,
   ],
   bootstrap: [AppComponent],
 })

@@ -1,12 +1,7 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-} from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { Project } from "../../models/project.model";
-import { ProjectsApiService } from "../../services";
-import { ErrorService } from "../../services/error.service";
+import { Project } from "@mlaide/entities/project.model";
+import { ProjectsApiService } from "@mlaide/services";
 
 @Component({
   selector: "app-project",
@@ -16,7 +11,7 @@ import { ErrorService } from "../../services/error.service";
 export class ProjectComponent implements OnInit, OnDestroy {
   public project: Project;
   private routeParamsSubscription: any;
-  constructor(private projectApiService: ProjectsApiService, private route: ActivatedRoute, private errorService: ErrorService) {}
+  constructor(private projectApiService: ProjectsApiService, private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.routeParamsSubscription = this.route.params.subscribe((params) => {

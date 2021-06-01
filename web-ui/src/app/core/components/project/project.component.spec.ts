@@ -15,8 +15,8 @@ import { ProjectComponent } from "./project.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
-import { ProjectsApiService } from "../../services";
-import { Project } from "../../models/project.model";
+import { ProjectsApiService } from "../../../services";
+import { Project } from "../../../entities/project.model";
 import { Observable, of, Subscription } from "rxjs";
 import { RouterTestingModule } from "@angular/router/testing";
 import { MatButtonHarness } from "@angular/material/button/testing";
@@ -40,12 +40,10 @@ describe("ProjectComponent", () => {
     const paramMapObservable = new Observable<ParamMap>();
     const paramMapSubscription = new Subscription();
     unsubscriptionSpy = spyOn(paramMapSubscription, "unsubscribe").and.callThrough();
-    spyOn(paramMapObservable, "subscribe").and.callFake(
-      (fn): Subscription => {
-        fn({ projectKey: fakeProject.key });
-        return paramMapSubscription;
-      }
-    );
+    spyOn(paramMapObservable, "subscribe").and.callFake((fn): Subscription => {
+      fn({ projectKey: fakeProject.key });
+      return paramMapSubscription;
+    });
 
     // stub services
     projectsApiServiceStub = jasmine.createSpyObj("projectsApiService", ["getProject"]);

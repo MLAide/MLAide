@@ -6,7 +6,7 @@
           <div>
             <a id="ml-aide-button" mat-button [routerLink]="['/']">
               <div fxLayout="row" fxLayoutAlign="center center">
-                <img class="img-logo" src="../../../assets/Home/Logo_red_eyes_round.png">
+                <img class="img-logo" src="../../../assets/Home/Logo_red_eyes_round.png" />
                 <span class="mat-h1 home-button">ML Aide</span>
               </div>
             </a>
@@ -26,7 +26,9 @@
             {{ user?.nickName }}
           </a>
           <mat-menu #userMenu>
-            <a mat-menu-item [routerLink]="['/user-settings']"> <mat-icon>settings</mat-icon><span i18n>Settings</span> </a>
+            <a mat-menu-item [routerLink]="['/user-settings', 'user']">
+              <mat-icon>settings</mat-icon><span i18n>Settings</span>
+            </a>
             <a mat-menu-item (click)="logout()"> <mat-icon>exit_to_app</mat-icon> <span i18n>Logout</span> </a>
           </mat-menu>
         </div>

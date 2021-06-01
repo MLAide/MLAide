@@ -3,13 +3,12 @@ import { MatDialog } from "@angular/material/dialog";
 import { MatTableDataSource } from "@angular/material/table";
 import { Router } from "@angular/router";
 import { Subscription } from "rxjs";
-import { Project, ProjectListResponse } from "../../models/project.model";
-import { ListDataSource, ProjectsApiService, SnackbarUiService, SpinnerUiService } from "../../services";
-import { CreateProjectComponent } from "./create-project/create-project.component";
-import { ErrorService } from "../../services/error.service";
 import { HttpErrorResponse } from "@angular/common/http";
-import { LoggingService } from "../../services/logging.service";
 import { LocationStrategy } from "@angular/common";
+import { Project, ProjectListResponse } from "@mlaide/entities/project.model";
+import { ListDataSource, ProjectsApiService, SnackbarUiService, SpinnerUiService } from "@mlaide/services";
+import { LoggingService } from "@mlaide/services/logging.service";
+import { CreateProjectComponent } from "./create-project/create-project.component";
 
 @Component({
   selector: "app-project-list",
@@ -26,13 +25,12 @@ export class ProjectListComponent implements OnInit, OnDestroy {
 
   constructor(
     private dialog: MatDialog,
-    private errorService: ErrorService,
     private loggingService: LoggingService,
     private locationStrategy: LocationStrategy,
     private projectsApiService: ProjectsApiService,
     private router: Router,
     private snackbarUiService: SnackbarUiService,
-    private spinnerUiService: SpinnerUiService,
+    private spinnerUiService: SpinnerUiService
   ) {}
 
   goToProject(project: Project) {
@@ -50,7 +48,7 @@ export class ProjectListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.projectListDataSource = this.projectsApiService.getProjects();
     this.projectListSubscription = this.projectListDataSource.items$.subscribe(
-      (projects) => (this.dataSource.data = projects.items),
+      (projects) => (this.dataSource.data = projects.items)
     );
   }
 
@@ -85,10 +83,14 @@ export class ProjectListComponent implements OnInit, OnDestroy {
         if (error instanceof HttpErrorResponse) {
           if (error.status === 400) {
             this.loggingService.logError(error.message, this.locationStrategy.path(), JSON.stringify(error));
-            this.snackbarUiService.showErrorSnackbar("The project could not be created, because of invalid input data. Please try again with valid input data.");
+            this.snackbarUiService.showErrorSnackbar(
+              "The project could not be created, because of invalid input data. Please try again with valid input data."
+            );
           }
           if (error.status === 409) {
-            this.snackbarUiService.showErrorSnackbar("A project with this key already exists. Please choose a different project key.");
+            this.snackbarUiService.showErrorSnackbar(
+              "A project with this key already exists. Please choose a different project key."
+            );
           }
         }
         subscription.unsubscribe();

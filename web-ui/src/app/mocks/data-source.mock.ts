@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable } from "rxjs";
-import { ListDataSource } from "../core/services";
+import { ListDataSource } from "../services";
 
 export class ListDataSourceMock<TEntity, TListResponse> implements ListDataSource<TListResponse> {
   private itemsToEmulate: TEntity[] = [];

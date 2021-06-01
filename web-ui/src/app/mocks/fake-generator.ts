@@ -1,11 +1,11 @@
 import mocker from "mocker-data-generator";
-import { ApiKey } from "../core/models/apiKey.model";
-import { Artifact, CreateOrUpdateModel, ModelRevision, ModelStage } from "../core/models/artifact.model";
-import { Experiment, ExperimentStatus } from "../core/models/experiment.model";
-import { Project } from "../core/models/project.model";
-import { ProjectMember, ProjectMemberRole } from "../core/models/projectMember.model";
-import { Run, RunStatus } from "../core/models/run.model";
-import { User } from "../core/models/user.model";
+import { ApiKey } from "../entities/apiKey.model";
+import { Artifact, CreateOrUpdateModel, ModelRevision, ModelStage } from "../entities/artifact.model";
+import { Experiment, ExperimentStatus } from "../entities/experiment.model";
+import { Project } from "../entities/project.model";
+import { ProjectMember, ProjectMemberRole } from "../entities/projectMember.model";
+import { Run, RunStatus } from "../entities/run.model";
+import { User } from "../entities/user.model";
 
 const artifactFileSchemaFunction = (faker) => {
   return {

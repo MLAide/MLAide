@@ -1,7 +1,7 @@
 import { Component, Inject } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { Project } from "../../../models/project.model";
+import { Project } from "../../../../entities/project.model";
 import { ENTER } from "@angular/cdk/keycodes";
 
 @Component({
