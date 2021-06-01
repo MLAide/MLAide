@@ -6,6 +6,7 @@ import com.mlaide.webserver.model.Error;
 import com.mlaide.webserver.service.ConflictException;
 import com.mlaide.webserver.service.InvalidInputException;
 import com.mlaide.webserver.service.NotFoundException;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.validation.ConstraintViolation;
@@ -80,6 +82,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         Error error = new Error(HttpStatus.BAD_REQUEST.value(), e.getMessage(), violations);
         return handleExceptionInternal(e, error, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
+
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException e, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        if (e instanceof MethodArgumentTypeMismatchException) {
+            MethodArgumentTypeMismatchException ex = (MethodArgumentTypeMismatchException) e;
+
+            List<Violation> violations = new ArrayList<>();
+            violations.add(
+                    new Violation(ex.getName(), ex.getCause().toString()));
+            Error error = new Error(HttpStatus.BAD_REQUEST.value(), e.getMessage(), violations);
+
+            return handleExceptionInternal(e, error, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        }
+
+        return super.handleTypeMismatch(e, headers, status, request);
+    }
+
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e,
