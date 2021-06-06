@@ -2,7 +2,7 @@ import { AfterViewInit, Component, Input, OnChanges, OnDestroy, SimpleChanges, V
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { Subscription } from "rxjs";
-import { ListDataSource } from "@mlaide/services";
+import { ListDataSource } from "@mlaide/shared/api";
 import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
 
 @Component({

@@ -8,7 +8,7 @@ import { AppComponent } from "./app.component";
 import { AuthService } from "./auth/auth.service";
 import { Project, ProjectListResponse } from "./entities/project.model";
 import { User } from "./entities/user.model";
-import { ProjectsApiService, UsersApiService } from "./services";
+import { ProjectsApiService, UsersApiService } from "./shared/services";
 import { ListDataSourceMock } from "./mocks/data-source.mock";
 import { getRandomProjects, getRandomUser } from "./mocks/fake-generator";
 import { MatToolbarHarness } from "@angular/material/toolbar/testing";

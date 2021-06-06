@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from "@angular/core";
 import { MatTreeFlatDataSource, MatTreeFlattener } from "@angular/material/tree";
 import { FlatTreeControl } from "@angular/cdk/tree";
-import { ArtifactsApiService, ListDataSource } from "@mlaide/services";
+import { ArtifactsApiService, ListDataSource } from "@mlaide/shared/api";
 import { Observable, Subscription } from "rxjs";
 import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
 import { HttpResponse } from "@angular/common/http";

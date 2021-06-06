@@ -11,7 +11,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { RouterTestingModule } from "@angular/router/testing";
 import { Project } from "@mlaide/entities/project.model";
 import { Run, RunListResponse } from "@mlaide/entities/run.model";
-import { RunsApiService } from "src/app/services";
+import { RunsApiService } from "@mlaide/shared/services";
 import { ActivatedRouteStub } from "src/app/mocks/activated-route.stub";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomProject, getRandomRuns } from "src/app/mocks/fake-generator";

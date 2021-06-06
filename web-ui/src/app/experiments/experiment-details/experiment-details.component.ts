@@ -4,15 +4,8 @@ import { Subscription } from "rxjs";
 import { ArtifactListResponse } from "@mlaide/entities/artifact.model";
 import { Experiment } from "../../entities/experiment.model";
 import { Run, RunListResponse } from "@mlaide/entities/run.model";
-import {
-  ArtifactsApiService,
-  GraphEdge,
-  GraphNode,
-  LineageGraphUiService,
-  ListDataSource,
-  RunsApiService,
-} from "@mlaide/services";
-import { ExperimentsApiService } from "@mlaide/services";
+import { GraphEdge, GraphNode, LineageGraphUiService } from "@mlaide/shared/services";
+import { ArtifactsApiService, ExperimentsApiService, ListDataSource, RunsApiService } from "@mlaide/shared/api";
 
 @Component({
   selector: "app-experiment-details",

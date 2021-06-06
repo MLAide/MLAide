@@ -17,7 +17,7 @@ import { EMPTY, Observable, of, Subject, Subscription } from "rxjs";
 import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
 import { Project } from "@mlaide/entities/project.model";
 import { Run } from "@mlaide/entities/run.model";
-import { ArtifactsApiService, RunsApiService, SnackbarUiService } from "src/app/services";
+import { ArtifactsApiService, RunsApiService, SnackbarUiService } from "@mlaide/shared/services";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomArtifacts, getRandomProject, getRandomRun } from "src/app/mocks/fake-generator";
 import { DurationPipe } from "../../shared/pipes/duration.pipe";

@@ -9,7 +9,7 @@ import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model"
 import { Experiment } from "@mlaide/entities/experiment.model";
 import { getRandomExperiment, getRandomProject, getRandomRuns } from "src/app/mocks/fake-generator";
 import { Run, RunListResponse } from "@mlaide/entities/run.model";
-import { ArtifactsApiService, GraphEdge, GraphNode, LineageGraphUiService, RunsApiService } from "src/app/services";
+import { ArtifactsApiService, GraphEdge, GraphNode, LineageGraphUiService, RunsApiService } from "@mlaide/shared/services";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { MockComponent } from "ng-mocks";
 import { MatCardHarness } from "@angular/material/card/testing";
@@ -18,7 +18,7 @@ import { ExperimentDetailsComponent } from "./experiment-details.component";
 import { Project } from "@mlaide/entities/project.model";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
-import { ExperimentsApiService } from "@mlaide/services";
+import { ExperimentsApiService } from "@mlaide/shared/services";
 import { ArtifactsListTableComponent } from "src/app/shared/components/artifacts-list-table/artifacts-list-table.component";
 import { RunsListTableComponent } from "src/app/shared/components/runs-list-table/runs-list-table.component";
 

@@ -5,7 +5,7 @@ import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { Subscription } from "rxjs";
 import { FileSaverService } from "ngx-filesaver";
-import { ListDataSource, RunsApiService } from "@mlaide/services";
+import { ListDataSource, RunsApiService } from "@mlaide/shared/api";
 import { Run, RunListResponse } from "@mlaide/entities/run.model";
 
 @Component({

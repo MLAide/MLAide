@@ -1,8 +1,8 @@
 import { ErrorHandler, Injectable } from "@angular/core";
 import { LocationStrategy, PathLocationStrategy } from "@angular/common";
-import { ErrorService } from "@mlaide/services/error.service";
-import { LoggingService } from "@mlaide/services/logging.service";
-import { SnackbarUiService } from "@mlaide/services";
+import { ErrorService } from "@mlaide/shared/services/error.service";
+import { LoggingService } from "@mlaide/shared/services/logging.service";
+import { SnackbarUiService } from "@mlaide/shared/services";
 import { HttpErrorResponse } from "@angular/common/http";
 
 @Injectable({

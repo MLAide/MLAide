@@ -5,9 +5,9 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MockProvider } from "ng-mocks";
 
 import { GlobalErrorHandler } from "./global-error-handler";
-import { SnackbarUiService } from "../services";
-import { ErrorService } from "../services/error.service";
-import { LoggingService } from "../services/logging.service";
+import { SnackbarUiService } from "../shared/services";
+import { ErrorService } from "../shared/services/error.service";
+import { LoggingService } from "../shared/services/logging.service";
 
 describe("GlobalErrorHandler", () => {
   let service: GlobalErrorHandler;

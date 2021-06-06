@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, Subject } from "rxjs";
 
 import { APP_CONFIG, IAppConfig } from "@mlaide/config/app-config.model";
 import { Experiment, ExperimentListResponse } from "@mlaide/entities/experiment.model";
-import { ListDataSource } from "@mlaide/services/list-data-source";
+import { ListDataSource } from "@mlaide/shared/api/list-data-source";
 
 @Injectable({
   providedIn: "root",

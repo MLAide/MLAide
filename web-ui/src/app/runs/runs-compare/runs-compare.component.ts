@@ -3,7 +3,7 @@ import { MatTableDataSource } from "@angular/material/table";
 import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
 import { Run, RunListResponse } from "@mlaide/entities/run.model";
-import { ListDataSource, RunsApiService } from "@mlaide/services";
+import { ListDataSource, RunsApiService } from "@mlaide/shared/api";
 
 @Component({
   selector: "app-runs-compare",

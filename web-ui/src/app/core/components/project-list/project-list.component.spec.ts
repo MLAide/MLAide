@@ -9,7 +9,7 @@ import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableH
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
 import { MomentModule, TimeAgoPipe } from "ngx-moment";
-import { ProjectsApiService } from "../../../services";
+import { ProjectsApiService } from "../../../shared/services";
 import { ListDataSourceMock } from "../../../mocks/data-source.mock";
 import { ProjectListComponent } from "./project-list.component";
 import { Project, ProjectListResponse } from "../../../entities/project.model";

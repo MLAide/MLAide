@@ -14,7 +14,7 @@ import { FileSaverService } from "ngx-filesaver";
 import { of } from "rxjs";
 import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
 import { Project } from "@mlaide/entities/project.model";
-import { ArtifactsApiService } from "src/app/services";
+import { ArtifactsApiService } from "@mlaide/shared/services";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
 

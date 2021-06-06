@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { AbstractControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { SnackbarUiService, UsersApiService } from "src/app/services";
+import { SnackbarUiService, UsersApiService } from "@mlaide/shared/services";
 import { MatFormFieldHarness } from "@angular/material/form-field/testing";
 import { MatInputHarness } from "@angular/material/input/testing";
 

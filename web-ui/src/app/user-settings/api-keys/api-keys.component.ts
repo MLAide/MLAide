@@ -3,9 +3,8 @@ import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatTableDataSource } from "@angular/material/table";
 import { Subscription } from "rxjs";
 import { ApiKey, ApiKeyListResponse } from "@mlaide/entities/apiKey.model";
-import { ListDataSource } from "@mlaide/services";
-import { SnackbarUiService } from "@mlaide/services/snackbar-ui.service";
-import { UsersApiService } from "@mlaide/services/users-api.service";
+import { ListDataSource, UsersApiService } from "@mlaide/shared/api";
+import { SnackbarUiService } from "@mlaide/shared/services/snackbar-ui.service";
 import { CreateApiKeyComponent } from "../create-api-key/create-api-key.component";
 
 @Component({

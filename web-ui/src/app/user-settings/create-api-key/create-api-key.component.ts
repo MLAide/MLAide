@@ -3,7 +3,8 @@ import { Component } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef } from "@angular/material/dialog";
 import { ApiKey } from "@mlaide/entities/apiKey.model";
-import { SnackbarUiService, SpinnerUiService, UsersApiService } from "@mlaide/services";
+import { UsersApiService } from "@mlaide/shared/api";
+import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
 
 @Component({
   selector: "app-create-api-key",

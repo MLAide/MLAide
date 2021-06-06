@@ -6,8 +6,9 @@ import { Observable, Subscription } from "rxjs";
 import { CreateOrEditProjectMemberComponent } from "../create-or-edit-project-member/create-or-edit-project-member.component";
 import { Project } from "@mlaide/entities/project.model";
 import { ProjectMember, ProjectMemberListResponse, ProjectMemberRole } from "@mlaide/entities/projectMember.model";
-import { ListDataSource, ProjectsApiService, SnackbarUiService, SpinnerUiService } from "@mlaide/services";
+import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
 import { MatSort } from "@angular/material/sort";
+import { ListDataSource, ProjectsApiService } from "@mlaide/shared/api";
 
 @Component({
   selector: "app-project-settings",

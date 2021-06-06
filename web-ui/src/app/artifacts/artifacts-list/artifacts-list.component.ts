@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ArtifactListResponse } from "@mlaide/entities/artifact.model";
-import { ArtifactsApiService, ListDataSource } from "@mlaide/services";
+import { ArtifactsApiService, ListDataSource } from "@mlaide/shared/api";
 
 @Component({
   selector: "app-artifacts-list",

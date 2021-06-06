@@ -4,10 +4,10 @@ import { Observable } from "rxjs";
 import { skip } from "rxjs/operators";
 import { APP_CONFIG } from "src/app/config/app-config.model";
 import { appConfigMock } from "src/app/mocks/app-config.mock";
-import { Project, ProjectListResponse } from "../entities/project.model";
-import { ProjectMember, ProjectMemberListResponse } from "../entities/projectMember.model";
+import { Project, ProjectListResponse } from "../../entities/project.model";
+import { ProjectMember, ProjectMemberListResponse } from "../../entities/projectMember.model";
 
-import { getRandomProject, getRandomProjectMembers, getRandomProjectMember, getRandomProjects } from "../mocks/fake-generator";
+import { getRandomProject, getRandomProjectMembers, getRandomProjectMember, getRandomProjects } from "../../mocks/fake-generator";
 import { ListDataSource } from "./list-data-source";
 
 import { ProjectsApiService } from "./projects-api.service";

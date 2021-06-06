@@ -12,7 +12,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MockPipe } from "ng-mocks";
 import { EMPTY, of, Subject } from "rxjs";
 import { ApiKey, ApiKeyListResponse } from "@mlaide/entities/apiKey.model";
-import { SnackbarUiService, UsersApiService } from "src/app/services";
+import { SnackbarUiService, UsersApiService } from "@mlaide/shared/services";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomApiKeys } from "src/app/mocks/fake-generator";
 

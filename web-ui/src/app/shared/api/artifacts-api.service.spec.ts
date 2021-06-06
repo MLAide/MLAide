@@ -7,10 +7,10 @@ import {
   getRandomCreateOrUpdateModel,
   getRandomProject,
 } from "src/app/mocks/fake-generator";
-import { Artifact, ArtifactListResponse, CreateOrUpdateModel } from "../entities/artifact.model";
+import { Artifact, ArtifactListResponse, CreateOrUpdateModel } from "../../entities/artifact.model";
 
 import { ArtifactsApiService } from "./artifacts-api.service";
-import { Project } from "../entities/project.model";
+import { Project } from "../../entities/project.model";
 import { Observable } from "rxjs";
 import { HttpResponse } from "@angular/common/http";
 import { ListDataSource } from "./list-data-source";

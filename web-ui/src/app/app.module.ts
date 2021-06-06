@@ -24,7 +24,6 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { CoreModule } from "@mlaide/core/core.module";
 import { GlobalErrorHandler } from "@mlaide/core/global-error-handler";
 import { UserSettingsModule } from "@mlaide/user-settings/user-settings.module";
-import { ArtifactsApiService, ProjectsApiService, RunsApiService, SnackbarUiService } from "@mlaide/services";
 import { ErrorsModule } from "@mlaide/errors/errors.module";
 
 import { AppRoutingModule } from "./app-routing.module";
@@ -80,12 +79,6 @@ import { StoreRouterConnectingModule } from "@ngrx/router-store";
       provide: ErrorHandler,
       useClass: GlobalErrorHandler,
     },
-
-    ArtifactsApiService,
-    ProjectsApiService,
-    RunsApiService,
-
-    SnackbarUiService,
   ],
   bootstrap: [AppComponent],
 })

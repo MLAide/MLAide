@@ -18,7 +18,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MockPipe } from "ng-mocks";
 import { of } from "rxjs";
 import { ApiKey } from "@mlaide/entities/apiKey.model";
-import { SnackbarUiService, SpinnerUiService, UsersApiService } from "src/app/services";
+import { SnackbarUiService, SpinnerUiService, UsersApiService } from "@mlaide/shared/services";
 import { getRandomApiKey } from "src/app/mocks/fake-generator";
 
 import { CreateApiKeyComponent } from "./create-api-key.component";

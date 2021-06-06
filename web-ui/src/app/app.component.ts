@@ -13,8 +13,7 @@ import { filter, mergeMap } from "rxjs/operators";
 import { AuthService } from "./auth/auth.service";
 import { Project } from "./entities/project.model";
 import { User } from "./entities/user.model";
-import { ProjectsApiService } from "./services/projects-api.service";
-import { UsersApiService } from "./services/users-api.service";
+import { ProjectsApiService, UsersApiService } from "./shared/api";
 
 @Component({
   selector: "app-root",

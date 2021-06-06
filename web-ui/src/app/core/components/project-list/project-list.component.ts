@@ -6,9 +6,10 @@ import { Subscription } from "rxjs";
 import { HttpErrorResponse } from "@angular/common/http";
 import { LocationStrategy } from "@angular/common";
 import { Project, ProjectListResponse } from "@mlaide/entities/project.model";
-import { ListDataSource, ProjectsApiService, SnackbarUiService, SpinnerUiService } from "@mlaide/services";
-import { LoggingService } from "@mlaide/services/logging.service";
+import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
+import { LoggingService } from "@mlaide/shared/services/logging.service";
 import { CreateProjectComponent } from "./create-project/create-project.component";
+import { ListDataSource, ProjectsApiService } from "@mlaide/shared/api";
 
 @Component({
   selector: "app-project-list",

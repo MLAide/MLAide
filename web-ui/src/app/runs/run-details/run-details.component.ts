@@ -3,9 +3,9 @@ import { MatTableDataSource } from "@angular/material/table";
 import { ActivatedRoute } from "@angular/router";
 import { Observable, Subscription } from "rxjs";
 import { ArtifactListResponse } from "@mlaide/entities/artifact.model";
-import { SnackbarUiService } from "@mlaide/services/snackbar-ui.service";
+import { SnackbarUiService } from "@mlaide/shared/services/snackbar-ui.service";
 import { Run, RunMetrics, RunParameter } from "@mlaide/entities/run.model";
-import { ArtifactsApiService, ListDataSource, RunsApiService } from "@mlaide/services";
+import { ArtifactsApiService, ListDataSource, RunsApiService } from "@mlaide/shared/api";
 
 @Component({
   selector: "app-run-details",

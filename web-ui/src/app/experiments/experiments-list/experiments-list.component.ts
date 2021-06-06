@@ -6,8 +6,8 @@ import { ActivatedRoute } from "@angular/router";
 import { Observable, Subscription } from "rxjs";
 import { CreateOrUpdateExperimentComponent } from "../create-or-update-experiment/create-or-update-experiment.component";
 import { Experiment, ExperimentListResponse, ExperimentStatus } from "@mlaide/entities/experiment.model";
-import { ListDataSource, SpinnerUiService } from "@mlaide/services";
-import { ExperimentsApiService } from "@mlaide/services";
+import { SpinnerUiService } from "@mlaide/shared/services";
+import { ExperimentsApiService, ListDataSource } from "@mlaide/shared/api";
 
 @Component({
   selector: "app-experiments-list",

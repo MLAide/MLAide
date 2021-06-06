@@ -4,11 +4,11 @@ import { Observable } from "rxjs";
 import { skip } from "rxjs/operators";
 import { APP_CONFIG } from "src/app/config/app-config.model";
 import { appConfigMock } from "src/app/mocks/app-config.mock";
-import { Experiment } from "../entities/experiment.model";
-import { Project } from "../entities/project.model";
-import { Run, RunListResponse } from "../entities/run.model";
+import { Experiment } from "../../entities/experiment.model";
+import { Project } from "../../entities/project.model";
+import { Run, RunListResponse } from "../../entities/run.model";
 
-import { getRandomExperiment, getRandomProject, getRandomRun, getRandomRuns } from "../mocks/fake-generator";
+import { getRandomExperiment, getRandomProject, getRandomRun, getRandomRuns } from "../../mocks/fake-generator";
 import { ListDataSource } from "./list-data-source";
 
 import { RunsApiService } from "./runs-api.service";

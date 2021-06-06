@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Project } from "@mlaide/entities/project.model";
-import { ProjectsApiService } from "@mlaide/services";
+import { ProjectsApiService } from "@mlaide/shared/api";
 
 @Component({
   selector: "app-project",

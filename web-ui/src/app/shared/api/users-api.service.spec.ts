@@ -1,11 +1,11 @@
 import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@angular/common/http/testing";
 import { skip } from "rxjs/operators";
 import { TestBed } from "@angular/core/testing";
-import { getRandomApiKey, getRandomApiKeys, getRandomUser } from "../mocks/fake-generator";
+import { getRandomApiKey, getRandomApiKeys, getRandomUser } from "../../mocks/fake-generator";
 
 import { UsersApiService } from "./users-api.service";
-import { ApiKey, ApiKeyListResponse } from "../entities/apiKey.model";
-import { User } from "../entities/user.model";
+import { ApiKey, ApiKeyListResponse } from "../../entities/apiKey.model";
+import { User } from "../../entities/user.model";
 import { Observable } from "rxjs";
 import { ListDataSource } from ".";
 import { APP_CONFIG } from "src/app/config/app-config.model";

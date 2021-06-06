@@ -7,8 +7,8 @@ import { Subscription } from "rxjs";
 import { EditModelComponent } from "../edit-model/edit-model.component";
 import { ModelStageLogComponent } from "../model-stage-log/model-stage-log.component";
 import { Artifact, ArtifactListResponse, CreateOrUpdateModel, ModelStage } from "@mlaide/entities/artifact.model";
-import { ArtifactsApiService } from "@mlaide/services/artifacts-api.service";
-import { ListDataSource, SpinnerUiService } from "src/app/services";
+import { ArtifactsApiService, ListDataSource } from "@mlaide/shared/api";
+import { SpinnerUiService } from "@mlaide/shared/services";
 
 @Component({
   selector: "app-models-list",

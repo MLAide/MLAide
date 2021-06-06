@@ -1,8 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { SnackbarUiService } from "@mlaide/services/snackbar-ui.service";
+import { SnackbarUiService } from "@mlaide/shared/services/snackbar-ui.service";
 import { User } from "@mlaide/entities/user.model";
-import { UsersApiService } from "@mlaide/services/users-api.service";
+import { UsersApiService } from "@mlaide/shared/api/users-api.service";
 
 @Component({
   selector: "app-user",
