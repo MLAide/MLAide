@@ -1,7 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import { skip } from "rxjs/operators";
-import "jasmine";
 import {
   getRandomArtifact,
   getRandomArtifacts,

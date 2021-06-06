@@ -8,7 +8,6 @@ import { MatTableModule } from "@angular/material/table";
 import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
-import "jasmine";
 import { MomentModule, TimeAgoPipe } from "ngx-moment";
 import { ProjectsApiService } from "../../../services";
 import { ListDataSourceMock } from "../../../mocks/data-source.mock";

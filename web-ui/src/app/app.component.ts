@@ -8,7 +8,6 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
-import { Router } from "@angular/router";
 import { Observable, Subscription } from "rxjs";
 import { filter, mergeMap } from "rxjs/operators";
 import { AuthService } from "./auth/auth.service";
@@ -37,8 +36,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
     private projectsApiService: ProjectsApiService,
-    private userService: UsersApiService,
-    private router: Router
+    private userService: UsersApiService
   ) {
     this.isAuthenticated$ = this.authService.isAuthenticated$;
     this.isAuthenticatedSubscription = this.isAuthenticated$
@@ -51,8 +49,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       });
 
     this.authService.runInitialLoginSequence();
-
-    console.log(router.config);
   }
 
   login() {

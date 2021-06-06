@@ -8,8 +8,6 @@ import { MatListModule } from "@angular/material/list";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatDrawerHarness } from "@angular/material/sidenav/testing";
 import { MatIconHarness, MatIconTestingModule } from "@angular/material/icon/testing";
-import "jasmine";
-
 import { getRandomProject } from "../../../mocks/fake-generator";
 import { ProjectComponent } from "./project.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";

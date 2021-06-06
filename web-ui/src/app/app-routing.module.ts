@@ -14,7 +14,6 @@ const ROUTES: Routes = [
       anchorScrolling: "enabled",
       onSameUrlNavigation: "reload",
       paramsInheritanceStrategy: "always",
-      enableTracing: true,
     }),
   ],
   exports: [RouterModule],

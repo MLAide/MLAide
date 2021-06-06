@@ -8,7 +8,7 @@ import { ProjectComponent } from "./components/project/project.component";
 
 export const routes: Routes = [
   { path: "home", component: HomeComponent },
-
+  { path: "index.html", redirectTo: "projects" },
   { path: "projects", component: ProjectListComponent, canActivate: [AuthGuard] },
   {
     path: "projects/:projectKey",
