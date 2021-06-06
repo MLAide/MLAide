@@ -381,7 +381,7 @@ describe("AppComponent", () => {
 
         // assert
         const aElement: TestElement = await menuItems[0].host();
-        expect(await aElement.getAttribute("href")).toEqual("/user-settings");
+        expect(await aElement.getAttribute("href")).toEqual("/user-settings/user");
       });
 
       it("should call logout on clicking logout button in user menu", async () => {

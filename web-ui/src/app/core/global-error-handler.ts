@@ -1,5 +1,5 @@
 import { ErrorHandler, Injectable } from "@angular/core";
-import { PathLocationStrategy } from "@angular/common";
+import { LocationStrategy, PathLocationStrategy } from "@angular/common";
 import { ErrorService } from "@mlaide/services/error.service";
 import { LoggingService } from "@mlaide/services/logging.service";
 import { SnackbarUiService } from "@mlaide/services";
@@ -12,15 +12,16 @@ export class GlobalErrorHandler implements ErrorHandler {
   // https://medium.com/angular-in-depth/expecting-the-unexpected-best-practices-for-error-handling-in-angular-21c3662ef9e4
 
   constructor(
-    private errorService: ErrorService,
-    private loggingService: LoggingService,
-    private snackbarUiService: SnackbarUiService
+    private readonly errorService: ErrorService,
+    private readonly loggingService: LoggingService,
+    private readonly snackbarUiService: SnackbarUiService,
+    private readonly locationStrategy: LocationStrategy
   ) {}
 
   handleError(error) {
     let message;
     let stackTrace;
-    const url = location instanceof PathLocationStrategy ? location.path() : "";
+    const url = this.locationStrategy instanceof PathLocationStrategy ? this.locationStrategy.path() : "";
 
     if (error instanceof HttpErrorResponse) {
       // Server error
