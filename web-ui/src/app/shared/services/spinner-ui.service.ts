@@ -20,10 +20,14 @@ export class SpinnerUiService {
   }
 
   public showSpinner() {
-    this.overlayRef.attach(new ComponentPortal(MatSpinner));
+    if (!this.overlayRef.hasAttached()) {
+      this.overlayRef.attach(new ComponentPortal(MatSpinner));
+    }
   }
 
   public stopSpinner() {
-    this.overlayRef.detach();
+    if (this.overlayRef.hasAttached()) {
+      this.overlayRef.detach();
+    }
   }
 }

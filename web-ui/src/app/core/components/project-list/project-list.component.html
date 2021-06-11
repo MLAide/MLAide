@@ -12,7 +12,7 @@
 
   <div fxLayout="row">
     <div fxLayout="column" fxFlexFill>
-      <table mat-table class="mat-elevation-z2" [dataSource]="dataSource" aria-label="Projects overview">
+      <table mat-table class="mat-elevation-z2" [dataSource]="projects$" aria-label="Projects overview">
         <ng-container matColumnDef="name">
           <th id="name" mat-header-cell *matHeaderCellDef i18n>Name</th>
           <td headers="name" mat-cell *matCellDef="let element">

@@ -1,56 +1,33 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
-import { MatTableDataSource } from "@angular/material/table";
 import { Router } from "@angular/router";
-import { Subscription } from "rxjs";
-import { HttpErrorResponse } from "@angular/common/http";
-import { LocationStrategy } from "@angular/common";
-import { Project, ProjectListResponse } from "@mlaide/entities/project.model";
-import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
-import { LoggingService } from "@mlaide/shared/services/logging.service";
+import { Observable } from "rxjs";
 import { CreateProjectComponent } from "./create-project/create-project.component";
-import { ListDataSource, ProjectsApiService } from "@mlaide/shared/api";
+import { Store } from "@ngrx/store";
+import { selectProjects } from "@mlaide/state/project/project.selectors";
+import { addProject, loadProjects } from "@mlaide/state/project/project.actions";
+import { Project } from "@mlaide/state/model";
 
 @Component({
   selector: "app-project-list",
   templateUrl: "./project-list.component.html",
   styleUrls: ["./project-list.component.scss"],
 })
-export class ProjectListComponent implements OnInit, OnDestroy {
+export class ProjectListComponent implements OnInit {
   public title = "Projects Overview";
-  public dataSource: MatTableDataSource<Project> = new MatTableDataSource<Project>();
   public displayedColumns: string[] = ["name", "key", "createdAt"];
 
-  private projectListDataSource: ListDataSource<ProjectListResponse>;
-  private projectListSubscription: Subscription;
+  public projects$: Observable<Project[]> = this.store.select(selectProjects);
 
-  constructor(
-    private dialog: MatDialog,
-    private loggingService: LoggingService,
-    private locationStrategy: LocationStrategy,
-    private projectsApiService: ProjectsApiService,
-    private router: Router,
-    private snackbarUiService: SnackbarUiService,
-    private spinnerUiService: SpinnerUiService
-  ) {}
+  constructor(private dialog: MatDialog, private router: Router, private readonly store: Store) {}
+
+  public ngOnInit() {
+    this.store.dispatch(loadProjects());
+  }
 
   goToProject(project: Project) {
     const projectUrl = `/projects/${project.key}`;
     this.router.navigateByUrl(projectUrl);
-  }
-
-  ngOnDestroy() {
-    if (this.projectListSubscription) {
-      this.projectListSubscription.unsubscribe();
-      this.projectListSubscription = null;
-    }
-  }
-
-  ngOnInit() {
-    this.projectListDataSource = this.projectsApiService.getProjects();
-    this.projectListSubscription = this.projectListDataSource.items$.subscribe(
-      (projects) => (this.dataSource.data = projects.items)
-    );
   }
 
   openCreateProjectDialog(): void {
@@ -69,34 +46,6 @@ export class ProjectListComponent implements OnInit, OnDestroy {
   }
 
   private createNewProject(project: Project) {
-    this.spinnerUiService.showSpinner();
-
-    const createProjectObservable = this.projectsApiService.addProject(project);
-
-    const subscription = createProjectObservable.subscribe(
-      () => {
-        subscription.unsubscribe();
-        this.spinnerUiService.stopSpinner();
-
-        this.projectListDataSource.refresh();
-      },
-      (error) => {
-        if (error instanceof HttpErrorResponse) {
-          if (error.status === 400) {
-            this.loggingService.logError(error.message, this.locationStrategy.path(), JSON.stringify(error));
-            this.snackbarUiService.showErrorSnackbar(
-              "The project could not be created, because of invalid input data. Please try again with valid input data."
-            );
-          }
-          if (error.status === 409) {
-            this.snackbarUiService.showErrorSnackbar(
-              "A project with this key already exists. Please choose a different project key."
-            );
-          }
-        }
-        subscription.unsubscribe();
-        this.spinnerUiService.stopSpinner();
-      }
-    );
+    this.store.dispatch(addProject({ project }));
   }
 }

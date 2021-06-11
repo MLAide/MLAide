@@ -8,6 +8,7 @@ import {
   OnInit,
   ViewChild,
 } from "@angular/core";
+import { Store } from "@ngrx/store";
 import { Observable, Subscription } from "rxjs";
 import { filter, mergeMap } from "rxjs/operators";
 import { AuthService } from "./auth/auth.service";
