@@ -17,13 +17,14 @@ import { EMPTY, Observable, of, Subject, Subscription } from "rxjs";
 import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
 import { Project } from "@mlaide/entities/project.model";
 import { Run } from "@mlaide/entities/run.model";
-import { ArtifactsApiService, RunsApiService, SnackbarUiService } from "@mlaide/shared/services";
+import { SnackbarUiService } from "@mlaide/shared/services";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomArtifacts, getRandomProject, getRandomRun } from "src/app/mocks/fake-generator";
 import { DurationPipe } from "../../shared/pipes/duration.pipe";
 import { ArtifactsTreeComponent } from "../artifacts-tree/artifacts-tree.component";
 import { RunDetailsComponent } from "./run-details.component";
 import { RunStatusI18nComponent } from "src/app/shared/components/run-status-i18n/run-status-i18n.component";
+import { ArtifactsApiService, RunsApiService } from "@mlaide/shared/api";
 
 describe("RunDetailsComponent", () => {
   let component: RunDetailsComponent;

@@ -15,7 +15,6 @@ import { Observable, Subscription } from "rxjs";
 import { Experiment, ExperimentListResponse } from "@mlaide/entities/experiment.model";
 import { Project } from "@mlaide/entities/project.model";
 import { SpinnerUiService } from "@mlaide/shared/services";
-import { ExperimentsApiService } from "@mlaide/shared/services";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomExperiments, getRandomProject } from "src/app/mocks/fake-generator";
 import { ExperimentStatusI18nComponent } from "../experiment-status-i18n/experiment-status-i18n.component";
@@ -23,6 +22,7 @@ import { ExperimentStatusI18nComponent } from "../experiment-status-i18n/experim
 import { ExperimentsListComponent } from "./experiments-list.component";
 import { MatSortModule } from "@angular/material/sort";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { ExperimentsApiService } from "@mlaide/shared/api";
 
 describe("ExperimentsListComponent", () => {
   let component: ExperimentsListComponent;

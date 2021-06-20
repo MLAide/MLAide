@@ -8,14 +8,16 @@ import { hideSpinner, showSpinner } from "../shared/spinner.actions";
 import {
   addProject,
   addProjectFailed,
-  addProjectSucceeded, closeCreateProjectDialog,
+  addProjectSucceeded, 
+  closeCreateProjectDialog,
   loadProjects,
   loadProjectsFailed,
-  loadProjectsSucceeded, openCreateProjectDialog
+  loadProjectsSucceeded, 
+  openCreateProjectDialog
 } from "./project.actions";
 import { ProjectApi } from "./project.api";
 import { MatDialog } from "@angular/material/dialog";
-import { CreateProjectComponent } from "@mlaide/core/components/project-list/create-project/create-project.component";
+import { CreateProjectComponent } from "@mlaide/core/components/create-project/create-project.component";
 
 @Injectable({ providedIn: "root" })
 export class ProjectEffects {

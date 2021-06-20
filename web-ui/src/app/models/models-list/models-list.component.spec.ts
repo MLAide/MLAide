@@ -13,12 +13,13 @@ import { ActivatedRoute, ParamMap } from "@angular/router";
 import { Observable, Subscription } from "rxjs";
 import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
 import { Project } from "@mlaide/entities/project.model";
-import { ArtifactsApiService, SpinnerUiService } from "@mlaide/shared/services";
+import { SpinnerUiService } from "@mlaide/shared/services";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
 import { ModelStageI18nComponent } from "../../shared/components/model-stage-i18n/model-stage-i18n.component";
 
 import { ModelsListComponent } from "./models-list.component";
+import { ArtifactsApiService } from "@mlaide/shared/api";
 
 describe("ModelsListComponent", () => {
   let component: ModelsListComponent;

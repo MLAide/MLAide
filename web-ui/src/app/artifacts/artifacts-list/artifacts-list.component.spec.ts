@@ -4,12 +4,12 @@ import { MockComponent } from "ng-mocks";
 import { Observable, Subscription } from "rxjs";
 import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
 import { Project } from "@mlaide/entities/project.model";
-import { ArtifactsApiService } from "@mlaide/shared/services";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomProject } from "src/app/mocks/fake-generator";
 
 import { ArtifactsListComponent } from "./artifacts-list.component";
 import { ArtifactsListTableComponent } from "@mlaide/shared/components/artifacts-list-table/artifacts-list-table.component";
+import { ArtifactsApiService } from "@mlaide/shared/api";
 
 describe("ArtifactsListComponent", () => {
   let component: ArtifactsListComponent;

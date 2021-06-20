@@ -12,11 +12,12 @@ import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { EMPTY, Observable, of, Subject, Subscription } from "rxjs";
 import { Project } from "@mlaide/entities/project.model";
 import { ProjectMember, ProjectMemberListResponse, ProjectMemberRole } from "@mlaide/entities/projectMember.model";
-import { ProjectsApiService, SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
+import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomProject, getRandomProjectMember, getRandomProjectMembers } from "src/app/mocks/fake-generator";
 import { ProjectSettingsComponent } from "./project-settings.component";
 import { ProjectMemberRoleI18nComponent } from "src/app/shared/components/project-member-role-i18n/project-member-role-i18n.component";
+import { ProjectsApiService } from "@mlaide/shared/api";
 
 describe("ProjectSettingsComponent", () => {
   let component: ProjectSettingsComponent;

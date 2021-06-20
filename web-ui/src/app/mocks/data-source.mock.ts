@@ -1,5 +1,5 @@
+import { ListDataSource } from "@mlaide/shared/api";
 import { BehaviorSubject, Observable } from "rxjs";
-import { ListDataSource } from "../shared/services";
 
 export class ListDataSourceMock<TEntity, TListResponse> implements ListDataSource<TListResponse> {
   private itemsToEmulate: TEntity[] = [];

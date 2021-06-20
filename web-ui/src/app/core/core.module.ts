@@ -27,7 +27,7 @@ import { CdkTreeModule } from "@angular/cdk/tree";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
 import { CoreRoutingModule } from "./core-routing.module";
-import { CreateProjectComponent } from "./components/project-list/create-project/create-project.component";
+import { CreateProjectComponent } from "./components/create-project/create-project.component";
 import { HomeComponent } from "./components/home/home.component";
 import { ProjectListComponent } from "./components/project-list/project-list.component";
 import { ProjectComponent } from "./components/project/project.component";
