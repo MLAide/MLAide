@@ -12,9 +12,7 @@ import { Project } from "@mlaide/state/model";
   styleUrls: ["./project-list.component.scss"],
 })
 export class ProjectListComponent implements OnInit {
-  public title = "Projects Overview";
   public displayedColumns: string[] = ["name", "key", "createdAt"];
-
   public projects$: Observable<Project[]> = this.store.select(selectProjects);
 
   constructor(private router: Router, private readonly store: Store) {}
