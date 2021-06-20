@@ -468,9 +468,9 @@ describe("RunDetailsComponent", () => {
           expect(value.textContent).toEqual("-");
         });
 
-        it("should contain experiments label and value", async () => {
+        it("should contain experiment label and value", async () => {
           // arrange + act also in beforeEach
-          let label: HTMLElement = fixture.nativeElement.querySelector("#experiments-label");
+          let label: HTMLElement = fixture.nativeElement.querySelector("#experiment-label");
           const chipLists: MatChipListHarness[] = await loader.getAllHarnesses(MatChipListHarness);
           const chips: MatChipHarness[] = await chipLists[0].getChips();
 
@@ -607,7 +607,7 @@ describe("RunDetailsComponent", () => {
     runsApiServiceStub = jasmine.createSpyObj("runsApiService", ["getRun", "updateNoteInRun"]);
     snackBarUiServiceStub = jasmine.createSpyObj("snackBarUiService", ["showSuccesfulSnackbar", "showErrorSnackbar"]);
 
-    // setup experiments fakes
+    // setup experiment fakes
     fakeArtifacts = await getRandomArtifacts(3);
     fakeRun = await getRandomRun();
     fakeProject = await getRandomProject();

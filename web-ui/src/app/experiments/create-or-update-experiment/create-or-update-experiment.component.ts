@@ -4,6 +4,12 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatChipInputEvent } from "@angular/material/chips";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Experiment, ExperimentStatus } from "@mlaide/entities/experiment.model";
+import { Store } from "@ngrx/store";
+import {
+  addExperiment,
+  closeAddOrEditExperimentDialog,
+  editExperiment
+} from "@mlaide/state/experiment/experiment.actions";
 
 @Component({
   selector: "app-create-or-update-experiment",
@@ -16,7 +22,7 @@ export class CreateOrUpdateExperimentComponent {
   public experimentStatus = ExperimentStatus;
 
   public form: FormGroup;
-  public keyReadonly: boolean;
+  public isEditMode: boolean;
   public removable = true;
   public selectable = true;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
@@ -24,14 +30,15 @@ export class CreateOrUpdateExperimentComponent {
   public visible = true;
 
   constructor(
+    private store: Store,
     private dialogRef: MatDialogRef<CreateOrUpdateExperimentComponent>,
     private formBuilder: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: { experiment: Experiment; keyReadonly: boolean; title: string }
+    @Inject(MAT_DIALOG_DATA) public data: { experiment: Experiment; isEditMode: boolean; title: string }
   ) {
     // We need to do this, otherwise the changes in the dialog are also visible in the table
     this.tags = Object.assign([], data.experiment.tags);
     this.currentStatus = data.experiment.status;
-    this.keyReadonly = data.keyReadonly;
+    this.isEditMode = data.isEditMode;
 
     this.form = this.formBuilder.group({
       name: [data.experiment.name, { validators: [Validators.required], updateOn: "change" }],
@@ -41,7 +48,7 @@ export class CreateOrUpdateExperimentComponent {
     });
 
     this.form.get("name").valueChanges.subscribe((newName: string) => {
-      if (newName && !this.keyReadonly) {
+      if (newName && !this.isEditMode) {
         const newKey = newName.split(" ").join("-").toLowerCase();
         this.form.get("key").setValue(newKey);
       }
@@ -68,7 +75,8 @@ export class CreateOrUpdateExperimentComponent {
   }
 
   public cancel() {
-    this.dialogRef.close();
+    this.store.dispatch(closeAddOrEditExperimentDialog());
+    // this.dialogRef.close();
   }
 
   public remove(tag: string): void {
@@ -94,6 +102,12 @@ export class CreateOrUpdateExperimentComponent {
 
   public save() {
     this.form.get("tags").setValue(this.tags);
-    this.dialogRef.close(this.form.value);
+
+    if (this.isEditMode) {
+      this.store.dispatch(editExperiment(this.form.value));
+    } else {
+      this.store.dispatch(addExperiment(this.form.value));
+    }
+    // this.dialogRef.close(this.form.value);
   }
 }

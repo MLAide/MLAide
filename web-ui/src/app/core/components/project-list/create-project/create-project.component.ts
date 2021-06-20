@@ -1,8 +1,10 @@
 import { Component, Inject } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { Project } from "../../../../entities/project.model";
 import { ENTER } from "@angular/cdk/keycodes";
+import { Store } from "@ngrx/store";
+import { Project } from "@mlaide/entities/project.model";
+import { addProject, closeCreateProjectDialog } from "@mlaide/state/project/project.actions";
 
 @Component({
   selector: "app-create-project",
@@ -13,6 +15,7 @@ export class CreateProjectComponent {
   public form: FormGroup;
 
   constructor(
+    private store: Store,
     private dialogRef: MatDialogRef<CreateProjectComponent>,
     private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) data: Project
@@ -43,11 +46,11 @@ export class CreateProjectComponent {
   }
 
   public cancel() {
-    this.dialogRef.close();
+    this.store.dispatch(closeCreateProjectDialog());
   }
 
   public create() {
-    this.dialogRef.close(this.form.value);
+    this.store.dispatch(addProject(this.form.value));
   }
 
   public keyDown(event) {

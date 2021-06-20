@@ -104,7 +104,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
       // arrange + act in beforeEach
 
       // assert
-      expect(component.keyReadonly).toEqual(formData.keyReadonly);
+      expect(component.isEditMode).toEqual(formData.keyReadonly);
     });
 
     it("should init form group with provided experiment", async () => {
@@ -169,7 +169,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
       // arrange in beforeEac
       const nameControl: AbstractControl = component.form.get("name");
       const keyControl: AbstractControl = component.form.get("key");
-      component.keyReadonly = false;
+      component.isEditMode = false;
 
       // act
       nameControl.patchValue("This is a new experiment name");
@@ -182,7 +182,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
       // arrange in beforeEac
       const nameControl: AbstractControl = component.form.get("name");
       const keyControl: AbstractControl = component.form.get("key");
-      component.keyReadonly = true;
+      component.isEditMode = true;
 
       // act
       nameControl.patchValue("This is a new experiment name");
@@ -490,7 +490,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
         const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.key }));
 
         // act
-        component.keyReadonly = true;
+        component.isEditMode = true;
 
         // assert
         expect(await input.isReadonly()).toBeTruthy();
@@ -502,7 +502,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
         const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.key }));
 
         // act
-        component.keyReadonly = false;
+        component.isEditMode = false;
 
         // assert
         expect(await input.isReadonly()).toBeFalsy();
@@ -575,7 +575,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
           );
 
           // act
-          component.keyReadonly = true;
+          component.isEditMode = true;
 
           // assert
           expect(await cancelButton.getText()).toEqual("Update");
@@ -589,7 +589,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
             })
           );
 
-          component.keyReadonly = false;
+          component.isEditMode = false;
 
           // assert
           expect(await cancelButton.getText()).toEqual("Create");

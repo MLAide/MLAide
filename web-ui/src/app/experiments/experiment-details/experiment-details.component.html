@@ -1,12 +1,12 @@
 <div fxLayout="column" fxLayoutAlign="space-between start">
-  <h1 class="mat-display-2">{{ experiment?.name }}</h1>
+  <h1 class="mat-display-2">{{ (experiment | async)?.name }}</h1>
 </div>
 <div fxLayout="column">
   <h2 class="mat-h2" i18n>Graph</h2>
 </div>
 <div fxLayout="row" fxLayoutAlign="space-between center">
   <span id="experiment-graph-header-description" class="mat-body" i18n>
-    This graph shows the connections between runs and artifacts within the experiment <em>{{ experiment?.name }}</em>
+    This graph shows the connections between runs and artifacts within the experiment <em>{{ (experiment | async)?.name }}</em>
   </span>
   <div fxLayout="row" role="Legend for below experiment lineage">
     <div fxLayout="row" class="margin-right-sm">

@@ -49,7 +49,7 @@ describe("ExperimentsListComponent", () => {
     spinnerUiServiceStub = jasmine.createSpyObj("spinnerUiService", ["showSpinner", "stopSpinner"]);
 
     // arrange fakes & stubs
-    // setup experiments fakes
+    // setup experiment fakes
     fakeProject = await getRandomProject();
     fakeExperiments = await getRandomExperiments(3);
 
@@ -62,7 +62,7 @@ describe("ExperimentsListComponent", () => {
       return paramMapSubscription;
     });
 
-    // setup experiments api
+    // setup experiment api
     experimentsApiServiceStub.getExperiments.withArgs(fakeProject.key).and.returnValue(experimentListDataSourceMock);
     experimentListDataSourceMock.emulate(fakeExperiments);
 
@@ -108,7 +108,7 @@ describe("ExperimentsListComponent", () => {
   });
 
   describe("ngOnInit", () => {
-    it("should load experiments with projectKey defined in active route", async () => {
+    it("should load experiment with projectKey defined in active route", async () => {
       // arrange + act in beforeEach
 
       // assert
@@ -116,7 +116,7 @@ describe("ExperimentsListComponent", () => {
       expect(experimentsApiServiceStub.getExperiments).toHaveBeenCalledWith(fakeProject.key);
     });
 
-    it("should load all experiments of the current project", async () => {
+    it("should load all experiment of the current project", async () => {
       // arrange + act in beforeEach
 
       // assert
@@ -165,8 +165,8 @@ describe("ExperimentsListComponent", () => {
       });
     });
 
-    describe("experiments table", () => {
-      it("should contain the experiments table", () => {
+    describe("experiment table", () => {
+      it("should contain the experiment table", () => {
         // arrange + act also in beforeEach
         let table: HTMLElement = fixture.nativeElement.querySelector("table");
 
@@ -220,13 +220,13 @@ describe("ExperimentsListComponent", () => {
         // assert
         expect(links.length).toBe(3);
         expect(ngMocks.input(links[0], "routerLink")).toEqual([
-          "/projects/" + fakeProject.key + "/experiments/" + fakeExperiments[0].key,
+          "/projects/" + fakeProject.key + "/experiment/" + fakeExperiments[0].key,
         ]);
         expect(ngMocks.input(links[1], "routerLink")).toEqual([
-          "/projects/" + fakeProject.key + "/experiments/" + fakeExperiments[1].key,
+          "/projects/" + fakeProject.key + "/experiment/" + fakeExperiments[1].key,
         ]);
         expect(ngMocks.input(links[2], "routerLink")).toEqual([
-          "/projects/" + fakeProject.key + "/experiments/" + fakeExperiments[2].key,
+          "/projects/" + fakeProject.key + "/experiment/" + fakeExperiments[2].key,
         ]);
       });
 

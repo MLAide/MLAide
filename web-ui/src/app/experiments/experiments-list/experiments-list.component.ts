@@ -1,13 +1,15 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
-import { ActivatedRoute } from "@angular/router";
-import { Observable, Subscription } from "rxjs";
-import { CreateOrUpdateExperimentComponent } from "../create-or-update-experiment/create-or-update-experiment.component";
-import { Experiment, ExperimentListResponse, ExperimentStatus } from "@mlaide/entities/experiment.model";
-import { SpinnerUiService } from "@mlaide/shared/services";
-import { ExperimentsApiService, ListDataSource } from "@mlaide/shared/api";
+import {  Subscription } from "rxjs";
+import { Experiment, ExperimentStatus } from "@mlaide/entities/experiment.model";
+import { Store } from "@ngrx/store";
+import {
+  loadExperiments,
+  openAddOrEditExperimentDialog
+} from "@mlaide/state/experiment/experiment.actions";
+import { selectExperiments } from "@mlaide/state/experiment/experiment.selectors";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 
 @Component({
   selector: "app-experiments-list",
@@ -18,27 +20,17 @@ export class ExperimentsListComponent implements OnInit, OnDestroy, AfterViewIni
   public dataSource: MatTableDataSource<Experiment> = new MatTableDataSource<Experiment>();
   public displayedColumns: string[] = ["key", "name", "status", "tags", "actions"];
 
-  public experimentStatus = ExperimentStatus;
   public projectKey: string;
   @ViewChild(MatSort) public sort: MatSort;
-  private experimentListDataSource: ListDataSource<ExperimentListResponse>;
   private experimentListSubscription: Subscription;
-  private routeParamsSubscription: any;
 
-  constructor(
-    private dialog: MatDialog,
-    private experimentsApiService: ExperimentsApiService,
-    private route: ActivatedRoute,
-    private spinnerUiService: SpinnerUiService
-  ) {}
+  constructor(private store: Store) {}
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
   }
 
   ngOnDestroy() {
-    this.routeParamsSubscription.unsubscribe();
-
     if (this.experimentListSubscription) {
       this.experimentListSubscription.unsubscribe();
       this.experimentListSubscription = null;
@@ -46,83 +38,31 @@ export class ExperimentsListComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   ngOnInit() {
-    this.routeParamsSubscription = this.route.params.subscribe((params) => {
-      this.projectKey = params.projectKey;
-      this.experimentListDataSource = this.experimentsApiService.getExperiments(this.projectKey);
-      this.experimentListSubscription = this.experimentListDataSource.items$.subscribe((experiments) => {
-        this.dataSource.data = experiments.items;
-      });
-    });
+    this.store.dispatch(loadExperiments());
+
+    this.experimentListSubscription = this.store.select(selectExperiments).subscribe((experiments) => this.dataSource.data = experiments);
+
+    this.store.select(selectCurrentProjectKey).subscribe((projectKey) => this.projectKey = projectKey);
   }
 
   openCreateExperimentDialog(): void {
-    const dialogRef = this.dialog.open(CreateOrUpdateExperimentComponent, {
-      minWidth: "20%",
-      data: {
-        title: "Add Experiment",
-        experiment: {
-          name: "",
-          key: "",
-          tags: [],
-          status: ExperimentStatus.TODO,
-        },
-        keyEditable: true,
+    this.store.dispatch(openAddOrEditExperimentDialog({
+      title: "Add Experiment",
+      experiment: {
+        name: "",
+        key: "",
+        tags: [],
+        status: ExperimentStatus.TODO,
       },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.createNewExperiment(result);
-      }
-    });
+      isEditMode: false
+    }));
   }
 
   openEditExperimentDialog(experiment: Experiment) {
-    const dialogRef = this.dialog.open(CreateOrUpdateExperimentComponent, {
-      minWidth: "20%",
-      data: {
-        title: "Edit Experiment",
-        experiment,
-        keyReadonly: true,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.editExperiment(result);
-      }
-    });
-  }
-
-  private createNewExperiment(experiment: Experiment) {
-    this.spinnerUiService.showSpinner();
-
-    const createExperimentObservable = this.experimentsApiService.addExperiment(this.projectKey, experiment);
-
-    this.createOrEditExperiment(createExperimentObservable);
-  }
-
-  private editExperiment(experiment: Experiment) {
-    this.spinnerUiService.showSpinner();
-
-    const editExperimentObservable = this.experimentsApiService.patchExperiment(this.projectKey, experiment.key, experiment);
-
-    this.createOrEditExperiment(editExperimentObservable);
-  }
-
-  private createOrEditExperiment(observable: Observable<Experiment>) {
-    const subscription = observable.subscribe(
-      (response: any) => {
-        subscription.unsubscribe();
-        this.spinnerUiService.stopSpinner();
-
-        this.experimentListDataSource.refresh();
-      },
-      (error) => {
-        console.error(error);
-        subscription.unsubscribe();
-        this.spinnerUiService.stopSpinner();
-      }
-    );
+    this.store.dispatch(openAddOrEditExperimentDialog({
+      title: "Edit Experiment",
+      experiment: experiment,
+      isEditMode: true
+    }));
   }
 }

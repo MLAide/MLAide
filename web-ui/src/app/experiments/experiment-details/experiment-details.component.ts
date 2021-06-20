@@ -1,11 +1,15 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { Subscription } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { ArtifactListResponse } from "@mlaide/entities/artifact.model";
 import { Experiment } from "../../entities/experiment.model";
 import { Run, RunListResponse } from "@mlaide/entities/run.model";
 import { GraphEdge, GraphNode, LineageGraphUiService } from "@mlaide/shared/services";
 import { ArtifactsApiService, ExperimentsApiService, ListDataSource, RunsApiService } from "@mlaide/shared/api";
+import { Store } from "@ngrx/store";
+import { loadExperiment, loadExperiments } from "@mlaide/state/experiment/experiment.actions";
+import { selectCurrentExperiment } from "@mlaide/state/experiment/experiment.selectors";
+import { loadRunsForExperiment } from "@mlaide/state/run/run.actions";
 
 @Component({
   selector: "app-experiment-details",
@@ -16,7 +20,7 @@ export class ExperimentDetailsComponent implements OnInit, OnDestroy {
   @ViewChild("experimentGraph")
   public experimentGraphSvg: ElementRef;
   public artifactListDataSource: ListDataSource<ArtifactListResponse>;
-  public experiment: Experiment;
+  public experiment: Observable<Experiment>;
   public projectKey: string;
   public runListDataSource: ListDataSource<RunListResponse>;
   public runs: Run[];
@@ -26,6 +30,7 @@ export class ExperimentDetailsComponent implements OnInit, OnDestroy {
   private runListSubscription: Subscription;
 
   constructor(
+private store: Store,
     private artifactsApiService: ArtifactsApiService,
     private experimentsApiService: ExperimentsApiService,
     private route: ActivatedRoute,
@@ -46,14 +51,14 @@ export class ExperimentDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.store.dispatch(loadExperiment());
+    this.experiment = this.store.select(selectCurrentExperiment);
+
+    this.store.dispatch(loadRunsForExperiment());
+
     this.routeSubscription = this.route.params.subscribe((params) => {
       this.projectKey = params.projectKey;
       this.experimentKey = params.experimentKey;
-
-      // get experiment
-      this.experimentsApiService.getExperiment(this.projectKey, this.experimentKey).subscribe((experiment) => {
-        this.experiment = experiment;
-      });
 
       // get runs
       this.runListDataSource = this.runsApiService.getRunsByExperimentKey(this.projectKey, this.experimentKey);

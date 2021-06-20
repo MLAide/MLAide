@@ -288,7 +288,7 @@ describe("ExperimentDetailsComponent", () => {
     runsApiServiceStub = jasmine.createSpyObj("runsApiService", ["getRunsByExperimentKey"]);
 
     // arrange fakes & stubs
-    // setup experiments fakes
+    // setup experiment fakes
     fakeProject = await getRandomProject();
     fakeExperiment = await getRandomExperiment();
 
@@ -301,7 +301,7 @@ describe("ExperimentDetailsComponent", () => {
       return paramMapSubscription;
     });
 
-    // setup experiments api
+    // setup experiment api
     experimentsApiServiceStub.getExperiment.and.returnValue(of(fakeExperiment));
 
     // setup runs api

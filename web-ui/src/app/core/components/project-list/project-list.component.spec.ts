@@ -155,7 +155,7 @@ describe("ProjectListComponent", () => {
         });
       });
 
-      it("should navigate to project experiments page on clicking the project button", async () => {
+      it("should navigate to project experiment page on clicking the project button", async () => {
         // arrange data for projects table
         const projects = [{ key: "my-project", name: "My Project", createdAt: new Date() }];
         projectListDataSourceMock.emulate(projects);

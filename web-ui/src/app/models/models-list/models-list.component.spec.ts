@@ -53,7 +53,7 @@ describe("ModelsListComponent", () => {
     spinnerUiServiceStub = jasmine.createSpyObj("spinnerUiService", ["showSpinner", "stopSpinner"]);
 
     // arrange fakes & stubs
-    // setup experiments fakes
+    // setup experiment fakes
     fakeProject = await getRandomProject();
     fakeArtifacts = await getRandomArtifacts(3);
 

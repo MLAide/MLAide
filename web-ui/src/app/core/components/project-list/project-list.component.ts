@@ -2,10 +2,9 @@ import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
 import { Observable } from "rxjs";
-import { CreateProjectComponent } from "./create-project/create-project.component";
 import { Store } from "@ngrx/store";
 import { selectProjects } from "@mlaide/state/project/project.selectors";
-import { addProject, loadProjects } from "@mlaide/state/project/project.actions";
+import { loadProjects, openCreateProjectDialog } from "@mlaide/state/project/project.actions";
 import { Project } from "@mlaide/state/model";
 
 @Component({
@@ -25,27 +24,12 @@ export class ProjectListComponent implements OnInit {
     this.store.dispatch(loadProjects());
   }
 
-  goToProject(project: Project) {
+  async goToProject(project: Project) {
     const projectUrl = `/projects/${project.key}`;
-    this.router.navigateByUrl(projectUrl);
+    await this.router.navigateByUrl(projectUrl);
   }
 
   openCreateProjectDialog(): void {
-    const dialogRef = this.dialog.open(CreateProjectComponent, {
-      data: {
-        key: "",
-        name: "",
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.createNewProject(result);
-      }
-    });
-  }
-
-  private createNewProject(project: Project) {
-    this.store.dispatch(addProject({ project }));
+    this.store.dispatch(openCreateProjectDialog());
   }
 }

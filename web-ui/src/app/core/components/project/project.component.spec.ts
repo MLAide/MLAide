@@ -112,7 +112,7 @@ describe("ProjectComponent", () => {
         expect(sideNavLinks.length).toBe(5);
       });
 
-      it("should contain experiments link with icon science and text Experiments and href /projects/project.key/experiments", async () => {
+      it("should contain experiment link with icon science and text Experiments and href /projects/project.key/experiment", async () => {
         const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
         const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
         const link: MatNavListItemHarness = sideNavLinks[0];

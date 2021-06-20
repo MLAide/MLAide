@@ -13,7 +13,7 @@
     <div>
       <mat-form-field fxFlex="100">
         <mat-label i18n>Experiment key</mat-label>
-        <input matInput [readonly]="keyReadonly" formControlName="key" placeholder="Experiment key" required />
+        <input matInput [readonly]="isEditMode" formControlName="key" placeholder="Experiment key" required />
         <mat-error *ngIf="form.get('key').hasError('required')" i18n> You must provide an experiment key. </mat-error>
       </mat-form-field>
     </div>
@@ -74,7 +74,7 @@
       aria-label="Button to save a new or updates in an experiment"
       i18n
     >
-      {{ keyReadonly ? "Update" : "Create" }}
+      {{ isEditMode ? "Update" : "Create" }}
     </button>
   </mat-dialog-actions>
 </div>
