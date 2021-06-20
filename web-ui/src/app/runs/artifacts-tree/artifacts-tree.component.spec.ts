@@ -14,11 +14,11 @@ import { FileSaverService } from "ngx-filesaver";
 import { of } from "rxjs";
 import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
 import { Project } from "@mlaide/entities/project.model";
-import { ArtifactsApiService } from "@mlaide/shared/services";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
 
 import { ArtifactsTreeComponent, FileNode, FlatTreeNode } from "./artifacts-tree.component";
+import { ArtifactsApiService } from "@mlaide/shared/api";
 
 describe("ArtifactsTreeComponent", () => {
   let component: ArtifactsTreeComponent;

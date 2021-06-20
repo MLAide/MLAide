@@ -13,11 +13,11 @@ import { ProjectComponent } from "./project.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
-import { ProjectsApiService } from "../../../shared/services";
 import { Project } from "../../../entities/project.model";
 import { Observable, of, Subscription } from "rxjs";
 import { RouterTestingModule } from "@angular/router/testing";
 import { MatButtonHarness } from "@angular/material/button/testing";
+import { ProjectsApiService } from "@mlaide/shared/api";
 
 describe("ProjectComponent", () => {
   let component: ProjectComponent;

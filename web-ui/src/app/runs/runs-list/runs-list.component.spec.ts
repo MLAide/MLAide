@@ -4,11 +4,11 @@ import { MockComponent } from "ng-mocks";
 import { Observable, Subscription } from "rxjs";
 import { Project } from "@mlaide/entities/project.model";
 import { Run, RunListResponse } from "@mlaide/entities/run.model";
-import { RunsApiService } from "@mlaide/shared/services";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomProject } from "src/app/mocks/fake-generator";
 import { RunsListComponent } from "./runs-list.component";
 import { RunsListTableComponent } from "src/app/shared/components/runs-list-table/runs-list-table.component";
+import { RunsApiService } from "@mlaide/shared/api";
 
 describe("RunsListComponent", () => {
   let component: RunsListComponent;

@@ -1,6 +1,6 @@
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
-import { ComponentFixture, ComponentFixtureAutoDetect, TestBed } from "@angular/core/testing";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatButtonHarness } from "@angular/material/button/testing";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDialogModule } from "@angular/material/dialog";
@@ -9,51 +9,36 @@ import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableH
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
 import { MomentModule, TimeAgoPipe } from "ngx-moment";
-import { ProjectsApiService } from "../../../shared/services";
-import { ListDataSourceMock } from "../../../mocks/data-source.mock";
 import { ProjectListComponent } from "./project-list.component";
-import { Project, ProjectListResponse } from "../../../entities/project.model";
+import { Project } from "../../../entities/project.model";
 import { getRandomProjects } from "src/app/mocks/fake-generator";
 import { MockPipe } from "ng-mocks";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { provideMockStore, MockStore } from '@ngrx/store/testing';
+import { AppState } from "@mlaide/state/app.state";
+import { openCreateProjectDialog } from "@mlaide/state/project/project.actions";
 
 describe("ProjectListComponent", () => {
   let component: ProjectListComponent;
   let fixture: ComponentFixture<ProjectListComponent>;
   let loader: HarnessLoader;
 
-  // fakes
-  let fakeProjects: Project[];
-
   const routerSpy = jasmine.createSpyObj("Router", ["navigateByUrl"]);
-
-  // service stubs
-  let projectsApiServiceStub: jasmine.SpyObj<ProjectsApiService>;
-
-  // data source mocks
-  let projectListDataSourceMock: ListDataSourceMock<Project, ProjectListResponse> = new ListDataSourceMock();
+  let store: MockStore;
 
   beforeEach(async () => {
-    // stub services
-    projectsApiServiceStub = jasmine.createSpyObj("projectApiService", ["getProjects"]);
+    const initialState = createAppState([]);
 
-    // setup project fakes
-    fakeProjects = await getRandomProjects(3);
-
-    // setup project api
-    projectsApiServiceStub.getProjects.and.returnValue(projectListDataSourceMock);
-    projectListDataSourceMock.emulate(fakeProjects);
-
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [ProjectListComponent, MockPipe(TimeAgoPipe, (v) => String(v))],
       providers: [
-        // For auto detecting changes, e.g. the title - https://angular.io/guide/testing-components-scenarios
-        { provide: ComponentFixtureAutoDetect, useValue: true },
-        { provide: ProjectsApiService, useValue: projectsApiServiceStub },
         { provide: Router, useValue: routerSpy },
+        provideMockStore({ initialState })
       ],
       imports: [BrowserAnimationsModule, MatButtonModule, MatDialogModule, MatSnackBarModule, MatTableModule, MomentModule],
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
   });
 
   beforeEach(() => {
@@ -64,30 +49,17 @@ describe("ProjectListComponent", () => {
     fixture.detectChanges();
   });
 
-  afterEach(() => {
-    projectListDataSourceMock.emulate([]);
-  });
-
   it("should create", () => {
     expect(component).toBeTruthy();
   });
 
-  describe("ngOnInit", () => {
-    it("should set datasource to loaded projects", async () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(component.dataSource.data).toBe(fakeProjects);
-    });
-  });
-
   describe("component rendering", () => {
     it("should contain components title", async () => {
-      // arrange + act also in beforeEach
-      let h1: HTMLElement = fixture.nativeElement.querySelector("h1");
+      // arrange
+      const h1: HTMLElement = fixture.nativeElement.querySelector("h1");
 
       // assert
-      expect(h1.textContent).toEqual(component.title);
+      expect(h1.textContent).toEqual("Projects Overview");
     });
 
     describe("add projects", () => {
@@ -101,19 +73,16 @@ describe("ProjectListComponent", () => {
         expect(addProjectsButton.textContent).toContain(addProjectButtonTitle);
       });
 
-      it("should call openCreateProjectDialog on clicking the add project button", async () => {
+      it("should dispatch openCreateProjectDialog action on clicking the add project button", async () => {
         // arrange
-        spyOn(component, "openCreateProjectDialog");
-
+        const dispatchSpy = spyOn(store, 'dispatch');
         const addProjectButton = await loader.getHarness(MatButtonHarness.with({ text: addProjectButtonTitle }));
 
         // act
         await addProjectButton.click();
 
         // assert
-        fixture.whenStable().then(() => {
-          expect(component.openCreateProjectDialog).toHaveBeenCalled();
-        });
+        expect(dispatchSpy).toHaveBeenCalledWith(openCreateProjectDialog());
       });
     });
 
@@ -127,7 +96,7 @@ describe("ProjectListComponent", () => {
       });
 
       it("should have defined headers", async () => {
-        // arrange + act also in beforeEach
+        // arrange
         const table: MatTableHarness = await loader.getHarness(MatTableHarness);
         const headers: MatHeaderRowHarness[] = await table.getHeaderRows();
         const headerRow: MatRowHarnessColumnsText = await headers[0].getCellTextByColumnName();
@@ -140,34 +109,51 @@ describe("ProjectListComponent", () => {
       });
 
       it("should show row for each project", async () => {
-        // arrange + act also in beforeEach
-        const table: MatTableHarness = await loader.getHarness(MatTableHarness);
-        const rows: MatRowHarness[] = await table.getRows();
+        // arrange
+        const projects = await getRandomProjects(3);
+        store.setState(createAppState(projects));
+
+        // act
+        fixture.detectChanges();
 
         // assert
-        expect(rows.length).toBe(fakeProjects.length);
-        fakeProjects.forEach(async (fakeProject, index) => {
+        const table: MatTableHarness = await loader.getHarness(MatTableHarness);
+        const rows: MatRowHarness[] = await table.getRows();
+        expect(rows.length).toBe(projects.length);
+        for (let index = 0; index < projects.length; index++) {
+          const project = projects[index];
+          
           const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
 
-          expect(row.name).toEqual(fakeProject.name);
-          expect(row.key).toEqual(fakeProject.key);
-          expect(row.createdAt).toEqual(String(fakeProject.createdAt));
-        });
+          expect(row.name).toEqual(project.name);
+          expect(row.key).toEqual(project.key);
+          expect(row.createdAt).toEqual(String(project.createdAt));
+        }
       });
 
       it("should navigate to project experiment page on clicking the project button", async () => {
         // arrange data for projects table
         const projects = [{ key: "my-project", name: "My Project", createdAt: new Date() }];
-        projectListDataSourceMock.emulate(projects);
-        fixture.detectChanges();
+        store.setState(createAppState(projects));
 
-        // act: click on project button
+        // act
+        fixture.detectChanges();
         const projectButton = await loader.getHarness(MatButtonHarness.with({ text: projects[0].name }));
         await projectButton.click();
+
+        // assert
         const spy = routerSpy.navigateByUrl as jasmine.Spy;
         expect(spy.calls.count()).toBe(1, "expected navigation router to be called once");
         expect(spy.calls.first().args[0]).toBe("/projects/my-project");
       });
     });
   });
+
+  function createAppState(projects: Project[]): Partial<AppState> {
+    return {
+      projects: {
+        items: projects
+      }
+    };
+  }
 });

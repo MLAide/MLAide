@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { AbstractControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { SnackbarUiService, UsersApiService } from "@mlaide/shared/services";
+import { SnackbarUiService } from "@mlaide/shared/services";
 import { MatFormFieldHarness } from "@angular/material/form-field/testing";
 import { MatInputHarness } from "@angular/material/input/testing";
 
@@ -17,6 +17,7 @@ import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { DebugElement } from "@angular/core";
 import { By } from "@angular/platform-browser";
+import { UsersApiService } from "@mlaide/shared/api";
 
 describe("UserComponent", () => {
   let fixture: ComponentFixture<UserComponent>;

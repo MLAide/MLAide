@@ -8,7 +8,6 @@ import { AppComponent } from "./app.component";
 import { AuthService } from "./auth/auth.service";
 import { Project, ProjectListResponse } from "./entities/project.model";
 import { User } from "./entities/user.model";
-import { ProjectsApiService, UsersApiService } from "./shared/services";
 import { ListDataSourceMock } from "./mocks/data-source.mock";
 import { getRandomProjects, getRandomUser } from "./mocks/fake-generator";
 import { MatToolbarHarness } from "@angular/material/toolbar/testing";
@@ -17,6 +16,7 @@ import { MatMenuModule } from "@angular/material/menu";
 import { MatIconModule } from "@angular/material/icon";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatButtonHarness } from "@angular/material/button/testing";
+import { ProjectsApiService, UsersApiService } from "./shared/api";
 
 describe("AppComponent", () => {
   let component: AppComponent;

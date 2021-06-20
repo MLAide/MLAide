@@ -11,7 +11,6 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { RouterTestingModule } from "@angular/router/testing";
 import { Project } from "@mlaide/entities/project.model";
 import { Run, RunListResponse } from "@mlaide/entities/run.model";
-import { RunsApiService } from "@mlaide/shared/services";
 import { ActivatedRouteStub } from "src/app/mocks/activated-route.stub";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomProject, getRandomRuns } from "src/app/mocks/fake-generator";
@@ -30,6 +29,7 @@ import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableH
 import { MatChipHarness, MatChipListHarness } from "@angular/material/chips/testing";
 import { FileSaverService } from "ngx-filesaver";
 import { RunStatusI18nComponent } from "../run-status-i18n/run-status-i18n.component";
+import { RunsApiService } from "@mlaide/shared/api";
 
 describe("RunsListTableComponent", () => {
   let component: RunsListTableComponent;

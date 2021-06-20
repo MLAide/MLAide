@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
 import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
@@ -13,12 +12,10 @@ import { Project } from "@mlaide/state/model";
   styleUrls: ["./project-list.component.scss"],
 })
 export class ProjectListComponent implements OnInit {
-  public title = "Projects Overview";
   public displayedColumns: string[] = ["name", "key", "createdAt"];
-
   public projects$: Observable<Project[]> = this.store.select(selectProjects);
 
-  constructor(private dialog: MatDialog, private router: Router, private readonly store: Store) {}
+  constructor(private router: Router, private readonly store: Store) {}
 
   public ngOnInit() {
     this.store.dispatch(loadProjects());
