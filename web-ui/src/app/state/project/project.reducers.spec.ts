@@ -3,7 +3,7 @@ import { ProjectState } from "../app.state";
 import { loadProjectsSucceeded } from "./project.actions";
 import { projectsReducer } from "./project.reducers";
 
-fdescribe("ProjectReducer", () => {
+describe("ProjectReducer", () => {
   describe("loadProjectsSucceeded action", () => {
     it("should update all projects", async () => {
       // arrange
