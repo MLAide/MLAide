@@ -50,7 +50,7 @@ export class CreateProjectComponent {
   }
 
   public create() {
-    this.store.dispatch(addProject(this.form.value));
+    this.store.dispatch(addProject({ project: this.form.value }));
   }
 
   public keyDown(event) {

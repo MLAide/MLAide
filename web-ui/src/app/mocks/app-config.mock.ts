@@ -1,6 +1,6 @@
-import { IAppConfig } from "../config/app-config.model";
+import { AppConfig } from "../config/app-config.model";
 
-export const appConfigMock: IAppConfig = {
+export const appConfigMock: AppConfig = {
   env: {
     name: "DEV",
   },

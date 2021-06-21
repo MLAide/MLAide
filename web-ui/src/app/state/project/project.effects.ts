@@ -29,7 +29,7 @@ export class ProjectEffects {
         this.projectApi.getProjects().pipe(
           map((response) => response.items),
           map((projects) => loadProjectsSucceeded({ projects })),
-          catchError((error) => of(loadProjectsFailed(error)))
+          catchError((error) => of(loadProjectsFailed({ payload: error })))
         )
       )
     )
@@ -38,10 +38,10 @@ export class ProjectEffects {
   addProject$ = createEffect(() =>
     this.actions$.pipe(
       ofType(addProject),
-      switchMap((project) =>
-        this.projectApi.addProject(project).pipe(
-          map((createdProject) => addProjectSucceeded(createdProject)),
-          catchError((error) => of(addProjectFailed(error)))
+      switchMap((action) =>
+        this.projectApi.addProject(action.project).pipe(
+          map((createdProject) => addProjectSucceeded({ project: createdProject })),
+          catchError((error) => of(addProjectFailed({ payload: error })))
         )
       )
     )
@@ -50,7 +50,7 @@ export class ProjectEffects {
   openCreateDialog$ = createEffect(() =>
       this.actions$.pipe(
         ofType(openCreateProjectDialog),
-        tap((data) => {
+        tap(() => {
           this.dialog.open(CreateProjectComponent, {
             data: {
               key: "",
@@ -62,7 +62,7 @@ export class ProjectEffects {
     { dispatch: false }
   );
 
-  closeCreateOrEditDialog$ = createEffect(() =>
+  closeCreateDialog$ = createEffect(() =>
       this.actions$.pipe(
         ofType(addProjectSucceeded, closeCreateProjectDialog),
         tap(() => this.dialog.closeAll())

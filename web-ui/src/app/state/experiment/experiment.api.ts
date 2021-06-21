@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@angular/core";
-import { APP_CONFIG, IAppConfig } from "@mlaide/config/app-config.model";
+import { APP_CONFIG, AppConfig } from "@mlaide/config/app-config.model";
 import { HttpClient } from "@angular/common/http";
 import { Experiment } from "@mlaide/entities/experiment.model";
 import { Observable } from "rxjs";
@@ -12,7 +12,7 @@ export class ExperimentListResponse {
 export class ExperimentApi {
   private readonly baseUrl: string;
 
-  constructor(@Inject(APP_CONFIG) appConfig: IAppConfig, private http: HttpClient) {
+  constructor(@Inject(APP_CONFIG) appConfig: AppConfig, private http: HttpClient) {
     this.baseUrl = `${appConfig.apiServer.uri}/api/${appConfig.apiServer.version}`;
   }
 

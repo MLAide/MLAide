@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 
-import { APP_CONFIG, IAppConfig } from "@mlaide/config/app-config.model";
+import { APP_CONFIG, AppConfig } from "@mlaide/config/app-config.model";
 import { Experiment, ExperimentListResponse } from "@mlaide/entities/experiment.model";
 import { ListDataSource } from "@mlaide/shared/api/list-data-source";
 
@@ -13,7 +13,7 @@ export class ExperimentsApiService {
   public readonly API_URL;
   public readonly API_VERSION;
 
-  constructor(@Inject(APP_CONFIG) appConfig: IAppConfig, private http: HttpClient) {
+  constructor(@Inject(APP_CONFIG) appConfig: AppConfig, private http: HttpClient) {
     this.API_URL = appConfig.apiServer.uri;
     this.API_VERSION = appConfig.apiServer.version;
   }

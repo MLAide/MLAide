@@ -1,7 +1,7 @@
 import { HttpClientModule } from "@angular/common/http";
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from "@angular/core";
 import { AuthConfig, OAuthModule, OAuthModuleConfig, OAuthStorage } from "angular-oauth2-oidc";
-import { APP_CONFIG, IAppConfig } from "./../config/app-config.model";
+import { APP_CONFIG, AppConfig } from "./../config/app-config.model";
 import { AuthGuard } from "./auth-guard.service";
 import { AuthService } from "./auth.service";
 
@@ -43,7 +43,7 @@ export class AuthModule {
   }
 }
 
-export function authConfigFactory(appConfig: IAppConfig): AuthConfig {
+export function authConfigFactory(appConfig: AppConfig): AuthConfig {
   const isSecurityDisabled = appConfig.auth.disableSecurity === "true";
 
   return {
@@ -83,7 +83,7 @@ export function authConfigFactory(appConfig: IAppConfig): AuthConfig {
   };
 }
 
-export function authModuleConfigFactory(appConfig: IAppConfig): OAuthModuleConfig {
+export function authModuleConfigFactory(appConfig: AppConfig): OAuthModuleConfig {
   return {
     resourceServer: {
       allowedUrls: appConfig.auth.allowedUrls.split(","),

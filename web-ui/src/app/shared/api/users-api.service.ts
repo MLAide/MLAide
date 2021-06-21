@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { share, tap } from "rxjs/operators";
-import { APP_CONFIG, IAppConfig } from "@mlaide/config/app-config.model";
+import { APP_CONFIG, AppConfig } from "@mlaide/config/app-config.model";
 import { ListDataSource } from ".";
 import { ApiKey, ApiKeyListResponse } from "@mlaide/entities/apiKey.model";
 import { User } from "@mlaide/entities/user.model";
@@ -16,7 +16,7 @@ export class UsersApiService {
   private currentUserSubject$ = new BehaviorSubject<User>(null);
   public readonly currentUser$ = this.currentUserSubject$.asObservable();
 
-  constructor(@Inject(APP_CONFIG) appConfig: IAppConfig, private http: HttpClient) {
+  constructor(@Inject(APP_CONFIG) appConfig: AppConfig, private http: HttpClient) {
     this.API_URL = appConfig.apiServer.uri;
     this.API_VERSION = appConfig.apiServer.version;
   }

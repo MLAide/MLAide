@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { map } from "rxjs/operators";
-import { APP_CONFIG, IAppConfig } from "@mlaide/config/app-config.model";
+import { APP_CONFIG, AppConfig } from "@mlaide/config/app-config.model";
 import { Run, RunListResponse } from "@mlaide/entities/run.model";
 import { ListDataSource } from "./list-data-source";
 
@@ -13,7 +13,7 @@ export class RunsApiService {
   public readonly API_URL;
   public readonly API_VERSION;
 
-  constructor(@Inject(APP_CONFIG) appConfig: IAppConfig, private http: HttpClient) {
+  constructor(@Inject(APP_CONFIG) appConfig: AppConfig, private http: HttpClient) {
     this.API_URL = appConfig.apiServer.uri;
     this.API_VERSION = appConfig.apiServer.version;
   }

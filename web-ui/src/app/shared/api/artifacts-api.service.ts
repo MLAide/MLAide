@@ -1,7 +1,7 @@
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, Subject } from "rxjs";
-import { APP_CONFIG, IAppConfig } from "@mlaide/config/app-config.model";
+import { APP_CONFIG, AppConfig } from "@mlaide/config/app-config.model";
 import { ArtifactListResponse, CreateOrUpdateModel } from "@mlaide/entities/artifact.model";
 import { ListDataSource } from "./list-data-source";
 
@@ -12,7 +12,7 @@ export class ArtifactsApiService {
   public readonly API_URL;
   public readonly API_VERSION;
 
-  constructor(@Inject(APP_CONFIG) appConfig: IAppConfig, private http: HttpClient) {
+  constructor(@Inject(APP_CONFIG) appConfig: AppConfig, private http: HttpClient) {
     this.API_URL = appConfig.apiServer.uri;
     this.API_VERSION = appConfig.apiServer.version;
   }
