@@ -17,13 +17,10 @@ export class RunEffects {
       ofType(loadRunsOfCurrentExperiment),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       concatLatestFrom(() => this.store.select(selectCurrentExperimentKey)),
-      mergeMap(([[action, projectKey], experimentKey]) =>
-        this.runApi.getRunsByExperimentKey(projectKey, experimentKey).pipe(
-          map((response) => response.items),
-          map((runs) => loadRunsOfCurrentExperimentSucceeded({ runs: runs })),
-          catchError((error) => of(loadRunsOfCurrentExperimentFailed({ payload: error })))
-        )
-      )
+      mergeMap(([[action, projectKey], experimentKey]) => this.runApi.getRunsByExperimentKey(projectKey, experimentKey)),
+      map((response) => response.items),
+      map((runs) => loadRunsOfCurrentExperimentSucceeded({ runs: runs })),
+      catchError((error) => of(loadRunsOfCurrentExperimentFailed({ payload: error })))
     )
   );
 

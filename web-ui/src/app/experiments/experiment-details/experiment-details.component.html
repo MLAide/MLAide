@@ -52,6 +52,6 @@
   <div fxLayout="column">
     <h2 id="artifacts-title" class="mat-h2" i18n>Artifacts</h2>
   </div>
-  <app-artifacts-list-table [artifactListDataSource]="artifactListDataSource" [projectKey]="(projectKey$ | async)">
+  <app-artifacts-list-table [artifacts$]="artifacts$" [projectKey]="(projectKey$ | async)">
   </app-artifacts-list-table>
 </div>

@@ -2,7 +2,7 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/co
 import { Observable, Subscription } from "rxjs";
 import { ArtifactListResponse } from "@mlaide/entities/artifact.model";
 import { Experiment } from "../../entities/experiment.model";
-import { Run, RunListResponse } from "@mlaide/entities/run.model";
+import { Run } from "@mlaide/entities/run.model";
 import { GraphEdge, GraphNode, LineageGraphUiService } from "@mlaide/shared/services";
 import { ListDataSource } from "@mlaide/shared/api";
 import { Store } from "@ngrx/store";
@@ -11,6 +11,9 @@ import { selectCurrentExperiment } from "@mlaide/state/experiment/experiment.sel
 import { loadRunsOfCurrentExperiment } from "@mlaide/state/run/run.actions";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectRunsOfCurrentExperiment } from "@mlaide/state/run/run.selectors";
+import { loadArtifactsByRunKeys } from "@mlaide/state/artifact/artifact.actions";
+import { selectArtifactsByRunKeys } from "@mlaide/state/artifact/artifact.selectors";
+import { Artifact } from "@mlaide/state/artifact/artifact.models";
 
 @Component({
   selector: "app-experiment-details",
@@ -21,43 +24,41 @@ export class ExperimentDetailsComponent implements OnInit, OnDestroy {
   @ViewChild("experimentGraph")
   public experimentGraphSvg: ElementRef;
 
+  public artifacts$: Observable<Artifact[]>;
   public experiment$: Observable<Experiment>;
   public projectKey$: Observable<string>;
   public runs$: Observable<Run[]>;
-  
-  public runs: Run[];
+
   public artifactListDataSource: ListDataSource<ArtifactListResponse>;
   // public runListDataSource: ListDataSource<RunListResponse>;
 
   // private experimentKey: string;
-  private routeSubscription: Subscription;
-  private runListSubscription: Subscription;
+  private  runsSubscription: Subscription;
 
   constructor(private store: Store,
     private lineageGraphService: LineageGraphUiService
   ) {}
 
   ngOnDestroy(): void {
-    if (this.routeSubscription) {
-      this.routeSubscription.unsubscribe();
-      this.routeSubscription = null;
-    }
-
-    if (this.runListSubscription) {
-      this.runListSubscription.unsubscribe();
-      this.runListSubscription = null;
+    if (this.runsSubscription) {
+      this.runsSubscription.unsubscribe();
+      this.runsSubscription = null;
     }
   }
 
   ngOnInit(): void {
-    this.store.dispatch(loadExperiment());
-    this.store.dispatch(loadRunsOfCurrentExperiment());
-    // this.store.dispatch(loadArtifactsOfCurrentExperiment());
-
     this.experiment$ = this.store.select(selectCurrentExperiment);
     this.projectKey$ = this.store.select(selectCurrentProjectKey);
     this.runs$ = this.store.select(selectRunsOfCurrentExperiment);
-    // this.artifacts$ = this.store.select(selectArtifactsOfCurrentExperiment());
+    this.artifacts$ = this.store.select(selectArtifactsByRunKeys);
+
+    this.store.dispatch(loadExperiment());
+    this.store.dispatch(loadRunsOfCurrentExperiment());
+    this.runsSubscription = this.runs$.subscribe((runs) => {
+      const runKeys = runs.map((r) => r.key);
+      this.store.dispatch(loadArtifactsByRunKeys({ runKeys }));
+    })
+    // this.artifacts$ = this.store.select(selectArtifactsByRunKeys());
 
     ///////////////
 

@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild } from "@angular/core";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
-import { Subscription } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { ListDataSource } from "@mlaide/shared/api";
 import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
 
@@ -11,7 +11,7 @@ import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model"
   styleUrls: ["./artifacts-list-table.component.scss"],
 })
 export class ArtifactsListTableComponent implements AfterViewInit, OnChanges, OnDestroy {
-  @Input() artifactListDataSource: ListDataSource<ArtifactListResponse>;
+  @Input() artifacts$: Observable<Artifact[]>;
   public dataSource: MatTableDataSource<Artifact> = new MatTableDataSource<Artifact>();
   public displayedColumns: string[] = ["createdAt", "artifactName", "version", "runName", "runKey", "type"];
   @Input() projectKey: string;
@@ -23,13 +23,13 @@ export class ArtifactsListTableComponent implements AfterViewInit, OnChanges, On
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.artifactListDataSource) {
+    if (changes.artifacts$) {
       if (this.artifactListSubscription) {
         this.artifactListSubscription.unsubscribe();
       }
 
-      this.artifactListSubscription = this.artifactListDataSource?.items$.subscribe((artifacts) => {
-        this.dataSource.data = artifacts.items;
+      this.artifactListSubscription = this.artifacts$.subscribe((artifacts) => {
+        this.dataSource.data = artifacts;
       });
     }
   }

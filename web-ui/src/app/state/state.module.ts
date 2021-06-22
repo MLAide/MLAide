@@ -10,13 +10,17 @@ import { StoreDevtoolsModule } from "@ngrx/store-devtools";
 import { spinnerReducer } from "./shared/spinner.reducers";
 import { ExperimentEffects } from "@mlaide/state/experiment/experiment.effects";
 import { experimentsReducer } from "@mlaide/state/experiment/experiment.reducers";
+import { runsReducer } from "@mlaide/state/run/run.reducers";
+import { RunEffects } from "@mlaide/state/run/run.effects";
+import { artifactsReducer } from "@mlaide/state/artifact/artifact.reducers";
+import { ArtifactEffects } from "@mlaide/state/artifact/artifact.effects";
 
 @NgModule({
   declarations: [],
   imports: [
-    StoreModule.forRoot({ experiments: experimentsReducer, projects: projectsReducer, spinner: spinnerReducer, router: routerReducer }),
+    StoreModule.forRoot({ artifacts: artifactsReducer, experiments: experimentsReducer, projects: projectsReducer, runs: runsReducer, spinner: spinnerReducer, router: routerReducer }),
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot([ExperimentEffects, ProjectEffects, SnackbarEffects, SpinnerEffects]),
+    EffectsModule.forRoot([ArtifactEffects, ExperimentEffects, ProjectEffects, RunEffects, SnackbarEffects, SpinnerEffects]),
 
     StoreRouterConnectingModule.forRoot(),
 

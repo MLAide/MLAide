@@ -20,7 +20,7 @@
     <ng-container matColumnDef="key">
       <th id="key" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Key</th>
       <td headers="key" mat-cell *matCellDef="let element">
-        <a mat-button color="primary" [routerLink]="['/projects/' + projectKey + '/experiment/' + element.key]">{{
+        <a mat-button color="primary" [routerLink]="['/projects/' + projectKey + '/experiments/' + element.key]">{{
           element.key
         }}</a>
       </td>
