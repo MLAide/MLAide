@@ -1,13 +1,10 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
-import {  Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 import { Experiment, ExperimentStatus } from "@mlaide/entities/experiment.model";
 import { Store } from "@ngrx/store";
-import {
-  loadExperiments,
-  openAddOrEditExperimentDialog
-} from "@mlaide/state/experiment/experiment.actions";
+import { loadExperiments, openAddOrEditExperimentDialog } from "@mlaide/state/experiment/experiment.actions";
 import { selectExperiments } from "@mlaide/state/experiment/experiment.selectors";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 
@@ -19,10 +16,11 @@ import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors
 export class ExperimentsListComponent implements OnInit, OnDestroy, AfterViewInit {
   public dataSource: MatTableDataSource<Experiment> = new MatTableDataSource<Experiment>();
   public displayedColumns: string[] = ["key", "name", "status", "tags", "actions"];
-
   public projectKey: string;
   @ViewChild(MatSort) public sort: MatSort;
-  private experimentListSubscription: Subscription;
+
+  private experimentsSubscription: Subscription;
+  private currentProjectKeySubscription: Subscription;
 
   constructor(private store: Store) {}
 
@@ -31,18 +29,25 @@ export class ExperimentsListComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   ngOnDestroy() {
-    if (this.experimentListSubscription) {
-      this.experimentListSubscription.unsubscribe();
-      this.experimentListSubscription = null;
+    if (this.experimentsSubscription) {
+      this.experimentsSubscription.unsubscribe();
+      this.experimentsSubscription = null;
+    }
+
+    if (this.currentProjectKeySubscription) {
+      this.currentProjectKeySubscription.unsubscribe();
+      this.currentProjectKeySubscription = null;
     }
   }
 
   ngOnInit() {
     this.store.dispatch(loadExperiments());
 
-    this.experimentListSubscription = this.store.select(selectExperiments).subscribe((experiments) => this.dataSource.data = experiments);
+    this.experimentsSubscription = this.store.select(selectExperiments)
+      .subscribe((experiments) => this.dataSource.data = experiments);
 
-    this.store.select(selectCurrentProjectKey).subscribe((projectKey) => this.projectKey = projectKey);
+    this.currentProjectKeySubscription = this.store.select(selectCurrentProjectKey)
+      .subscribe((projectKey) => this.projectKey = projectKey);
   }
 
   openCreateExperimentDialog(): void {

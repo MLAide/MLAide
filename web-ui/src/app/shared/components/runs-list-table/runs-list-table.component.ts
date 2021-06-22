@@ -3,10 +3,10 @@ import { AfterViewInit, Component, Input, OnChanges, OnDestroy, SimpleChanges, V
 import { ActivatedRoute, Router } from "@angular/router";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
-import { Subscription } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { FileSaverService } from "ngx-filesaver";
-import { ListDataSource, RunsApiService } from "@mlaide/shared/api";
-import { Run, RunListResponse } from "@mlaide/entities/run.model";
+import { RunsApiService } from "@mlaide/shared/api";
+import { Run, } from "@mlaide/entities/run.model";
 
 @Component({
   selector: "app-runs-list-table",
@@ -14,14 +14,16 @@ import { Run, RunListResponse } from "@mlaide/entities/run.model";
   styleUrls: ["./runs-list-table.component.scss"],
 })
 export class RunsListTableComponent implements AfterViewInit, OnChanges, OnDestroy {
+  @Input() public projectKey: string;
+  @Input() public runs$: Observable<Run[]>;
+
   public dataSource: MatTableDataSource<Run> = new MatTableDataSource<Run>();
   public displayedColumns: string[] = ["select", "name", "status", "startTime", "runTime", "metrics", "createdBy", "experiments"];
   public hideParameters = true;
-  @Input() projectKey: string;
-  @Input() runListDataSource: ListDataSource<RunListResponse>;
   public selection = new SelectionModel<Run>(true, []);
-  @ViewChild(MatSort) sort: MatSort;
-  private runListSubscription: Subscription;
+  @ViewChild(MatSort) public sort: MatSort;
+
+  private runsSubscription: Subscription;
 
   constructor(
     private router: Router,
@@ -30,21 +32,25 @@ export class RunsListTableComponent implements AfterViewInit, OnChanges, OnDestr
     private fileSaverService: FileSaverService
   ) {}
 
-  ngAfterViewInit() {
+  public ngAfterViewInit() {
     this.dataSource.sort = this.sort;
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.runListDataSource) {
-      this.runListSubscription = this.runListDataSource?.items$.subscribe((runs) => {
-        this.dataSource.data = runs.items;
-      });
+  public ngOnChanges(changes: SimpleChanges): void {
+    if (changes.runs$) {
+      this.unsubscribeRuns();
+      this.runsSubscription = this.runs$.subscribe((runs) => this.dataSource.data = runs);
     }
   }
-  ngOnDestroy(): void {
-    if (this.runListSubscription) {
-      this.runListSubscription.unsubscribe();
-      this.runListSubscription = null;
+
+  public ngOnDestroy(): void {
+    this.unsubscribeRuns();
+  }
+
+  private unsubscribeRuns() {
+    if (this.runsSubscription) {
+      this.runsSubscription.unsubscribe();
+      this.runsSubscription = null;
     }
   }
 

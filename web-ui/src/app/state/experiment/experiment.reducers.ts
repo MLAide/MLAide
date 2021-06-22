@@ -1,6 +1,6 @@
 import { createReducer, on } from "@ngrx/store";
 import { loadExperimentsSucceeded, loadExperimentSucceeded } from "@mlaide/state/experiment/experiment.actions";
-import { ExperimentState } from "@mlaide/state/app.state";
+import { ExperimentState } from "./experiment.state";
 
 export const initialState: ExperimentState = {
   currentExperiment: undefined,

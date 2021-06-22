@@ -1,9 +1,9 @@
 import { Experiment } from "./experiment.models";
 import { createAction, props } from "@ngrx/store";
 
-export const loadExperiments = createAction("@mlaide/actions/experiment/load");
-export const loadExperimentsSucceeded = createAction("@mlaide/actions/experiment/load/succeeded", props<{ experiments: Experiment[] }>());
-export const loadExperimentsFailed = createAction("@mlaide/actions/experiment/load/failed", props<{ payload }>());
+export const loadExperiments = createAction("@mlaide/actions/experiments/load");
+export const loadExperimentsSucceeded = createAction("@mlaide/actions/experiments/load/succeeded", props<{ experiments: Experiment[] }>());
+export const loadExperimentsFailed = createAction("@mlaide/actions/experiments/load/failed", props<{ payload }>());
 
 export const loadExperiment = createAction("@mlaide/actions/experiment/load");
 export const loadExperimentSucceeded = createAction("@mlaide/actions/experiment/load/succeeded", props<Experiment>());

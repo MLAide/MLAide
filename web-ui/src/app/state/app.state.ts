@@ -1,14 +1,7 @@
-import { Experiment, Project } from "./model";
 import { RouterReducerState } from "@ngrx/router-store";
-
-export interface ExperimentState {
-  currentExperiment: Experiment,
-  items: Experiment[];
-}
-
-export interface ProjectState {
-  items: Project[];
-}
+import { RunState } from "./run/run.state";
+import { ExperimentState } from "./experiment/experiment.state";
+import { ProjectState } from "./project/project.state";
 
 export interface SpinnerState {
   isLoading: boolean;
@@ -19,4 +12,5 @@ export interface AppState {
   projects: ProjectState;
   spinner: SpinnerState;
   router: RouterReducerState;
+  runs: RunState;
 }

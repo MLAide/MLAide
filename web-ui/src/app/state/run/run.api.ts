@@ -11,7 +11,7 @@ export class RunListResponse {
 @Injectable({
   providedIn: "root",
 })
-export class RunsApi {
+export class RunApi {
   private readonly baseUrl: string;
 
   constructor(@Inject(APP_CONFIG) appConfig: AppConfig, private http: HttpClient) {
