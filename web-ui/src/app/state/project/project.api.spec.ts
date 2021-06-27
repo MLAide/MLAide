@@ -34,18 +34,18 @@ describe("ProjectApi", () => {
     it("should return the created project as observable from api response", async (done) => {
       // arrange
       const fakeProject: Project = await getRandomProject();
-      
+
       // act
       const project$: Observable<Project> = projectApi.addProject(fakeProject);
-      
+
       // assert
       project$.subscribe((response) => {
         expect(response).toEqual(fakeProject);
-        
+
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne("http://localhost:9000/api/v1/projects");
+      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects`);
       expect(req.request.method).toBe("POST");
       expect(req.request.body).toEqual(fakeProject);
       req.flush(fakeProject);
@@ -60,7 +60,7 @@ describe("ProjectApi", () => {
 
       // act
       const projects$: Observable<ProjectListResponse> = projectApi.getProjects();
-      
+
       // assert
       projects$.subscribe((response) => {
         expect(response.items.length).toBe(fakeProjects.length);
@@ -69,7 +69,7 @@ describe("ProjectApi", () => {
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne("http://localhost:9000/api/v1/projects");
+      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects`);
       expect(req.request.method).toBe("GET");
       req.flush(dummyResponse);
     });

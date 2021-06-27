@@ -7,14 +7,25 @@ import {
 } from "@mlaide/state/experiment/experiment.actions";
 
 export const initialState: ArtifactState = {
-  artifactsByRunKeys: {
-    items: [],
-    runKeys: []
-  },
+  isLoading: false,
+  artifactsByRunKeys: [],
   items: [],
 };
 
 export const artifactsReducer = createReducer(
   initialState,
-  on(loadArtifactsByRunKeysSucceeded, (state, { artifacts, runKeys }) => ({ ...state, artifactsByRunKeys: { items: artifacts, runKeys: runKeys} })),
+  on(loadExperimentWithAllDetails, (state) => ({ ...state, isLoading: true })),
+  on(loadExperimentWithAllDetailsSucceeded, (state, { artifacts }) => ({ ...state, artifactsByRunKeys: artifacts })),
+  on(loadExperimentWithAllDetailsFailed, (state) => ({ ...state, isLoading: false })),
+  on(loadExperimentWithAllDetailsStatusUpdate, (state, { artifacts }) => {
+    if (artifacts) {
+      return {
+        ...state,
+        isLoading: false,
+        artifactsByRunKeys: artifacts
+      }
+    }
+
+    return {...state};
+  })
 );

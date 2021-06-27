@@ -9,7 +9,7 @@ import { User } from "../entities/user.model";
 
 const artifactFileSchemaFunction = (faker) => {
   return {
-    fileId: faker.random.uuid(),
+    fileId: faker.datatype.uuid(),
     fileName: faker.system.fileName(),
   };
 };
@@ -17,7 +17,7 @@ const artifactFileSchemaFunction = (faker) => {
 const artifactsRefSchemaFunction = (faker) => {
   return {
     name: faker.lorem.slug(),
-    version: faker.random.number(),
+    version: faker.datatype.number(),
   };
 };
 
@@ -35,11 +35,11 @@ const metaDataSchemaFunction = (faker) => {
 
 const metricsAndParametersSchemaFunction = (faker) => {
   return {
-    mae: faker.random.float(),
-    r2: faker.random.float(),
-    rmse: faker.random.float(),
-    number: faker.random.number(),
-    bool: faker.random.boolean(),
+    mae: faker.datatype.float(),
+    r2: faker.datatype.float(),
+    rmse: faker.datatype.float(),
+    number: faker.datatype.number(),
+    bool: faker.datatype.boolean(),
   };
 };
 
@@ -66,7 +66,7 @@ const modelRevisionFunction = (faker) => {
 const userSchemaFunction = (faker) => {
   return {
     nickName: faker.name.firstName(),
-    userId: faker.random.number(),
+    userId: faker.datatype.number(),
   };
 };
 

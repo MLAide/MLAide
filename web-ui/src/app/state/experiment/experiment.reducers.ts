@@ -8,6 +8,7 @@ import { ExperimentState } from "./experiment.state";
 export const initialState: ExperimentState = {
   currentExperiment: undefined,
   items: [],
+  isLoading: false
 };
 
 export const experimentsReducer = createReducer(

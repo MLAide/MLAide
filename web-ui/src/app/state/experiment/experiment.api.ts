@@ -16,8 +16,8 @@ export class ExperimentApi {
     this.baseUrl = `${appConfig.apiServer.uri}/api/${appConfig.apiServer.version}`;
   }
 
-  public getExperiments(projectKey: string): Observable<ExperimentListResponse> {
-    return this.http.get<ExperimentListResponse>(`${this.baseUrl}/projects/${projectKey}/experiments`);
+  public addExperiment(projectKey: string, experiment: Experiment): Observable<Experiment> {
+    return this.http.post<Experiment>(`${this.baseUrl}/projects/${projectKey}/experiments`, experiment);
   }
 
   public getExperiment(projectKey: string, experimentKey: string): Observable<Experiment> {
@@ -26,8 +26,8 @@ export class ExperimentApi {
     );
   }
 
-  public addExperiment(projectKey: string, experiment: Experiment): Observable<Experiment> {
-    return this.http.post<Experiment>(`${this.baseUrl}/projects/${projectKey}/experiments`, experiment);
+  public getExperiments(projectKey: string): Observable<ExperimentListResponse> {
+    return this.http.get<ExperimentListResponse>(`${this.baseUrl}/projects/${projectKey}/experiments`);
   }
 
   public patchExperiment(projectKey: string, experimentKey: string, experiment: Experiment): Observable<Experiment> {
