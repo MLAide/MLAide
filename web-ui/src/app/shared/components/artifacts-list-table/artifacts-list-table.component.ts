@@ -2,8 +2,7 @@ import { AfterViewInit, Component, Input, OnChanges, OnDestroy, SimpleChanges, V
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { Observable, Subscription } from "rxjs";
-import { ListDataSource } from "@mlaide/shared/api";
-import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
+import { Artifact } from "@mlaide/state/artifact/artifact.models";
 
 @Component({
   selector: "app-artifacts-list-table",
@@ -11,11 +10,14 @@ import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model"
   styleUrls: ["./artifacts-list-table.component.scss"],
 })
 export class ArtifactsListTableComponent implements AfterViewInit, OnChanges, OnDestroy {
-  @Input() artifacts$: Observable<Artifact[]>;
+  @Input() public projectKey: string;
+  @Input() public artifacts$: Observable<Artifact[]>;
+  @Input() public isLoading$: Observable<boolean>;
+
   public dataSource: MatTableDataSource<Artifact> = new MatTableDataSource<Artifact>();
   public displayedColumns: string[] = ["createdAt", "artifactName", "version", "runName", "runKey", "type"];
-  @Input() projectKey: string;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort) public sort: MatSort;
+
   private artifactListSubscription: Subscription;
 
   ngAfterViewInit() {

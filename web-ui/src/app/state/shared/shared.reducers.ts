@@ -1,8 +1,8 @@
 import { createReducer, on } from "@ngrx/store";
-import { SpinnerState } from "../app.state";
-import { hideSpinner, showSpinner } from "./spinner.actions";
+import { hideSpinner, showSpinner } from "./shared.actions";
+import { SharedState } from "@mlaide/state/shared/shared.state";
 
-export const initialState: SpinnerState = {
+export const initialState: SharedState = {
   isLoading: false,
 };
 

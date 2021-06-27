@@ -1,8 +1,10 @@
 import { createReducer, on } from "@ngrx/store";
+import { ArtifactState } from "./artifact.state";
 import {
-  loadArtifactsByRunKeysSucceeded,
-} from "@mlaide/state/Artifact/Artifact.actions";
-import { ArtifactState } from "./Artifact.state";
+  loadExperimentWithAllDetails, loadExperimentWithAllDetailsFailed,
+  loadExperimentWithAllDetailsStatusUpdate,
+  loadExperimentWithAllDetailsSucceeded
+} from "@mlaide/state/experiment/experiment.actions";
 
 export const initialState: ArtifactState = {
   artifactsByRunKeys: {

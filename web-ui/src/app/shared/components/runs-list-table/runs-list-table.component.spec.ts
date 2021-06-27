@@ -88,7 +88,7 @@ describe("RunsListTableComponent", () => {
     fixture.detectChanges();
 
     // setup mocks
-    component.runListDataSource = runListDataSourceMock;
+    // component.runListDataSource = runListDataSourceMock;
     component.projectKey = fakeProject.key;
   });
 

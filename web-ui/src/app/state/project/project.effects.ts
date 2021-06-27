@@ -3,16 +3,16 @@ import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
 import { catchError, map, mergeMap, switchMap, tap } from "rxjs/operators";
-import { snackbarError } from "../shared/snackbar.actions";
-import { hideSpinner, showSpinner } from "../shared/spinner.actions";
+import { showError } from "../shared/shared.actions";
+import { hideSpinner, showSpinner } from "../shared/shared.actions";
 import {
   addProject,
   addProjectFailed,
-  addProjectSucceeded, 
+  addProjectSucceeded,
   closeCreateProjectDialog,
   loadProjects,
   loadProjectsFailed,
-  loadProjectsSucceeded, 
+  loadProjectsSucceeded,
   openCreateProjectDialog
 } from "./project.actions";
 import { ProjectApi } from "./project.api";
@@ -84,25 +84,45 @@ export class ProjectEffects {
     )
   );
 
-  showError$ = createEffect(() =>
+  addProjectFailed$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(addProjectFailed),
+      map((action) => action.payload),
+      map((error) => {
+        let message = "Could not create project. A unknown error occurred.";
+
+        if (this.hasErrorStatusCode(error, 400)) {
+          message = "The project could not be created, because of invalid input data. Please try again with valid input data.";
+        }
+
+        if (this.hasErrorStatusCode(error, 409)) {
+          message = "A project with this key already exists. Please choose a different project key.";
+        }
+
+        return {
+          message: message,
+          error: error
+        };
+      }),
+      map(showError)
+    )
+  );
+
+  loadProjectsFailed$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadProjectsFailed, addProjectFailed),
       map((action) => action.payload),
-      map((error) => {
-        if (error instanceof HttpErrorResponse) {
-          if (error.status === 400) {
-            return "The project could not be created, because of invalid input data. Please try again with valid input data.";
-          }
-          if (error.status === 409) {
-            return "A project with this key already exists. Please choose a different project key.";
-          }
-        }
-
-        return "A unknown error occoured.";
-      }),
-      map((errorMessage) => snackbarError({ message: errorMessage }))
+      map((error) => ({
+        message: "Could not load projects. A unknown error occurred.",
+        error: error
+      })),
+      map(showError)
     )
   );
+
+  private hasErrorStatusCode = (error, statusCode: number): boolean => {
+    return error instanceof HttpErrorResponse && error.status === statusCode;
+  }
 
   public constructor(private readonly actions$: Actions,
                      private readonly dialog: MatDialog,

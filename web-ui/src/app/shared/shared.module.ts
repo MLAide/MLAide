@@ -19,6 +19,8 @@ import { DurationPipe } from "./pipes/duration.pipe";
 import { RunStatusI18nComponent } from "./components/run-status-i18n/run-status-i18n.component";
 import { ProjectMemberRoleI18nComponent } from "./components/project-member-role-i18n/project-member-role-i18n.component";
 import { ModelStageI18nComponent } from "./components/model-stage-i18n/model-stage-i18n.component";
+import { MatCardModule } from "@angular/material/card";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -41,10 +43,12 @@ import { ModelStageI18nComponent } from "./components/model-stage-i18n/model-sta
     FlexLayoutModule,
 
     MatButtonModule,
+    MatCardModule,
     MatCheckboxModule,
     MatChipsModule,
     MatIconModule,
     MatListModule,
+    MatProgressSpinnerModule,
     MatTableModule,
   ],
   exports: [

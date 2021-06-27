@@ -16,6 +16,7 @@ import { Run, } from "@mlaide/entities/run.model";
 export class RunsListTableComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() public projectKey: string;
   @Input() public runs$: Observable<Run[]>;
+  @Input() public isLoading$: Observable<boolean>;
 
   public dataSource: MatTableDataSource<Run> = new MatTableDataSource<Run>();
   public displayedColumns: string[] = ["select", "name", "status", "startTime", "runTime", "metrics", "createdBy", "experiments"];

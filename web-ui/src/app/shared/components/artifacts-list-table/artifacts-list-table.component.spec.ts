@@ -43,7 +43,7 @@ describe("ArtifactsListTableComponent", () => {
     fixture.detectChanges();
 
     // setup mocks
-    component.artifactListDataSource = artifactListDataSourceMock;
+    // component.artifactListDataSource = artifactListDataSourceMock;
     component.projectKey = fakeProject.key;
   });
 

@@ -1,7 +1,7 @@
 import { getRandomProjects } from "@mlaide/mocks/fake-generator";
-import { ProjectState } from "../app.state";
 import { loadProjectsSucceeded } from "./project.actions";
 import { projectsReducer } from "./project.reducers";
+import { ProjectState } from "@mlaide/state/project/project.state";
 
 describe("ProjectReducer", () => {
   describe("loadProjectsSucceeded action", () => {

@@ -29,6 +29,7 @@ import { ExperimentStatusI18nComponent } from "./experiment-status-i18n/experime
 import { ExperimentsListComponent } from "./experiments-list/experiments-list.component";
 import { ExperimentsRoutingModule } from "./experiments-routing.module";
 import { SharedModule } from "@mlaide/shared/shared.module";
+import { ExperimentLineageVisualizationComponent } from './experiment-lineage-visualization/experiment-lineage-visualization.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { SharedModule } from "@mlaide/shared/shared.module";
     CreateOrUpdateExperimentComponent,
     ExperimentDetailsComponent,
     ExperimentStatusI18nComponent,
+    ExperimentLineageVisualizationComponent,
   ],
   imports: [
     CommonModule,

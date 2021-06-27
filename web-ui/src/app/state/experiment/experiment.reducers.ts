@@ -1,5 +1,8 @@
 import { createReducer, on } from "@ngrx/store";
-import { loadExperimentsSucceeded, loadExperimentSucceeded } from "@mlaide/state/experiment/experiment.actions";
+import {
+  loadExperimentsSucceeded,
+  loadExperimentWithAllDetailsSucceeded
+} from "@mlaide/state/experiment/experiment.actions";
 import { ExperimentState } from "./experiment.state";
 
 export const initialState: ExperimentState = {
@@ -10,5 +13,5 @@ export const initialState: ExperimentState = {
 export const experimentsReducer = createReducer(
   initialState,
   on(loadExperimentsSucceeded, (state, { experiments }) => ({ ...state, items: [...experiments] })),
-  on(loadExperimentSucceeded, (state, currentExperiment ) => ({ ...state, currentExperiment}))
+  on(loadExperimentWithAllDetailsSucceeded, (state, { experiment } ) => ({ ...state, currentExperiment: experiment }))
 );
