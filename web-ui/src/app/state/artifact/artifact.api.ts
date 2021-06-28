@@ -19,9 +19,22 @@ export class ArtifactApi {
   }
 
   public getArtifactsByRunKeys(projectKey: string, runKeys: number[]): Observable<ArtifactListResponse> {
-    let params = {
+    const params = {
       runKeys: runKeys
     }
+
+    return this.http.get<ArtifactListResponse>(
+      `${this.baseUrl}/projects/${projectKey}/artifacts`, {
+        params,
+      }
+    )
+  }
+
+  public getArtifacts(projectKey: string, onlyModels = false): Observable<ArtifactListResponse> {
+    const params = {
+      isModel: onlyModels ? "true" : "false",
+    };
+
     return this.http.get<ArtifactListResponse>(
       `${this.baseUrl}/projects/${projectKey}/artifacts`, {
         params,

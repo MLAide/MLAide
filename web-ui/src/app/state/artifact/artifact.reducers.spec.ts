@@ -5,6 +5,7 @@ import {
   loadExperimentWithAllDetails, loadExperimentWithAllDetailsFailed,
   loadExperimentWithAllDetailsSucceeded, loadExperimentWithAllDetailsStatusUpdate
 } from "@mlaide/state/experiment/experiment.actions";
+import { loadModels, loadModelsSucceeded } from "@mlaide/state/artifact/artifact.actions";
 
 describe("ArtifactReducer", () => {
   describe("loadExperimentWithAllDetails action", () => {
@@ -88,6 +89,40 @@ describe("ArtifactReducer", () => {
       // assert
       await expect(newState.artifactsByRunKeys).toEqual(initialState.artifactsByRunKeys);
       await expect(newState.isLoading).toBeTrue();
+    });
+  });
+
+  describe("loadModels action", () => {
+    it("should set isLoading to true in artifactState", async () => {
+      // arrange
+      const initialState: Partial<ArtifactState> = {
+        isLoading: false
+      };
+      const action = loadModels();
+
+      // act
+      const newState = artifactsReducer(initialState as ArtifactState, action);
+
+      // assert
+      await expect(newState.isLoading).toBeTrue();
+    });
+  });
+
+  describe("loadModelsSucceeded action", () => {
+    it("should update all models and set isLoading to false in artifactState", async () => {
+      // arrange
+      const initialState: Partial<ArtifactState> = {
+        models: await getRandomArtifacts(3)
+      };
+      const newModels = await getRandomArtifacts(4);
+      const action = loadModelsSucceeded({ models: newModels } as any);
+
+      // act
+      const newState = artifactsReducer(initialState as ArtifactState, action);
+
+      // assert
+      await expect(newState.models).toEqual(newModels);
+      await expect(newState.isLoading).toEqual(false);
     });
   });
 });

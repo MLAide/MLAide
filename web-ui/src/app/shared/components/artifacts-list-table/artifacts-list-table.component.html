@@ -34,7 +34,7 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
 
-  <mat-card *ngIf="(isLoading$ | async)" style="display: flex; justify-content: center; align-items: center">
+  <mat-card *ngIf="(isLoading$ | async)" fxLayoutAlign="center center">
     <mat-progress-spinner
       color="primary"
       mode="indeterminate">

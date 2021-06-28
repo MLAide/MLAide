@@ -3,7 +3,7 @@
 </div>
 
 <div fxLayout="column" class="example-container mat-elevation-z2">
-  <table mat-table matSort [dataSource]="dataSource" aria-label="Models overview">
+  <table mat-table matSort [dataSource]="models$" aria-label="Models overview">
     <ng-container matColumnDef="modelName">
       <th id="model-name" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Model name</th>
       <td headers="model-name" mat-cell *matCellDef="let element">{{ element.name }}</td>
@@ -36,4 +36,11 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
+
+  <mat-card *ngIf="(isLoadingArtifacts$ | async)" fxLayoutAlign="center center">
+    <mat-progress-spinner
+      color="primary"
+      mode="indeterminate">
+    </mat-progress-spinner>
+  </mat-card>
 </div>

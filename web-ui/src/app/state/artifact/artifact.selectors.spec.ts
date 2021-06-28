@@ -1,7 +1,11 @@
 import { AppState } from "@mlaide/state/app.state";
 import { getRandomArtifacts } from "@mlaide/mocks/fake-generator";
 import { ArtifactState } from "@mlaide/state/artifact/artifact.state";
-import { selectArtifactsByRunKeys, selectIsLoadingArtifacts } from "@mlaide/state/artifact/artifact.selectors";
+import {
+  selectArtifactsByRunKeys,
+  selectIsLoadingArtifacts,
+  selectModels
+} from "@mlaide/state/artifact/artifact.selectors";
 
 describe("ArtifactSelectors", () => {
   describe("selectArtifactsByRunKeys", () => {
@@ -37,6 +41,24 @@ describe("ArtifactSelectors", () => {
 
       // assert
       expect(isLoading).toBeTrue();
+    });
+  });
+
+  describe("selectModels", () => {
+    it("should select model from state", async () => {
+      // arrange
+      const partialArtifactState: Partial<ArtifactState> = {
+        models: await getRandomArtifacts(3)
+      }
+      const state: Partial<AppState> = {
+        artifacts: partialArtifactState as ArtifactState
+      };
+
+      // act
+      const artifacts = selectModels(state as AppState);
+
+      // assert
+      expect(artifacts).toBe(state.artifacts.models);
     });
   });
 });
