@@ -76,7 +76,6 @@ export class CreateOrUpdateExperimentComponent {
 
   public cancel() {
     this.store.dispatch(closeAddOrEditExperimentDialog());
-    // this.dialogRef.close();
   }
 
   public remove(tag: string): void {
@@ -108,6 +107,5 @@ export class CreateOrUpdateExperimentComponent {
     } else {
       this.store.dispatch(addExperiment(this.form.value));
     }
-    // this.dialogRef.close(this.form.value);
   }
 }

@@ -3,6 +3,7 @@ import { APP_CONFIG, AppConfig } from "@mlaide/config/app-config.model";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { Artifact } from "@mlaide/state/artifact/artifact.models";
+import { CreateOrUpdateModel } from "@mlaide/entities/artifact.model";
 
 export class ArtifactListResponse {
   items: Artifact[];
@@ -40,5 +41,15 @@ export class ArtifactApi {
         params,
       }
     )
+  }
+
+  public putModel(projectKey: string,
+                  artifactName: string,
+                  artifactVersion: number,
+                  createOrUpdateModel: CreateOrUpdateModel): Observable<void> {
+    return this.http.put<void>(
+      `${this.baseUrl}/projects/${projectKey}/artifacts/${artifactName}/${artifactVersion}/model`,
+      createOrUpdateModel
+    );
   }
 }
