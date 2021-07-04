@@ -28,4 +28,8 @@ export class RunApi {
       }
     )
   }
+
+  public getRuns(projectKey: string): Observable<RunListResponse> {
+    return this.http.get<RunListResponse>(`${this.baseUrl}/projects/${projectKey}/runs`)
+  }
 }

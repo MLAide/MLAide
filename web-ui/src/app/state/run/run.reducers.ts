@@ -4,11 +4,13 @@ import {
   loadExperimentWithAllDetails, loadExperimentWithAllDetailsFailed, loadExperimentWithAllDetailsStatusUpdate,
   loadExperimentWithAllDetailsSucceeded
 } from "@mlaide/state/experiment/experiment.actions";
+import { loadRuns, loadRunsFailed, loadRunsSucceeded } from "./run.actions";
 
 export const initialState: RunState = {
   isLoading: false,
-  runsOfCurrentExperiment: []
-}
+  runsOfCurrentExperiment: [],
+  items: []
+};
 
 export const runsReducer = createReducer(
   initialState,
@@ -25,5 +27,8 @@ export const runsReducer = createReducer(
     }
 
     return {...state};
-  })
+  }),
+  on(loadRuns, (state) => ({ ...state, isLoading: true })),
+  on(loadRunsSucceeded, (state, { runs }) => ({ ...state, items: runs, isLoading: false })),
+  on(loadRunsFailed, (state) => ({ ...state, isLoading: false })),
 );
