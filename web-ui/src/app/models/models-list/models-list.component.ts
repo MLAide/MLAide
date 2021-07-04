@@ -26,12 +26,7 @@ export class ModelsListComponent implements OnInit {
   public models$: Observable<Artifact[]>;
   public isLoadingArtifacts$: Observable<boolean>;
 
-  constructor(
-    private dialog: MatDialog,
-    private artifactsApiService: ArtifactsApiService,
-    private route: ActivatedRoute,
-    private readonly store: Store
-  ) {}
+  constructor(private readonly store: Store) {}
 
   ngOnInit() {
     this.models$ = this.store.select(selectModels);

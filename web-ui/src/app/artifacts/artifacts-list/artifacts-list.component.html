@@ -3,6 +3,6 @@
 </div>
 
 <div fxLayout="column">
-  <app-artifacts-list-table [artifactListDataSource]="artifactListDataSource" [projectKey]="projectKey">
+  <app-artifacts-list-table [artifacts$]="artifacts$" [projectKey]="(projectKey$ | async)" [isLoading$]="isLoadingArtifacts$">
   </app-artifacts-list-table>
 </div>

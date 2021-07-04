@@ -5,7 +5,7 @@ import {
   loadExperimentWithAllDetailsStatusUpdate,
   loadExperimentWithAllDetailsSucceeded
 } from "@mlaide/state/experiment/experiment.actions";
-import { loadModels, loadModelsFailed, loadModelsSucceeded } from "@mlaide/state/artifact/artifact.actions";
+import { loadArtifacts, loadArtifactsFailed, loadArtifactsSucceeded, loadModels, loadModelsFailed, loadModelsSucceeded } from "@mlaide/state/artifact/artifact.actions";
 
 export const initialState: ArtifactState = {
   artifactsByRunKeys: [],
@@ -33,4 +33,7 @@ export const artifactsReducer = createReducer(
   on(loadModels, (state) => ({ ...state, isLoading: true })),
   on(loadModelsSucceeded, (state, { models }) => ({ ...state, models: models, isLoading: false })),
   on(loadModelsFailed, (state) => ({ ...state, isLoading: false })),
+  on(loadArtifacts, (state) => ({ ...state, isLoading: true })),
+  on(loadArtifactsSucceeded, (state, { artifacts }) => ({ ...state, items: artifacts, isLoading: false })),
+  on(loadArtifactsFailed, (state) => ({ ...state, isLoading: false })),
 );

@@ -7,7 +7,6 @@ import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors
 import { catchError, map, mergeMap, tap } from "rxjs/operators";
 import { of } from "rxjs";
 import { showError } from "@mlaide/state/shared/shared.actions";
-import { loadModelsFailed } from "@mlaide/state/artifact/artifact.actions";
 import { MatDialog } from "@angular/material/dialog";
 import { EditModelComponent } from "@mlaide/models/edit-model/edit-model.component";
 import { CreateOrUpdateModel } from "@mlaide/entities/artifact.model";
@@ -28,10 +27,33 @@ export class ArtifactEffects {
 
   loadModelsFailed$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(loadModelsFailed),
+      ofType(artifactActions.loadModelsFailed),
       map((action) => action.payload),
       map((error) => ({
         message: "Could not load models. A unknown error occurred.",
+        error: error
+      })),
+      map(showError)
+    )
+  );
+
+  loadArtifacts$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(artifactActions.loadArtifacts),
+      concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
+      mergeMap(([action, projectKey]) => this.artifactApi.getArtifacts(projectKey)),
+      map((artifactListResponse) => ({ artifacts: artifactListResponse.items })),
+      map((artifacts) => artifactActions.loadArtifactsSucceeded(artifacts)),
+      catchError((error) => of(artifactActions.loadArtifactsFailed(error)))
+    )
+  );
+
+  loadArtifactsFailed$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(artifactActions.loadArtifactsFailed),
+      map((action) => action.payload),
+      map((error) => ({
+        message: "Could not load artifacts. A unknown error occurred.",
         error: error
       })),
       map(showError)
