@@ -7,6 +7,8 @@ import { Project } from "@mlaide/entities/project.model";
 import { getRandomProject, getRandomArtifacts } from "@mlaide/mocks/fake-generator";
 import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
 import { Observable } from "rxjs";
+import { ListDataSource } from "@mlaide/shared/api";
+import { skip } from "rxjs/operators";
 
 describe("ArtifactApi", () => {
   let artifactApi: ArtifactApi;
@@ -29,6 +31,75 @@ describe("ArtifactApi", () => {
 
   it("should be created", () => {
     expect(artifactApi).toBeTruthy();
+  });
+
+  describe("getArtifacts", () => {
+    it("should return data source that emits results from api response if isModel is false", async (done) => {
+      // arrange
+      const fakeProject: Project = await getRandomProject();
+      const fakeArtifacts: Artifact[] = await getRandomArtifacts(2);
+      const dummyResponse: ArtifactListResponse = { items: fakeArtifacts };
+
+      // act
+      const artifacts$: Observable<ArtifactListResponse> = artifactApi.getArtifacts(fakeProject.key, false);
+
+      // assert
+      artifacts$.subscribe((response) => {
+        checkThatItemsLengthAndResponseMatch(response, fakeArtifacts, dummyResponse);
+        done();
+      });
+
+      const req: TestRequest = httpMock.expectOne(
+        `${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects/${fakeProject.key}/artifacts?isModel=false`
+      );
+      expect(req.request.method).toBe("GET");
+      expect(req.request.params.get("isModel")).toBe("false");
+      req.flush(dummyResponse);
+    });
+
+    it("should return data source that emits results from api response with isModel false if not set explicetly", async (done) => {
+      // arrange
+      const fakeProject = await getRandomProject();
+      const fakeArtifacts = await getRandomArtifacts(2);
+      const dummyResponse: ArtifactListResponse = { items: fakeArtifacts };
+
+      // act
+      const artifacts$: Observable<ArtifactListResponse> = artifactApi.getArtifacts(fakeProject.key);
+
+      // assert
+      artifacts$.subscribe((response) => {
+        checkThatItemsLengthAndResponseMatch(response, fakeArtifacts, dummyResponse);
+        done();
+      });
+
+      const req: TestRequest = httpMock.expectOne(
+        `${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects/${fakeProject.key}/artifacts?isModel=false`
+      );
+      expect(req.request.method).toBe("GET");
+      expect(req.request.params.get("isModel")).toBe("false");
+      req.flush(dummyResponse);
+    });
+
+    it("should return data source that emits results from api response if isModel is true", async (done) => {
+      // arrange
+      const fakeProject: Project = await getRandomProject();
+      const fakeArtifacts: Artifact[] = await getRandomArtifacts(2);
+      const dummyResponse: ArtifactListResponse = { items: fakeArtifacts };
+
+      // act
+      const artifacts$: Observable<ArtifactListResponse> = artifactApi.getArtifacts(fakeProject.key, true);
+
+      // assert
+      artifacts$.subscribe((response) => {
+        checkThatItemsLengthAndResponseMatch(response, fakeArtifacts, dummyResponse);
+        done();
+      });
+
+      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects/${fakeProject.key}/artifacts?isModel=true`);
+      expect(req.request.method).toBe("GET");
+      expect(req.request.params.get("isModel")).toBe("true");
+      req.flush(dummyResponse);
+    });
   });
 
   describe("getArtifactsByRunKeys", () => {

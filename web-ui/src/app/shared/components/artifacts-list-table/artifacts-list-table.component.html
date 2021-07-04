@@ -1,5 +1,5 @@
 <div fxLayout="column" fxFlex="100" class="example-container mat-elevation-z2">
-  <table mat-table matSort [dataSource]="dataSource" aria-label="Artifacts overview">
+  <table mat-table matSort [dataSource]="artifacts$" aria-label="Artifacts overview">
     <ng-container matColumnDef="createdAt">
       <th id="created-at" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Created at</th>
       <td headers="created-at" mat-cell *matCellDef="let element">
@@ -34,7 +34,7 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
 
-  <mat-card *ngIf="(isLoading$ | async)" style="display: flex; justify-content: center; align-items: center">
+  <mat-card *ngIf="(isLoading$ | async)" fxLayoutAlign="center center">
     <mat-progress-spinner
       color="primary"
       mode="indeterminate">
