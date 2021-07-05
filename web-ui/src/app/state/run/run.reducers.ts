@@ -4,7 +4,7 @@ import {
   loadExperimentWithAllDetails, loadExperimentWithAllDetailsFailed, loadExperimentWithAllDetailsStatusUpdate,
   loadExperimentWithAllDetailsSucceeded
 } from "@mlaide/state/experiment/experiment.actions";
-import { loadRuns, loadRunsFailed, loadRunsSucceeded } from "./run.actions";
+import { loadRuns, loadRunsByRunKeys, loadRunsByRunKeysFailed, loadRunsByRunKeysSucceeded, loadRunsFailed, loadRunsSucceeded } from "./run.actions";
 
 export const initialState: RunState = {
   isLoading: false,
@@ -28,7 +28,12 @@ export const runsReducer = createReducer(
 
     return {...state};
   }),
+  
   on(loadRuns, (state) => ({ ...state, isLoading: true })),
   on(loadRunsSucceeded, (state, { runs }) => ({ ...state, items: runs, isLoading: false })),
   on(loadRunsFailed, (state) => ({ ...state, isLoading: false })),
+
+  on(loadRunsByRunKeys, (state) => ({ ...state, isLoading: true })),
+  on(loadRunsByRunKeysSucceeded, (state, { runs }) => ({ ...state, items: runs, isLoading: false })),
+  on(loadRunsByRunKeysFailed, (state) => ({ ...state, isLoading: false })),
 );

@@ -1,21 +1,15 @@
-import { AfterViewInit, Component, Input, ViewChild } from "@angular/core";
-import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
+import { Component, Input } from "@angular/core";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "app-run-params-metrics-table",
   templateUrl: "./run-params-metrics-table.component.html",
   styleUrls: ["./run-params-metrics-table.component.scss"],
 })
-export class RunParamsMetricsTableComponent implements AfterViewInit {
-  @Input() dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
-  @Input() displayedColumnsName: string[];
-  @Input() displayedColumnsStartTime: any[] = [" "];
-  @ViewChild(MatSort) sort: MatSort;
-
-  ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
-  }
+export class RunParamsMetricsTableComponent {
+  @Input() data$: Observable<any[]>;
+  @Input() displayedColumnsName$: Observable<string[]>;
+  @Input() displayedColumnsStartTime$: Observable<any[]>;
 
   public valuesInRowDiffer(row: any[]) {
     const array = row.slice(1);

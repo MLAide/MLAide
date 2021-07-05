@@ -1,105 +1,87 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { MatTableDataSource } from "@angular/material/table";
-import { ActivatedRoute } from "@angular/router";
-import { Subscription } from "rxjs";
-import { Run, RunListResponse } from "@mlaide/entities/run.model";
-import { ListDataSource, RunsApiService } from "@mlaide/shared/api";
+import { Component, OnInit } from "@angular/core";
+import { Observable } from "rxjs";
+import { Run } from "@mlaide/entities/run.model";
+import { Store } from "@ngrx/store";
+import { loadRunsByRunKeys } from "@mlaide/state/run/run.actions";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { selectIsLoadingRuns, selectRuns } from "@mlaide/state/run/run.selectors";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: "app-runs-compare",
   templateUrl: "./runs-compare.component.html",
   styleUrls: ["./runs-compare.component.scss"],
 })
-export class RunsCompareComponent implements OnInit, OnDestroy {
-  public dataSourceMetrics: MatTableDataSource<any> = new MatTableDataSource<any>();
-  public dataSourceParameters: MatTableDataSource<any> = new MatTableDataSource<any>();
-  public displayedColumnsStartTime: any[] = [" "];
-  public displayedMetricsColumns: string[] = ["metrics"];
-  public displayedParametersColumns: string[] = ["parameter"];
-  private routeParamsSubscription: Subscription;
-  private routeQueryParamsSub: Subscription;
-  private projectKey: string;
-  private runKeys: number[];
-  private runListDataSource: ListDataSource<RunListResponse>;
-  private runListSubscription: Subscription;
-  private runs: Run[];
-  private uniqueMetricsList: string[];
-  private uniqueParametersList: string[];
+export class RunsCompareComponent implements OnInit {
+  public runs$: Observable<Run[]>;
+  public projectKey$: Observable<string>;
+  public isLoadingRuns$: Observable<boolean>;
 
-  constructor(private route: ActivatedRoute, private runsApiService: RunsApiService) {}
+  public displayedMetricsColumns$: Observable<string[]>;
+  public displayedParametersColumns$: Observable<string[]>;
+  public displayedColumnsStartTime$: Observable<any>;
+  
+  public metrics$: Observable<string[][]>;
+  public parameters$: Observable<string[][]>;
+
+  constructor(private store: Store) {}
 
   ngOnInit() {
-    this.routeParamsSubscription = this.route.params.subscribe((routeParams) => {
-      this.projectKey = routeParams.projectKey;
+    this.runs$ = this.store.select(selectRuns);
 
-      this.routeQueryParamsSub = this.route.queryParams.subscribe((queryParams) => {
-        this.runKeys = queryParams.runKeys;
+    this.metrics$ = this.runs$.pipe(
+      map((runs) => {
+        const uniqueMetrics = this.createMetricsList(runs);
+        return this.createDatasourceForMetrics(runs, uniqueMetrics);
+      })
+    );
 
-        this.runListDataSource = this.runsApiService.getRunsByRunKeys(this.projectKey, this.runKeys);
-        this.runListSubscription = this.runListDataSource.items$.subscribe((runs) => {
-          this.runs = runs.items;
-          this.runs.forEach((run) => {
-            this.displayedMetricsColumns.push(`${run.name}-${run.key}`);
-            this.displayedParametersColumns.push(`${run.name}-${run.key}`);
-            this.displayedColumnsStartTime.push(run?.startTime);
-          });
-          this.uniqueMetricsList = this.createMetricsList(this.runs);
-          this.uniqueParametersList = this.createParametersList(this.runs);
+    this.parameters$ = this.runs$.pipe(
+      map((runs) => {
+        const uniqueParameters = this.createParametersList(runs);
+        return this.createDatasourceForParameters(runs, uniqueParameters);
+      })
+    );
 
-          this.dataSourceMetrics.data = this.createDatasourceForMetrics(this.runs, this.uniqueMetricsList);
+    this.displayedMetricsColumns$ = this.runs$.pipe(
+      map((runs) => ["metrics"].concat(...runs.map((run) => `${run.name}-${run.key}`)))
+    );
 
-          this.dataSourceParameters.data = this.createDatasourceForParameters(this.runs, this.uniqueParametersList);
-        });
-      });
-    });
-  }
+    this.displayedParametersColumns$ = this.runs$.pipe(
+      map((runs) => ["parameters"].concat(...runs.map((run) => `${run.name}-${run.key}`)))
+    );
 
-  ngOnDestroy() {
-    if (this.routeParamsSubscription) {
-      this.routeParamsSubscription.unsubscribe();
-    }
+    this.displayedColumnsStartTime$ = this.runs$.pipe(
+      map((runs) => [(" " as any)].concat(...runs.map((run) => run.startTime)))
+    );
 
-    if (this.routeQueryParamsSub) {
-      this.routeQueryParamsSub.unsubscribe();
-    }
+    this.projectKey$ = this.store.select(selectCurrentProjectKey);
+    this.isLoadingRuns$ = this.store.select(selectIsLoadingRuns);
 
-    if (this.runListSubscription) {
-      this.runListSubscription.unsubscribe();
-      this.runListSubscription = null;
-    }
+    this.store.dispatch(loadRunsByRunKeys());
   }
 
   private createDatasourceForMetrics(runs: Run[], uniqueMetricsList: string[]) {
-    const data = [];
-
-    uniqueMetricsList.forEach((metric) => {
-      const valuesForMetrics = [metric];
-
-      runs.forEach((run) => {
-        if (run.metrics) {
-          valuesForMetrics.push(run.metrics[metric]);
-        }
-      });
-
-      data.push(valuesForMetrics);
-    });
-
-    return data;
+    return this.createDatasourceForRunProperty(runs, uniqueMetricsList, "metrics");
   }
 
   private createDatasourceForParameters(runs: Run[], uniqueParamsList: string[]) {
+    return this.createDatasourceForRunProperty(runs, uniqueParamsList, "parameters");
+  }
+
+  private createDatasourceForRunProperty(runs: Run[], propertyKeys: string[], propertyName: string) {
     const data = [];
 
-    uniqueParamsList.forEach((param) => {
-      const valuesForParam = [param];
+    propertyKeys.forEach((propertyKey) => {
+      const values = [propertyKey];
 
       runs.forEach((run) => {
-        if (run.parameters) {
-          valuesForParam.push(run.parameters[param]);
+        if (run[propertyName]) {
+          values.push(run[propertyName][propertyKey]);
         }
       });
 
-      data.push(valuesForParam);
+      data.push(values);
     });
 
     return data;

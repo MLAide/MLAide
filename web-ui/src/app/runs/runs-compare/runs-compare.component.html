@@ -6,9 +6,9 @@
 
   <app-run-params-metrics-table
     id="run-metrics-table"
-    [dataSource]="dataSourceMetrics"
-    [displayedColumnsName]="displayedMetricsColumns"
-    [displayedColumnsStartTime]="displayedColumnsStartTime"
+    [data$]="metrics$"
+    [displayedColumnsName$]="displayedMetricsColumns$"
+    [displayedColumnsStartTime$]="displayedColumnsStartTime$"
   >
   </app-run-params-metrics-table>
 
@@ -16,9 +16,9 @@
 
   <app-run-params-metrics-table
     id="run-parameters-table"
-    [dataSource]="dataSourceParameters"
-    [displayedColumnsName]="displayedParametersColumns"
-    [displayedColumnsStartTime]="displayedColumnsStartTime"
+    [data$]="parameters$"
+    [displayedColumnsName$]="displayedParametersColumns$"
+    [displayedColumnsStartTime$]="displayedColumnsStartTime$"
   >
   </app-run-params-metrics-table>
 </div>

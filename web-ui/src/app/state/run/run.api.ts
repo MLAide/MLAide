@@ -29,6 +29,17 @@ export class RunApi {
     )
   }
 
+  public getRunsByRunKeys(projectKey: string, runKeys: string[]): Observable<RunListResponse> {
+    let params = {
+      runKeys: runKeys.join(","),
+    }
+    return this.http.get<RunListResponse>(
+      `${this.baseUrl}/projects/${projectKey}/runs`, {
+        params,
+      }
+    )
+  }
+
   public getRuns(projectKey: string): Observable<RunListResponse> {
     return this.http.get<RunListResponse>(`${this.baseUrl}/projects/${projectKey}/runs`)
   }
