@@ -1,8 +1,10 @@
 import { ENTER } from "@angular/cdk/keycodes";
 import { Component, Inject } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { ProjectMember, ProjectMemberRole } from "@mlaide/entities/projectMember.model";
+import { addProjectMember, closeAddOrEditProjectMemberDialog, editProjectMember } from "@mlaide/state/project-member/project-member.actions";
+import { Store } from "@ngrx/store";
 
 @Component({
   selector: "app-create-or-edit-project-member",
@@ -13,11 +15,12 @@ export class CreateOrEditProjectMemberComponent {
   public currentRole;
   public form: FormGroup;
   public projectMemberRole = ProjectMemberRole;
+  public isEditMode: boolean;
 
   constructor(
-    private dialogRef: MatDialogRef<CreateOrEditProjectMemberComponent>,
+    private store: Store,
     private formBuilder: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: { projectMember: ProjectMember; title: string; create: boolean }
+    @Inject(MAT_DIALOG_DATA) public data: { projectMember: ProjectMember; title: string }
   ) {
     this.currentRole = data.projectMember?.role;
 
@@ -32,10 +35,12 @@ export class CreateOrEditProjectMemberComponent {
       ],
       role: [this.currentRole, { validators: [Validators.required], updateOn: "change" }],
     });
+
+    this.isEditMode = data.projectMember !== undefined && data.projectMember !== null;
   }
 
   public cancel() {
-    this.dialogRef.close();
+    this.store.dispatch(closeAddOrEditProjectMemberDialog());
   }
 
   public keyDown(event) {
@@ -52,6 +57,10 @@ export class CreateOrEditProjectMemberComponent {
   }
 
   public save() {
-    this.dialogRef.close(this.form.value);
+    if (this.isEditMode) {
+      this.store.dispatch(editProjectMember({ projectMember: this.form.value }));
+    } else {
+      this.store.dispatch(addProjectMember({ projectMember: this.form.value }));
+    }
   }
 }

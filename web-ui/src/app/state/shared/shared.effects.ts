@@ -2,15 +2,24 @@ import { Injectable } from "@angular/core";
 import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { tap } from "rxjs/operators";
-import { hideSpinner, showError, showSpinner } from "./shared.actions";
+import { hideSpinner, showError, showSpinner, showSuccessMessage } from "./shared.actions";
 
 @Injectable({ providedIn: "root" })
 export class SharedEffects {
-  showError = createEffect(
+  showError$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(showError),
         tap((action) => this.snackbarUiService.showErrorSnackbar(action.message))
+      ),
+    { dispatch: false }
+  );
+
+  showSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(showSuccessMessage),
+        tap((action) => this.snackbarUiService.showSuccesfulSnackbar(action.message))
       ),
     { dispatch: false }
   );

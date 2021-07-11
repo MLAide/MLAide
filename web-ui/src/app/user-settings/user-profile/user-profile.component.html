@@ -1,9 +1,9 @@
 <div fxLayout="row" fxLayoutAlign="space-around">
   <div fxLayout="column" fxFlex="50">
     <h1 class="mat-display-2" aria-label="Title of user component" i18n>Personal information</h1>
-    <span id="sub-text" class="mat-body" aria-label="Subtext of user component's title" i18n
-      >Edit your personal information here.</span
-    >
+    <span id="sub-text" class="mat-body" aria-label="Subtext of user component's title" i18n>
+      Edit your personal information here.
+    </span>
     <h3 class="mat-h3" i18n><span></span></h3>
     <form id="user-form" [formGroup]="userForm" *ngIf="userForm" role="Form to edit user settings" (submit)="save()">
       <div>

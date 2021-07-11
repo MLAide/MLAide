@@ -1,55 +1,32 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { MatTableDataSource } from "@angular/material/table";
-import { Subscription } from "rxjs";
-import { ApiKey, ApiKeyListResponse } from "@mlaide/entities/apiKey.model";
-import { ListDataSource, UsersApiService } from "@mlaide/shared/api";
-import { SnackbarUiService } from "@mlaide/shared/services/snackbar-ui.service";
-import { CreateApiKeyComponent } from "../create-api-key/create-api-key.component";
+import { Component, OnInit } from "@angular/core";
+import { Observable } from "rxjs";
+import { Store } from "@ngrx/store";
+import { selectApiKeys, selectIsLoadingApiKeys } from "@mlaide/state/api-key/api-key.selectors";
+import { ApiKey } from "@mlaide/state/api-key/api-key.models";
+import { deleteApiKey, loadApiKeys, openAddApiKeyDialog } from "@mlaide/state/api-key/api-key.actions";
 
 @Component({
   selector: "app-api-keys",
   templateUrl: "./api-keys.component.html",
   styleUrls: ["./api-keys.component.scss"],
 })
-export class ApiKeysComponent implements OnInit, OnDestroy {
+export class ApiKeysComponent implements OnInit {
   public displayedColumns: string[] = ["description", "createdAt", "expiresAt", "actions"];
-  public dataSource: MatTableDataSource<ApiKey> = new MatTableDataSource<ApiKey>();
-  private apiKeysListDatasource: ListDataSource<ApiKeyListResponse>;
-  private apiKeysListSubscription: Subscription;
 
-  constructor(private userService: UsersApiService, private dialog: MatDialog, private snackBarService: SnackbarUiService) {}
+  public apiKeys$: Observable<ApiKey[]> = this.store.select(selectApiKeys);
+  public isLoading$: Observable<boolean> = this.store.select(selectIsLoadingApiKeys);
 
-  ngOnDestroy(): void {
-    if (this.apiKeysListSubscription) {
-      this.apiKeysListSubscription.unsubscribe();
-    }
-  }
+  constructor(private readonly store: Store) {}
 
-  ngOnInit(): void {
-    this.apiKeysListDatasource = this.userService.getApiKeys();
-    this.apiKeysListSubscription = this.apiKeysListDatasource.items$.subscribe(
-      (apiKeys) => (this.dataSource.data = apiKeys.items)
-    );
+  public ngOnInit(): void {
+    this.store.dispatch(loadApiKeys());
   }
 
   public deleteApiKey(apiKey: ApiKey) {
-    this.userService.deleteApiKey(apiKey).subscribe(
-      () => {
-        this.apiKeysListDatasource.refresh();
-        this.snackBarService.showSuccesfulSnackbar("Successfully deleted API Key!");
-      },
-      () => this.snackBarService.showErrorSnackbar("Error while deleted API Key.")
-    );
+    this.store.dispatch(deleteApiKey({ apiKey }));
   }
 
-  public openCreateApiKeyDialog(): void {
-    const dialogRef: MatDialogRef<CreateApiKeyComponent, any> = this.dialog.open(CreateApiKeyComponent, {
-      minWidth: "20%",
-    });
-
-    dialogRef.afterClosed().subscribe(() => {
-      this.apiKeysListDatasource.refresh();
-    });
+  public createApiKey(): void {
+    this.store.dispatch(openAddApiKeyDialog());
   }
 }

@@ -4,7 +4,7 @@ import { CommonModule } from "@angular/common";
 import { UserSettingsRoutingModule } from "./user-settings-routing.module";
 import { ApiKeysComponent } from "./api-keys/api-keys.component";
 import { CreateApiKeyComponent } from "./create-api-key/create-api-key.component";
-import { UserComponent } from "./user/user.component";
+import { UserProfileComponent } from "./user-profile/user-profile.component";
 import { UserSettingsComponent } from "./user-settings/user-settings.component";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { ReactiveFormsModule } from "@angular/forms";
@@ -31,7 +31,7 @@ import { MatTreeModule } from "@angular/material/tree";
 import { FlexLayoutModule } from "@angular/flex-layout";
 
 @NgModule({
-  declarations: [ApiKeysComponent, CreateApiKeyComponent, UserComponent, UserSettingsComponent],
+  declarations: [ApiKeysComponent, CreateApiKeyComponent, UserProfileComponent, UserSettingsComponent],
   imports: [
     CommonModule,
 

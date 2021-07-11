@@ -4,7 +4,7 @@ import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { catchError, map, mergeMap, tap } from "rxjs/operators";
 import { of } from "rxjs";
 
-import { hideSpinner, showError, showSpinner } from "@mlaide/state/shared/shared.actions";
+import { showError } from "@mlaide/state/shared/shared.actions";
 import { ExperimentApi } from "@mlaide/state/experiment/experiment.api";
 import * as experimentActions from "@mlaide/state/experiment/experiment.actions";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -19,6 +19,7 @@ import { ArtifactApi } from "@mlaide/state/artifact/artifact.api";
 export class ExperimentEffects {
   loadExperimentsOnRouterNavigation$ = createEffect(() =>
     this.store.pipe(select(selectCurrentProjectKey)).pipe(
+      //TODO: only do this if experiment route is active
       map(() => experimentActions.loadExperiments())
     )
   );
@@ -124,20 +125,6 @@ export class ExperimentEffects {
       tap(() => this.dialog.closeAll())
     ),
     { dispatch: false }
-  );
-
-  showSpinner$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(experimentActions.loadExperiments),
-      map(() => showSpinner())
-    )
-  );
-
-  hideSpinner$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(experimentActions.loadExperimentsSucceeded),
-      map(() => hideSpinner())
-    )
   );
 
   loadExperimentsFailed$ = createEffect(() =>

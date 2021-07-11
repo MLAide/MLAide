@@ -24,7 +24,7 @@
         />
       </mat-form-field>
     </div>
-    <div *ngIf="apiKey != ''">
+    <div *ngIf="(apiKey$ | async)">
       <mat-divider></mat-divider>
       <h3 class="mat-h3">Created API key</h3>
       <div>
@@ -35,10 +35,10 @@
             cdkTextareaAutosize
             #notes
             #autosize="cdkTextareaAutosize"
-            [value]="apiKey"
+            [value]="(apiKey$ | async)?.apiKey"
             readonly="true"
           ></textarea>
-          <button id="create-api-key-copy-button" mat-icon-button matSuffix [cdkCopyToClipboard]="apiKey" (click)="copy()" i18n>
+          <button id="create-api-key-copy-button" mat-icon-button matSuffix [cdkCopyToClipboard]="(apiKey$ | async).apiKey" (click)="copy()" i18n>
             <mat-icon>content_copy</mat-icon>
           </button>
           <mat-hint i18n>Save this key - you won't be able to access it again.</mat-hint>
@@ -47,7 +47,7 @@
     </div>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
-    <div *ngIf="apiKey == ''">
+    <div *ngIf="!(apiKey$ | async)">
       <button id="create-api-key-cancel-button" mat-button (click)="close()" type="button" i18n>Cancel</button>
       <span class="margin-right-sm"></span>
       <button
@@ -63,7 +63,7 @@
         Create
       </button>
     </div>
-    <div *ngIf="apiKey != ''">
+    <div *ngIf="(apiKey$ | async)">
       <button id="create-api-key-close-button" mat-button (click)="close()" color="primary" cdkFocusInitial i18n>Close</button>
     </div>
   </mat-dialog-actions>

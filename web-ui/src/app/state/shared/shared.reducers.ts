@@ -6,7 +6,7 @@ export const initialState: SharedState = {
   isLoading: false,
 };
 
-export const spinnerReducer = createReducer(
+export const sharedReducer = createReducer(
   initialState,
   on(showSpinner, (state) => ({ isLoading: true })),
   on(hideSpinner, (state) => ({ isLoading: false }))

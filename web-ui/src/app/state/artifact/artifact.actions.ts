@@ -1,6 +1,5 @@
 import { createAction, props } from "@ngrx/store";
-import { Artifact, ModelRevision } from "@mlaide/state/artifact/artifact.models";
-import { ModelStage } from "@mlaide/entities/artifact.model";
+import { Artifact, ModelRevision, ModelStage } from "@mlaide/state/artifact/artifact.models";
 
 export const loadModels = createAction("@mlaide/actions/models/load");
 export const loadModelsSucceeded = createAction("@mlaide/actions/models/load/succeeded", props<{ models: Artifact[] }>());

@@ -2,7 +2,7 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 
 import { ProjectSettingsRoutingModule } from "./project-settings-routing.module";
-import { ProjectSettingsComponent } from "./project-settings/project-settings.component";
+import { ProjectMembersListComponent } from "./project-members-list/project-members-list.component";
 import { CreateOrEditProjectMemberComponent } from "./create-or-edit-project-member/create-or-edit-project-member.component";
 import { SharedModule } from "../shared/shared.module";
 import { MatIconModule } from "@angular/material/icon";
@@ -14,9 +14,10 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { FlexLayoutModule } from "@angular/flex-layout";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
-  declarations: [ProjectSettingsComponent, CreateOrEditProjectMemberComponent],
+  declarations: [ProjectMembersListComponent, CreateOrEditProjectMemberComponent],
   imports: [
     CommonModule,
 
@@ -29,6 +30,7 @@ import { FlexLayoutModule } from "@angular/flex-layout";
     MatDialogModule,
     MatIconModule,
     MatInputModule,
+    MatProgressSpinnerModule,
     MatSelectModule,
     MatSnackBarModule,
     MatTableModule,

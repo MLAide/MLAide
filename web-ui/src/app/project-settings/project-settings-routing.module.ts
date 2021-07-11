@@ -1,13 +1,13 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { AuthGuard } from "@mlaide/auth/auth-guard.service";
-import { ProjectSettingsComponent } from "./project-settings/project-settings.component";
+import { ProjectMembersListComponent } from "./project-members-list/project-members-list.component";
 
 const routes: Routes = [
   {
     path: "",
     canActivate: [AuthGuard],
-    children: [{ path: "", component: ProjectSettingsComponent, canActivate: [AuthGuard] }],
+    children: [{ path: "", component: ProjectMembersListComponent, canActivate: [AuthGuard] }],
   },
 ];
 

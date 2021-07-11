@@ -3,7 +3,7 @@
     <h1 class="mat-display-2" mat-dialog-title i18n>{{ data.title }}</h1>
   </div>
   <mat-dialog-content [formGroup]="form" (keydown)="keyDown($event)">
-    <div *ngIf="!data.create">
+    <div *ngIf="isEditMode">
       <mat-form-field fxFlex="100">
         <mat-label i18n>Nickname</mat-label>
         <input matInput readonly="true" formControlName="nickName" placeholder="Nickname" />
@@ -14,14 +14,14 @@
         <mat-label i18n>Email</mat-label>
         <input
           matInput
-          *ngIf="data.create"
-          [readonly]="!data.create"
+          *ngIf="!isEditMode"
+          [readonly]="isEditMode"
           formControlName="email"
           placeholder="Email"
           cdkFocusInitial
           required
         />
-        <input matInput *ngIf="!data.create" [readonly]="!data.create" formControlName="email" placeholder="Email" required />
+        <input matInput *ngIf="isEditMode" [readonly]="isEditMode" formControlName="email" placeholder="Email" required />
         <mat-error *ngIf="form.get('email').hasError('email') && !form.get('email').hasError('required')" i18n>
           You must provide a valid email.
         </mat-error>
@@ -32,7 +32,7 @@
       <mat-form-field fxFlex="100">
         <mat-label i18n>Role</mat-label>
         <mat-select
-          *ngIf="!data.create"
+          *ngIf="isEditMode"
           formControlName="role"
           placeholder="Choose users role"
           [(value)]="currentRole"
@@ -46,7 +46,7 @@
             </span>
           </mat-option>
         </mat-select>
-        <mat-select *ngIf="data.create" formControlName="role" placeholder="Choose users role" [(value)]="currentRole" required>
+        <mat-select *ngIf="!isEditMode" formControlName="role" placeholder="Choose users role" [(value)]="currentRole" required>
           <mat-option *ngFor="let item of projectMemberRole | keyvalue" [value]="item.key">
             <!--https://medium.com/@piotrl/angular-translate-enums-i18n-ec1bb1462181-->
             <span i18n>
@@ -71,7 +71,7 @@
       cdkFocusInitial
       i18n
     >
-      {{ data.create ? "Create" : "Update" }}
+      {{ isEditMode ? "Update" : "Create" }}
     </button>
   </mat-dialog-actions>
 </div>

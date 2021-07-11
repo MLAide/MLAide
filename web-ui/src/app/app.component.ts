@@ -4,85 +4,51 @@ import {
   Component,
   ElementRef,
   HostListener,
-  OnDestroy,
-  OnInit,
   ViewChild,
 } from "@angular/core";
 import { Store } from "@ngrx/store";
-import { Observable, Subscription } from "rxjs";
-import { filter, mergeMap } from "rxjs/operators";
-import { AuthService } from "./auth/auth.service";
+import { Observable } from "rxjs";
 import { Project } from "./entities/project.model";
 import { User } from "./entities/user.model";
-import { ProjectsApiService, UsersApiService } from "./shared/api";
+import { initializeLogin, login, logout } from "@mlaide/state/auth/auth.actions";
+import { selectIsUserAuthenticated } from "@mlaide/state/auth/auth.selectors";
+import { selectProjects } from "./state/project/project.selectors";
+import { selectCurrentUser } from "./state/user/user.selectors";
 
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
 })
-export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AppComponent implements AfterViewInit {
   @ViewChild("tabBar") public elementView: ElementRef;
   public isAuthenticated$: Observable<boolean>;
-  public projects: Project[];
-  public user: User;
+  public projects$: Observable<Project[]>;
+  public user$: Observable<User>;
   public tabBarHeight: number;
 
-  private isAuthenticatedSubscription: Subscription;
-  private isAuthenticatedSubscriptionForProjects: Subscription;
-  private projectListSubscription: Subscription;
-
   constructor(
-    private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
-    private projectsApiService: ProjectsApiService,
-    private userService: UsersApiService
+    private store: Store,
   ) {
-    this.isAuthenticated$ = this.authService.isAuthenticated$;
-    this.isAuthenticatedSubscription = this.isAuthenticated$
-      .pipe(
-        filter((isAuthenticated) => isAuthenticated),
-        mergeMap(() => this.userService.getCurrentUser())
-      )
-      .subscribe((user) => {
-        this.user = user;
-      });
+    this.user$ = this.store.select(selectCurrentUser);
+    this.isAuthenticated$ = this.store.select(selectIsUserAuthenticated);
+    this.projects$ = this.store.select(selectProjects);
 
-    this.authService.runInitialLoginSequence();
+    this.store.dispatch(initializeLogin());
   }
 
   login() {
-    this.authService.loginWithUserInteraction("/projects");
+    this.store.dispatch(login({ targetUrl: "/projects"}))
   }
 
   logout() {
-    this.authService.logout();
+    this.store.dispatch(logout());
   }
 
   ngAfterViewInit(): void {
     this.tabBarHeight = this.elementView.nativeElement.offsetHeight;
     this.changeDetectorRef.detectChanges();
-  }
-
-  ngOnDestroy() {
-    if (this.projectListSubscription) {
-      this.projectListSubscription.unsubscribe();
-    }
-    if (this.isAuthenticatedSubscription) {
-      this.isAuthenticatedSubscription.unsubscribe();
-    }
-    if (this.isAuthenticatedSubscriptionForProjects) {
-      this.isAuthenticatedSubscriptionForProjects.unsubscribe();
-    }
-  }
-
-  ngOnInit() {
-    this.isAuthenticatedSubscriptionForProjects = this.isAuthenticated$.subscribe((isAuthenticated) => {
-      if (isAuthenticated) {
-        const projectListDataSource = this.projectsApiService.getProjects();
-        this.projectListSubscription = projectListDataSource.items$.subscribe((projects) => (this.projects = projects.items));
-      }
-    });
   }
 
   @HostListener("window:scroll", ["$event"])

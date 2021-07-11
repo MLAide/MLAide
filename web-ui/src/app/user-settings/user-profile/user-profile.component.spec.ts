@@ -6,7 +6,7 @@ import { SnackbarUiService } from "@mlaide/shared/services";
 import { MatFormFieldHarness } from "@angular/material/form-field/testing";
 import { MatInputHarness } from "@angular/material/input/testing";
 
-import { UserComponent } from "./user.component";
+import { UserProfileComponent } from "./user-profile.component";
 import { User } from "@mlaide/entities/user.model";
 import { getRandomUser } from "src/app/mocks/fake-generator";
 import { of, Subject } from "rxjs";
@@ -20,8 +20,8 @@ import { By } from "@angular/platform-browser";
 import { UsersApiService } from "@mlaide/shared/api";
 
 describe("UserComponent", () => {
-  let fixture: ComponentFixture<UserComponent>;
-  let component: UserComponent;
+  let fixture: ComponentFixture<UserProfileComponent>;
+  let component: UserProfileComponent;
 
   // fakeVariables
   let fakeUser: User;
@@ -43,7 +43,7 @@ describe("UserComponent", () => {
     usersApiServiceStub.getCurrentUser.and.returnValue(of(fakeUser));
 
     await TestBed.configureTestingModule({
-      declarations: [UserComponent],
+      declarations: [UserProfileComponent],
       providers: [
         { provide: SnackbarUiService, useValue: snackBarUiServiceStub },
         { provide: UsersApiService, useValue: usersApiServiceStub },
@@ -53,7 +53,7 @@ describe("UserComponent", () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(UserComponent);
+    fixture = TestBed.createComponent(UserProfileComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

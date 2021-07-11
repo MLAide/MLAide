@@ -15,13 +15,13 @@ import { ProjectMember, ProjectMemberListResponse, ProjectMemberRole } from "@ml
 import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
 import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomProject, getRandomProjectMember, getRandomProjectMembers } from "src/app/mocks/fake-generator";
-import { ProjectSettingsComponent } from "./project-settings.component";
 import { ProjectMemberRoleI18nComponent } from "src/app/shared/components/project-member-role-i18n/project-member-role-i18n.component";
 import { ProjectsApiService } from "@mlaide/shared/api";
+import { ProjectMembersListComponent } from "./project-members-list.component";
 
-describe("ProjectSettingsComponent", () => {
-  let component: ProjectSettingsComponent;
-  let fixture: ComponentFixture<ProjectSettingsComponent>;
+describe("ProjectMembersListComponent", () => {
+  let component: ProjectMembersListComponent;
+  let fixture: ComponentFixture<ProjectMembersListComponent>;
 
   // fakes
   let fakeProject: Project;
@@ -75,7 +75,7 @@ describe("ProjectSettingsComponent", () => {
     projectMemberDataSourceMock.emulate(fakeProjectMembers);
 
     await TestBed.configureTestingModule({
-      declarations: [ProjectSettingsComponent, ProjectMemberRoleI18nComponent],
+      declarations: [ProjectMembersListComponent, ProjectMemberRoleI18nComponent],
       providers: [
         { provide: ActivatedRoute, useValue: { params: paramMapObservable } },
         { provide: ProjectsApiService, useValue: projectsApiServiceStub },
@@ -93,7 +93,7 @@ describe("ProjectSettingsComponent", () => {
 
   it("should create", () => {
     // arrange + act
-    fixture = TestBed.createComponent(ProjectSettingsComponent);
+    fixture = TestBed.createComponent(ProjectMembersListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
 
@@ -104,7 +104,7 @@ describe("ProjectSettingsComponent", () => {
   describe("ngOnInit", () => {
     describe("projectMemberForCurrentUser.role does not matter", () => {
       beforeEach(() => {
-        fixture = TestBed.createComponent(ProjectSettingsComponent);
+        fixture = TestBed.createComponent(ProjectMembersListComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
       });
@@ -137,7 +137,7 @@ describe("ProjectSettingsComponent", () => {
     describe("projectMemberForCurrentUser.role is OWNER", () => {
       beforeEach(() => {
         fakeProjectMemberForCurrentUser.role = ProjectMemberRole.OWNER;
-        fixture = TestBed.createComponent(ProjectSettingsComponent);
+        fixture = TestBed.createComponent(ProjectMembersListComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
       });
@@ -153,7 +153,7 @@ describe("ProjectSettingsComponent", () => {
     describe("projectMemberForCurrentUser.role is not OWNER", () => {
       beforeEach(() => {
         fakeProjectMemberForCurrentUser.role = ProjectMemberRole.CONTRIBUTOR;
-        fixture = TestBed.createComponent(ProjectSettingsComponent);
+        fixture = TestBed.createComponent(ProjectMembersListComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
       });
@@ -169,7 +169,7 @@ describe("ProjectSettingsComponent", () => {
 
   describe("ngAfterViewInit", () => {
     beforeEach(() => {
-      fixture = TestBed.createComponent(ProjectSettingsComponent);
+      fixture = TestBed.createComponent(ProjectMembersListComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
     });
@@ -185,7 +185,7 @@ describe("ProjectSettingsComponent", () => {
   describe("removeProjectMember", () => {
     describe("projectMemberForCurrentUser.role does not matter", () => {
       beforeEach(() => {
-        fixture = TestBed.createComponent(ProjectSettingsComponent);
+        fixture = TestBed.createComponent(ProjectMembersListComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
       });
@@ -255,7 +255,7 @@ describe("ProjectSettingsComponent", () => {
 
     describe("projectMemberForCurrentUser.role does not matter", () => {
       beforeEach(() => {
-        fixture = TestBed.createComponent(ProjectSettingsComponent);
+        fixture = TestBed.createComponent(ProjectMembersListComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
         loader = TestbedHarnessEnvironment.loader(fixture);
@@ -273,7 +273,7 @@ describe("ProjectSettingsComponent", () => {
     describe("projectMemberForCurrentUser.role is OWNER", () => {
       beforeEach(() => {
         fakeProjectMemberForCurrentUser.role = ProjectMemberRole.OWNER;
-        fixture = TestBed.createComponent(ProjectSettingsComponent);
+        fixture = TestBed.createComponent(ProjectMembersListComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
         loader = TestbedHarnessEnvironment.loader(fixture);
@@ -401,7 +401,7 @@ describe("ProjectSettingsComponent", () => {
     describe("projectMemberForCurrentUser.role is not OWNER", () => {
       beforeEach(() => {
         fakeProjectMemberForCurrentUser.role = ProjectMemberRole.CONTRIBUTOR;
-        fixture = TestBed.createComponent(ProjectSettingsComponent);
+        fixture = TestBed.createComponent(ProjectMembersListComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
         loader = TestbedHarnessEnvironment.loader(fixture);
@@ -477,7 +477,7 @@ describe("ProjectSettingsComponent", () => {
 
   describe("ngOnDestroy", () => {
     beforeEach(() => {
-      fixture = TestBed.createComponent(ProjectSettingsComponent);
+      fixture = TestBed.createComponent(ProjectMembersListComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
     });

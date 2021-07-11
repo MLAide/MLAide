@@ -18,6 +18,7 @@ import {
 import { ProjectApi } from "./project.api";
 import { MatDialog } from "@angular/material/dialog";
 import { CreateProjectComponent } from "@mlaide/core/components/create-project/create-project.component";
+import { currentUserChanged } from "../user/user.actions";
 
 @Injectable({ providedIn: "root" })
 export class ProjectEffects {
@@ -72,14 +73,14 @@ export class ProjectEffects {
 
   showSpinner$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(loadProjects, addProject),
+      ofType(addProject),
       map(() => showSpinner())
     )
   );
 
   hideSpinner$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(loadProjectsSucceeded, loadProjectsFailed, addProjectSucceeded, addProjectFailed),
+      ofType(addProjectSucceeded, addProjectFailed),
       map(() => hideSpinner())
     )
   );
@@ -110,13 +111,20 @@ export class ProjectEffects {
 
   loadProjectsFailed$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(loadProjectsFailed, addProjectFailed),
+      ofType(loadProjectsFailed),
       map((action) => action.payload),
       map((error) => ({
         message: "Could not load projects. A unknown error occurred.",
         error: error
       })),
       map(showError)
+    )
+  );
+
+  loadProjectsOnLoggedInUserChanged = createEffect(() =>
+    this.actions$.pipe(
+      ofType(currentUserChanged),
+      map(() => loadProjects())
     )
   );
 

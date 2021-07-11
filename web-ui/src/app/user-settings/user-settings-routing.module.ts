@@ -3,7 +3,7 @@ import { RouterModule, Routes } from "@angular/router";
 import { AuthGuard } from "@mlaide/auth/auth-guard.service";
 import { ApiKeysComponent } from "./api-keys/api-keys.component";
 import { UserSettingsComponent } from "./user-settings/user-settings.component";
-import { UserComponent } from "./user/user.component";
+import { UserProfileComponent } from "./user-profile/user-profile.component";
 
 const routes: Routes = [
   {
@@ -11,9 +11,9 @@ const routes: Routes = [
     component: UserSettingsComponent,
     canActivate: [AuthGuard],
     children: [
-      { path: "user", component: UserComponent, canActivate: [AuthGuard] },
+      { path: "user-profile", component: UserProfileComponent, canActivate: [AuthGuard] },
       { path: "api-keys", component: ApiKeysComponent, canActivate: [AuthGuard] },
-      { path: "", redirectTo: "user-settings/user", pathMatch: "full" },
+      { path: "", redirectTo: "user-settings/user-profile", pathMatch: "full" },
     ],
   },
 ];

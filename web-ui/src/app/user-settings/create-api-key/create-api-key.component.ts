@@ -5,6 +5,10 @@ import { MatDialogRef } from "@angular/material/dialog";
 import { ApiKey } from "@mlaide/entities/apiKey.model";
 import { UsersApiService } from "@mlaide/shared/api";
 import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
+import { addApiKey, closeAddApiKeyDialog } from "@mlaide/state/api-key/api-key.actions";
+import { selectNewCreatedApiKey } from "@mlaide/state/api-key/api-key.selectors";
+import { Store } from "@ngrx/store";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "app-create-api-key",
@@ -13,14 +17,15 @@ import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
 })
 export class CreateApiKeyComponent {
   public form: FormGroup;
-  public apiKey: string = "";
   public today = new Date(Date.now());
+  public apiKey$: Observable<ApiKey> = this.store.select(selectNewCreatedApiKey);
+
+  private isApiKeyCreated: boolean = false;
+
   constructor(
-    private dialogRef: MatDialogRef<CreateApiKeyComponent>,
-    private formBuilder: FormBuilder,
-    private usersApiService: UsersApiService,
-    private spinnerUiService: SpinnerUiService,
-    private snackbarUiService: SnackbarUiService
+    private readonly formBuilder: FormBuilder,
+    private readonly snackbarUiService: SnackbarUiService,
+    private readonly store: Store
   ) {
     this.form = this.formBuilder.group({
       description: [
@@ -35,7 +40,7 @@ export class CreateApiKeyComponent {
   }
 
   public close() {
-    this.dialogRef.close();
+    this.store.dispatch(closeAddApiKeyDialog());
   }
 
   public copy() {
@@ -50,18 +55,16 @@ export class CreateApiKeyComponent {
       expiresAt: this.form.value.expiresAt ? new Date(this.form.value.expiresAt) : undefined,
       id: undefined,
     };
-    this.spinnerUiService.showSpinner();
-    this.usersApiService.createApiKey(apiKey).subscribe((returnedApiKey) => {
-      this.apiKey = returnedApiKey.apiKey;
-      this.spinnerUiService.stopSpinner();
-    });
+
+    this.store.dispatch(addApiKey({ apiKey }));
+    this.isApiKeyCreated = true;
   }
 
   public keyDown(event) {
     if (event.keyCode === ENTER) {
-      if (this.form.valid && this.apiKey === "") {
+      if (this.form.valid && !this.isApiKeyCreated) {
         this.create();
-      } else if (this.form.valid && this.apiKey !== "") {
+      } else if (this.form.valid && this.isApiKeyCreated) {
         this.close();
       } else {
         Object.keys(this.form.controls).forEach((field) => {
