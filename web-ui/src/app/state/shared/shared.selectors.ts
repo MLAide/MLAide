@@ -1,3 +1,3 @@
 import { AppState } from "../app.state";
 
-export const isLoading = (state: AppState) => state.shared.isLoading;
+export const selectIsLoadingShared = (state: AppState) => state.shared.isLoading;
