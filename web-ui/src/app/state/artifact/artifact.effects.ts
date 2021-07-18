@@ -16,12 +16,19 @@ import { ModelStageLogComponent } from "@mlaide/models/model-stage-log/model-sta
 export class ArtifactEffects {
   loadModels$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(artifactActions.loadModels, artifactActions.editModelSucceeded),
+      ofType(artifactActions.loadModels),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       mergeMap(([action, projectKey]) => this.artifactApi.getArtifacts(projectKey, true)),
       map((artifactListResponse) => ({ models: artifactListResponse.items })),
       map((models) => artifactActions.loadModelsSucceeded(models)),
       catchError((error) => of(artifactActions.loadModelsFailed(error)))
+    )
+  );
+
+  reloadModels$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(artifactActions.editModelSucceeded),
+      map(() => artifactActions.loadModels())
     )
   );
 

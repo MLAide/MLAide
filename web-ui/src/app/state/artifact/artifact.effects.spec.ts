@@ -12,7 +12,8 @@ import { EditModelComponent } from "@mlaide/models/edit-model/edit-model.compone
 import Spy = jasmine.Spy;
 import { getRandomArtifacts } from "@mlaide/mocks/fake-generator";
 import { loadModels, loadModelsSucceeded } from "@mlaide/state/artifact/artifact.actions";
-import { provideMockStore } from "@ngrx/store/testing";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { randomUUID } from "crypto";
 
 describe("ArtifactEffects", () => {
   let actions$ = new Observable<Action>();
@@ -21,6 +22,7 @@ describe("ArtifactEffects", () => {
   let matDialog: MatDialog;
   let openDialogSpy: Spy<(component: ComponentType<EditModelComponent>, config?: MatDialogConfig) => MatDialogRef<EditModelComponent>>;
   let closeAllDialogSpy: Spy<() => void>;
+  let store: MockStore;
 
   beforeEach(() => {
     artifactApiStub = jasmine.createSpyObj<ArtifactApi>("ArtifactApi", ["getArtifacts", "putModel"]);
@@ -32,9 +34,10 @@ describe("ArtifactEffects", () => {
       providers: [
         ArtifactEffects,
         provideMockActions(() => actions$),
-        provideMockStore({ initialState: {
-
-          } }),
+        provideMockStore({
+          initialState: {
+          }
+        }),
         { provide: ArtifactApi, useValue: artifactApiStub }
       ],
     });
@@ -43,7 +46,9 @@ describe("ArtifactEffects", () => {
     matDialog = TestBed.inject<MatDialog>(MatDialog);
     openDialogSpy = spyOn(matDialog, 'open');
     closeAllDialogSpy = spyOn(matDialog, 'closeAll');
+    store = TestBed.inject(MockStore);
   });
+
   describe("loadModels$", () => {
     it("should trigger loadModelsSucceeded action containing models if api call is successful", async (done) => {
       // arrange
@@ -51,12 +56,26 @@ describe("ArtifactEffects", () => {
       const models = await getRandomArtifacts(3);
       const response: ArtifactListResponse = { items: models };
       artifactApiStub.getArtifacts.and.returnValue(of(response));
+      const projectKey = randomUUID();
+      store.setState({
+        router: {
+          state: {
+            root: {
+              firstChild: {
+                params: {
+                  projectKey: projectKey
+                }
+              }
+            }
+          }
+        }
+      });
 
       // act
       effects.loadModels$.subscribe(action => {
         // assert
         expect(action).toEqual(loadModelsSucceeded({ models }));
-        expect(artifactApiStub.getArtifacts).toHaveBeenCalled();
+        expect(artifactApiStub.getArtifacts).toHaveBeenCalledWith(projectKey, true);
 
         done();
       });
