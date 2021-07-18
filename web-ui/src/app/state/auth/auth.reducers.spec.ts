@@ -70,5 +70,19 @@ describe("AuthReducer", () => {
       // assert
       await expect(newState.isUserAuthenticated).toBeTrue();
     });
+
+    it("should set isUserAuthenticated to false in authState", async () => {
+      // arrange
+      const initialState: Partial<AuthState> = {
+        isUserAuthenticated: true
+      };
+      const action = isAuthenticated({ isAuthenticated: false } as any);
+
+      // act
+      const newState = authReducer(initialState as AuthState, action);
+
+      // assert
+      await expect(newState.isUserAuthenticated).toBeFalse();
+    });
   });
 });
