@@ -7,11 +7,11 @@ describe("ApiKeySelectors", () => {
   describe("selectApiKeys", () => {
     it("should select api keys from state", async () => {
       // arrange
-      const partialArtifactState: Partial<ApiKeyState> = {
+      const partialApiKeyState: Partial<ApiKeyState> = {
         items: await getRandomApiKeys(3)
       }
       const state: Partial<AppState> = {
-        apiKeys: partialArtifactState as ApiKeyState
+        apiKeys: partialApiKeyState as ApiKeyState
       };
 
       // act
@@ -25,11 +25,11 @@ describe("ApiKeySelectors", () => {
   describe("selectIsLoadingApiKeys", () => {
     it("should select isLoading from state", async () => {
       // arrange
-      const partialArtifactState: Partial<ApiKeyState> = {
+      const partialApiKeyState: Partial<ApiKeyState> = {
         isLoading: true
       }
       const state: Partial<AppState> = {
-        apiKeys: partialArtifactState as ApiKeyState
+        apiKeys: partialApiKeyState as ApiKeyState
       };
 
       // act
@@ -43,11 +43,11 @@ describe("ApiKeySelectors", () => {
   describe("selectNewCreatedApiKey", () => {
     it("should select newCreatedApiKey from state", async () => {
       // arrange
-      const partialArtifactState: Partial<ApiKeyState> = {
+      const partialApiKeyState: Partial<ApiKeyState> = {
         newCreatedApiKey: await getRandomApiKey()
       }
       const state: Partial<AppState> = {
-        apiKeys: partialArtifactState as ApiKeyState
+        apiKeys: partialApiKeyState as ApiKeyState
       };
 
       // act
