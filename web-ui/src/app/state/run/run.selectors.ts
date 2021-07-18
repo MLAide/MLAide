@@ -8,4 +8,4 @@ export const selectIsLoadingRuns = (state: AppState) => state.runs.isLoading;
 export const selectRuns = (state: AppState) => state.runs.items;
 
 // override the response type because runKeys query param will always be an array of strings
-export const selectSelectedRunKeys: MemoizedSelector<object, string[], DefaultProjectorFn<string>> = selectQueryParam("runKeys") as any;
+export const selectSelectedRunKeys: MemoizedSelector<object, number[], DefaultProjectorFn<string>> = selectQueryParam("runKeys") as any;

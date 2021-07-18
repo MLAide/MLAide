@@ -32,6 +32,28 @@ describe("RunApi", () => {
     expect(runApi).toBeTruthy();
   });
 
+  describe("getRuns", () => {
+    it("should return data source that emits results from api response", async (done) => {
+      // arrange
+      const fakeProject: Project = await getRandomProject();
+      const fakeRuns: Run[] = await getRandomRuns(2);
+      const dummyResponse: RunListResponse = { items: fakeRuns };
+
+      // act
+      const runs$: Observable<RunListResponse> = runApi.getRuns(fakeProject.key);
+
+      // assert
+      runs$.subscribe((response) => {
+        checkThatItemsLengthAndResponseMatch(response, fakeRuns, dummyResponse);
+        done();
+      });
+
+      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects/${fakeProject.key}/runs`);
+      expect(req.request.method).toBe("GET");
+      req.flush(dummyResponse);
+    });
+  });
+
   describe("getRunsByExperimentKey", () => {
     it("should return data source that emits results from api response", async (done) => {
       // arrange
@@ -55,6 +77,32 @@ describe("RunApi", () => {
       );
       expect(req.request.method).toBe("GET");
       expect(req.request.params.get("experimentKey")).toBe(fakeExperiment.key);
+      req.flush(dummyResponse);
+    });
+  });
+
+  describe("getRunsByRunKeys", () => {
+    it("should return data source that emits results from api response", async (done) => {
+      // arrange
+      const fakeProject: Project = await getRandomProject();
+      const fakeRuns: Run[] = await getRandomRuns(2);
+      const runKeys = [fakeRuns[0].key, fakeRuns[1].key];
+      const dummyResponse: RunListResponse = { items: fakeRuns };
+
+      // act
+      const runs$: Observable<RunListResponse> = runApi.getRunsByRunKeys(fakeProject.key, runKeys);
+
+      // assert
+      runs$.subscribe((response) => {
+        checkThatItemsLengthAndResponseMatch(response, fakeRuns, dummyResponse);
+        done();
+      });
+
+      const req: TestRequest = httpMock.expectOne(
+        `${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects/${fakeProject.key}/runs?runKeys=${runKeys}`
+      );
+      expect(req.request.method).toBe("GET");
+      expect(req.request.params.get("runKeys")).toBe(runKeys.join(","));
       req.flush(dummyResponse);
     });
   });

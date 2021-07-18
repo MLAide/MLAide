@@ -18,6 +18,10 @@ export class RunApi {
     this.baseUrl = `${appConfig.apiServer.uri}/api/${appConfig.apiServer.version}`;
   }
 
+  public getRuns(projectKey: string): Observable<RunListResponse> {
+    return this.http.get<RunListResponse>(`${this.baseUrl}/projects/${projectKey}/runs`)
+  }
+
   public getRunsByExperimentKey(projectKey: string, experimentKey: string): Observable<RunListResponse> {
     let params = {
       experimentKey: experimentKey,
@@ -29,7 +33,7 @@ export class RunApi {
     )
   }
 
-  public getRunsByRunKeys(projectKey: string, runKeys: string[]): Observable<RunListResponse> {
+  public getRunsByRunKeys(projectKey: string, runKeys: number[]): Observable<RunListResponse> {
     let params = {
       runKeys: runKeys.join(","),
     }
@@ -38,9 +42,5 @@ export class RunApi {
         params,
       }
     )
-  }
-
-  public getRuns(projectKey: string): Observable<RunListResponse> {
-    return this.http.get<RunListResponse>(`${this.baseUrl}/projects/${projectKey}/runs`)
   }
 }
