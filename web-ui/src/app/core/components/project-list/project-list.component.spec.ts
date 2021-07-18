@@ -125,7 +125,7 @@ describe("ProjectListComponent", () => {
       expect(rows.length).toBe(projects.length);
       for (let index = 0; index < projects.length; index++) {
         const project = projects[index];
-        
+
         const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
 
         expect(row.name).toEqual(project.name);
@@ -160,10 +160,11 @@ describe("ProjectListComponent", () => {
     });
   });
 
-  function createAppState(projects: Project[]): Partial<AppState> {
+  function createAppState(projects: Project[], isLoading = false): Partial<AppState> {
     return {
       projects: {
-        items: projects
+        items: projects,
+        isLoading: isLoading
       }
     };
   }

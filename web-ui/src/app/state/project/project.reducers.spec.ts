@@ -8,7 +8,8 @@ describe("ProjectReducer", () => {
     it("should update all projects", async () => {
       // arrange
       const initialState: ProjectState = {
-        items: await getRandomProjects(3)
+        isLoading: true,
+        items: await getRandomProjects(3),
       };
       const newProjects = await getRandomProjects(4);
       const action = loadProjectsSucceeded({ projects: newProjects });
@@ -17,7 +18,7 @@ describe("ProjectReducer", () => {
       const newState = projectsReducer(initialState, action);
 
       // assert
-      expect(newState).toEqual({ items: newProjects });
+      expect(newState).toEqual({ isLoading: true, items: newProjects});
     });
   });
 });
