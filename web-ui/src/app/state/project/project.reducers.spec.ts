@@ -1,9 +1,29 @@
 import { getRandomProjects } from "@mlaide/mocks/fake-generator";
-import { loadProjectsSucceeded } from "./project.actions";
+import { loadProjects, loadProjectsFailed, loadProjectsSucceeded } from "./project.actions";
 import { projectsReducer } from "./project.reducers";
 import { ProjectState } from "@mlaide/state/project/project.state";
+import { ArtifactState } from "@mlaide/state/artifact/artifact.state";
+import { loadExperimentWithAllDetails } from "@mlaide/state/experiment/experiment.actions";
+import { artifactsReducer } from "@mlaide/state/artifact/artifact.reducers";
+import { Projects } from "@angular/cli/lib/config/workspace-schema";
 
 describe("ProjectReducer", () => {
+  describe("loadProjects action", () => {
+    it("should set isLoading to true in projectState", async () => {
+      // arrange
+      const initialState: Partial<ProjectState> = {
+        isLoading: false
+      };
+      const action = loadProjects();
+
+      // act
+      const newState = projectsReducer(initialState as ProjectState, action);
+
+      // assert
+      await expect(newState.isLoading).toBeTrue();
+    });
+  });
+
   describe("loadProjectsSucceeded action", () => {
     it("should update all projects", async () => {
       // arrange
@@ -18,7 +38,23 @@ describe("ProjectReducer", () => {
       const newState = projectsReducer(initialState, action);
 
       // assert
-      expect(newState).toEqual({ isLoading: true, items: newProjects});
+      expect(newState).toEqual({ isLoading: false, items: newProjects});
+    });
+  });
+
+  describe("loadProjectsFailed action", () => {
+    it("should set isLoading to false in projectState", async () => {
+      // arrange
+      const initialState: Partial<ProjectState> = {
+        isLoading: true
+      };
+      const action = loadProjectsFailed(undefined);
+
+      // act
+      const newState = projectsReducer(initialState as ProjectState, action);
+
+      // assert
+      await expect(newState.isLoading).toBeFalse();
     });
   });
 });
