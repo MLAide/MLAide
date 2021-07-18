@@ -29,6 +29,7 @@ describe("ApiKeyReducer", () => {
     it("should update all apiKeys and set isLoading to false in apiKeyState", async () => {
       // arrange
       const initialState: Partial<ApiKeyState> = {
+        isLoading: true,
         items: await getRandomApiKeys(3)
       };
       const newApiKeys = await getRandomApiKeys(4);
