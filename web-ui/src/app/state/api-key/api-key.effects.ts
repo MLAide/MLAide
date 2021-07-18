@@ -16,17 +16,16 @@ export class ApiKeyEffects {
       mergeMap(() => this.userApi.getApiKeys()),
       map((apiKeyListResponse) => ({ apiKeys: apiKeyListResponse.items })),
       map((apiKeys) => actions.loadApiKeysSucceeded(apiKeys)),
-      catchError((error) => of(actions.loadApiKeysFailed(error)))
+      catchError((error) => of(actions.loadApiKeysFailed({ payload: error })))
     )
   );
 
-  loadApiKeysFailed$ = createEffect(() =>
+  showErrorOnLoadApiKeysFailed$ = createEffect(() =>
     this.actions$.pipe(
       ofType(actions.loadApiKeysFailed),
-      map((action) => action.payload),
-      map((error) => ({
+      map((action) => ({
         message: "Could not load api keys. A unknown error occurred.",
-        error: error
+        error: action.payload
       })),
       map(showError)
     )
@@ -37,18 +36,18 @@ export class ApiKeyEffects {
       ofType(actions.addApiKey),
       mergeMap(action => this.userApi.createApiKey(action.apiKey)),
       map((apiKey) => actions.addApiKeySucceeded({ apiKey })),
-      catchError((error) => of(actions.addApiKeyFailed(error)))
+      catchError((error) => of(actions.addApiKeyFailed({ payload: error })))
     )
   );
 
-  addApiKeySucceeded$ = createEffect(() =>
+  reloadApiKeys$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(actions.addApiKeySucceeded),
+      ofType(actions.addApiKeySucceeded, actions.deleteApiKeySucceeded),
       map(actions.loadApiKeys)
     )
   );
 
-  addApiKeyFailed$ = createEffect(() =>
+  showErrorOnAddApiKeyFailed$ = createEffect(() =>
     this.actions$.pipe(
       ofType(actions.addApiKeyFailed),
       map((action) => action.payload),
@@ -85,18 +84,11 @@ export class ApiKeyEffects {
       ofType(actions.deleteApiKey),
       mergeMap((action) => this.userApi.deleteApiKey(action.apiKey)),
       map(() => actions.deleteApiKeySucceeded()),
-      catchError((error) => of(actions.deleteApiKeyFailed(error)))
+      catchError((error) => of(actions.deleteApiKeyFailed({ payload: error })))
     )
   );
 
-  deleteApiKeySucceeded$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(actions.deleteApiKeySucceeded),
-      map(actions.loadApiKeys)
-    )
-  );
-
-  deleteApiKeyFailed$ = createEffect(() =>
+  showErrorOnDeleteApiKeyFailed$ = createEffect(() =>
     this.actions$.pipe(
       ofType(actions.deleteApiKeyFailed),
       map((action) => action.payload),
