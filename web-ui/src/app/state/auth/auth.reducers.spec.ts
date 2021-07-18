@@ -7,7 +7,7 @@ import {
 } from "@mlaide/state/auth/auth.actions";
 import { authReducer } from "@mlaide/state/auth/auth.reducers";
 
-describe("AuthReducer", () => {
+describe("AuthReducers", () => {
   describe("initializeLogin action", () => {
     it("should set isLoading to true in authState", async () => {
       // arrange

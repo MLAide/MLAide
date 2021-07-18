@@ -8,7 +8,7 @@ import {
 import { apiKeysReducer } from "@mlaide/state/api-key/api-key.reducers";
 import { getRandomApiKey, getRandomApiKeys } from "@mlaide/mocks/fake-generator";
 
-describe("ApiKeyReducer", () => {
+describe("ApiKeyReducers", () => {
   describe("loadApiKeys action", () => {
     it("should set isLoading to true in apiKeyState", async () => {
       // arrange

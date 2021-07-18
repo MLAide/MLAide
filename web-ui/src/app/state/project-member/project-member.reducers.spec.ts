@@ -8,7 +8,7 @@ import {
 import { projectMembersReducer } from "@mlaide/state/project-member/project-member.reducers";
 import { getRandomProjectMember, getRandomProjectMembers } from "@mlaide/mocks/fake-generator";
 
-describe("ProjectMemberReducer", () => {
+describe("ProjectMemberReducers", () => {
   describe("loadProjectMembers action", () => {
     it("should set isLoading to true in projectMemberState", async () => {
       // arrange

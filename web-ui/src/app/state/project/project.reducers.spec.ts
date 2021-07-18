@@ -2,12 +2,8 @@ import { getRandomProjects } from "@mlaide/mocks/fake-generator";
 import { loadProjects, loadProjectsFailed, loadProjectsSucceeded } from "./project.actions";
 import { projectsReducer } from "./project.reducers";
 import { ProjectState } from "@mlaide/state/project/project.state";
-import { ArtifactState } from "@mlaide/state/artifact/artifact.state";
-import { loadExperimentWithAllDetails } from "@mlaide/state/experiment/experiment.actions";
-import { artifactsReducer } from "@mlaide/state/artifact/artifact.reducers";
-import { Projects } from "@angular/cli/lib/config/workspace-schema";
 
-describe("ProjectReducer", () => {
+describe("ProjectReducers", () => {
   describe("loadProjects action", () => {
     it("should set isLoading to true in projectState", async () => {
       // arrange

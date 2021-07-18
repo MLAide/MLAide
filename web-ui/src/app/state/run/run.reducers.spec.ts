@@ -13,7 +13,7 @@ import {
   loadRunsSucceeded
 } from "@mlaide/state/run/run.actions";
 
-describe("RunReducer", () => {
+describe("RunReducers", () => {
   describe("loadExperimentWithAllDetails action", () => {
     it("should set isLoading to true in runState", async () => {
       // arrange
