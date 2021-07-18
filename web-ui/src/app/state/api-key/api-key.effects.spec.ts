@@ -20,7 +20,7 @@ import { MatDialogConfig } from "@angular/material/dialog/dialog-config";
 import { MatDialogRef } from "@angular/material/dialog/dialog-ref";
 import { CreateApiKeyComponent } from "@mlaide/user-settings/create-api-key/create-api-key.component";
 
-describe("api key effects", () => {
+describe("ApiKeyEffects", () => {
   let actions$ = new Observable<Action>();
   let effects: ApiKeyEffects;
   let userApiStub: jasmine.SpyObj<UserApi>;
