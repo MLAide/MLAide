@@ -4,8 +4,13 @@ import { appConfigMock } from "@mlaide/mocks/app-config.mock";
 import { TestBed } from "@angular/core/testing";
 import { APP_CONFIG } from "@mlaide/config/app-config.model";
 import { Project } from "@mlaide/entities/project.model";
-import { getRandomProject, getRandomArtifacts } from "@mlaide/mocks/fake-generator";
-import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
+import {
+  getRandomProject,
+  getRandomArtifacts,
+  getRandomArtifact,
+  getRandomCreateOrUpdateModel
+} from "@mlaide/mocks/fake-generator";
+import { Artifact, ArtifactListResponse, CreateOrUpdateModel } from "@mlaide/entities/artifact.model";
 import { Observable } from "rxjs";
 import { ListDataSource } from "@mlaide/shared/api";
 import { skip } from "rxjs/operators";
@@ -31,6 +36,32 @@ describe("ArtifactApi", () => {
 
   it("should be created", () => {
     expect(artifactApi).toBeTruthy();
+  });
+
+  describe("getArtifactsByRunKeys", () => {
+    it("should return data source that emits results from api response", async (done) => {
+      // arrange
+      const fakeProject: Project = await getRandomProject();
+      const fakeArtifacts: Artifact[] = await getRandomArtifacts(2);
+      const dummyResponse: ArtifactListResponse = { items: fakeArtifacts };
+
+      // act
+      const artifacts$: Observable<ArtifactListResponse> = artifactApi.getArtifactsByRunKeys(fakeProject.key, [1, 2, 3]);
+
+      // assert
+      artifacts$.subscribe((response) => {
+        checkThatItemsLengthAndResponseMatch(response, fakeArtifacts, dummyResponse);
+
+        done();
+      });
+
+      const req: TestRequest = httpMock.expectOne(
+        `${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects/${fakeProject.key}/artifacts?runKeys=1&runKeys=2&runKeys=3`
+      );
+      expect(req.request.method).toBe("GET");
+      expect(req.request.params.getAll("runKeys") as any).toEqual([1, 2, 3]);
+      req.flush(dummyResponse);
+    });
   });
 
   describe("getArtifacts", () => {
@@ -102,29 +133,27 @@ describe("ArtifactApi", () => {
     });
   });
 
-  describe("getArtifactsByRunKeys", () => {
-    it("should return data source that emits results from api response", async (done) => {
+  describe("putModel", () => {
+    it("should execute put request with the model", async (done) => {
       // arrange
       const fakeProject: Project = await getRandomProject();
-      const fakeArtifacts: Artifact[] = await getRandomArtifacts(2);
-      const dummyResponse: ArtifactListResponse = { items: fakeArtifacts };
+      const fakeArtifact: Artifact = await getRandomArtifact();
+      const createOrUpdateModel: CreateOrUpdateModel = await getRandomCreateOrUpdateModel();
 
       // act
-      const artifacts$: Observable<ArtifactListResponse> = artifactApi.getArtifactsByRunKeys(fakeProject.key, [1, 2, 3]);
+      const request$: Observable<void> = artifactApi.putModel(fakeProject.key, fakeArtifact.name, fakeArtifact.version, createOrUpdateModel);
 
       // assert
-      artifacts$.subscribe((response) => {
-        checkThatItemsLengthAndResponseMatch(response, fakeArtifacts, dummyResponse);
-
+      request$.subscribe(() => {
         done();
-      });
+      })
 
       const req: TestRequest = httpMock.expectOne(
-        `${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects/${fakeProject.key}/artifacts?runKeys=1&runKeys=2&runKeys=3`
+        `${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects/${fakeProject.key}/artifacts/${fakeArtifact.name}/${fakeArtifact.version}/model`
       );
-      expect(req.request.method).toBe("GET");
-      expect(req.request.params.getAll("runKeys") as any).toEqual([1, 2, 3]);
-      req.flush(dummyResponse);
+      expect(req.request.method).toBe("PUT");
+      expect(req.request.body).toBe(createOrUpdateModel);
+      req.flush(null);
     });
   });
 

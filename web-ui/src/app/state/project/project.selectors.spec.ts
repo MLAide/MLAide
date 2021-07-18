@@ -8,6 +8,7 @@ describe("ProjectSelectors", () => {
       // arrange
       const state: Partial<AppState> = {
         projects: {
+          isLoading: true,
           items: await getRandomProjects(3)
         }
       };
@@ -19,7 +20,7 @@ describe("ProjectSelectors", () => {
       expect(projects).toBe(state.projects.items);
     });
   });
-  
+
   describe("selectCurrentProjectKey", () => {
     it("should select current project key from router state", async () => {
       // arrange
