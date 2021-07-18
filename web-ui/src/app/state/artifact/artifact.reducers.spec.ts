@@ -117,6 +117,7 @@ describe("ArtifactReducer", () => {
     it("should update all models and set isLoading to false in artifactState", async () => {
       // arrange
       const initialState: Partial<ArtifactState> = {
+        isLoading: true,
         models: await getRandomArtifacts(3)
       };
       const newModels = await getRandomArtifacts(4);
