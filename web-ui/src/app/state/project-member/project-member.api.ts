@@ -18,12 +18,16 @@ export class ProjectMemberApi {
     this.baseUrl = `${appConfig.apiServer.uri}/api/${appConfig.apiServer.version}`;
   }
 
+  deleteProjectMember(projectKey: string, email: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/projects/${projectKey}/members/${email}`);
+  }
+
   getProjectMembers(projectKey: string): Observable<ProjectMemberListResponse> {
     return this.http.get<ProjectMemberListResponse>(`${this.baseUrl}/projects/${projectKey}/members`);
   }
 
-  patchProjectMembers(projectKey: string, ...projectMembers: ProjectMember[]): Observable<ProjectMember> {
-    return this.http.patch<ProjectMember>(
+  patchProjectMembers(projectKey: string, ...projectMembers: ProjectMember[]): Observable<void> {
+    return this.http.patch<void>(
       `${this.baseUrl}/projects/${projectKey}/members`,
       projectMembers,
       {
@@ -32,9 +36,5 @@ export class ProjectMemberApi {
         },
       }
     );
-  }
-
-  deleteProjectMember(projectKey: string, email: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/projects/${projectKey}/members/${email}`);
   }
 }

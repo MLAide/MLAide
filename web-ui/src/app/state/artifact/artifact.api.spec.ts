@@ -12,8 +12,6 @@ import {
 } from "@mlaide/mocks/fake-generator";
 import { Artifact, ArtifactListResponse, CreateOrUpdateModel } from "@mlaide/entities/artifact.model";
 import { Observable } from "rxjs";
-import { ListDataSource } from "@mlaide/shared/api";
-import { skip } from "rxjs/operators";
 
 describe("ArtifactApi", () => {
   let artifactApi: ArtifactApi;
@@ -141,10 +139,10 @@ describe("ArtifactApi", () => {
       const createOrUpdateModel: CreateOrUpdateModel = await getRandomCreateOrUpdateModel();
 
       // act
-      const request$: Observable<void> = artifactApi.putModel(fakeProject.key, fakeArtifact.name, fakeArtifact.version, createOrUpdateModel);
+      const apiCall$: Observable<void> = artifactApi.putModel(fakeProject.key, fakeArtifact.name, fakeArtifact.version, createOrUpdateModel);
 
       // assert
-      request$.subscribe(() => {
+      apiCall$.subscribe(() => {
         done();
       })
 
