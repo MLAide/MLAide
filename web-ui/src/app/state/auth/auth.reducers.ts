@@ -12,5 +12,6 @@ export const authReducer = createReducer(
   on(initializeLogin, (state) => ({ ...state, isLoading: true })),
   on(initializeLoginSucceeded, (state) => ({ ...state, isLoading: false })),
   on(initializeLoginFailed, (state) => ({ ...state, isLoading: false })),
+  // TODO Raman: Warum die Inkonsistenz isAuthenticated vs. isUserAuthenticated?
   on(isAuthenticated, (state, { isAuthenticated }) => ({ ...state, isUserAuthenticated: isAuthenticated })),
 );
