@@ -6,10 +6,7 @@ import {
   loadProjectMembersSucceeded
 } from "@mlaide/state/project-member/project-member.actions";
 import { projectMembersReducer } from "@mlaide/state/project-member/project-member.reducers";
-import { ArtifactState } from "@mlaide/state/artifact/artifact.state";
-import { getRandomArtifacts, getRandomProjectMember, getRandomProjectMembers } from "@mlaide/mocks/fake-generator";
-import { loadModelsSucceeded } from "@mlaide/state/artifact/artifact.actions";
-import { artifactsReducer } from "@mlaide/state/artifact/artifact.reducers";
+import { getRandomProjectMember, getRandomProjectMembers } from "@mlaide/mocks/fake-generator";
 
 describe("ProjectMemberReducer", () => {
   describe("loadProjectMembers action", () => {
