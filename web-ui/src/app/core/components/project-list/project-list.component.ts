@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
-import { isLoadingProjects, selectProjects } from "@mlaide/state/project/project.selectors";
+import { selectIsLoadingProjects, selectProjects } from "@mlaide/state/project/project.selectors";
 import { loadProjects, openCreateProjectDialog } from "@mlaide/state/project/project.actions";
 import { Project } from "@mlaide/state/model";
 
@@ -14,7 +14,7 @@ import { Project } from "@mlaide/state/model";
 export class ProjectListComponent implements OnInit {
   public displayedColumns: string[] = ["name", "key", "createdAt"];
   public projects$: Observable<Project[]> = this.store.select(selectProjects);
-  public isLoading$: Observable<boolean> = this.store.select(isLoadingProjects);
+  public isLoading$: Observable<boolean> = this.store.select(selectIsLoadingProjects);
 
   constructor(private router: Router, private readonly store: Store) {}
 
