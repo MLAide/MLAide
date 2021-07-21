@@ -16,12 +16,19 @@ import { ModelStageLogComponent } from "@mlaide/models/model-stage-log/model-sta
 export class ArtifactEffects {
   loadModels$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(artifactActions.loadModels, artifactActions.editModelSucceeded),
+      ofType(artifactActions.loadModels),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       mergeMap(([action, projectKey]) => this.artifactApi.getArtifacts(projectKey, true)),
       map((artifactListResponse) => ({ models: artifactListResponse.items })),
       map((models) => artifactActions.loadModelsSucceeded(models)),
-      catchError((error) => of(artifactActions.loadModelsFailed(error)))
+      catchError((error) => of(artifactActions.loadModelsFailed({payload: error})))
+    )
+  );
+
+  reloadModels$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(artifactActions.editModelSucceeded),
+      map(() => artifactActions.loadModels())
     )
   );
 
@@ -44,7 +51,7 @@ export class ArtifactEffects {
       mergeMap(([action, projectKey]) => this.artifactApi.getArtifacts(projectKey)),
       map((artifactListResponse) => ({ artifacts: artifactListResponse.items })),
       map((artifacts) => artifactActions.loadArtifactsSucceeded(artifacts)),
-      catchError((error) => of(artifactActions.loadArtifactsFailed(error)))
+      catchError((error) => of(artifactActions.loadArtifactsFailed({payload: error})))
     )
   );
 
@@ -60,6 +67,7 @@ export class ArtifactEffects {
     )
   );
 
+  // TODO Raman: Wieso heißt das hier editExperiment?
   editExperiment$ = createEffect(() =>
     this.actions$.pipe(
       ofType(artifactActions.editModel),
@@ -78,7 +86,7 @@ export class ArtifactEffects {
         );
       }),
       map(() => artifactActions.editModelSucceeded()),
-      catchError((error) => of(artifactActions.editModelFailed(error)))
+      catchError((error) => of(artifactActions.editModelFailed({payload: error})))
     )
   );
 

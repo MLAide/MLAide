@@ -20,7 +20,7 @@ import { MatDialogConfig } from "@angular/material/dialog/dialog-config";
 import { MatDialogRef } from "@angular/material/dialog/dialog-ref";
 import { CreateApiKeyComponent } from "@mlaide/user-settings/create-api-key/create-api-key.component";
 
-describe("api key effects", () => {
+describe("ApiKeyEffects", () => {
   let actions$ = new Observable<Action>();
   let effects: ApiKeyEffects;
   let userApiStub: jasmine.SpyObj<UserApi>;
@@ -68,7 +68,7 @@ describe("api key effects", () => {
 
     it("should trigger loadApiKeysFailed action if api call is not successful", async (done) => {
       // arrange
-      actions$ = of(loadApiKeys);
+      actions$ = of(loadApiKeys());
       userApiStub.getApiKeys.and.returnValue(throwError("failed"));
 
       // act
@@ -162,6 +162,7 @@ describe("api key effects", () => {
         // act
         effects.reloadApiKeys$.subscribe(action => {
           // assert
+          // TODO Raman: Ich glaube hier steht der falsche Vergleich
           expect(action).toEqual(action);
 
           done();
