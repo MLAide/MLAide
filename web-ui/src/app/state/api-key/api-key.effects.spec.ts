@@ -68,7 +68,7 @@ describe("ApiKeyEffects", () => {
 
     it("should trigger loadApiKeysFailed action if api call is not successful", async (done) => {
       // arrange
-      actions$ = of(loadApiKeys);
+      actions$ = of(loadApiKeys());
       userApiStub.getApiKeys.and.returnValue(throwError("failed"));
 
       // act
@@ -162,6 +162,7 @@ describe("ApiKeyEffects", () => {
         // act
         effects.reloadApiKeys$.subscribe(action => {
           // assert
+          // TODO Raman: Ich glaube hier steht der falsche Vergleich
           expect(action).toEqual(action);
 
           done();
