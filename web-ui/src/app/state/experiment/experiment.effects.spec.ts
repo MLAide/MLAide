@@ -1,25 +1,30 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { TestBed } from "@angular/core/testing";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
-import { getRandomExperiments } from "@mlaide/mocks/fake-generator";
+import { getRandomExperiments, getRandomProject } from "@mlaide/mocks/fake-generator";
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from "@ngrx/store";
-import { Observable, of } from "rxjs";
+import { Observable, of, throwError } from "rxjs";
 import { loadExperiments, loadExperimentsSucceeded } from "./experiment.actions";
 import { ExperimentApi, ExperimentListResponse } from "./experiment.api";
 import { ExperimentEffects } from "./experiment.effects";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { loadArtifactsFailed, loadModels, loadModelsFailed } from "@mlaide/state/artifact/artifact.actions";
+import { showError } from "@mlaide/state/shared/shared.actions";
+import { ArtifactApi } from "@mlaide/state/artifact/artifact.api";
 
 describe("experiment effects", () => {
   let actions$ = new Observable<Action>();
   let effects: ExperimentEffects;
-  let experimentsApiServiceStub: jasmine.SpyObj<ExperimentApi>;
+  let artifactApiStub: jasmine.SpyObj<ArtifactApi>;
+  let experimentsApiStub: jasmine.SpyObj<ExperimentApi>;
   let matDialog: MatDialog;
   let store: MockStore;
 
 
   beforeEach(() => {
-    experimentsApiServiceStub = jasmine.createSpyObj<ExperimentApi>("ExperimentApi", ["getExperiments", "addExperiment"]);
+    artifactApiStub = jasmine.createSpyObj<ArtifactApi>("ArtifactApi", ["getArtifactsByRunKeys"]);
+    experimentsApiStub = jasmine.createSpyObj<ExperimentApi>("ExperimentApi", ["getExperiments", "addExperiment"]);
 
     TestBed.configureTestingModule({
       imports: [
@@ -29,7 +34,8 @@ describe("experiment effects", () => {
         ExperimentEffects,
         provideMockActions(() => actions$),
         provideMockStore({ initialState: {} }),
-        { provide: ExperimentApi, useValue: experimentsApiServiceStub }
+        { provide: ArtifactApi, useValue: artifactApiStub },
+        { provide: ExperimentApi, useValue: experimentsApiStub }
       ],
     });
 
@@ -41,22 +47,56 @@ describe("experiment effects", () => {
   describe("loadExperiments$", () => {
 
     describe("should trigger loadExperimentsSucceeded action if api call is successful", () => {
-      it(`on '${loadExperiments.type}' action`, async (done) => {
+      let project;
+
+      beforeEach(async () => {
+        project = await getRandomProject();
+        store.setState({
+          router: {
+            state: {
+              root: {
+                firstChild: {
+                  params: {
+                    projectKey: project.key
+                  }
+                }
+              }
+            }
+          }
+        });
+      });
+
+      it(`should trigger loadExperimentsSucceeded action containing experiments if api call is successful`, async (done) => {
         // arrange
-        actions$ = of(loadExperiments);
+        actions$ = of(loadExperiments());
         const experiments = await getRandomExperiments(3);
         const response: ExperimentListResponse = { items: experiments };
-        experimentsApiServiceStub.getExperiments.and.returnValue(of(response));
+        experimentsApiStub.getExperiments.withArgs(project.key).and.returnValue(of(response));
 
         // act
         effects.loadExperiments$.subscribe(action => {
           // assert
           expect(action).toEqual(loadExperimentsSucceeded({experiments: experiments}));
-          expect(experimentsApiServiceStub.getExperiments).toHaveBeenCalled();
+          expect(experimentsApiStub.getExperiments).toHaveBeenCalledWith(project.key);
 
           done();
         });
       });
+
+      /*it("should trigger loadExperimentsFailed action if api call is not successful", async (done) => {
+        // arrange
+        actions$ = of(loadExperiments());
+        experimentsApiServiceStub.getExperiments.withArgs(project.key).and.returnValue(throwError("failed"));
+
+        // act
+        effects.loadExperiments$.subscribe(action => {
+          // assert
+          expect(action).toEqual(loadModelsFailed({ payload: "failed" }));
+          expect(experimentsApiServiceStub.getExperiments).toHaveBeenCalledWith(project.key);
+
+          done();
+        });
+      });*/
     });
   });
 });

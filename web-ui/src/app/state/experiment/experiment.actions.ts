@@ -5,7 +5,7 @@ import { Artifact } from "@mlaide/state/artifact/artifact.models";
 
 export const loadExperiments = createAction("@mlaide/actions/experiments/load");
 export const loadExperimentsSucceeded = createAction("@mlaide/actions/experiments/load/succeeded", props<{ experiments: Experiment[] }>());
-export const loadExperimentsFailed = createAction("@mlaide/actions/experiments/load/failed", props<{ payload }>());
+export const loadExperimentsFailed = createAction("@mlaide/actions/experiments/load/failed", props<{ payload: any }>());
 
 export const openAddOrEditExperimentDialog =
   createAction(

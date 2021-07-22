@@ -17,9 +17,10 @@ import { ArtifactApi } from "@mlaide/state/artifact/artifact.api";
 
 @Injectable({ providedIn: "root" })
 export class ExperimentEffects {
+  // TODO Raman: Write Test for this
   loadExperimentsOnRouterNavigation$ = createEffect(() =>
     this.store.pipe(select(selectCurrentProjectKey)).pipe(
-      //TODO: only do this if experiment route is active
+      //TODO Raman: only do this if experiment route is active
       map(() => experimentActions.loadExperiments())
     )
   );
@@ -31,7 +32,7 @@ export class ExperimentEffects {
       mergeMap(([action, projectKey]) => this.experimentsApi.getExperiments(projectKey)),
       map((experimentListResponse) => ({ experiments: experimentListResponse.items })),
       map((experiments) => experimentActions.loadExperimentsSucceeded(experiments)),
-      catchError((error) => of(experimentActions.loadExperimentsFailed(error)))
+      catchError((error) => of(experimentActions.loadExperimentsFailed({payload: error})))
     )
   );
 
