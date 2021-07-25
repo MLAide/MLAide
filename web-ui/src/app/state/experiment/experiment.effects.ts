@@ -8,7 +8,7 @@ import { showError } from "@mlaide/state/shared/shared.actions";
 import { ExperimentApi } from "@mlaide/state/experiment/experiment.api";
 import * as experimentActions from "@mlaide/state/experiment/experiment.actions";
 import { HttpErrorResponse } from "@angular/common/http";
-import { CreateOrUpdateExperimentComponent } from "@mlaide/experiments/create-or-update-experiment/create-or-update-experiment.component";
+import { CreateOrEditExperimentComponent } from "@mlaide/experiments/create-or-update-experiment/create-or-edit-experiment.component";
 import { MatDialog } from "@angular/material/dialog";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectCurrentExperimentKey } from "@mlaide/state/experiment/experiment.selectors";
@@ -107,7 +107,7 @@ export class ExperimentEffects {
     this.actions$.pipe(
       ofType(experimentActions.openAddOrEditExperimentDialog),
       tap((data) => {
-        this.dialog.open(CreateOrUpdateExperimentComponent, {
+        this.dialog.open(CreateOrEditExperimentComponent, {
           minWidth: "20%",
           data: {
             title: data.title,
