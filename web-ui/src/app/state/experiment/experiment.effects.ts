@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { select, Store } from "@ngrx/store";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { catchError, map, mergeMap, tap } from "rxjs/operators";
-import { of } from "rxjs";
+import { of, throwError } from "rxjs";
 
 import { showError } from "@mlaide/state/shared/shared.actions";
 import { ExperimentApi } from "@mlaide/state/experiment/experiment.api";
@@ -32,7 +32,7 @@ export class ExperimentEffects {
       mergeMap(([action, projectKey]) => this.experimentsApi.getExperiments(projectKey)),
       map((experimentListResponse) => ({ experiments: experimentListResponse.items })),
       map((experiments) => experimentActions.loadExperimentsSucceeded(experiments)),
-      catchError((error) => of(experimentActions.loadExperimentsFailed({payload: error})))
+      catchError((error) => of(experimentActions.loadExperimentsFailed({ payload: error })))
     )
   );
 
@@ -41,38 +41,48 @@ export class ExperimentEffects {
       ofType(experimentActions.loadExperimentWithAllDetails),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       concatLatestFrom(() => this.store.select(selectCurrentExperimentKey)),
-      mergeMap(([[action, projectKey], experimentKey]) =>
-        this.experimentsApi.getExperiment(projectKey, experimentKey).pipe(
-          map((experiment) => ({ projectKey: projectKey, experiment: experiment })),
-          catchError((error) => this.handleLoadExperimentWithAllDetailsError(
+      map(([[action, projectKey], experimentKey]) => ({
+        projectKey,
+        experimentKey
+      })),
+      mergeMap((data) =>
+        this.experimentsApi.getExperiment(data.projectKey, data.experimentKey).pipe(
+          map((experiment) => ({ projectKey: data.projectKey, experiment: experiment })),
+          tap(this.dispatchStatusUpdate),
+          catchError((error) => this.throwLoadExperimentWithAllDetailsError(
             error,
-            "Error while loading experiment",
-            `The experiment with key '${experimentKey}' does not exist.`)),
-          tap(this.dispatchStatusUpdate)
+            "Could not load experiment.",
+            `The experiment with key '${data.experimentKey}' does not exist.`)),
         )
       ),
       mergeMap((data) =>
         this.runApi.getRunsByExperimentKey(data.projectKey, data.experiment.key).pipe(
           map((runs) => ({ projectKey: data.projectKey, experiment: data.experiment, runs: runs.items })),
-          catchError((error) => this.handleLoadExperimentWithAllDetailsError(
+          tap(this.dispatchStatusUpdate),
+          catchError((error) => this.throwLoadExperimentWithAllDetailsError(
             error,
             "Could not load runs of experiment.")),
-          tap(this.dispatchStatusUpdate)
         )
       ),
       mergeMap((data) =>
         this.artifactApi.getArtifactsByRunKeys(data.projectKey, data.runs.map((run) => run.key)).pipe(
           map((artifacts) => ({ projectKey: data.projectKey, experiment: data.experiment, runs: data.runs, artifacts: artifacts.items })),
-          catchError((error) => this.handleLoadExperimentWithAllDetailsError(
+          tap(this.dispatchStatusUpdate),
+          catchError((error) => this.throwLoadExperimentWithAllDetailsError(
             error,
-            "Could not load artifacts of experiment.")),
-          tap(this.dispatchStatusUpdate)
+            "Could not load artifacts of experiment."))
         )
       ),
       map((data) => experimentActions.loadExperimentWithAllDetailsSucceeded(data)),
-      catchError((error) => this.handleLoadExperimentWithAllDetailsError(
-        error,
-        "An unexpected error occurred while loading the experiment with all details.")),
+      catchError((error) => {
+        if (error && error.type === experimentActions.loadExperimentWithAllDetailsFailed.type) {
+          return of(error);
+        } else {
+          return of(this.mapToLoadExperimentWithAllDetailsError(
+            error,
+            "An unexpected error occurred while loading the experiment with all details."));
+        }
+      }),
     )
   );
 
@@ -80,9 +90,9 @@ export class ExperimentEffects {
     this.actions$.pipe(
       ofType(experimentActions.addExperiment),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([experiment, projectKey]) => this.experimentsApi.addExperiment(projectKey, experiment)),
-      map((experiment) => experimentActions.addExperimentSucceeded(experiment)),
-      catchError((error) => of(experimentActions.addExperimentFailed(error)))
+      mergeMap(([action, projectKey]) => this.experimentsApi.addExperiment(projectKey, action.experiment)),
+      map((experiment) => experimentActions.addExperimentSucceeded({ experiment })),
+      catchError((error) => of(experimentActions.addExperimentFailed({ payload: error })))
     )
   );
 
@@ -90,9 +100,9 @@ export class ExperimentEffects {
     this.actions$.pipe(
       ofType(experimentActions.editExperiment),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([experiment, projectKey]) => this.experimentsApi.patchExperiment(projectKey, experiment.key, experiment)),
-      map((experiment) => experimentActions.addExperimentSucceeded(experiment)),
-      catchError((error) => of(experimentActions.addExperimentFailed(error)))
+      mergeMap(([action, projectKey]) => this.experimentsApi.patchExperiment(projectKey, action.experiment.key, action.experiment)),
+      map((experiment) => experimentActions.editExperimentSucceeded({ experiment })),
+      catchError((error) => of(experimentActions.editExperimentFailed({ payload: error })))
     )
   );
 
@@ -132,7 +142,7 @@ export class ExperimentEffects {
     this.actions$.pipe(
       ofType(experimentActions.loadExperimentsFailed),
       map((action) => action.payload),
-      map((error) => ({ error, message: "Could not load error" })),
+      map((error) => ({ error, message: "Could not load experiments." })),
       map(showError)
     )
   );
@@ -172,7 +182,13 @@ export class ExperimentEffects {
     )
   );
 
-  private handleLoadExperimentWithAllDetailsError = (error, defaultErrorMessage: string, errorMessage404: string = null) => {
+  private throwLoadExperimentWithAllDetailsError = (error, defaultErrorMessage: string, errorMessage404: string = null) => {
+    const errorAction = this.mapToLoadExperimentWithAllDetailsError(error, defaultErrorMessage, errorMessage404);
+
+    return throwError(errorAction);
+  };
+
+  private mapToLoadExperimentWithAllDetailsError = (error, defaultErrorMessage: string, errorMessage404: string = null) => {
     let errorMessage = defaultErrorMessage;
     if (error instanceof HttpErrorResponse) {
       if (errorMessage404 && error.status === 404) {
@@ -180,11 +196,11 @@ export class ExperimentEffects {
       }
     }
 
-    return of(experimentActions.loadExperimentWithAllDetailsFailed({
+    return experimentActions.loadExperimentWithAllDetailsFailed({
       payload: error,
       errorMessage: errorMessage
-    }));
-  }
+    });
+  };
 
   private dispatchStatusUpdate = (data) => {
     this.store.dispatch(experimentActions.loadExperimentWithAllDetailsStatusUpdate({
