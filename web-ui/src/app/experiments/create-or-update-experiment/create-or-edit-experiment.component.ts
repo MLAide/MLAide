@@ -13,10 +13,10 @@ import {
 
 @Component({
   selector: "app-create-or-update-experiment",
-  templateUrl: "./create-or-update-experiment.component.html",
-  styleUrls: ["./create-or-update-experiment.component.scss"],
+  templateUrl: "./create-or-edit-experiment.component.html",
+  styleUrls: ["./create-or-edit-experiment.component.scss"],
 })
-export class CreateOrUpdateExperimentComponent {
+export class CreateOrEditExperimentComponent {
   public addOnBlur = true;
   public currentStatus;
   public experimentStatus = ExperimentStatus;
@@ -31,7 +31,7 @@ export class CreateOrUpdateExperimentComponent {
 
   constructor(
     private store: Store,
-    private dialogRef: MatDialogRef<CreateOrUpdateExperimentComponent>,
+    private dialogRef: MatDialogRef<CreateOrEditExperimentComponent>,
     private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: { experiment: Experiment; isEditMode: boolean; title: string }
   ) {

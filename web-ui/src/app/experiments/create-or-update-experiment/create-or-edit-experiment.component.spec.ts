@@ -21,11 +21,11 @@ import { getRandomExperiment } from "src/app/mocks/fake-generator";
 import { Experiment } from "../../entities/experiment.model";
 import { ExperimentStatusI18nComponent } from "../experiment-status-i18n/experiment-status-i18n.component";
 
-import { CreateOrUpdateExperimentComponent } from "./create-or-update-experiment.component";
+import { CreateOrEditExperimentComponent } from "./create-or-edit-experiment.component";
 
-describe("CreateOrUpdateExperimentComponent", () => {
-  let component: CreateOrUpdateExperimentComponent;
-  let fixture: ComponentFixture<CreateOrUpdateExperimentComponent>;
+describe("CreateOrEditExperimentComponent", () => {
+  let component: CreateOrEditExperimentComponent;
+  let fixture: ComponentFixture<CreateOrEditExperimentComponent>;
 
   // dialog mock
   // https://github.com/angular/quickstart/issues/320#issuecomment-404705258
@@ -56,7 +56,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [CreateOrUpdateExperimentComponent, ExperimentStatusI18nComponent],
+      declarations: [CreateOrEditExperimentComponent, ExperimentStatusI18nComponent],
       providers: [{ provide: MatDialogRef, useValue: dialogMock }, FormBuilder, { provide: MAT_DIALOG_DATA, useValue: formData }],
       imports: [
         BrowserAnimationsModule,
@@ -73,7 +73,7 @@ describe("CreateOrUpdateExperimentComponent", () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CreateOrUpdateExperimentComponent);
+    fixture = TestBed.createComponent(CreateOrEditExperimentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
