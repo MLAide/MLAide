@@ -19,7 +19,7 @@ export class RunEffects {
       mergeMap(([action, projectKey]) => this.runApi.getRuns(projectKey)),
       map((runListResponse) => ({ runs: runListResponse.items })),
       map((runs) => runActions.loadRunsSucceeded(runs)),
-      catchError((error) => of(runActions.loadRunsFailed(error)))
+      catchError((error) => of(runActions.loadRunsFailed({ payload: error })))
     )
   );
 
@@ -43,7 +43,7 @@ export class RunEffects {
       mergeMap(([[action, projectKey], runKeys]) => this.runApi.getRunsByRunKeys(projectKey, runKeys)),
       map((runListResponse) => ({ runs: runListResponse.items })),
       map((runs) => runActions.loadRunsByRunKeysSucceeded(runs)),
-      catchError((error) => of(runActions.loadRunsByRunKeysFailed(error)))
+      catchError((error) => of(runActions.loadRunsByRunKeysFailed({ payload: error })))
     )
   );
 
