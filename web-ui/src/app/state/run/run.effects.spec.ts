@@ -30,7 +30,7 @@ describe("run effects", () => {
 
     TestBed.configureTestingModule({
       providers: [
-        ProjectMemberEffects,
+        RunEffects,
         provideMockActions(() => actions$),
         provideMockStore({ initialState: {} }),
         { provide: RunApi, useValue: runApiStub },

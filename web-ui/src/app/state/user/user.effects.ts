@@ -10,7 +10,7 @@ import { currentUserChanged, updateUserProfile, updateUserProfileFailed, updateU
 @Injectable({ providedIn: "root" })
 export class UserEffects {
 
-  loadUserInfoAfterAuthentication$ = createEffect(() => 
+  loadUserInfoAfterAuthentication$ = createEffect(() =>
     this.actions$.pipe(
       ofType(isAuthenticated),
       filter(action => action.isAuthenticated),
@@ -19,19 +19,19 @@ export class UserEffects {
     )
   );
 
-  userProfileChanged$ = createEffect(() => 
+  userProfileChanged$ = createEffect(() =>
     this.actions$.pipe(
       ofType(updateUserProfileSucceeded),
       map((action) => currentUserChanged({ currentUser: action.user }))
     )
   );
 
-  updateUserProfile$ = createEffect(() => 
+  updateUserProfile$ = createEffect(() =>
     this.actions$.pipe(
       ofType(updateUserProfile),
       mergeMap((action) => this.userApi.updateCurrentUser(action.user)),
       map((user) => updateUserProfileSucceeded({ user })),
-      catchError(error => of(updateUserProfileFailed(error)))
+      catchError(error => of(updateUserProfileFailed({ payload: error })))
     )
   );
 
