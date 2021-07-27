@@ -170,44 +170,66 @@ describe("project effects", () => {
 
   });
 
-  describe("showSpinner$", () => {
+  describe("showSpinner$", async () => {
+    let actions = [
+      {
+        name: "addProject",
+        generate: async () => {
+          const project = await getRandomProject();
+          return addProject({project});
+        }
+      },
+    ];
 
-    describe("should emit showSpinner action", () => {
-      [loadProjects(), addProject(null)].forEach(inputAction => {
-        it(`on '${inputAction.type}' action`, async (done) => {
-          // arrange
-          actions$ = of(inputAction);
+    actions.forEach((actionGenerator) => {
+      it(`'${actionGenerator.name}' should map to showSpinner action`, async (done) => {
+        // arrange
+        const generatedAction = await actionGenerator.generate()
+        actions$ = of(generatedAction);
 
+        // act
+        effects.showSpinner$.subscribe(action => {
           // assert
-          effects.showSpinner$.subscribe((action) => {
-            expect(action).toEqual(showSpinner());
+          expect(action).toEqual(showSpinner());
 
-            done();
-          });
+          done();
         });
       });
-    });
-
+    })
   });
 
-  describe("hideSpinner$", () => {
+  describe("hideSpinner$", async () => {
+    let actions = [
+      {
+        name: "addProjectSucceeded",
+        generate: async () => {
+          const project = await getRandomProject();
+          return addProjectSucceeded({project});
+        }
+      },
+      {
+        name: "addProjectFailed",
+        generate: async () => {
+          return addProjectFailed({payload: "failed"});
+        }
+      },
+    ];
 
-    describe("should emit hideSpinner action", () => {
-      [loadProjectsSucceeded(null), loadProjectsFailed(null), addProjectSucceeded(null), addProjectFailed(null)].forEach(inputAction => {
-        it(`on '${inputAction.type}' action`, async (done) => {
-          // arrange
-          actions$ = of(inputAction);
+    actions.forEach((actionGenerator) => {
+      it(`'${actionGenerator.name}' should map to hideSpinner action`, async (done) => {
+        // arrange
+        const generatedAction = await actionGenerator.generate()
+        actions$ = of(generatedAction);
 
+        // act
+        effects.hideSpinner$.subscribe(action => {
           // assert
-          effects.hideSpinner$.subscribe((action) => {
-            expect(action).toEqual(hideSpinner());
+          expect(action).toEqual(hideSpinner());
 
-            done();
-          });
+          done();
         });
       });
-    });
-
+    })
   });
 
   describe("failed actions", () => {
