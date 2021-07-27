@@ -16,20 +16,20 @@ import { selectCurrentUser } from "../user/user.selectors";
 export class ProjectMemberEffects {
   loadProjectMembers$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(projectMemberActions.loadProjectMembers, 
-        projectMemberActions.addProjectMemberSucceeded, 
+      ofType(projectMemberActions.loadProjectMembers,
+        projectMemberActions.addProjectMemberSucceeded,
         projectMemberActions.editProjectMemberSucceeded,
         projectMemberActions.deleteProjectMemberSucceeded),
       // if this was triggered by a successful delete action, then only execute loading if the deleted user is not the current user
       concatLatestFrom(() => this.store.select(selectCurrentUser)),
-      filter(([action, currentUser]) => 
-        action.type !== projectMemberActions.deleteProjectMemberSucceeded 
+      filter(([action, currentUser]) =>
+        action.type !== projectMemberActions.deleteProjectMemberSucceeded
         || (action as any).projectMember.email !== currentUser.email),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       mergeMap(([action, projectKey]) => this.projectMemberApi.getProjectMembers(projectKey)),
       map((projectMemberListResponse) => ({ projectMembers: projectMemberListResponse.items })),
       map((projectMembers) => projectMemberActions.loadProjectMembersSucceeded(projectMembers)),
-      catchError((error) => of(projectMemberActions.loadProjectMembersFailed(error)))
+      catchError((error) => of(projectMemberActions.loadProjectMembersFailed({payload: error })))
     )
   );
 
@@ -92,7 +92,7 @@ export class ProjectMemberEffects {
         );
       }),
       map(() => projectMemberActions.editProjectMemberSucceeded()),
-      catchError((error) => of(projectMemberActions.editProjectMemberFailed(error)))
+      catchError((error) => of(projectMemberActions.editProjectMemberFailed({payload: error })))
     )
   );
 
@@ -142,8 +142,8 @@ export class ProjectMemberEffects {
 
   closeAddOrEditProjectMemberDialog$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(projectMemberActions.closeAddOrEditProjectMemberDialog, 
-        projectMemberActions.addProjectMemberSucceeded, 
+      ofType(projectMemberActions.closeAddOrEditProjectMemberDialog,
+        projectMemberActions.addProjectMemberSucceeded,
         projectMemberActions.editProjectMemberSucceeded),
       tap(() => this.dialog.closeAll())
     ),
@@ -154,11 +154,11 @@ export class ProjectMemberEffects {
     this.actions$.pipe(
       ofType(projectMemberActions.deleteProjectMember),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([action, projectKey]) => 
+      mergeMap(([action, projectKey]) =>
         this.projectMemberApi.deleteProjectMember(projectKey, action.projectMember.email).pipe(map(() => action.projectMember))
       ),
       map((projectMember) => projectMemberActions.deleteProjectMemberSucceeded({ projectMember })),
-      catchError((error) => of(projectMemberActions.deleteProjectMemberFailed(error)))
+      catchError((error) => of(projectMemberActions.deleteProjectMemberFailed({payload: error })))
     )
   );
 
@@ -174,7 +174,7 @@ export class ProjectMemberEffects {
     )
   );
 
-  goToProjectOverviewIfDeletedUserIsCurrentUser$ = createEffect(() => 
+  goToProjectOverviewIfDeletedUserIsCurrentUser$ = createEffect(() =>
     this.actions$.pipe(
       ofType(projectMemberActions.deleteProjectMemberSucceeded),
       concatLatestFrom(() => this.store.select(selectCurrentUser)),
