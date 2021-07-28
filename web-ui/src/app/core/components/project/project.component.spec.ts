@@ -18,6 +18,8 @@ import { Observable, of, Subscription } from "rxjs";
 import { RouterTestingModule } from "@angular/router/testing";
 import { MatButtonHarness } from "@angular/material/button/testing";
 import { ProjectsApiService } from "@mlaide/shared/api";
+import { MockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
 
 describe("ProjectComponent", () => {
   let component: ProjectComponent;
@@ -29,6 +31,9 @@ describe("ProjectComponent", () => {
 
   // route spy
   let unsubscriptionSpy: jasmine.Spy<() => void>;
+
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   // service stubs
   let projectsApiServiceStub: jasmine.SpyObj<ProjectsApiService>;
@@ -69,6 +74,9 @@ describe("ProjectComponent", () => {
         RouterTestingModule,
       ],
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {

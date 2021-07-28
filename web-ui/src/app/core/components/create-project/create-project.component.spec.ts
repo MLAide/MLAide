@@ -15,6 +15,10 @@ import { of } from "rxjs";
 import { getRandomProject } from "src/app/mocks/fake-generator";
 
 import { CreateProjectComponent } from "./create-project.component";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { AppState } from "@mlaide/state/app.state";
+import { addProject, closeCreateProjectDialog } from "@mlaide/state/project/project.actions";
 
 describe("CreateProjectComponent", () => {
   let component: CreateProjectComponent;
@@ -30,7 +34,12 @@ describe("CreateProjectComponent", () => {
 
   let formData: Project;
 
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
+
   beforeEach(async () => {
+    const initialState: Partial<AppState> = {};
+
     // prepare dialog mock object
     dialogMock = {
       open: () => ({ afterClosed: () => of(true) }),
@@ -45,9 +54,13 @@ describe("CreateProjectComponent", () => {
 
     TestBed.configureTestingModule({
       declarations: [CreateProjectComponent],
-      providers: [{ provide: MatDialogRef, useValue: dialogMock }, FormBuilder, { provide: MAT_DIALOG_DATA, useValue: formData }],
+      providers: [{ provide: MatDialogRef, useValue: dialogMock }, FormBuilder, { provide: MAT_DIALOG_DATA, useValue: formData },
+        provideMockStore({ initialState })],
       imports: [BrowserAnimationsModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -116,28 +129,27 @@ describe("CreateProjectComponent", () => {
   });
 
   describe("cancel", () => {
-    it("should call close on dialog", async () => {
+    it("should dispatch closeCreateProjectDialog action", async () => {
       // arrange in beforeEach
-      const spy = spyOn(dialogMock, "close");
 
       // act
       component.cancel();
 
       // assert
-      expect(spy).toHaveBeenCalled();
+      expect(dispatchSpy).toHaveBeenCalledWith(closeCreateProjectDialog());
     });
   });
 
+
   describe("create", () => {
-    it("should call close on dialog with form values", async () => {
+    it("should dispatch addProject action", async () => {
       // arrange in beforeEach
-      const spy = spyOn(dialogMock, "close");
 
       // act
       component.create();
 
       // assert
-      expect(spy).toHaveBeenCalledWith(component.form.value);
+      expect(dispatchSpy).toHaveBeenCalledWith(addProject({ project: component.form.value }));
     });
   });
 

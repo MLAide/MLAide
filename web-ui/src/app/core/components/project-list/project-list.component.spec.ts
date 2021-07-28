@@ -56,6 +56,15 @@ describe("ProjectListComponent", () => {
     expect(component).toBeTruthy();
   });
 
+  describe("ngOnInit", () => {
+    it("should dispatch loadProjects action", () => {
+      // ngOnInit will be called in beforeEach while creating the component
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(loadProjects());
+    });
+  });
+
   describe("component rendering", () => {
     it("should contain components title", async () => {
       // arrange
@@ -148,15 +157,6 @@ describe("ProjectListComponent", () => {
       const spy = routerSpy.navigateByUrl as jasmine.Spy;
       expect(spy.calls.count()).toBe(1, "expected navigation router to be called once");
       expect(spy.calls.first().args[0]).toBe("/projects/my-project");
-    });
-  });
-
-  describe("ngOnInit", () => {
-    it("should dispatch loadProjects action", () => {
-      // ngOnInit will be called in beforeEach while creating the component
-
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(loadProjects());
     });
   });
 
