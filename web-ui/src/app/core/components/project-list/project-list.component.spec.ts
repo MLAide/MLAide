@@ -65,6 +65,18 @@ describe("ProjectListComponent", () => {
     });
   });
 
+  describe("openCreateProjectDialog", () => {
+    it("should dispatch openCreateProjectDialog action", async () => {
+      // arrange in beforeEach
+
+      // act
+      component.openCreateProjectDialog();
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(openCreateProjectDialog());
+    });
+  });
+
   describe("component rendering", () => {
     it("should contain components title", async () => {
       // arrange
@@ -86,15 +98,15 @@ describe("ProjectListComponent", () => {
       expect(addProjectsButton.textContent).toContain(addProjectButtonTitle);
     });
 
-    it("should dispatch openCreateProjectDialog action on clicking the add project button", async () => {
+    it("should call openCreateProjectDialog when clicking the add project button", async () => {
       // arrange
       const addProjectButton = await loader.getHarness(MatButtonHarness.with({ text: addProjectButtonTitle }));
-
+      spyOn(component, "openCreateProjectDialog");
       // act
       await addProjectButton.click();
 
       // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(openCreateProjectDialog());
+      expect(component.openCreateProjectDialog).toHaveBeenCalled();
     });
   });
 

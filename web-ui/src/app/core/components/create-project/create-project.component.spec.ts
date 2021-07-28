@@ -140,7 +140,6 @@ describe("CreateProjectComponent", () => {
     });
   });
 
-
   describe("create", () => {
     it("should dispatch addProject action", async () => {
       // arrange in beforeEach
