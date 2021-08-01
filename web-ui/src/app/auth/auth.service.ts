@@ -37,10 +37,6 @@ export class AuthService {
     this.gotoLoginPageAfterLogout();
   }
 
-  public hasValidToken() {
-    return this.oauthService.hasValidAccessToken();
-  }
-
   public loginWithUserInteraction(targetUrl?: string) {
     // Note: before version 9.1.0 of the library you needed to
     // call encodeURIComponent on the argument to the method.

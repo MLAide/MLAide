@@ -13,7 +13,7 @@ export class AuthEffects {
       ofType(authActions.initializeLogin),
       mergeMap(() => this.authService.runInitialLoginSequence()),
       map(() => authActions.initializeLoginSucceeded()),
-      catchError((error) => of(authActions.initializeLoginFailed(error)))
+      catchError((error) => of(authActions.initializeLoginFailed({ payload: error })))
     )
   );
 

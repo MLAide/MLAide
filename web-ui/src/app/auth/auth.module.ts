@@ -5,11 +5,6 @@ import { APP_CONFIG, AppConfig } from "./../config/app-config.model";
 import { AuthGuard } from "./auth-guard.service";
 import { AuthService } from "./auth.service";
 
-// We need a factory since localStorage is not available at AOT build time
-export function storageFactory(): OAuthStorage {
-  return localStorage;
-}
-
 @NgModule({
   imports: [HttpClientModule, OAuthModule.forRoot()],
   providers: [AuthService, AuthGuard],
@@ -31,7 +26,10 @@ export class AuthModule {
           useFactory: authModuleConfigFactory,
           deps: [APP_CONFIG],
         },
-        { provide: OAuthStorage, useFactory: storageFactory },
+        {
+          provide: OAuthStorage,
+          useFactory: storageFactory
+        },
       ],
     };
   }
@@ -90,4 +88,9 @@ export function authModuleConfigFactory(appConfig: AppConfig): OAuthModuleConfig
       sendAccessToken: true,
     },
   };
+}
+
+// We need a factory since localStorage is not available at AOT build time
+export function storageFactory(): OAuthStorage {
+  return localStorage;
 }
