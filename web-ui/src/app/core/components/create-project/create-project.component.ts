@@ -1,6 +1,6 @@
 import { Component, Inject } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { ENTER } from "@angular/cdk/keycodes";
 import { Store } from "@ngrx/store";
 import { Project } from "@mlaide/entities/project.model";
@@ -16,7 +16,6 @@ export class CreateProjectComponent {
 
   constructor(
     private store: Store,
-    private dialogRef: MatDialogRef<CreateProjectComponent>,
     private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) data: Project
   ) {

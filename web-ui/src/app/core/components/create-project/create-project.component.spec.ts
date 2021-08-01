@@ -4,14 +4,13 @@ import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonHarness } from "@angular/material/button/testing";
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MatDialogModule, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatFormFieldHarness } from "@angular/material/form-field/testing";
 import { MatInputModule } from "@angular/material/input";
 import { MatInputHarness } from "@angular/material/input/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Project } from "@mlaide/entities/project.model";
-import { of } from "rxjs";
 import { getRandomProject } from "src/app/mocks/fake-generator";
 
 import { CreateProjectComponent } from "./create-project.component";
@@ -24,11 +23,6 @@ describe("CreateProjectComponent", () => {
   let component: CreateProjectComponent;
   let fixture: ComponentFixture<CreateProjectComponent>;
 
-  // dialog mock
-  // https://github.com/angular/quickstart/issues/320#issuecomment-404705258
-  // https://stackoverflow.com/questions/54108924/this-dialogref-close-is-not-a-function-error/54109919
-  let dialogMock;
-
   // fakes
   let fakeProject: Project;
 
@@ -40,12 +34,6 @@ describe("CreateProjectComponent", () => {
   beforeEach(async () => {
     const initialState: Partial<AppState> = {};
 
-    // prepare dialog mock object
-    dialogMock = {
-      open: () => ({ afterClosed: () => of(true) }),
-      close: () => {},
-    };
-
     // setup fakes
     fakeProject = await getRandomProject();
 
@@ -54,8 +42,11 @@ describe("CreateProjectComponent", () => {
 
     TestBed.configureTestingModule({
       declarations: [CreateProjectComponent],
-      providers: [{ provide: MatDialogRef, useValue: dialogMock }, FormBuilder, { provide: MAT_DIALOG_DATA, useValue: formData },
-        provideMockStore({ initialState })],
+      providers: [
+        FormBuilder,
+        { provide: MAT_DIALOG_DATA, useValue: formData },
+        provideMockStore({ initialState })
+      ],
       imports: [BrowserAnimationsModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
     }).compileComponents();
 

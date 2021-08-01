@@ -2,7 +2,7 @@ import { COMMA, ENTER } from "@angular/cdk/keycodes";
 import { Component, Inject } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatChipInputEvent } from "@angular/material/chips";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Experiment, ExperimentStatus } from "@mlaide/entities/experiment.model";
 import { Store } from "@ngrx/store";
 import {
@@ -31,7 +31,6 @@ export class CreateOrEditExperimentComponent {
 
   constructor(
     private store: Store,
-    private dialogRef: MatDialogRef<CreateOrEditExperimentComponent>,
     private formBuilder: FormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: { experiment: Experiment; isEditMode: boolean; title: string }
   ) {
@@ -103,9 +102,9 @@ export class CreateOrEditExperimentComponent {
     this.form.get("tags").setValue(this.tags);
 
     if (this.isEditMode) {
-      this.store.dispatch(editExperiment(this.form.value));
+      this.store.dispatch(editExperiment({experiment: this.form.value}));
     } else {
-      this.store.dispatch(addExperiment(this.form.value));
+      this.store.dispatch(addExperiment({ experiment: this.form.value }));
     }
   }
 }
