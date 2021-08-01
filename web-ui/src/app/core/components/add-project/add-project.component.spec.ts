@@ -13,15 +13,15 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Project } from "@mlaide/entities/project.model";
 import { getRandomProject } from "src/app/mocks/fake-generator";
 
-import { CreateProjectComponent } from "./create-project.component";
+import { AddProjectComponent } from "./add-project.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
 import { AppState } from "@mlaide/state/app.state";
-import { addProject, closeCreateProjectDialog } from "@mlaide/state/project/project.actions";
+import { addProject, closeAddProjectDialog } from "@mlaide/state/project/project.actions";
 
 describe("CreateProjectComponent", () => {
-  let component: CreateProjectComponent;
-  let fixture: ComponentFixture<CreateProjectComponent>;
+  let component: AddProjectComponent;
+  let fixture: ComponentFixture<AddProjectComponent>;
 
   // fakes
   let fakeProject: Project;
@@ -41,7 +41,7 @@ describe("CreateProjectComponent", () => {
     formData = fakeProject;
 
     TestBed.configureTestingModule({
-      declarations: [CreateProjectComponent],
+      declarations: [AddProjectComponent],
       providers: [
         FormBuilder,
         { provide: MAT_DIALOG_DATA, useValue: formData },
@@ -55,7 +55,7 @@ describe("CreateProjectComponent", () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CreateProjectComponent);
+    fixture = TestBed.createComponent(AddProjectComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -127,7 +127,7 @@ describe("CreateProjectComponent", () => {
       component.cancel();
 
       // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(closeCreateProjectDialog());
+      expect(dispatchSpy).toHaveBeenCalledWith(closeAddProjectDialog());
     });
   });
 
@@ -287,7 +287,7 @@ describe("CreateProjectComponent", () => {
           // arrange also in beforeEach
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#create-project-cancel-button",
+              selector: "#add-project-cancel-button",
             })
           );
 
@@ -299,7 +299,7 @@ describe("CreateProjectComponent", () => {
           spyOn(component, "cancel");
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#create-project-cancel-button",
+              selector: "#add-project-cancel-button",
             })
           );
 
@@ -316,7 +316,7 @@ describe("CreateProjectComponent", () => {
           // arrange also in beforeEach
           const button: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#create-project-create-button",
+              selector: "#add-project-create-button",
             })
           );
 
@@ -328,7 +328,7 @@ describe("CreateProjectComponent", () => {
           // arrange + act also in beforeEach
           const button: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#create-project-create-button",
+              selector: "#add-project-create-button",
             })
           );
           const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeProject.name }));
@@ -344,7 +344,7 @@ describe("CreateProjectComponent", () => {
           // arrange + act also in beforeEach
           const button: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#create-project-create-button",
+              selector: "#add-project-create-button",
             })
           );
 
@@ -357,7 +357,7 @@ describe("CreateProjectComponent", () => {
           spyOn(component, "create");
           const button: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#create-project-create-button",
+              selector: "#add-project-create-button",
             })
           );
 

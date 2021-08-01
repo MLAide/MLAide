@@ -3,7 +3,7 @@ import { Router } from "@angular/router";
 import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
 import { selectIsLoadingProjects, selectProjects } from "@mlaide/state/project/project.selectors";
-import { loadProjects, openCreateProjectDialog } from "@mlaide/state/project/project.actions";
+import { loadProjects, openAddProjectDialog } from "@mlaide/state/project/project.actions";
 import { Project } from "@mlaide/state/model";
 
 @Component({
@@ -28,6 +28,6 @@ export class ProjectListComponent implements OnInit {
   }
 
   openCreateProjectDialog(): void {
-    this.store.dispatch(openCreateProjectDialog());
+    this.store.dispatch(openAddProjectDialog());
   }
 }

@@ -9,9 +9,9 @@ export const loadArtifacts = createAction("@mlaide/actions/artifacts/load");
 export const loadArtifactsSucceeded = createAction("@mlaide/actions/artifacts/load/succeeded", props<{ artifacts: Artifact[] }>());
 export const loadArtifactsFailed = createAction("@mlaide/actions/artifacts/load/failed", props<{ payload: any }>());
 
-export const updateModel = createAction("@mlaide/actions/models/update", props<{ modelName: string; note: string; runName: string; stage: ModelStage; version: number }>());
-export const updateModelSucceeded = createAction("@mlaide/actions/models/update/succeeded");
-export const updateModelFailed = createAction("@mlaide/actions/models/update/failed", props<{ payload: any }>());
+export const editModel = createAction("@mlaide/actions/models/edit", props<{ modelName: string; note: string; runName: string; stage: ModelStage; version: number }>());
+export const editModelSucceeded = createAction("@mlaide/actions/models/edit/succeeded");
+export const editModelFailed = createAction("@mlaide/actions/models/edit/failed", props<{ payload: any }>());
 
 export const openEditModelDialog = createAction("@mlaide/actions/models/edit-dialog/open", props<{ artifact: Artifact }>());
 export const closeEditModelDialog = createAction("@mlaide/actions/models/edit-dialog/close");

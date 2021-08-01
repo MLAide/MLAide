@@ -4,11 +4,11 @@ import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { catchError, map, mergeMap, tap } from "rxjs/operators";
 import { of, throwError } from "rxjs";
 
-import { showError } from "@mlaide/state/shared/shared.actions";
+import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 import { ExperimentApi } from "@mlaide/state/experiment/experiment.api";
 import * as experimentActions from "@mlaide/state/experiment/experiment.actions";
 import { HttpErrorResponse } from "@angular/common/http";
-import { CreateOrEditExperimentComponent } from "@mlaide/experiments/create-or-update-experiment/create-or-edit-experiment.component";
+import { AddOrEditExperimentComponent } from "@mlaide/experiments/add-or-edit-experiment/add-or-edit-experiment.component";
 import { MatDialog } from "@angular/material/dialog";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectCurrentExperimentKey } from "@mlaide/state/experiment/experiment.selectors";
@@ -109,7 +109,7 @@ export class ExperimentEffects {
     this.actions$.pipe(
       ofType(experimentActions.openAddOrEditExperimentDialog),
       tap((data) => {
-        this.dialog.open(CreateOrEditExperimentComponent, {
+        this.dialog.open(AddOrEditExperimentComponent, {
           minWidth: "20%",
           data: {
             title: data.title,
@@ -135,7 +135,7 @@ export class ExperimentEffects {
       ofType(experimentActions.loadExperimentsFailed),
       map((action) => action.payload),
       map((error) => ({ error, message: "Could not load experiments." })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 
@@ -149,7 +149,7 @@ export class ExperimentEffects {
           "The experiment could not be created, because of invalid input data. Please try again with valid input data." :
           "Creating experiment failed."
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 
@@ -163,14 +163,14 @@ export class ExperimentEffects {
           "The experiment could not be modified, because of invalid input data. Please try again with valid input data." :
           "Editing experiment failed."
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 
   loadExperimentWithAllDetailsFailed$ = createEffect(() =>
     this.actions$.pipe(
       ofType(experimentActions.loadExperimentWithAllDetailsFailed),
-      map((action) => showError({ error: action.payload, message: action.errorMessage }))
+      map((action) => showErrorMessage({ error: action.payload, message: action.errorMessage }))
     )
   );
 

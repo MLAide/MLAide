@@ -16,7 +16,7 @@ import { MockPipe } from "ng-mocks";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { AppState } from "@mlaide/state/app.state";
-import { loadProjects, openCreateProjectDialog } from "@mlaide/state/project/project.actions";
+import { loadProjects, openAddProjectDialog } from "@mlaide/state/project/project.actions";
 import { Action } from "@ngrx/store";
 
 describe("ProjectListComponent", () => {
@@ -73,7 +73,7 @@ describe("ProjectListComponent", () => {
       component.openCreateProjectDialog();
 
       // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(openCreateProjectDialog());
+      expect(dispatchSpy).toHaveBeenCalledWith(openAddProjectDialog());
     });
   });
 

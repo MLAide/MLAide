@@ -17,14 +17,14 @@ import {
 } from "@mlaide/mocks/fake-generator";
 import {
   closeEditModelDialog,
-  updateModel, updateModelFailed,
-  updateModelSucceeded, loadArtifacts, loadArtifactsFailed, loadArtifactsSucceeded,
+  editModel, editModelFailed,
+  editModelSucceeded, loadArtifacts, loadArtifactsFailed, loadArtifactsSucceeded,
   loadModels,
   loadModelsFailed,
   loadModelsSucceeded, openEditModelDialog, openModelStageLogDialog
 } from "@mlaide/state/artifact/artifact.actions";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import { showError } from "@mlaide/state/shared/shared.actions";
+import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 import { CreateOrUpdateModel } from "@mlaide/state/artifact/artifact.models";
 import { ModelStageLogComponent } from "@mlaide/models/model-stage-log/model-stage-log.component";
 
@@ -119,7 +119,7 @@ describe("ArtifactEffects", () => {
   describe("reloadModels$", async () => {
     it(`editModelSucceeded should map to 'loadModels' action`, async (done) => {
       // arrange
-      actions$ = of(updateModelSucceeded());
+      actions$ = of(editModelSucceeded());
 
       // act
       effects.reloadModels$.subscribe(action => {
@@ -140,7 +140,7 @@ describe("ArtifactEffects", () => {
       // act
       effects.loadModelsFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not load models. A unknown error occurred.",
           error: error
         }));
@@ -213,7 +213,7 @@ describe("ArtifactEffects", () => {
       // act
       effects.loadArtifactsFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not load artifacts. A unknown error occurred.",
           error: error
         }));
@@ -250,7 +250,7 @@ describe("ArtifactEffects", () => {
         note: artifact.model.modelRevisions[0].note,
         stage: artifact.model.stage,
       }
-      actions$ = of(updateModel({
+      actions$ = of(editModel({
         modelName: artifact.name,
         note: artifact.model.modelRevisions[0].note,
         runName: artifact.runName,
@@ -266,7 +266,7 @@ describe("ArtifactEffects", () => {
       // act
       effects.updateModel$.subscribe(action => {
         // assert
-        expect(action).toEqual(updateModelSucceeded());
+        expect(action).toEqual(editModelSucceeded());
         expect(artifactApiStub.putModel).toHaveBeenCalledWith(
           project.key,
           artifact.name,
@@ -285,7 +285,7 @@ describe("ArtifactEffects", () => {
         note: artifact.model.modelRevisions[0].note,
         stage: artifact.model.stage,
       }
-      actions$ = of(updateModel({
+      actions$ = of(editModel({
         modelName: artifact.name,
         note: artifact.model.modelRevisions[0].note,
         runName: artifact.runName,
@@ -301,7 +301,7 @@ describe("ArtifactEffects", () => {
       // act
       effects.updateModel$.subscribe(action => {
         // assert
-        expect(action).toEqual(updateModelFailed({ payload: "failed" }));
+        expect(action).toEqual(editModelFailed({ payload: "failed" }));
         expect(artifactApiStub.putModel).toHaveBeenCalledWith(
           project.key,
           artifact.name,
@@ -365,7 +365,7 @@ describe("ArtifactEffects", () => {
   describe("closeEditModelDialog$", () => {
     let actions = [
       closeEditModelDialog(),
-      updateModelSucceeded(),
+      editModelSucceeded(),
     ];
 
     actions.forEach((action) => {

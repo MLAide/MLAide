@@ -9,7 +9,7 @@ import { ComponentType } from "@angular/cdk/portal";
 import { MatDialogConfig } from "@angular/material/dialog/dialog-config";
 import { MatDialogRef } from "@angular/material/dialog/dialog-ref";
 import Spy = jasmine.Spy;
-import { CreateOrEditProjectMemberComponent } from "@mlaide/project-settings/create-or-edit-project-member/create-or-edit-project-member.component";
+import { AddOrEditProjectMemberComponent } from "@mlaide/project-settings/add-or-edit-project-member/add-or-edit-project-member.component";
 import { TestBed } from "@angular/core/testing";
 import { provideMockActions } from "@ngrx/effects/testing";
 import {
@@ -17,7 +17,7 @@ import {
   getRandomProjectMembers,
   getRandomUser
 } from "@mlaide/mocks/fake-generator";
-import { showError } from "@mlaide/state/shared/shared.actions";
+import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 import {
   addProjectMemberFailed, addProjectMemberSucceeded,
   closeAddOrEditProjectMemberDialog,
@@ -39,7 +39,7 @@ describe("ProjectMemberEffects", () => {
   let projectMemberApiStub: jasmine.SpyObj<ProjectMemberApi>;
   let store: MockStore;
   let matDialog: MatDialog;
-  let openDialogSpy: Spy<(component: ComponentType<CreateOrEditProjectMemberComponent>, config?: MatDialogConfig) => MatDialogRef<CreateOrEditProjectMemberComponent>>;
+  let openDialogSpy: Spy<(component: ComponentType<AddOrEditProjectMemberComponent>, config?: MatDialogConfig) => MatDialogRef<AddOrEditProjectMemberComponent>>;
   let closeAllDialogSpy: Spy<() => void>;
   let router = {
     navigate: jasmine.createSpy('navigate')
@@ -208,7 +208,7 @@ describe("ProjectMemberEffects", () => {
       // act
       effects.loadProjectMembersFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not load project members. A unknown error occurred.",
           error: error
         }));
@@ -250,7 +250,7 @@ describe("ProjectMemberEffects", () => {
       // act
       effects.addProjectMemberFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not add project member. A unknown error occurred.",
           error: error
         }));
@@ -323,7 +323,7 @@ describe("ProjectMemberEffects", () => {
       // act
       effects.editProjectMemberFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not edit project member. A unknown error occurred.",
           error: error
         }));
@@ -341,7 +341,7 @@ describe("ProjectMemberEffects", () => {
       // act
       effects.openAddProjectMemberDialog$.subscribe(() => {
         // assert
-        expect(openDialogSpy).toHaveBeenCalledWith(CreateOrEditProjectMemberComponent, { minWidth: "20%",
+        expect(openDialogSpy).toHaveBeenCalledWith(AddOrEditProjectMemberComponent, { minWidth: "20%",
           data: {
             title: `Add new member`,
             projectMember: null,
@@ -361,7 +361,7 @@ describe("ProjectMemberEffects", () => {
       // act
       effects.openEditProjectMemberDialog$.subscribe(() => {
         // assert
-        expect(openDialogSpy).toHaveBeenCalledWith(CreateOrEditProjectMemberComponent, { minWidth: "20%",
+        expect(openDialogSpy).toHaveBeenCalledWith(AddOrEditProjectMemberComponent, { minWidth: "20%",
           data: {
             title: `Edit member: ${projectMember.nickName}`,
             projectMember: projectMember,
@@ -450,7 +450,7 @@ describe("ProjectMemberEffects", () => {
       // act
       effects.deleteProjectMemberFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not delete project member. A unknown error occurred.",
           error: error
         }));

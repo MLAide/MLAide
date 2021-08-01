@@ -3,7 +3,7 @@ import { CommonModule } from "@angular/common";
 
 import { ProjectSettingsRoutingModule } from "./project-settings-routing.module";
 import { ProjectMembersListComponent } from "./project-members-list/project-members-list.component";
-import { CreateOrEditProjectMemberComponent } from "./create-or-edit-project-member/create-or-edit-project-member.component";
+import { AddOrEditProjectMemberComponent } from "./add-or-edit-project-member/add-or-edit-project-member.component";
 import { SharedModule } from "../shared/shared.module";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTableModule } from "@angular/material/table";
@@ -17,7 +17,7 @@ import { FlexLayoutModule } from "@angular/flex-layout";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
-  declarations: [ProjectMembersListComponent, CreateOrEditProjectMemberComponent],
+  declarations: [ProjectMembersListComponent, AddOrEditProjectMemberComponent],
   imports: [
     CommonModule,
 

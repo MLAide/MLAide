@@ -15,7 +15,7 @@ import {
   loadRunsFailed,
   loadRunsSucceeded
 } from "@mlaide/state/run/run.actions";
-import { showError } from "@mlaide/state/shared/shared.actions";
+import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 
 describe("run effects", () => {
   let actions$ = new Observable<Action>();
@@ -104,7 +104,7 @@ describe("run effects", () => {
       // act
       effects.loadRunsFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not load runs. A unknown error occurred.",
           error: error
         }));
@@ -181,7 +181,7 @@ describe("run effects", () => {
       // act
       effects.loadRunsByRunKeysFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not load runs. A unknown error occurred.",
           error: error
         }));

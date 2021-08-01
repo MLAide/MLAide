@@ -6,7 +6,7 @@ import { RunApi } from "./run.api";
 import { Store } from "@ngrx/store";
 import * as runActions from "@mlaide/state/run/run.actions";
 import { selectCurrentProjectKey } from "../project/project.selectors";
-import { showError } from "../shared/shared.actions";
+import { showErrorMessage } from "../shared/shared.actions";
 import { selectSelectedRunKeys } from "./run.selectors";
 
 @Injectable({ providedIn: "root" })
@@ -31,7 +31,7 @@ export class RunEffects {
         message: "Could not load runs. A unknown error occurred.",
         error: error
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 
@@ -55,7 +55,7 @@ export class RunEffects {
         message: "Could not load runs. A unknown error occurred.",
         error: error
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 

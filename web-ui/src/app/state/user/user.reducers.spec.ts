@@ -1,9 +1,9 @@
 import { getRandomUser } from "@mlaide/mocks/fake-generator";
 import { UserState } from "@mlaide/state/user/user.state";
 import {
-  currentUserChanged, updateUserProfile,
-  updateUserProfileFailed,
-  updateUserProfileSucceeded
+  currentUserChanged, editUserProfile,
+  editUserProfileFailed,
+  editUserProfileSucceeded
 } from "@mlaide/state/user/user.actions";
 import { userReducer } from "@mlaide/state/user/user.reducers";
 
@@ -33,7 +33,7 @@ describe("UserReducers", () => {
       const initialState: Partial<UserState> = {
         isLoading: false
       };
-      const action = updateUserProfile(undefined);
+      const action = editUserProfile(undefined);
 
       // act
       const newState = userReducer(initialState as UserState, action);
@@ -49,7 +49,7 @@ describe("UserReducers", () => {
       const initialState: Partial<UserState> = {
         isLoading: true
       };
-      const action = updateUserProfileSucceeded(undefined);
+      const action = editUserProfileSucceeded(undefined);
 
       // act
       const newState = userReducer(initialState as UserState, action);
@@ -65,7 +65,7 @@ describe("UserReducers", () => {
       const initialState: Partial<UserState> = {
         isLoading: true
       };
-      const action = updateUserProfileFailed(undefined);
+      const action = editUserProfileFailed(undefined);
 
       // act
       const newState = userReducer(initialState as UserState, action);

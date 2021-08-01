@@ -5,10 +5,10 @@ import * as projectMemberActions from "@mlaide/state/project-member/project-memb
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { catchError, filter, map, mergeMap, tap } from "rxjs/operators";
 import { of } from "rxjs";
-import { showError } from "@mlaide/state/shared/shared.actions";
+import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 import { MatDialog } from "@angular/material/dialog";
 import { ProjectMemberApi } from "./project-member.api";
-import { CreateOrEditProjectMemberComponent } from "@mlaide/project-settings/create-or-edit-project-member/create-or-edit-project-member.component";
+import { AddOrEditProjectMemberComponent } from "@mlaide/project-settings/add-or-edit-project-member/add-or-edit-project-member.component";
 import { Router } from "@angular/router";
 import { selectCurrentUser } from "../user/user.selectors";
 
@@ -41,7 +41,7 @@ export class ProjectMemberEffects {
         message: "Could not load project members. A unknown error occurred.",
         error: error
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 
@@ -77,7 +77,7 @@ export class ProjectMemberEffects {
         message: "Could not add project member. A unknown error occurred.",
         error: error
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 
@@ -104,7 +104,7 @@ export class ProjectMemberEffects {
         message: "Could not edit project member. A unknown error occurred.",
         error: error
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 
@@ -112,7 +112,7 @@ export class ProjectMemberEffects {
     this.actions$.pipe(
       ofType(projectMemberActions.openAddProjectMemberDialog),
       tap(() => {
-        this.dialog.open(CreateOrEditProjectMemberComponent, {
+        this.dialog.open(AddOrEditProjectMemberComponent, {
           minWidth: "20%",
           data: {
             title: `Add new member`,
@@ -128,7 +128,7 @@ export class ProjectMemberEffects {
     this.actions$.pipe(
       ofType(projectMemberActions.openEditProjectMemberDialog),
       tap((action) => {
-        this.dialog.open(CreateOrEditProjectMemberComponent, {
+        this.dialog.open(AddOrEditProjectMemberComponent, {
           minWidth: "20%",
           data: {
             title: `Edit member: ${action.projectMember.nickName}`,
@@ -170,7 +170,7 @@ export class ProjectMemberEffects {
         message: "Could not delete project member. A unknown error occurred.",
         error: error
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 

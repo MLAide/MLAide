@@ -2,10 +2,10 @@ import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { catchError, filter, map, mergeMap } from "rxjs/operators";
 import { of } from "rxjs";
-import { hideSpinner, showError, showSpinner, showSuccessMessage } from "@mlaide/state/shared/shared.actions";
+import { hideSpinner, showErrorMessage, showSpinner, showSuccessMessage } from "@mlaide/state/shared/shared.actions";
 import { UserApi } from "./user.api";
 import { isUserAuthenticated } from "../auth/auth.actions";
-import { currentUserChanged, updateUserProfile, updateUserProfileFailed, updateUserProfileSucceeded } from "./user.actions";
+import { currentUserChanged, editUserProfile, editUserProfileFailed, editUserProfileSucceeded } from "./user.actions";
 
 @Injectable({ providedIn: "root" })
 export class UserEffects {
@@ -21,35 +21,35 @@ export class UserEffects {
 
   userProfileChanged$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(updateUserProfileSucceeded),
+      ofType(editUserProfileSucceeded),
       map((action) => currentUserChanged({ currentUser: action.user }))
     )
   );
 
   updateUserProfile$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(updateUserProfile),
+      ofType(editUserProfile),
       mergeMap((action) => this.userApi.updateCurrentUser(action.user)),
-      map((user) => updateUserProfileSucceeded({ user })),
-      catchError(error => of(updateUserProfileFailed({ payload: error })))
+      map((user) => editUserProfileSucceeded({ user })),
+      catchError(error => of(editUserProfileFailed({ payload: error })))
     )
   );
 
   updateUserProfileFailed$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(updateUserProfileFailed),
+      ofType(editUserProfileFailed),
       map((action) => action.payload),
       map((error) => ({
         message: "Could not update user profile. A unknown error occurred.",
         error: error
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 
   updateUserProfileSucceeded$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(updateUserProfileSucceeded),
+      ofType(editUserProfileSucceeded),
       map(() => ({ message: "Successfully saved user info!" })),
       map(showSuccessMessage)
     )
@@ -57,14 +57,14 @@ export class UserEffects {
 
   showSpinner$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(updateUserProfile),
+      ofType(editUserProfile),
       map(() => showSpinner())
     )
   );
 
   hideSpinner$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(updateUserProfileSucceeded, updateUserProfileFailed),
+      ofType(editUserProfileSucceeded, editUserProfileFailed),
       map(() => hideSpinner())
     )
   );

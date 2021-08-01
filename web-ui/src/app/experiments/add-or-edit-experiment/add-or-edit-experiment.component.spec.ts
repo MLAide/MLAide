@@ -20,7 +20,7 @@ import { getRandomExperiment } from "src/app/mocks/fake-generator";
 import { Experiment } from "../../entities/experiment.model";
 import { ExperimentStatusI18nComponent } from "../experiment-status-i18n/experiment-status-i18n.component";
 
-import { CreateOrEditExperimentComponent } from "./create-or-edit-experiment.component";
+import { AddOrEditExperimentComponent } from "./add-or-edit-experiment.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
 import { AppState } from "@mlaide/state/app.state";
@@ -30,9 +30,9 @@ import {
   editExperiment
 } from "@mlaide/state/experiment/experiment.actions";
 
-describe("CreateOrEditExperimentComponent", () => {
-  let component: CreateOrEditExperimentComponent;
-  let fixture: ComponentFixture<CreateOrEditExperimentComponent>;
+describe("AddOrEditExperimentComponent", () => {
+  let component: AddOrEditExperimentComponent;
+  let fixture: ComponentFixture<AddOrEditExperimentComponent>;
 
   // fakes
   let fakeExperiment: Experiment;
@@ -57,7 +57,7 @@ describe("CreateOrEditExperimentComponent", () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [CreateOrEditExperimentComponent, ExperimentStatusI18nComponent],
+      declarations: [AddOrEditExperimentComponent, ExperimentStatusI18nComponent],
       providers: [
         FormBuilder,
         { provide: MAT_DIALOG_DATA, useValue: formData },
@@ -80,7 +80,7 @@ describe("CreateOrEditExperimentComponent", () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CreateOrEditExperimentComponent);
+    fixture = TestBed.createComponent(AddOrEditExperimentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -529,7 +529,7 @@ describe("CreateOrEditExperimentComponent", () => {
           // arrange also in beforeEach
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#create-or-update-experiment-cancel-button",
+              selector: "#add-or-edit-experiment-cancel-button",
             })
           );
 
@@ -541,7 +541,7 @@ describe("CreateOrEditExperimentComponent", () => {
           spyOn(component, "cancel");
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#create-or-update-experiment-cancel-button",
+              selector: "#add-or-edit-experiment-cancel-button",
             })
           );
 
@@ -556,9 +556,9 @@ describe("CreateOrEditExperimentComponent", () => {
       describe("create or update button", () => {
         it("should have disabled save button if the form is invalid -- required fields are empty", async () => {
           // arrange
-          const createOrUpdateExperimentButton: MatButtonHarness = await loader.getHarness(
+          const addOrEditExperimentButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#create-or-update-experiment-save-button",
+              selector: "#add-or-edit-experiment-save-button",
             })
           );
 
@@ -567,26 +567,26 @@ describe("CreateOrEditExperimentComponent", () => {
           fixture.detectChanges();
 
           // assert
-          expect(await createOrUpdateExperimentButton.isDisabled()).toBeTruthy();
+          expect(await addOrEditExperimentButton.isDisabled()).toBeTruthy();
         });
 
         it("should have enabled save button if the form is valid", async () => {
           // arrange + act also in beforeEach
-          const createOrUpdateExperimentButton: MatButtonHarness = await loader.getHarness(
+          const addOrEditExperimentButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#create-or-update-experiment-save-button",
+              selector: "#add-or-edit-experiment-save-button",
             })
           );
 
           // assert
-          expect(await createOrUpdateExperimentButton.isDisabled()).toBeFalsy();
+          expect(await addOrEditExperimentButton.isDisabled()).toBeFalsy();
         });
 
         it("should have update button if keyReadonly is true", async () => {
           // arrange also in beforeEach
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#create-or-update-experiment-save-button",
+              selector: "#add-or-edit-experiment-save-button",
             })
           );
 
@@ -601,7 +601,7 @@ describe("CreateOrEditExperimentComponent", () => {
           // arrange also in beforeEach
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#create-or-update-experiment-save-button",
+              selector: "#add-or-edit-experiment-save-button",
             })
           );
 
@@ -614,14 +614,14 @@ describe("CreateOrEditExperimentComponent", () => {
         it("should call save when clicking save button", async () => {
           // arrange also in beforeEach
           spyOn(component, "save");
-          const createOrUpdateExperimentButton: MatButtonHarness = await loader.getHarness(
+          const addOrEditExperimentButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#create-or-update-experiment-save-button",
+              selector: "#add-or-edit-experiment-save-button",
             })
           );
 
           // act
-          await createOrUpdateExperimentButton.click();
+          await addOrEditExperimentButton.click();
 
           // assert
           expect(component.save).toHaveBeenCalled();

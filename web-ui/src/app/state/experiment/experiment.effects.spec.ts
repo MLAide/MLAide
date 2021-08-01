@@ -31,7 +31,7 @@ import {
 import { ExperimentApi, ExperimentListResponse } from "./experiment.api";
 import { ExperimentEffects } from "./experiment.effects";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import { showError } from "@mlaide/state/shared/shared.actions";
+import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 import { ArtifactApi, ArtifactListResponse } from "@mlaide/state/artifact/artifact.api";
 import { RunApi, RunListResponse } from "@mlaide/state/run/run.api";
 import { Project } from "@mlaide/state/project/project.models";
@@ -40,7 +40,7 @@ import { ComponentType } from "@angular/cdk/portal";
 import { MatDialogConfig } from "@angular/material/dialog/dialog-config";
 import { MatDialogRef } from "@angular/material/dialog/dialog-ref";
 import Spy = jasmine.Spy;
-import { CreateOrEditExperimentComponent } from "@mlaide/experiments/create-or-update-experiment/create-or-edit-experiment.component";
+import { AddOrEditExperimentComponent } from "@mlaide/experiments/add-or-edit-experiment/add-or-edit-experiment.component";
 
 describe("experiment effects", () => {
   let actions$ = new Observable<Action>();
@@ -51,7 +51,7 @@ describe("experiment effects", () => {
   let store: MockStore;
   let project: Project;
   let matDialog: MatDialog;
-  let openDialogSpy: Spy<(component: ComponentType<CreateOrEditExperimentComponent>, config?: MatDialogConfig) => MatDialogRef<CreateOrEditExperimentComponent>>;
+  let openDialogSpy: Spy<(component: ComponentType<AddOrEditExperimentComponent>, config?: MatDialogConfig) => MatDialogRef<AddOrEditExperimentComponent>>;
   let closeAllDialogSpy: Spy<() => void>;
 
   beforeEach(() => {
@@ -426,7 +426,7 @@ describe("experiment effects", () => {
   });
 
   describe("openCreateOrEditDialog$", () => {
-    it("should open MatDialog with CreateOrEditExperimentComponent", async (done) => {
+    it("should open MatDialog with AddOrEditExperimentComponent", async (done) => {
       // arrange
       const experiment = await getRandomExperiment();
       const isEditMode = true;
@@ -448,7 +448,7 @@ describe("experiment effects", () => {
             isEditMode: isEditMode,
           },
         };
-        expect(openDialogSpy).toHaveBeenCalledWith(CreateOrEditExperimentComponent, expectedDialogArgs);
+        expect(openDialogSpy).toHaveBeenCalledWith(AddOrEditExperimentComponent, expectedDialogArgs);
 
         done();
       });
@@ -500,7 +500,7 @@ describe("experiment effects", () => {
           error: "error",
           message: "Could not load experiments."
         }
-        expect(action).toEqual(showError(expectedError));
+        expect(action).toEqual(showErrorMessage(expectedError));
 
         done();
       });
@@ -519,7 +519,7 @@ describe("experiment effects", () => {
           error: "error",
           message: "Creating experiment failed."
         }
-        expect(action).toEqual(showError(expectedError));
+        expect(action).toEqual(showErrorMessage(expectedError));
 
         done();
       });
@@ -537,7 +537,7 @@ describe("experiment effects", () => {
           error: httpError,
           message: "The experiment could not be created, because of invalid input data. Please try again with valid input data."
         }
-        expect(action).toEqual(showError(expectedError));
+        expect(action).toEqual(showErrorMessage(expectedError));
 
         done();
       });
@@ -556,7 +556,7 @@ describe("experiment effects", () => {
           error: "error",
           message: "Editing experiment failed."
         }
-        expect(action).toEqual(showError(expectedError));
+        expect(action).toEqual(showErrorMessage(expectedError));
 
         done();
       });
@@ -574,7 +574,7 @@ describe("experiment effects", () => {
           error: httpError,
           message: "The experiment could not be modified, because of invalid input data. Please try again with valid input data."
         }
-        expect(action).toEqual(showError(expectedError));
+        expect(action).toEqual(showErrorMessage(expectedError));
 
         done();
       });
@@ -593,7 +593,7 @@ describe("experiment effects", () => {
           error: "error",
           message: "the message"
         }
-        expect(action).toEqual(showError(expectedError));
+        expect(action).toEqual(showErrorMessage(expectedError));
 
         done();
       });

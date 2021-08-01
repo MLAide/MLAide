@@ -1,14 +1,14 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { TestBed } from "@angular/core/testing";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
-import { CreateProjectComponent } from "@mlaide/core/components/create-project/create-project.component";
+import { AddProjectComponent } from "@mlaide/core/components/add-project/add-project.component";
 import { getRandomProject, getRandomProjects } from "@mlaide/mocks/fake-generator";
 import { getEffectsMetadata } from "@ngrx/effects";
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from "@ngrx/store";
 import { Observable, of, throwError } from "rxjs";
-import { hideSpinner, showError, showSpinner } from "../shared/shared.actions";
-import { addProject, addProjectFailed, addProjectSucceeded, closeCreateProjectDialog, loadProjects, loadProjectsFailed, loadProjectsSucceeded, openCreateProjectDialog } from "./project.actions";
+import { hideSpinner, showErrorMessage, showSpinner } from "../shared/shared.actions";
+import { addProject, addProjectFailed, addProjectSucceeded, closeAddProjectDialog, loadProjects, loadProjectsFailed, loadProjectsSucceeded, openAddProjectDialog } from "./project.actions";
 import { ProjectApi, ProjectListResponse } from "./project.api";
 import { ProjectEffects } from "./project.effects";
 
@@ -123,16 +123,16 @@ describe("project effects", () => {
   describe("openCreateDialog$", () => {
 
     describe("should open the CreateProjectComponent in a MatDialog", () => {
-      it(`on '${openCreateProjectDialog.type}' action`, async (done) => {
+      it(`on '${openAddProjectDialog.type}' action`, async (done) => {
         // arrange
         const dialogOpenSpy = spyOn(matDialog, "open");
-        actions$ = of(openCreateProjectDialog());
+        actions$ = of(openAddProjectDialog());
 
         // assert
         expect(getEffectsMetadata(effects).openCreateDialog$.dispatch).toBeFalse();
         effects.openCreateDialog$.subscribe(() => {
           expect(dialogOpenSpy).toHaveBeenCalledOnceWith(
-            CreateProjectComponent,
+            AddProjectComponent,
             {
               data: {
                 key: "",
@@ -151,7 +151,7 @@ describe("project effects", () => {
   describe("closeCreateDialog$", () => {
 
     describe("should close all MatDialogs", () => {
-      [closeCreateProjectDialog(), addProjectSucceeded(null)].forEach(inputAction => {
+      [closeAddProjectDialog(), addProjectSucceeded(null)].forEach(inputAction => {
         it(`on '${inputAction.type}' action`, async (done) => {
           // arrange
           const dialogOpenSpy = spyOn(matDialog, "closeAll");
@@ -276,7 +276,7 @@ describe("project effects", () => {
 
             // assert
             error.effect(effects).subscribe((action) => {
-              expect(action).toEqual(showError({ error: error.inputAction.payload, message: error.expectedMessage }));
+              expect(action).toEqual(showErrorMessage({ error: error.inputAction.payload, message: error.expectedMessage }));
 
               done();
             });

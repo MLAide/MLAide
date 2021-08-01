@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Artifact, ModelStage } from "@mlaide/entities/artifact.model";
 import { closeAddOrEditExperimentDialog, editExperiment } from "@mlaide/state/experiment/experiment.actions";
-import { closeEditModelDialog, updateModel } from "@mlaide/state/artifact/artifact.actions";
+import { closeEditModelDialog, editModel } from "@mlaide/state/artifact/artifact.actions";
 import { Store } from "@ngrx/store";
 
 @Component({
@@ -39,6 +39,6 @@ export class EditModelComponent {
   update() {
     this.form.get("note").setValue(this.note);
 
-    this.store.dispatch(updateModel(this.form.value));
+    this.store.dispatch(editModel(this.form.value));
   }
 }

@@ -9,11 +9,11 @@ import { getRandomUser } from "@mlaide/mocks/fake-generator";
 import { isUserAuthenticated } from "@mlaide/state/auth/auth.actions";
 import {
   currentUserChanged,
-  updateUserProfile,
-  updateUserProfileFailed,
-  updateUserProfileSucceeded
+  editUserProfile,
+  editUserProfileFailed,
+  editUserProfileSucceeded
 } from "@mlaide/state/user/user.actions";
-import { hideSpinner, showError, showSpinner, showSuccessMessage } from "@mlaide/state/shared/shared.actions";
+import { hideSpinner, showErrorMessage, showSpinner, showSuccessMessage } from "@mlaide/state/shared/shared.actions";
 
 describe("user effects", () => {
   let actions$ = new Observable<Action>();
@@ -81,7 +81,7 @@ describe("user effects", () => {
     it("should trigger currentUserChanged with provided user", async (done) => {
       // arrange
       const user = await getRandomUser();
-      actions$ = of(updateUserProfileSucceeded({user}));
+      actions$ = of(editUserProfileSucceeded({user}));
 
       // act
       effects.userProfileChanged$.subscribe(action => {
@@ -97,13 +97,13 @@ describe("user effects", () => {
     it("should trigger updateUserProfileSucceeded containing user if api call is successful", async (done) => {
       // arrange
       const user = await getRandomUser();
-      actions$ = of(updateUserProfile({user}));
+      actions$ = of(editUserProfile({user}));
       userApiStub.updateCurrentUser.withArgs(user).and.returnValue(of(user));
 
       // act
       effects.updateUserProfile$.subscribe(action => {
         // assert
-        expect(action).toEqual(updateUserProfileSucceeded({user}));
+        expect(action).toEqual(editUserProfileSucceeded({user}));
         expect(userApiStub.updateCurrentUser).toHaveBeenCalledWith(user);
 
         done();
@@ -113,13 +113,13 @@ describe("user effects", () => {
     it("should trigger loadRunsFailed action if api call is not successful", async (done) => {
       // arrange
       const user = await getRandomUser();
-      actions$ = of(updateUserProfile({user}));
+      actions$ = of(editUserProfile({user}));
       userApiStub.updateCurrentUser.withArgs(user).and.returnValue(throwError("failed"));
 
       // act
       effects.updateUserProfile$.subscribe(action => {
         // assert
-        expect(action).toEqual(updateUserProfileFailed({ payload: "failed" }));
+        expect(action).toEqual(editUserProfileFailed({ payload: "failed" }));
         expect(userApiStub.updateCurrentUser).toHaveBeenCalledWith(user);
 
         done();
@@ -131,12 +131,12 @@ describe("user effects", () => {
     it("should map to 'showError' action", async (done) => {
       // arrange
       const error = "the error";
-      actions$ = of(updateUserProfileFailed({ payload: error }));
+      actions$ = of(editUserProfileFailed({ payload: error }));
 
       // act
       effects.updateUserProfileFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not update user profile. A unknown error occurred.",
           error: error
         }));
@@ -151,7 +151,7 @@ describe("user effects", () => {
       // arrange
       const user = await getRandomUser();
       const error = "the error";
-      actions$ = of(updateUserProfileSucceeded({ user }));
+      actions$ = of(editUserProfileSucceeded({ user }));
 
       // act
       effects.updateUserProfileSucceeded$.subscribe(action => {
@@ -171,7 +171,7 @@ describe("user effects", () => {
         name: "updateUserProfile",
         generate: async () => {
           const user = await getRandomUser();
-          return updateUserProfile({user});
+          return editUserProfile({user});
         }
       },
     ];
@@ -199,13 +199,13 @@ describe("user effects", () => {
         name: "updateUserProfileSucceeded",
         generate: async () => {
           const user = await getRandomUser();
-          return updateUserProfileSucceeded({user});
+          return editUserProfileSucceeded({user});
         }
       },
       {
         name: "updateUserProfileFailed",
         generate: async () => {
-          return updateUserProfileFailed({payload: "failed"});
+          return editUserProfileFailed({payload: "failed"});
         }
       },
     ];
