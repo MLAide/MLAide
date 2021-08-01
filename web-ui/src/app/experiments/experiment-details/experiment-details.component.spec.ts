@@ -7,7 +7,6 @@ import { Artifact } from "@mlaide/entities/artifact.model";
 import { Experiment } from "@mlaide/entities/experiment.model";
 import { getRandomArtifacts, getRandomExperiment, getRandomProject, getRandomRuns } from "src/app/mocks/fake-generator";
 import { Run } from "@mlaide/entities/run.model";
-import { LineageGraphUiService } from "@mlaide/shared/services";
 import { MockComponent, ngMocks } from "ng-mocks";
 
 import { ExperimentDetailsComponent } from "./experiment-details.component";
@@ -36,9 +35,6 @@ describe("ExperimentDetailsComponent", () => {
   let fakeProject: Project;
   let fakeRuns: Run[];
 
-  // service stubs
-  let lineageGraphServiceStub: jasmine.SpyObj<LineageGraphUiService>;
-
   let store: MockStore;
   let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
@@ -59,7 +55,6 @@ describe("ExperimentDetailsComponent", () => {
         MockComponent(RunsListTableComponent),
       ],
       providers: [
-        { provide: LineageGraphUiService, useValue: lineageGraphServiceStub },
         provideMockStore(),
       ],
       imports: [MatButtonModule, MatDialogModule, MatTableModule, MatCardModule],
@@ -157,102 +152,6 @@ describe("ExperimentDetailsComponent", () => {
       // assert
       expect(dispatchSpy).toHaveBeenCalledWith(loadExperimentWithAllDetails());
     });
-
-    /*
-    it("should not render experiment lineage if there are no runs in the current experiment", async () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(lineageGraphServiceStub.renderLineage).toHaveBeenCalledTimes(0);
-    });
-
-    it("should load all artifacts with the run keys of the current experiment", async () => {
-      // arrange + act also in beforeEach
-      const fakeRuns: Run[] = await getRandomRuns();
-      setupRunsStub(fakeRuns);
-
-      // assert
-      expect(component.artifactListDataSource).toBe(artifactListDataSourceMock);
-      expect(artifactsApiServiceStub.getArtifactsByRunKeys).toHaveBeenCalledWith(
-        fakeProject.key,
-        fakeRuns.map((r) => r.key)
-      );
-    });
-
-
-    it("should map all runs to nodes and edges and call the lineage graph service", async () => {
-      // arrange + act also in beforeEach
-      const fakeRuns: Partial<Run>[] = [
-        {
-          key: 1,
-          name: "r1",
-          artifacts: [{ name: "r1a1", version: 1 }],
-        },
-        {
-          key: 2,
-          name: "r2",
-          artifacts: [
-            { name: "r2a1", version: 3 },
-            { name: "r2a2", version: 4 },
-          ],
-          usedArtifacts: [{ name: "r1a1", version: 1 }],
-        },
-      ];
-      setupRunsStub(fakeRuns as any);
-
-      const expectedNodes: GraphNode[] = [
-        {
-          id: `run:${fakeRuns[0].key}`,
-          label: `${fakeRuns[0].name}:${fakeRuns[0].key}`,
-          class: "run",
-        },
-        {
-          id: `artifact:${fakeRuns[0].artifacts[0].name}:${fakeRuns[0].artifacts[0].version}`,
-          label: `${fakeRuns[0].artifacts[0].name}`,
-          class: "artifact",
-        },
-        {
-          id: `run:${fakeRuns[1].key}`,
-          label: `${fakeRuns[1].name}:${fakeRuns[1].key}`,
-          class: "run",
-        },
-        {
-          id: `artifact:${fakeRuns[1].artifacts[0].name}:${fakeRuns[1].artifacts[0].version}`,
-          label: `${fakeRuns[1].artifacts[0].name}`,
-          class: "artifact",
-        },
-        {
-          id: `artifact:${fakeRuns[1].artifacts[1].name}:${fakeRuns[1].artifacts[1].version}`,
-          label: `${fakeRuns[1].artifacts[1].name}`,
-          class: "artifact",
-        },
-      ];
-      const expectedEdges: GraphEdge[] = [
-        {
-          sourceId: `run:${fakeRuns[0].key}`,
-          targetId: `artifact:${fakeRuns[0].artifacts[0].name}:${fakeRuns[0].artifacts[0].version}`,
-        },
-        {
-          sourceId: `run:${fakeRuns[1].key}`,
-          targetId: `artifact:${fakeRuns[1].artifacts[0].name}:${fakeRuns[1].artifacts[0].version}`,
-        },
-        {
-          sourceId: `run:${fakeRuns[1].key}`,
-          targetId: `artifact:${fakeRuns[1].artifacts[1].name}:${fakeRuns[1].artifacts[1].version}`,
-        },
-        {
-          sourceId: `artifact:${fakeRuns[1].usedArtifacts[0].name}:${fakeRuns[1].usedArtifacts[0].version}`,
-          targetId: `run:${fakeRuns[1].key}`,
-        },
-      ];
-
-      // assert
-      expect(lineageGraphServiceStub.renderLineage).toHaveBeenCalledWith(
-        expectedNodes,
-        expectedEdges,
-        component.experimentGraphSvg
-      );
-    });*/
   });
 
   describe("component rendering", () => {
@@ -263,32 +162,6 @@ describe("ExperimentDetailsComponent", () => {
       // assert
       expect(h1.textContent).toEqual(fakeExperiment.name);
     });
-
-    /*
-    it("should contain graph header", async () => {
-      // arrange
-      const description: HTMLElement = fixture.nativeElement.querySelector("#experiment-graph-header-description");
-
-      // assert
-      expect(description.textContent).toContain(fakeExperiment.name);
-    });
-
-    it("should contain mat-card", async () => {
-      // arrange
-      const loader: HarnessLoader = TestbedHarnessEnvironment.loader(fixture);
-      const matCard = await loader.getHarness(MatCardHarness);
-
-      // assert
-      expect(matCard).toBeTruthy();
-    });
-    it("should contain svg", async () => {
-      // arrange
-      const svg: HTMLElement = fixture.nativeElement.querySelector("svg");
-
-      // assert
-      expect(svg).toBeTruthy();
-    });
-*/
 
     describe("child component - app-experiment-lineage-visualization", () => {
       it("should create", () => {
