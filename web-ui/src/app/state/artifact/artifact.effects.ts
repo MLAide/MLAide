@@ -27,7 +27,7 @@ export class ArtifactEffects {
 
   reloadModels$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(artifactActions.editModelSucceeded),
+      ofType(artifactActions.updateModelSucceeded),
       map(() => artifactActions.loadModels())
     )
   );
@@ -67,10 +67,9 @@ export class ArtifactEffects {
     )
   );
 
-  // TODO Raman: Wieso heißt das hier editExperiment?
-  editExperiment$ = createEffect(() =>
+  updateModel$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(artifactActions.editModel),
+      ofType(artifactActions.updateModel),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       mergeMap(([editModelData, projectKey]) => {
         const createOrUpdateModel: CreateOrUpdateModel = {
@@ -85,8 +84,8 @@ export class ArtifactEffects {
           createOrUpdateModel
         );
       }),
-      map(() => artifactActions.editModelSucceeded()),
-      catchError((error) => of(artifactActions.editModelFailed({payload: error})))
+      map(() => artifactActions.updateModelSucceeded()),
+      catchError((error) => of(artifactActions.updateModelFailed({payload: error})))
     )
   );
 
@@ -124,7 +123,7 @@ export class ArtifactEffects {
 
   closeEditModelDialog$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(artifactActions.closeEditModelDialog, artifactActions.editModelSucceeded),
+        ofType(artifactActions.closeEditModelDialog, artifactActions.updateModelSucceeded),
         tap(() => this.dialog.closeAll())
       ),
     { dispatch: false }

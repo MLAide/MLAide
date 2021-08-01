@@ -22,7 +22,7 @@ import { selectCurrentUser } from "./state/user/user.selectors";
 })
 export class AppComponent implements AfterViewInit {
   @ViewChild("tabBar") public elementView: ElementRef;
-  public isAuthenticated$: Observable<boolean>;
+  public isUserAuthenticated$: Observable<boolean>;
   public projects$: Observable<Project[]>;
   public user$: Observable<User>;
   public tabBarHeight: number;
@@ -32,7 +32,7 @@ export class AppComponent implements AfterViewInit {
     private store: Store,
   ) {
     this.user$ = this.store.select(selectCurrentUser);
-    this.isAuthenticated$ = this.store.select(selectIsUserAuthenticated);
+    this.isUserAuthenticated$ = this.store.select(selectIsUserAuthenticated);
     this.projects$ = this.store.select(selectProjects);
 
     this.store.dispatch(initializeLogin());

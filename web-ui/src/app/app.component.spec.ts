@@ -22,7 +22,7 @@ describe("AppComponent", () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
 
-  let authServiceIsAuthenticated$;
+  let authServiceIsUserAuthenticated$;
 
   // fakes
   let fakeProjects: Project[];
@@ -37,11 +37,11 @@ describe("AppComponent", () => {
   let projectListDataSourceMock: ListDataSourceMock<Project, ProjectListResponse> = new ListDataSourceMock();
 
   beforeEach(async () => {
-    authServiceIsAuthenticated$ = new Subject<boolean>();
+    authServiceIsUserAuthenticated$ = new Subject<boolean>();
 
     // stub services
     authServiceStub = jasmine.createSpyObj("authService", ["loginWithUserInteraction", "logout", "runInitialLoginSequence"]);
-    authServiceStub.isAuthenticated$ = authServiceIsAuthenticated$;
+    authServiceStub.isUserAuthenticated$ = authServiceIsUserAuthenticated$;
     projectsApiServiceStub = jasmine.createSpyObj("projectApiService", ["getProjects"]);
     usersApiServiceStub = jasmine.createSpyObj("usersApiService", ["getCurrentUser"]);
 
@@ -89,18 +89,18 @@ describe("AppComponent", () => {
   // TODO: Fix Tests
 /*
   describe("constructor", () => {
-    it("should load current user when isAuthenticated emits true", async () => {
+    it("should load current user when isUserAuthenticated emits true", async () => {
       // arrange + act in beforeEach
-      authServiceIsAuthenticated$.next(true);
+      authServiceIsUserAuthenticated$.next(true);
 
       // assert
       expect(usersApiServiceStub.getCurrentUser).toHaveBeenCalled();
       expect(component.user).toEqual(fakeUser);
     });
 
-    it("should not load current user when isAuthenticated emits false", async () => {
+    it("should not load current user when isUserAuthenticated emits false", async () => {
       // arrange + act in beforeEach
-      authServiceIsAuthenticated$.next(false);
+      authServiceIsUserAuthenticated$.next(false);
 
       // assert
       expect(usersApiServiceStub.getCurrentUser).not.toHaveBeenCalled();
@@ -116,18 +116,18 @@ describe("AppComponent", () => {
   });
 
   describe("ngOnInit", () => {
-    it("should load projects when isAuthenticated emits true", async () => {
+    it("should load projects when isUserAuthenticated emits true", async () => {
       // arrange + act in beforeEach
-      authServiceIsAuthenticated$.next(true);
+      authServiceIsUserAuthenticated$.next(true);
 
       // assert
       expect(projectsApiServiceStub.getProjects).toHaveBeenCalled();
       expect(component.projects).toEqual(fakeProjects);
     });
 
-    it("should not load projects when isAuthenticated emits false", async () => {
+    it("should not load projects when isUserAuthenticated emits false", async () => {
       // arrange + act in beforeEach
-      authServiceIsAuthenticated$.next(false);
+      authServiceIsUserAuthenticated$.next(false);
 
       // assert
       expect(projectsApiServiceStub.getProjects).not.toHaveBeenCalled();
@@ -138,7 +138,7 @@ describe("AppComponent", () => {
   describe("ngOnDestroy", () => {
     it("should unsubscribe projectListSubscription", async () => {
       // arrange also in beforeEach
-      authServiceIsAuthenticated$.next(true);
+      authServiceIsUserAuthenticated$.next(true);
       spyOn(component["projectListSubscription"], "unsubscribe");
 
       // act
@@ -148,26 +148,26 @@ describe("AppComponent", () => {
       expect(component["projectListSubscription"].unsubscribe).toHaveBeenCalled();
     });
 
-    it("should unsubscribe isAuthenticatedSubscription", async () => {
+    it("should unsubscribe isUserAuthenticatedSubscription", async () => {
       // arrange also in beforeEach
-      spyOn(component["isAuthenticatedSubscription"], "unsubscribe");
+      spyOn(component["isUserAuthenticatedSubscription"], "unsubscribe");
 
       // act
       component.ngOnDestroy();
 
       // assert
-      expect(component["isAuthenticatedSubscription"].unsubscribe).toHaveBeenCalled();
+      expect(component["isUserAuthenticatedSubscription"].unsubscribe).toHaveBeenCalled();
     });
 
-    it("should unsubscribe isAuthenticatedSubscriptionForProjects", async () => {
+    it("should unsubscribe isUserAuthenticatedSubscriptionForProjects", async () => {
       // arrange also in beforeEach
-      spyOn(component["isAuthenticatedSubscriptionForProjects"], "unsubscribe");
+      spyOn(component["isUserAuthenticatedSubscriptionForProjects"], "unsubscribe");
 
       // act
       component.ngOnDestroy();
 
       // assert
-      expect(component["isAuthenticatedSubscriptionForProjects"].unsubscribe).toHaveBeenCalled();
+      expect(component["isUserAuthenticatedSubscriptionForProjects"].unsubscribe).toHaveBeenCalled();
     });
   });
 */
@@ -210,7 +210,7 @@ describe("AppComponent", () => {
       it("should contain correct labels when not authenticated", async () => {
         // arrange
         const toolbar: MatToolbarHarness = await loader.getHarness(MatToolbarHarness);
-        authServiceIsAuthenticated$.next(false);
+        authServiceIsUserAuthenticated$.next(false);
 
         // assert
         expect((await toolbar.getRowsAsText())[0]).toEqual("ML AideloginLogin");
@@ -219,7 +219,7 @@ describe("AppComponent", () => {
       it("should contain correct labels when authenticated", async () => {
         // arrange
         const toolbar: MatToolbarHarness = await loader.getHarness(MatToolbarHarness);
-        authServiceIsAuthenticated$.next(true);
+        authServiceIsUserAuthenticated$.next(true);
 
         // assert
         expect((await toolbar.getRowsAsText())[0]).toEqual("ML AideProjects " + fakeUser.nickName);
@@ -244,7 +244,7 @@ describe("AppComponent", () => {
 
       it("should contain login button when not authenticated", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(false);
+        authServiceIsUserAuthenticated$.next(false);
         const loginButton: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#login-button" }));
 
         // assert
@@ -253,7 +253,7 @@ describe("AppComponent", () => {
 
       it("should call login on clicking login button", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(false);
+        authServiceIsUserAuthenticated$.next(false);
         const loginButton: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#login-button" }));
         spyOn(component, "login");
 
@@ -266,7 +266,7 @@ describe("AppComponent", () => {
 
       it("should contain two menus when authenticated", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(true);
+        authServiceIsUserAuthenticated$.next(true);
         const menus: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // assert
@@ -275,7 +275,7 @@ describe("AppComponent", () => {
 
       it("should contain projects and user menu when authenticated", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(true);
+        authServiceIsUserAuthenticated$.next(true);
         const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // assert
@@ -285,7 +285,7 @@ describe("AppComponent", () => {
 
       it("should not contain menus when not authenticated", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(false);
+        authServiceIsUserAuthenticated$.next(false);
         const menus: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // assert
@@ -294,7 +294,7 @@ describe("AppComponent", () => {
 
       it("should open and close projects menu", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(true);
+        authServiceIsUserAuthenticated$.next(true);
         const [projectsMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act + assert
@@ -307,7 +307,7 @@ describe("AppComponent", () => {
 
       it("should open and close user menu", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(true);
+        authServiceIsUserAuthenticated$.next(true);
         const [, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act + assert
@@ -320,7 +320,7 @@ describe("AppComponent", () => {
 
       it("should contain all project menu items", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(true);
+        authServiceIsUserAuthenticated$.next(true);
         const [projectsMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act
@@ -337,7 +337,7 @@ describe("AppComponent", () => {
 
       it("should contain all user menu items", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(true);
+        authServiceIsUserAuthenticated$.next(true);
         const [, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act
@@ -352,7 +352,7 @@ describe("AppComponent", () => {
 
       it("should have correct links for project menu entries", async (done) => {
         // arrange + act also in beforeEach
-        authServiceIsAuthenticated$.next(true);
+        authServiceIsUserAuthenticated$.next(true);
         const [projectsMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act
@@ -374,7 +374,7 @@ describe("AppComponent", () => {
 
       it("should have correct links for user menu entries", async () => {
         // arrange + act also in beforeEach
-        authServiceIsAuthenticated$.next(true);
+        authServiceIsUserAuthenticated$.next(true);
         const [, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act
@@ -388,7 +388,7 @@ describe("AppComponent", () => {
 
       it("should call logout on clicking logout button in user menu", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(true);
+        authServiceIsUserAuthenticated$.next(true);
         const [, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
         spyOn(component, "logout");
 

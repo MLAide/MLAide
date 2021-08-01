@@ -23,7 +23,7 @@ export class ProjectMemberEffects {
       // if this was triggered by a successful delete action, then only execute loading if the deleted user is not the current user
       concatLatestFrom(() => this.store.select(selectCurrentUser)),
       filter(([action, currentUser]) =>
-        action.type !== projectMemberActions.deleteProjectMemberSucceeded
+        action.type !== projectMemberActions.deleteProjectMemberSucceeded.type
         || (action as any).projectMember.email !== currentUser.email),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       mergeMap(([action, projectKey]) => this.projectMemberApi.getProjectMembers(projectKey)),

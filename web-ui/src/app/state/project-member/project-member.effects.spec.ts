@@ -33,7 +33,7 @@ import {
 } from "@mlaide/state/project-member/project-member.actions";
 import { Router } from "@angular/router";
 
-describe("project member effects", () => {
+describe("ProjectMemberEffects", () => {
   let actions$ = new Observable<Action>();
   let effects: ProjectMemberEffects;
   let projectMemberApiStub: jasmine.SpyObj<ProjectMemberApi>;
@@ -172,12 +172,9 @@ describe("project member effects", () => {
       });
     });
 
-    // TODO Raman: What to assert here?
-
-    /*it("should trigger nothing if action is deleteProjectMemberSucceeded and current user is provided project member", async (done) => {
+    it("should trigger nothing if action is deleteProjectMemberSucceeded and current user is provided project member", async (done) => {
       // arrange
       const projectMember = await getRandomProjectMember();
-      actions$ = of(deleteProjectMemberSucceeded({ projectMember }));
       const user = await getRandomUser();
       user.email = projectMember.email;
       store.setState({
@@ -185,18 +182,21 @@ describe("project member effects", () => {
           currentUser: user
         }
       });
-      const projectMembers = await getRandomProjectMembers(3);
-      const response: ProjectMemberListResponse = { items: projectMembers };
-      projectMemberApiStub.getProjectMembers.and.returnValue(of(response));
+      actions$ = of(deleteProjectMemberSucceeded({ projectMember }));
 
       // act
-      effects.deleteProjectMember$.subscribe(action => {
-        // assert
-        expect(projectMemberApiStub.getProjectMembers).not.toHaveBeenCalled();
-
-        done();
-      });
-    });*/
+      effects.loadProjectMembers$.subscribe(
+        (action) => {
+          fail(`loadProjectMembers$ should not trigger any output action but got ${action.type}.`);
+        },
+        () => {
+          fail("loadProjectMembers$ should not raise an error.");
+        },
+        () => {
+          expect().nothing();
+          done();
+        });
+    });
   });
 
   describe("loadProjectMembersFailed$", () => {

@@ -6,7 +6,7 @@ import { provideMockActions } from "@ngrx/effects/testing";
 import { UserEffects } from "@mlaide/state/user/user.effects";
 import { UserApi } from "@mlaide/state/user/user.api";
 import { getRandomUser } from "@mlaide/mocks/fake-generator";
-import { isAuthenticated } from "@mlaide/state/auth/auth.actions";
+import { isUserAuthenticated } from "@mlaide/state/auth/auth.actions";
 import {
   currentUserChanged,
   updateUserProfile,
@@ -43,7 +43,7 @@ describe("user effects", () => {
     it("should trigger currentUserChanged containing current user if api call is successful", async (done) => {
       // arrange
       const currentUser = await getRandomUser();
-      actions$ = of(isAuthenticated({isAuthenticated: true}));
+      actions$ = of(isUserAuthenticated({ isUserAuthenticated: true }));
       userApiStub.getCurrentUser.and.returnValue(of(currentUser));
 
       // act
@@ -56,7 +56,25 @@ describe("user effects", () => {
       });
     });
 
-    // TODO Raman: Wir sollten einen Test für isAuthenticated: false schreiben
+    it("should not try to load user info and trigger nothing if user is not authenticated", async (done) => {
+      // arrange
+      const currentUser = await getRandomUser();
+      actions$ = of(isUserAuthenticated({ isUserAuthenticated: false }));
+      userApiStub.getCurrentUser.and.returnValue(throwError("should not invoke user api"));
+
+      // act
+      effects.loadUserInfoAfterAuthentication$.subscribe(
+        () => {
+          fail("Should not trigger any action.");
+        },
+        () => {
+          fail("Should not raise an error.");
+        },
+        () => {
+          expect().nothing();
+          done();
+        });
+    });
   });
 
   describe("userProfileChanged$", () => {

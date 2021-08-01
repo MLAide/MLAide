@@ -13,7 +13,7 @@ import {
   loadApiKeysFailed,
   loadApiKeysSucceeded, openAddApiKeyDialog
 } from "@mlaide/state/api-key/api-key.actions";
-import { showError } from "@mlaide/state/shared/shared.actions";
+import { hideSpinner, showError, showSpinner } from "@mlaide/state/shared/shared.actions";
 import Spy = jasmine.Spy;
 import { ComponentType } from "@angular/cdk/portal";
 import { MatDialogConfig } from "@angular/material/dialog/dialog-config";
@@ -156,14 +156,13 @@ describe("ApiKeyEffects", () => {
     actions.forEach((actionGenerator) => {
       it(`'${actionGenerator.name}' should map to 'loadApiKeys' action`, async (done) => {
         // arrange
-        const action = await actionGenerator.generate()
-        actions$ = of(action);
+        const expectedAction = await actionGenerator.generate()
+        actions$ = of(expectedAction);
 
         // act
         effects.reloadApiKeys$.subscribe(action => {
           // assert
-          // TODO Raman: Ich glaube hier steht der falsche Vergleich
-          expect(action).toEqual(action);
+          expect(action).toEqual(loadApiKeys());
 
           done();
         });
@@ -279,15 +278,15 @@ describe("ApiKeyEffects", () => {
       deleteApiKey({ apiKey: null })
     ];
 
-    actions.forEach((action) => {
-      it(`'${action.type}' should map to showSpinner action`, async (done) => {
+    actions.forEach((expectedAction) => {
+      it(`'${expectedAction.type}' should map to showSpinner action`, async (done) => {
         // arrange
-        actions$ = of(action);
+        actions$ = of(expectedAction);
 
         // act
         effects.showSpinner$.subscribe(action => {
           // assert
-          expect(action).toEqual(action);
+          expect(action).toEqual(showSpinner());
 
           done();
         });
@@ -303,15 +302,15 @@ describe("ApiKeyEffects", () => {
       deleteApiKeyFailed({ payload: null })
     ];
 
-    actions.forEach((action) => {
-      it(`'${action.type}' should map to hideSpinner action`, async (done) => {
+    actions.forEach((expectedAction) => {
+      it(`'${expectedAction.type}' should map to hideSpinner action`, async (done) => {
         // arrange
-        actions$ = of(action);
+        actions$ = of(expectedAction);
 
         // act
         effects.hideSpinner$.subscribe(action => {
           // assert
-          expect(action).toEqual(action);
+          expect(action).toEqual(hideSpinner());
 
           done();
         });

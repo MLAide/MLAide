@@ -17,14 +17,6 @@ import { ArtifactApi } from "@mlaide/state/artifact/artifact.api";
 
 @Injectable({ providedIn: "root" })
 export class ExperimentEffects {
-  // TODO Raman: Write Test for this
-  loadExperimentsOnRouterNavigation$ = createEffect(() =>
-    this.store.pipe(select(selectCurrentProjectKey)).pipe(
-      //TODO Raman: only do this if experiment route is active
-      map(() => experimentActions.loadExperiments())
-    )
-  );
-
   loadExperiments$ = createEffect(() =>
     this.actions$.pipe(
       ofType(experimentActions.loadExperiments),

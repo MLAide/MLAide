@@ -11,7 +11,7 @@
               </div>
             </a>
           </div>
-          <div *ngIf="isAuthenticated$ | async">
+          <div *ngIf="isUserAuthenticated$ | async">
             <a mat-button [matMenuTriggerFor]="projectsMenu" i18n>Projects</a>
             <mat-menu #projectsMenu>
               <div *ngFor="let project of (projects$ | async)">
@@ -21,7 +21,7 @@
             </mat-menu>
           </div>
         </div>
-        <div *ngIf="isAuthenticated$ | async">
+        <div *ngIf="isUserAuthenticated$ | async">
           <a mat-button [matMenuTriggerFor]="userMenu" aria-label="User profile button with a menu">
             {{ (user$ | async)?.nickName }}
           </a>
@@ -32,7 +32,7 @@
             <a mat-menu-item (click)="logout()"> <mat-icon>exit_to_app</mat-icon> <span i18n>Logout</span> </a>
           </mat-menu>
         </div>
-        <div *ngIf="(isAuthenticated$ | async) == false">
+        <div *ngIf="(isUserAuthenticated$ | async) == false">
           <a id="login-button" mat-flat-button color="primary" (click)="login()" aria-label="Login button">
             <mat-icon>login</mat-icon><span class="button-text" i18n>Login</span>
           </a>

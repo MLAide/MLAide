@@ -11,8 +11,8 @@ export class AuthGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
     return this.authService.canActivateProtectedRoutes$.pipe(
-      map((isAuthenticated) => {
-        if (isAuthenticated) {
+      map((isUserAuthenticated) => {
+        if (isUserAuthenticated) {
           return true;
         } else {
           return this.router.parseUrl("/home");

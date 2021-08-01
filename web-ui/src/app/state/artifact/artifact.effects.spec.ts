@@ -17,8 +17,8 @@ import {
 } from "@mlaide/mocks/fake-generator";
 import {
   closeEditModelDialog,
-  editModel, editModelFailed,
-  editModelSucceeded, loadArtifacts, loadArtifactsFailed, loadArtifactsSucceeded,
+  updateModel, updateModelFailed,
+  updateModelSucceeded, loadArtifacts, loadArtifactsFailed, loadArtifactsSucceeded,
   loadModels,
   loadModelsFailed,
   loadModelsSucceeded, openEditModelDialog, openModelStageLogDialog
@@ -119,7 +119,7 @@ describe("ArtifactEffects", () => {
   describe("reloadModels$", async () => {
     it(`editModelSucceeded should map to 'loadModels' action`, async (done) => {
       // arrange
-      actions$ = of(editModelSucceeded());
+      actions$ = of(updateModelSucceeded());
 
       // act
       effects.reloadModels$.subscribe(action => {
@@ -250,7 +250,7 @@ describe("ArtifactEffects", () => {
         note: artifact.model.modelRevisions[0].note,
         stage: artifact.model.stage,
       }
-      actions$ = of(editModel({
+      actions$ = of(updateModel({
         modelName: artifact.name,
         note: artifact.model.modelRevisions[0].note,
         runName: artifact.runName,
@@ -264,9 +264,9 @@ describe("ArtifactEffects", () => {
       ).and.returnValue(of(void 0));
 
       // act
-      effects.editExperiment$.subscribe(action => {
+      effects.updateModel$.subscribe(action => {
         // assert
-        expect(action).toEqual(editModelSucceeded());
+        expect(action).toEqual(updateModelSucceeded());
         expect(artifactApiStub.putModel).toHaveBeenCalledWith(
           project.key,
           artifact.name,
@@ -285,7 +285,7 @@ describe("ArtifactEffects", () => {
         note: artifact.model.modelRevisions[0].note,
         stage: artifact.model.stage,
       }
-      actions$ = of(editModel({
+      actions$ = of(updateModel({
         modelName: artifact.name,
         note: artifact.model.modelRevisions[0].note,
         runName: artifact.runName,
@@ -299,9 +299,9 @@ describe("ArtifactEffects", () => {
       ).and.returnValue(throwError("failed"));
 
       // act
-      effects.editExperiment$.subscribe(action => {
+      effects.updateModel$.subscribe(action => {
         // assert
-        expect(action).toEqual(editModelFailed({ payload: "failed" }));
+        expect(action).toEqual(updateModelFailed({ payload: "failed" }));
         expect(artifactApiStub.putModel).toHaveBeenCalledWith(
           project.key,
           artifact.name,
@@ -365,7 +365,7 @@ describe("ArtifactEffects", () => {
   describe("closeEditModelDialog$", () => {
     let actions = [
       closeEditModelDialog(),
-      editModelSucceeded(),
+      updateModelSucceeded(),
     ];
 
     actions.forEach((action) => {

@@ -11,8 +11,8 @@ import { filter, map } from "rxjs/operators";
 export class AuthService {
   // https://github.com/jeroenheijmans/sample-angular-oauth2-oidc-with-auth-guards/tree/1dd98d884d93b6360b5c8e8f66a0dd1f7d36ef20
 
-  private isAuthenticatedSubject$ = new BehaviorSubject<boolean>(false);
-  public isAuthenticated$ = this.isAuthenticatedSubject$.asObservable();
+  private isUserAuthenticatedSubject$ = new BehaviorSubject<boolean>(false);
+  public isUserAuthenticated$ = this.isUserAuthenticatedSubject$.asObservable();
 
   private isDoneLoadingSubject$ = new ReplaySubject<boolean>();
   public isDoneLoading$ = this.isDoneLoadingSubject$.asObservable();
@@ -27,7 +27,7 @@ export class AuthService {
    * - the latest known state of whether the user is authorized
    * - whether the ajax calls for initial log in have all been done
    */
-  public canActivateProtectedRoutes$: Observable<boolean> = combineLatest([this.isAuthenticated$, this.isDoneLoading$]).pipe(
+  public canActivateProtectedRoutes$: Observable<boolean> = combineLatest([this.isUserAuthenticated$, this.isDoneLoading$]).pipe(
     map((values) => values.every((b) => b))
   );
 
@@ -86,8 +86,8 @@ export class AuthService {
         return;
       }
 
-      console.warn("Noticed changes to access_token (most likely from another tab), updating isAuthenticated");
-      this.isAuthenticatedSubject$.next(this.oauthService.hasValidAccessToken());
+      console.warn("Noticed changes to access_token (most likely from another tab), updating isUserAuthenticated");
+      this.isUserAuthenticatedSubject$.next(this.oauthService.hasValidAccessToken());
 
       if (!this.oauthService.hasValidAccessToken()) {
         this.navigateToLoginPage();
@@ -97,7 +97,7 @@ export class AuthService {
 
   private listenForRetrievingValidAccessToken() {
     this.oauthService.events.subscribe((_) => {
-      this.isAuthenticatedSubject$.next(this.oauthService.hasValidAccessToken());
+      this.isUserAuthenticatedSubject$.next(this.oauthService.hasValidAccessToken());
     });
   }
 

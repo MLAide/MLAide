@@ -40,13 +40,13 @@ describe("AuthService", () => {
     });
   });
 
-  it("should handle storage event and update isAuthenticated status", () => {
+  it("should handle storage event and update isUserAuthenticated status", () => {
     mockService.updateTokenValidity(false);
 
     window.dispatchEvent(new StorageEvent("storage", { key: "access_token" }));
 
     expect(router.navigateByUrl).toHaveBeenCalledWith(loginUrl);
-    service.isAuthenticated$.subscribe((isAuthenticated) => expect(isAuthenticated).toBe(false));
+    service.isUserAuthenticated$.subscribe((isUserAuthenticated) => expect(isUserAuthenticated).toBe(false));
   });
 
   describe("runInitialLoginSequence", () => {

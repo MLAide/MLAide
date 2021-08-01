@@ -4,7 +4,7 @@ import { catchError, filter, map, mergeMap } from "rxjs/operators";
 import { of } from "rxjs";
 import { hideSpinner, showError, showSpinner, showSuccessMessage } from "@mlaide/state/shared/shared.actions";
 import { UserApi } from "./user.api";
-import { isAuthenticated } from "../auth/auth.actions";
+import { isUserAuthenticated } from "../auth/auth.actions";
 import { currentUserChanged, updateUserProfile, updateUserProfileFailed, updateUserProfileSucceeded } from "./user.actions";
 
 @Injectable({ providedIn: "root" })
@@ -12,8 +12,8 @@ export class UserEffects {
 
   loadUserInfoAfterAuthentication$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(isAuthenticated),
-      filter(action => action.isAuthenticated),
+      ofType(isUserAuthenticated),
+      filter(action => action.isUserAuthenticated),
       mergeMap(() => this.userApi.getCurrentUser()),
       map((currentUser) => currentUserChanged({ currentUser }))
     )
