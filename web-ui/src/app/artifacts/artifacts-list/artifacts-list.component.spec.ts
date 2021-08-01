@@ -103,7 +103,7 @@ describe("ArtifactsListComponent", () => {
       expect(h1.textContent).toEqual("Artifacts");
     });
 
-    it("should contain child component - app-artifacts-list-table", async () => {
+    it("should contain child component with correct attributes - app-artifacts-list-table", async () => {
       // arrange
       const artifactsListTableComponent = ngMocks
         .find<ArtifactsListTableComponent>('app-artifacts-list-table')

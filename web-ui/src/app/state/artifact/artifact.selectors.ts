@@ -2,7 +2,7 @@ import { AppState } from "../app.state";
 import { createFeatureSelector, createSelector } from "@ngrx/store";
 import { ArtifactState } from "@mlaide/state/artifact/artifact.state";
 
-export const artifactState = createFeatureSelector<AppState, ArtifactState>("artifacts");
+const artifactState = createFeatureSelector<AppState, ArtifactState>("artifacts");
 
 export const selectArtifacts = createSelector(
   artifactState,

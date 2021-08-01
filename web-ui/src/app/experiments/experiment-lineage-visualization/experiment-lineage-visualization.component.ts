@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   Component,
   ElementRef,
   Input,
@@ -19,7 +18,7 @@ import { Subscription } from "rxjs/internal/Subscription";
   templateUrl: './experiment-lineage-visualization.component.html',
   styleUrls: ['./experiment-lineage-visualization.component.scss']
 })
-export class ExperimentLineageVisualizationComponent implements OnChanges, OnDestroy, AfterViewInit {
+export class ExperimentLineageVisualizationComponent implements OnChanges, OnDestroy {
   @ViewChild("experimentGraph")
   public experimentGraphSvg: ElementRef;
 
@@ -35,7 +34,7 @@ export class ExperimentLineageVisualizationComponent implements OnChanges, OnDes
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes.runs$) {
       this.unsubscribeRuns();
-      this.runs$.subscribe((runs) => {
+      this.runsSubscription = this.runs$.subscribe((runs) => {
         this.renderExperimentLineage(runs);
       });
     }
@@ -43,10 +42,6 @@ export class ExperimentLineageVisualizationComponent implements OnChanges, OnDes
 
   public ngOnDestroy() {
     this.unsubscribeRuns();
-  }
-
-  public ngAfterViewInit(): void {
-
   }
 
   private unsubscribeRuns() {

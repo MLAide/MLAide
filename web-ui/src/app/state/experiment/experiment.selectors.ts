@@ -1,7 +1,23 @@
 import { AppState } from "@mlaide/state/app.state";
 import { selectRouteParam } from "@mlaide/state/router.selectors";
+import { createFeatureSelector, createSelector } from "@ngrx/store";
+import { ExperimentState } from "@mlaide/state/experiment/experiment.state";
 
-export const selectCurrentExperiment = (state: AppState) => state.experiments.currentExperiment;
+const experimentState = createFeatureSelector<AppState, ExperimentState>("experiments")
+
+export const selectCurrentExperiment = createSelector(
+  experimentState,
+  (experimentState) => experimentState.currentExperiment
+);
+
 export const selectCurrentExperimentKey = selectRouteParam("experimentKey");
-export const selectExperiments = (state: AppState) => state.experiments.items;
-export const selectIsLoadingExperiments = (state: AppState) => state.experiments.isLoading;
+
+export const selectExperiments = createSelector(
+  experimentState,
+  (experimentState) => experimentState.items
+);
+
+export const selectIsLoadingExperiments = createSelector(
+  experimentState,
+  (experimentState) => experimentState.isLoading
+);
