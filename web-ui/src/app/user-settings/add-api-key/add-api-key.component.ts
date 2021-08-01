@@ -12,10 +12,10 @@ import { Observable } from "rxjs";
 
 @Component({
   selector: "app-create-api-key",
-  templateUrl: "./create-api-key.component.html",
-  styleUrls: ["./create-api-key.component.scss"],
+  templateUrl: "./add-api-key.component.html",
+  styleUrls: ["./add-api-key.component.scss"],
 })
-export class CreateApiKeyComponent {
+export class AddApiKeyComponent {
   public form: FormGroup;
   public today = new Date(Date.now());
   public apiKey$: Observable<ApiKey> = this.store.select(selectNewCreatedApiKey);

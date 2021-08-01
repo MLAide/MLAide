@@ -4,14 +4,14 @@ import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { ENTER } from "@angular/cdk/keycodes";
 import { Store } from "@ngrx/store";
 import { Project } from "@mlaide/entities/project.model";
-import { addProject, closeCreateProjectDialog } from "@mlaide/state/project/project.actions";
+import { addProject, closeAddProjectDialog } from "@mlaide/state/project/project.actions";
 
 @Component({
   selector: "app-create-project",
-  templateUrl: "./create-project.component.html",
-  styleUrls: ["./create-project.component.scss"],
+  templateUrl: "./add-project.component.html",
+  styleUrls: ["./add-project.component.scss"],
 })
-export class CreateProjectComponent {
+export class AddProjectComponent {
   public form: FormGroup;
 
   constructor(
@@ -45,7 +45,7 @@ export class CreateProjectComponent {
   }
 
   public cancel() {
-    this.store.dispatch(closeCreateProjectDialog());
+    this.store.dispatch(closeAddProjectDialog());
   }
 
   public create() {

@@ -24,7 +24,7 @@ import {
   loadModelsSucceeded, openEditModelDialog, openModelStageLogDialog
 } from "@mlaide/state/artifact/artifact.actions";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import { showError } from "@mlaide/state/shared/shared.actions";
+import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 import { CreateOrUpdateModel } from "@mlaide/state/artifact/artifact.models";
 import { ModelStageLogComponent } from "@mlaide/models/model-stage-log/model-stage-log.component";
 
@@ -140,7 +140,7 @@ describe("ArtifactEffects", () => {
       // act
       effects.loadModelsFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not load models. A unknown error occurred.",
           error: error
         }));
@@ -213,7 +213,7 @@ describe("ArtifactEffects", () => {
       // act
       effects.loadArtifactsFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not load artifacts. A unknown error occurred.",
           error: error
         }));
@@ -264,7 +264,7 @@ describe("ArtifactEffects", () => {
       ).and.returnValue(of(void 0));
 
       // act
-      effects.editExperiment$.subscribe(action => {
+      effects.updateModel$.subscribe(action => {
         // assert
         expect(action).toEqual(editModelSucceeded());
         expect(artifactApiStub.putModel).toHaveBeenCalledWith(
@@ -299,7 +299,7 @@ describe("ArtifactEffects", () => {
       ).and.returnValue(throwError("failed"));
 
       // act
-      effects.editExperiment$.subscribe(action => {
+      effects.updateModel$.subscribe(action => {
         // assert
         expect(action).toEqual(editModelFailed({ payload: "failed" }));
         expect(artifactApiStub.putModel).toHaveBeenCalledWith(

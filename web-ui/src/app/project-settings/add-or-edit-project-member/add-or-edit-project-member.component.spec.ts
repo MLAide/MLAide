@@ -17,12 +17,12 @@ import { of } from "rxjs";
 import { ProjectMember } from "@mlaide/entities/projectMember.model";
 import { getRandomProjectMember } from "src/app/mocks/fake-generator";
 
-import { CreateOrEditProjectMemberComponent } from "./create-or-edit-project-member.component";
+import { AddOrEditProjectMemberComponent } from "./add-or-edit-project-member.component";
 import { ProjectMemberRoleI18nComponent } from "@mlaide/shared/components/project-member-role-i18n/project-member-role-i18n.component";
 
 describe("EditProjectMemberComponent", () => {
-  let component: CreateOrEditProjectMemberComponent;
-  let fixture: ComponentFixture<CreateOrEditProjectMemberComponent>;
+  let component: AddOrEditProjectMemberComponent;
+  let fixture: ComponentFixture<AddOrEditProjectMemberComponent>;
 
   // dialog mock
   // https://github.com/angular/quickstart/issues/320#issuecomment-404705258
@@ -55,7 +55,7 @@ describe("EditProjectMemberComponent", () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [CreateOrEditProjectMemberComponent, ProjectMemberRoleI18nComponent],
+      declarations: [AddOrEditProjectMemberComponent, ProjectMemberRoleI18nComponent],
       providers: [{ provide: MatDialogRef, useValue: dialogMock }, FormBuilder, { provide: MAT_DIALOG_DATA, useValue: formData }],
       imports: [
         BrowserAnimationsModule,
@@ -70,7 +70,7 @@ describe("EditProjectMemberComponent", () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CreateOrEditProjectMemberComponent);
+    fixture = TestBed.createComponent(AddOrEditProjectMemberComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -344,7 +344,7 @@ describe("EditProjectMemberComponent", () => {
         it("should have cancel button", async () => {
           // arrange also in beforeEach
           const cancelButton: MatButtonHarness = await loader.getHarness(
-            MatButtonHarness.with({ selector: "#create-or-edit-project-member-cancel-button" })
+            MatButtonHarness.with({ selector: "#add-or-edit-project-member-cancel-button" })
           );
 
           // assert
@@ -354,7 +354,7 @@ describe("EditProjectMemberComponent", () => {
           // arrange also in beforeEach
           spyOn(component, "cancel");
           const cancelButton: MatButtonHarness = await loader.getHarness(
-            MatButtonHarness.with({ selector: "#create-or-edit-project-member-cancel-button" })
+            MatButtonHarness.with({ selector: "#add-or-edit-project-member-cancel-button" })
           );
 
           // act
@@ -368,8 +368,8 @@ describe("EditProjectMemberComponent", () => {
       describe("create or update button", () => {
         it("should have disabled save button if the form is invalid -- required fields are empty", async () => {
           // arrange
-          const createOrUpdateExperimentButton: MatButtonHarness = await loader.getHarness(
-            MatButtonHarness.with({ selector: "#create-or-edit-project-member-save-button" })
+          const addOrEditExperimentButton: MatButtonHarness = await loader.getHarness(
+            MatButtonHarness.with({ selector: "#add-or-edit-project-member-save-button" })
           );
 
           // act
@@ -377,23 +377,23 @@ describe("EditProjectMemberComponent", () => {
           fixture.detectChanges();
 
           // assert
-          expect(await createOrUpdateExperimentButton.isDisabled()).toBeTruthy();
+          expect(await addOrEditExperimentButton.isDisabled()).toBeTruthy();
         });
 
         it("should have enabled save button if the form is valid", async () => {
           // arrange + act also in beforeEach
-          const createOrUpdateExperimentButton: MatButtonHarness = await loader.getHarness(
-            MatButtonHarness.with({ selector: "#create-or-edit-project-member-save-button" })
+          const addOrEditExperimentButton: MatButtonHarness = await loader.getHarness(
+            MatButtonHarness.with({ selector: "#add-or-edit-project-member-save-button" })
           );
 
           // assert
-          expect(await createOrUpdateExperimentButton.isDisabled()).toBeFalsy();
+          expect(await addOrEditExperimentButton.isDisabled()).toBeFalsy();
         });
 
         it("should have create button if form data create is true", async () => {
           // arrange also in beforeEach
           const cancelButton: MatButtonHarness = await loader.getHarness(
-            MatButtonHarness.with({ selector: "#create-or-edit-project-member-save-button" })
+            MatButtonHarness.with({ selector: "#add-or-edit-project-member-save-button" })
           );
 
           // act
@@ -406,7 +406,7 @@ describe("EditProjectMemberComponent", () => {
         it("should have create button if form data create is false", async () => {
           // arrange also in beforeEach
           const cancelButton: MatButtonHarness = await loader.getHarness(
-            MatButtonHarness.with({ selector: "#create-or-edit-project-member-save-button" })
+            MatButtonHarness.with({ selector: "#add-or-edit-project-member-save-button" })
           );
 
           formData.create = false;
@@ -418,12 +418,12 @@ describe("EditProjectMemberComponent", () => {
         it("should call save when clicking save button", async () => {
           // arrange also in beforeEach
           spyOn(component, "save");
-          const createOrUpdateExperimentButton: MatButtonHarness = await loader.getHarness(
-            MatButtonHarness.with({ selector: "#create-or-edit-project-member-save-button" })
+          const addOrEditExperimentButton: MatButtonHarness = await loader.getHarness(
+            MatButtonHarness.with({ selector: "#add-or-edit-project-member-save-button" })
           );
 
           // act
-          await createOrUpdateExperimentButton.click();
+          await addOrEditExperimentButton.click();
 
           // assert
           expect(component.save).toHaveBeenCalled();

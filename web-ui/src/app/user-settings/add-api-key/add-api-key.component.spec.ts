@@ -21,12 +21,12 @@ import { ApiKey } from "@mlaide/entities/apiKey.model";
 import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
 import { getRandomApiKey } from "src/app/mocks/fake-generator";
 
-import { CreateApiKeyComponent } from "./create-api-key.component";
+import { AddApiKeyComponent } from "./add-api-key.component";
 import { UsersApiService } from "@mlaide/shared/api";
 
 describe("CreateApiKeyComponent", () => {
-  let component: CreateApiKeyComponent;
-  let fixture: ComponentFixture<CreateApiKeyComponent>;
+  let component: AddApiKeyComponent;
+  let fixture: ComponentFixture<AddApiKeyComponent>;
 
   // dialog mock
   // https://github.com/angular/quickstart/issues/320#issuecomment-404705258
@@ -59,7 +59,7 @@ describe("CreateApiKeyComponent", () => {
     usersApiServiceStub = jasmine.createSpyObj("usersApiService", ["createApiKey"]);
 
     await TestBed.configureTestingModule({
-      declarations: [CreateApiKeyComponent, MockPipe(DatePipe, (v) => v)],
+      declarations: [AddApiKeyComponent, MockPipe(DatePipe, (v) => v)],
       providers: [
         { provide: MatDialogRef, useValue: dialogMock },
         FormBuilder,
@@ -82,7 +82,7 @@ describe("CreateApiKeyComponent", () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CreateApiKeyComponent);
+    fixture = TestBed.createComponent(AddApiKeyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -343,7 +343,7 @@ describe("CreateApiKeyComponent", () => {
             // arrange also in beforeEach
             const button: MatButtonHarness = await loader.getHarness(
               MatButtonHarness.with({
-                selector: "#create-api-key-cancel-button",
+                selector: "#add-api-key-cancel-button",
               })
             );
 
@@ -355,7 +355,7 @@ describe("CreateApiKeyComponent", () => {
             spyOn(component, "close");
             const button: MatButtonHarness = await loader.getHarness(
               MatButtonHarness.with({
-                selector: "#create-api-key-cancel-button",
+                selector: "#add-api-key-cancel-button",
               })
             );
 
@@ -372,7 +372,7 @@ describe("CreateApiKeyComponent", () => {
             // arrange also in beforeEach
             const button: MatButtonHarness = await loader.getHarness(
               MatButtonHarness.with({
-                selector: "#create-api-key-create-button",
+                selector: "#add-api-key-create-button",
               })
             );
 
@@ -384,7 +384,7 @@ describe("CreateApiKeyComponent", () => {
             // arrange also in beforeEach
             const button: MatButtonHarness = await loader.getHarness(
               MatButtonHarness.with({
-                selector: "#create-api-key-create-button",
+                selector: "#add-api-key-create-button",
               })
             );
 
@@ -396,7 +396,7 @@ describe("CreateApiKeyComponent", () => {
             // arrange + act also in beforeEach
             const button: MatButtonHarness = await loader.getHarness(
               MatButtonHarness.with({
-                selector: "#create-api-key-create-button",
+                selector: "#add-api-key-create-button",
               })
             );
             component.form.get("description").setValue(fakeApiKey.description);
@@ -411,7 +411,7 @@ describe("CreateApiKeyComponent", () => {
             spyOn(component, "create");
             const button: MatButtonHarness = await loader.getHarness(
               MatButtonHarness.with({
-                selector: "#create-api-key-create-button",
+                selector: "#add-api-key-create-button",
               })
             );
             component.form.get("description").setValue(fakeApiKey.description);
@@ -474,7 +474,7 @@ describe("CreateApiKeyComponent", () => {
         it("should have a copy button", async () => {
           // arrange also in beforeEach
           const button: MatButtonHarness = await loader.getHarness(
-            MatButtonHarness.with({ selector: "#create-api-key-copy-button" })
+            MatButtonHarness.with({ selector: "#add-api-key-copy-button" })
           );
           const icon: MatIconHarness = await loader.getHarness(MatIconHarness.with({ name: "content_copy" }));
 
@@ -488,7 +488,7 @@ describe("CreateApiKeyComponent", () => {
           // arrange also in beforeEach
           spyOn(component, "copy");
           const button: MatButtonHarness = await loader.getHarness(
-            MatButtonHarness.with({ selector: "#create-api-key-copy-button" })
+            MatButtonHarness.with({ selector: "#add-api-key-copy-button" })
           );
 
           // act
@@ -514,7 +514,7 @@ describe("CreateApiKeyComponent", () => {
             // arrange also in beforeEach
             const button: MatButtonHarness = await loader.getHarness(
               MatButtonHarness.with({
-                selector: "#create-api-key-close-button",
+                selector: "#add-api-key-close-button",
               })
             );
 
@@ -526,7 +526,7 @@ describe("CreateApiKeyComponent", () => {
             spyOn(component, "close");
             const button: MatButtonHarness = await loader.getHarness(
               MatButtonHarness.with({
-                selector: "#create-api-key-close-button",
+                selector: "#add-api-key-close-button",
               })
             );
 

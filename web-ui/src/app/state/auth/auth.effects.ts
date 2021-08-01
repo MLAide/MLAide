@@ -8,7 +8,7 @@ import { AuthService } from "@mlaide/auth/auth.service";
 @Injectable({ providedIn: "root" })
 export class AuthEffects {
 
-  initializeLogin$ = createEffect(() => 
+  initializeLogin$ = createEffect(() =>
     this.actions$.pipe(
       ofType(authActions.initializeLogin),
       mergeMap(() => this.authService.runInitialLoginSequence()),
@@ -33,9 +33,9 @@ export class AuthEffects {
     { dispatch: false }
   );
 
-  isAuthenticated$ = createEffect(() =>
-    this.authService.isAuthenticated$.pipe(
-      map((isAuthenticated) => authActions.isAuthenticated({ isAuthenticated }))
+  isUserAuthenticated$ = createEffect(() =>
+    this.authService.isUserAuthenticated$.pipe(
+      map((isUserAuthenticated) => authActions.isUserAuthenticated({ isUserAuthenticated }))
     )
   );
 

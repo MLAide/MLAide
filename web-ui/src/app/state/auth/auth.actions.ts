@@ -7,4 +7,4 @@ export const initializeLoginFailed = createAction("@mlaide/actions/auth/initiali
 export const login = createAction("@mlaide/actions/auth/login", props<{ targetUrl: string }>());
 export const logout = createAction("@mlaide/actions/auth/logout");
 
-export const isAuthenticated = createAction("@mlaide/actions/auth/is-authenticated/changed", props<{ isAuthenticated: boolean }>());
+export const isUserAuthenticated = createAction("@mlaide/actions/auth/is-user-authenticated/changed", props<{ isUserAuthenticated: boolean }>());

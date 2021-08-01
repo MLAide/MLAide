@@ -282,12 +282,12 @@ describe("EditModelComponent", () => {
         it("should call update when clicking update button", async () => {
           // arrange also in beforeEach
           spyOn(component, "update");
-          const createOrUpdateExperimentButton: MatButtonHarness = await loader.getHarness(
+          const addOrEditExperimentButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({ selector: "#edit-model-update-button" })
           );
 
           // act
-          await createOrUpdateExperimentButton.click();
+          await addOrEditExperimentButton.click();
 
           // assert
           expect(component.update).toHaveBeenCalled();

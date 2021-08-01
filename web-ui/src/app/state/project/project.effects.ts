@@ -3,21 +3,21 @@ import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
 import { catchError, map, mergeMap, switchMap, tap } from "rxjs/operators";
-import { showError } from "../shared/shared.actions";
+import { showErrorMessage } from "../shared/shared.actions";
 import { hideSpinner, showSpinner } from "../shared/shared.actions";
 import {
   addProject,
   addProjectFailed,
   addProjectSucceeded,
-  closeCreateProjectDialog,
+  closeAddProjectDialog,
   loadProjects,
   loadProjectsFailed,
   loadProjectsSucceeded,
-  openCreateProjectDialog
+  openAddProjectDialog
 } from "./project.actions";
 import { ProjectApi } from "./project.api";
 import { MatDialog } from "@angular/material/dialog";
-import { CreateProjectComponent } from "@mlaide/core/components/create-project/create-project.component";
+import { AddProjectComponent } from "@mlaide/core/components/add-project/add-project.component";
 import { currentUserChanged } from "../user/user.actions";
 
 @Injectable({ providedIn: "root" })
@@ -50,9 +50,9 @@ export class ProjectEffects {
 
   openCreateDialog$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(openCreateProjectDialog),
+        ofType(openAddProjectDialog),
         tap(() => {
-          this.dialog.open(CreateProjectComponent, {
+          this.dialog.open(AddProjectComponent, {
             data: {
               key: "",
               name: "",
@@ -65,7 +65,7 @@ export class ProjectEffects {
 
   closeCreateDialog$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(addProjectSucceeded, closeCreateProjectDialog),
+        ofType(addProjectSucceeded, closeAddProjectDialog),
         tap(() => this.dialog.closeAll())
       ),
     { dispatch: false }
@@ -105,7 +105,7 @@ export class ProjectEffects {
           error: error
         };
       }),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 
@@ -117,7 +117,7 @@ export class ProjectEffects {
         message: "Could not load projects. A unknown error occurred.",
         error: error
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 

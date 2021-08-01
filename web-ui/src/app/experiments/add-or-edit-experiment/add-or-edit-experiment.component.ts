@@ -13,10 +13,10 @@ import {
 
 @Component({
   selector: "app-create-or-update-experiment",
-  templateUrl: "./create-or-edit-experiment.component.html",
-  styleUrls: ["./create-or-edit-experiment.component.scss"],
+  templateUrl: "./add-or-edit-experiment.component.html",
+  styleUrls: ["./add-or-edit-experiment.component.scss"],
 })
-export class CreateOrEditExperimentComponent {
+export class AddOrEditExperimentComponent {
   public addOnBlur = true;
   public currentStatus;
   public experimentStatus = ExperimentStatus;

@@ -2,11 +2,11 @@ import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { catchError, map, mergeMap, tap } from "rxjs/operators";
 import { of } from "rxjs";
-import { hideSpinner, showError, showSpinner } from "@mlaide/state/shared/shared.actions";
+import { hideSpinner, showErrorMessage, showSpinner } from "@mlaide/state/shared/shared.actions";
 import { MatDialog } from "@angular/material/dialog";
 import * as actions from "./api-key.actions";
 import { UserApi } from "../user/user.api";
-import { CreateApiKeyComponent } from "@mlaide/user-settings/create-api-key/create-api-key.component";
+import { AddApiKeyComponent } from "@mlaide/user-settings/add-api-key/add-api-key.component";
 
 @Injectable({ providedIn: "root" })
 export class ApiKeyEffects {
@@ -27,7 +27,7 @@ export class ApiKeyEffects {
         message: "Could not load api keys. A unknown error occurred.",
         error: action.payload
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 
@@ -55,7 +55,7 @@ export class ApiKeyEffects {
         message: "Could not add api key. A unknown error occurred.",
         error: error
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 
@@ -63,7 +63,7 @@ export class ApiKeyEffects {
     this.actions$.pipe(
       ofType(actions.openAddApiKeyDialog),
       tap(() => {
-        this.dialog.open(CreateApiKeyComponent, {
+        this.dialog.open(AddApiKeyComponent, {
           minWidth: "20%"
         });
       })
@@ -96,7 +96,7 @@ export class ApiKeyEffects {
         message: "Could not delete api key. A unknown error occurred.",
         error: error
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 

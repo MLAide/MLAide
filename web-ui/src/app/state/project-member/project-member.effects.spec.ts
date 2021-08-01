@@ -9,7 +9,7 @@ import { ComponentType } from "@angular/cdk/portal";
 import { MatDialogConfig } from "@angular/material/dialog/dialog-config";
 import { MatDialogRef } from "@angular/material/dialog/dialog-ref";
 import Spy = jasmine.Spy;
-import { CreateOrEditProjectMemberComponent } from "@mlaide/project-settings/create-or-edit-project-member/create-or-edit-project-member.component";
+import { AddOrEditProjectMemberComponent } from "@mlaide/project-settings/add-or-edit-project-member/add-or-edit-project-member.component";
 import { TestBed } from "@angular/core/testing";
 import { provideMockActions } from "@ngrx/effects/testing";
 import {
@@ -17,7 +17,7 @@ import {
   getRandomProjectMembers,
   getRandomUser
 } from "@mlaide/mocks/fake-generator";
-import { showError } from "@mlaide/state/shared/shared.actions";
+import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 import {
   addProjectMemberFailed, addProjectMemberSucceeded,
   closeAddOrEditProjectMemberDialog,
@@ -33,13 +33,13 @@ import {
 } from "@mlaide/state/project-member/project-member.actions";
 import { Router } from "@angular/router";
 
-describe("project member effects", () => {
+describe("ProjectMemberEffects", () => {
   let actions$ = new Observable<Action>();
   let effects: ProjectMemberEffects;
   let projectMemberApiStub: jasmine.SpyObj<ProjectMemberApi>;
   let store: MockStore;
   let matDialog: MatDialog;
-  let openDialogSpy: Spy<(component: ComponentType<CreateOrEditProjectMemberComponent>, config?: MatDialogConfig) => MatDialogRef<CreateOrEditProjectMemberComponent>>;
+  let openDialogSpy: Spy<(component: ComponentType<AddOrEditProjectMemberComponent>, config?: MatDialogConfig) => MatDialogRef<AddOrEditProjectMemberComponent>>;
   let closeAllDialogSpy: Spy<() => void>;
   let router = {
     navigate: jasmine.createSpy('navigate')
@@ -172,12 +172,9 @@ describe("project member effects", () => {
       });
     });
 
-    // TODO Raman: What to assert here?
-
-    /*it("should trigger nothing if action is deleteProjectMemberSucceeded and current user is provided project member", async (done) => {
+    it("should trigger nothing if action is deleteProjectMemberSucceeded and current user is provided project member", async (done) => {
       // arrange
       const projectMember = await getRandomProjectMember();
-      actions$ = of(deleteProjectMemberSucceeded({ projectMember }));
       const user = await getRandomUser();
       user.email = projectMember.email;
       store.setState({
@@ -185,18 +182,21 @@ describe("project member effects", () => {
           currentUser: user
         }
       });
-      const projectMembers = await getRandomProjectMembers(3);
-      const response: ProjectMemberListResponse = { items: projectMembers };
-      projectMemberApiStub.getProjectMembers.and.returnValue(of(response));
+      actions$ = of(deleteProjectMemberSucceeded({ projectMember }));
 
       // act
-      effects.deleteProjectMember$.subscribe(action => {
-        // assert
-        expect(projectMemberApiStub.getProjectMembers).not.toHaveBeenCalled();
-
-        done();
-      });
-    });*/
+      effects.loadProjectMembers$.subscribe(
+        (action) => {
+          fail(`loadProjectMembers$ should not trigger any output action but got ${action.type}.`);
+        },
+        () => {
+          fail("loadProjectMembers$ should not raise an error.");
+        },
+        () => {
+          expect().nothing();
+          done();
+        });
+    });
   });
 
   describe("loadProjectMembersFailed$", () => {
@@ -208,7 +208,7 @@ describe("project member effects", () => {
       // act
       effects.loadProjectMembersFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not load project members. A unknown error occurred.",
           error: error
         }));
@@ -250,7 +250,7 @@ describe("project member effects", () => {
       // act
       effects.addProjectMemberFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not add project member. A unknown error occurred.",
           error: error
         }));
@@ -323,7 +323,7 @@ describe("project member effects", () => {
       // act
       effects.editProjectMemberFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not edit project member. A unknown error occurred.",
           error: error
         }));
@@ -341,7 +341,7 @@ describe("project member effects", () => {
       // act
       effects.openAddProjectMemberDialog$.subscribe(() => {
         // assert
-        expect(openDialogSpy).toHaveBeenCalledWith(CreateOrEditProjectMemberComponent, { minWidth: "20%",
+        expect(openDialogSpy).toHaveBeenCalledWith(AddOrEditProjectMemberComponent, { minWidth: "20%",
           data: {
             title: `Add new member`,
             projectMember: null,
@@ -361,7 +361,7 @@ describe("project member effects", () => {
       // act
       effects.openEditProjectMemberDialog$.subscribe(() => {
         // assert
-        expect(openDialogSpy).toHaveBeenCalledWith(CreateOrEditProjectMemberComponent, { minWidth: "20%",
+        expect(openDialogSpy).toHaveBeenCalledWith(AddOrEditProjectMemberComponent, { minWidth: "20%",
           data: {
             title: `Edit member: ${projectMember.nickName}`,
             projectMember: projectMember,
@@ -450,7 +450,7 @@ describe("project member effects", () => {
       // act
       effects.deleteProjectMemberFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not delete project member. A unknown error occurred.",
           error: error
         }));

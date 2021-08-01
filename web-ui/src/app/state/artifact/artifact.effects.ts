@@ -6,7 +6,7 @@ import * as artifactActions from "@mlaide/state/artifact/artifact.actions";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { catchError, map, mergeMap, tap } from "rxjs/operators";
 import { of } from "rxjs";
-import { showError } from "@mlaide/state/shared/shared.actions";
+import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 import { MatDialog } from "@angular/material/dialog";
 import { EditModelComponent } from "@mlaide/models/edit-model/edit-model.component";
 import { CreateOrUpdateModel } from "@mlaide/entities/artifact.model";
@@ -40,7 +40,7 @@ export class ArtifactEffects {
         message: "Could not load models. A unknown error occurred.",
         error: error
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 
@@ -63,12 +63,11 @@ export class ArtifactEffects {
         message: "Could not load artifacts. A unknown error occurred.",
         error: error
       })),
-      map(showError)
+      map(showErrorMessage)
     )
   );
 
-  // TODO Raman: Wieso heißt das hier editExperiment?
-  editExperiment$ = createEffect(() =>
+  updateModel$ = createEffect(() =>
     this.actions$.pipe(
       ofType(artifactActions.editModel),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),

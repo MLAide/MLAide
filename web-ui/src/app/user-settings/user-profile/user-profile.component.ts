@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Store } from "@ngrx/store";
 import { Subscription } from "rxjs";
 import { selectCurrentUser } from "@mlaide/state/user/user.selectors";
-import { updateUserProfile } from "@mlaide/state/user/user.actions";
+import { editUserProfile } from "@mlaide/state/user/user.actions";
 
 @Component({
   selector: "app-user-profile",
@@ -42,6 +42,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   public save() {
-    this.store.dispatch(updateUserProfile({ user: this.userForm.value }));
+    this.store.dispatch(editUserProfile({ user: this.userForm.value }));
   }
 }

@@ -13,19 +13,19 @@ import {
   loadApiKeysFailed,
   loadApiKeysSucceeded, openAddApiKeyDialog
 } from "@mlaide/state/api-key/api-key.actions";
-import { showError } from "@mlaide/state/shared/shared.actions";
+import { hideSpinner, showErrorMessage, showSpinner } from "@mlaide/state/shared/shared.actions";
 import Spy = jasmine.Spy;
 import { ComponentType } from "@angular/cdk/portal";
 import { MatDialogConfig } from "@angular/material/dialog/dialog-config";
 import { MatDialogRef } from "@angular/material/dialog/dialog-ref";
-import { CreateApiKeyComponent } from "@mlaide/user-settings/create-api-key/create-api-key.component";
+import { AddApiKeyComponent } from "@mlaide/user-settings/add-api-key/add-api-key.component";
 
 describe("ApiKeyEffects", () => {
   let actions$ = new Observable<Action>();
   let effects: ApiKeyEffects;
   let userApiStub: jasmine.SpyObj<UserApi>;
   let matDialog: MatDialog;
-  let openDialogSpy: Spy<(component: ComponentType<CreateApiKeyComponent>, config?: MatDialogConfig) => MatDialogRef<CreateApiKeyComponent>>;
+  let openDialogSpy: Spy<(component: ComponentType<AddApiKeyComponent>, config?: MatDialogConfig) => MatDialogRef<AddApiKeyComponent>>;
   let closeAllDialogSpy: Spy<() => void>;
 
   beforeEach(() => {
@@ -91,7 +91,7 @@ describe("ApiKeyEffects", () => {
       // act
       effects.showErrorOnLoadApiKeysFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not load api keys. A unknown error occurred.",
           error: error
         }));
@@ -156,14 +156,13 @@ describe("ApiKeyEffects", () => {
     actions.forEach((actionGenerator) => {
       it(`'${actionGenerator.name}' should map to 'loadApiKeys' action`, async (done) => {
         // arrange
-        const action = await actionGenerator.generate()
-        actions$ = of(action);
+        const expectedAction = await actionGenerator.generate()
+        actions$ = of(expectedAction);
 
         // act
         effects.reloadApiKeys$.subscribe(action => {
           // assert
-          // TODO Raman: Ich glaube hier steht der falsche Vergleich
-          expect(action).toEqual(action);
+          expect(action).toEqual(loadApiKeys());
 
           done();
         });
@@ -180,7 +179,7 @@ describe("ApiKeyEffects", () => {
       // act
       effects.showErrorOnAddApiKeyFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not add api key. A unknown error occurred.",
           error: error
         }));
@@ -198,7 +197,7 @@ describe("ApiKeyEffects", () => {
       // act
       effects.openAddApiKeyDialog$.subscribe(() => {
         // assert
-        expect(openDialogSpy).toHaveBeenCalledWith(CreateApiKeyComponent, { minWidth: "20%" });
+        expect(openDialogSpy).toHaveBeenCalledWith(AddApiKeyComponent, { minWidth: "20%" });
 
         done();
       });
@@ -263,7 +262,7 @@ describe("ApiKeyEffects", () => {
       // act
       effects.showErrorOnDeleteApiKeyFailed$.subscribe(action => {
         // assert
-        expect(action).toEqual(showError({
+        expect(action).toEqual(showErrorMessage({
           message: "Could not delete api key. A unknown error occurred.",
           error: error
         }));
@@ -279,15 +278,15 @@ describe("ApiKeyEffects", () => {
       deleteApiKey({ apiKey: null })
     ];
 
-    actions.forEach((action) => {
-      it(`'${action.type}' should map to showSpinner action`, async (done) => {
+    actions.forEach((expectedAction) => {
+      it(`'${expectedAction.type}' should map to showSpinner action`, async (done) => {
         // arrange
-        actions$ = of(action);
+        actions$ = of(expectedAction);
 
         // act
         effects.showSpinner$.subscribe(action => {
           // assert
-          expect(action).toEqual(action);
+          expect(action).toEqual(showSpinner());
 
           done();
         });
@@ -303,15 +302,15 @@ describe("ApiKeyEffects", () => {
       deleteApiKeyFailed({ payload: null })
     ];
 
-    actions.forEach((action) => {
-      it(`'${action.type}' should map to hideSpinner action`, async (done) => {
+    actions.forEach((expectedAction) => {
+      it(`'${expectedAction.type}' should map to hideSpinner action`, async (done) => {
         // arrange
-        actions$ = of(action);
+        actions$ = of(expectedAction);
 
         // act
         effects.hideSpinner$.subscribe(action => {
           // assert
-          expect(action).toEqual(action);
+          expect(action).toEqual(hideSpinner());
 
           done();
         });

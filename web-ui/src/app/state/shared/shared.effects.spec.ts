@@ -5,7 +5,7 @@ import { TestBed } from "@angular/core/testing";
 import { provideMockActions } from "@ngrx/effects/testing";
 import { SharedEffects } from "@mlaide/state/shared/shared.effects";
 import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
-import { hideSpinner, showError, showSpinner, showSuccessMessage } from "@mlaide/state/shared/shared.actions";
+import { hideSpinner, showErrorMessage, showSpinner, showSuccessMessage } from "@mlaide/state/shared/shared.actions";
 
 describe("shared effects", () => {
   let actions$ = new Observable<Action>();
@@ -41,7 +41,7 @@ describe("shared effects", () => {
       // arrange
       const error = "error";
       const message = "message";
-      actions$ = of(showError({error, message}));
+      actions$ = of(showErrorMessage({error, message}));
 
       // act
       effects.showError$.subscribe(action => {

@@ -8,10 +8,10 @@ import { Store } from "@ngrx/store";
 
 @Component({
   selector: "app-create-or-edit-project-member",
-  templateUrl: "./create-or-edit-project-member.component.html",
-  styleUrls: ["./create-or-edit-project-member.component.scss"],
+  templateUrl: "./add-or-edit-project-member.component.html",
+  styleUrls: ["./add-or-edit-project-member.component.scss"],
 })
-export class CreateOrEditProjectMemberComponent {
+export class AddOrEditProjectMemberComponent {
   public currentRole;
   public form: FormGroup;
   public projectMemberRole = ProjectMemberRole;

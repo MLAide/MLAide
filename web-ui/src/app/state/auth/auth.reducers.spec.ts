@@ -3,7 +3,7 @@ import {
   initializeLogin,
   initializeLoginFailed,
   initializeLoginSucceeded,
-  isAuthenticated
+  isUserAuthenticated
 } from "@mlaide/state/auth/auth.actions";
 import { authReducer } from "@mlaide/state/auth/auth.reducers";
 
@@ -56,13 +56,13 @@ describe("AuthReducers", () => {
     });
   });
 
-  describe("isAuthenticated action", () => {
+  describe("isUserAuthenticated action", () => {
     it("should set isUserAuthenticated to true in authState", async () => {
       // arrange
       const initialState: Partial<AuthState> = {
         isUserAuthenticated: false
       };
-      const action = isAuthenticated({ isAuthenticated: true } as any);
+      const action = isUserAuthenticated({ isUserAuthenticated: true } as any);
 
       // act
       const newState = authReducer(initialState as AuthState, action);
@@ -76,7 +76,7 @@ describe("AuthReducers", () => {
       const initialState: Partial<AuthState> = {
         isUserAuthenticated: true
       };
-      const action = isAuthenticated({ isAuthenticated: false } as any);
+      const action = isUserAuthenticated({ isUserAuthenticated: false } as any);
 
       // act
       const newState = authReducer(initialState as AuthState, action);
