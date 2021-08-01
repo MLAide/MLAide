@@ -6,6 +6,10 @@ import { ArtifactListResponse } from "@mlaide/entities/artifact.model";
 import { SnackbarUiService } from "@mlaide/shared/services/snackbar-ui.service";
 import { Run, RunMetrics, RunParameter } from "@mlaide/entities/run.model";
 import { ArtifactsApiService, ListDataSource, RunsApiService } from "@mlaide/shared/api";
+import { AppState } from "@mlaide/state/app.state";
+import { Store } from "@ngrx/store";
+import { selectRuns } from "@mlaide/state/run/run.selectors";
+import { selectArtifactsByRunKeys } from "@mlaide/state/artifact/artifact.selectors";
 
 @Component({
   selector: "app-run-details",
@@ -32,10 +36,16 @@ export class RunDetailsComponent implements OnInit, OnDestroy {
     private artifactsApiService: ArtifactsApiService,
     private runsApiService: RunsApiService,
     private route: ActivatedRoute,
-    private snackBarUiService: SnackbarUiService
+    private snackBarUiService: SnackbarUiService,
+    private store: Store<AppState>
   ) {}
 
   ngOnInit() {
+    // const run$ = this.store.select(selectRun);
+    const artifacts$ = this.store.select(selectArtifactsByRunKeys);
+
+
+
     this.routeParamsSubscription = this.route.params.subscribe((params) => {
       this.projectKey = params.projectKey;
       this.runKey = params.runKey;

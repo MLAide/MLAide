@@ -18,3 +18,5 @@ export const closeEditModelDialog = createAction("@mlaide/actions/models/edit-di
 
 export const openModelStageLogDialog = createAction("@mlaide/actions/models/stage-log-dialog/open", props<{ modelRevisions: ModelRevision[] }>());
 
+export const downloadArtifact = createAction("@mlaide/actions/artifacts/download", props<{ projectKey: string, artifactName: string, artifactVersion: number, artifactFileId?: string }>());
+export const downloadArtifactSucceeded = createAction("@mlaide/actions/artifacts/download/succeeded", props<{ blob: Blob, fileName: string }>());

@@ -11,6 +11,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { EditModelComponent } from "@mlaide/models/edit-model/edit-model.component";
 import { CreateOrUpdateModel } from "@mlaide/entities/artifact.model";
 import { ModelStageLogComponent } from "@mlaide/models/model-stage-log/model-stage-log.component";
+import { FileSaverService } from "ngx-filesaver";
 
 @Injectable({ providedIn: "root" })
 export class ArtifactEffects {
@@ -129,8 +130,37 @@ export class ArtifactEffects {
     { dispatch: false }
   );
 
+  downloadArtifact$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(artifactActions.downloadArtifact),
+      mergeMap((action) => this.artifactApi.download(action.projectKey, action.artifactName, action.artifactVersion, action.artifactFileId)),
+      map((response) => {
+        const blob = new Blob([response as any], {
+          type: response.headers.get("Content-Type"),
+        });
+        const contentDisposition: string = response.headers.get("Content-Disposition");
+        // https://stackoverflow.com/questions/23054475/javascript-regex-for-extracting-filename-from-content-disposition-header/23054920
+        const regEx = new RegExp(/filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/gi);
+
+        const fileName = regEx.exec(contentDisposition)[1];
+
+        return { blob, fileName };
+      }),
+      map((downloadResult) => artifactActions.downloadArtifactSucceeded(downloadResult))
+    )
+  );
+
+  saveArtifact$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(artifactActions.downloadArtifactSucceeded),
+      tap((action) => this.fileSaverService.save(action.blob, action.fileName))
+    ),
+    { dispatch: false }
+  );
+
   public constructor(private readonly actions$: Actions,
                      private readonly artifactApi: ArtifactApi,
+                     private readonly fileSaverService: FileSaverService,
                      private readonly dialog: MatDialog,
                      private readonly store: Store) {}
 }

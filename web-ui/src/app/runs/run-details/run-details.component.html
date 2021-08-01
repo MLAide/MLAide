@@ -1,6 +1,7 @@
 <div fxLayout="row" fxLayoutAlign="space-between start">
   <h1 class="mat-display-2">{{ run?.name }}</h1>
 </div>
+
 <div fxLayout="column">
   <div>
     <h3 class="mat-h3" i18n>Meta data</h3>
@@ -36,6 +37,7 @@
     </div>
   </div>
 </div>
+
 <div fxLayout="column" (focusout)="unfocusedNoteTextarea()">
   <h3 class="mat-h3"><span></span></h3>
   <div fxLayout="row">
