@@ -7,7 +7,7 @@ import { MatButtonHarness } from "@angular/material/button/testing";
 import { MatChipInputEvent, MatChipsModule } from "@angular/material/chips";
 import { MatChipHarness, MatChipInputHarness, MatChipListHarness } from "@angular/material/chips/testing";
 import { MatOptionHarness } from "@angular/material/core/testing";
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MatDialogModule, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatFormFieldHarness } from "@angular/material/form-field/testing";
 import { MatIconModule } from "@angular/material/icon";
@@ -16,48 +16,52 @@ import { MatInputHarness } from "@angular/material/input/testing";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { of } from "rxjs";
 import { getRandomExperiment } from "src/app/mocks/fake-generator";
 import { Experiment } from "../../entities/experiment.model";
 import { ExperimentStatusI18nComponent } from "../experiment-status-i18n/experiment-status-i18n.component";
 
 import { CreateOrEditExperimentComponent } from "./create-or-edit-experiment.component";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { AppState } from "@mlaide/state/app.state";
+import {
+  addExperiment,
+  closeAddOrEditExperimentDialog,
+  editExperiment
+} from "@mlaide/state/experiment/experiment.actions";
 
 describe("CreateOrEditExperimentComponent", () => {
   let component: CreateOrEditExperimentComponent;
   let fixture: ComponentFixture<CreateOrEditExperimentComponent>;
 
-  // dialog mock
-  // https://github.com/angular/quickstart/issues/320#issuecomment-404705258
-  // https://stackoverflow.com/questions/54108924/this-dialogref-close-is-not-a-function-error/54109919
-  let dialogMock;
-
   // fakes
   let fakeExperiment: Experiment;
-  let randomKeyReadonly: boolean;
-  let formData: { experiment: Experiment; keyReadonly: boolean; title: string };
+  let randomIsEditMode: boolean;
+  let formData: { experiment: Experiment; isEditMode: boolean; title: string };
+
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    // prepare dialog mock object
-    dialogMock = {
-      open: () => ({ afterClosed: () => of(true) }),
-      close: () => {},
-    };
+    const initialState: Partial<AppState> = {};
 
     // setup fakes
     fakeExperiment = await getRandomExperiment();
-    randomKeyReadonly = Math.random() < 0.5;
+    randomIsEditMode = Math.random() < 0.5;
 
     // setup formData
     formData = {
       experiment: fakeExperiment,
-      keyReadonly: randomKeyReadonly,
+      isEditMode: randomIsEditMode,
       title: "Experiment",
     };
 
     await TestBed.configureTestingModule({
       declarations: [CreateOrEditExperimentComponent, ExperimentStatusI18nComponent],
-      providers: [{ provide: MatDialogRef, useValue: dialogMock }, FormBuilder, { provide: MAT_DIALOG_DATA, useValue: formData }],
+      providers: [
+        FormBuilder,
+        { provide: MAT_DIALOG_DATA, useValue: formData },
+        provideMockStore({ initialState })],
       imports: [
         BrowserAnimationsModule,
         FormsModule,
@@ -70,6 +74,9 @@ describe("CreateOrEditExperimentComponent", () => {
         ReactiveFormsModule,
       ],
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -104,7 +111,7 @@ describe("CreateOrEditExperimentComponent", () => {
       // arrange + act in beforeEach
 
       // assert
-      expect(component.isEditMode).toEqual(formData.keyReadonly);
+      expect(component.isEditMode).toEqual(formData.isEditMode);
     });
 
     it("should init form group with provided experiment", async () => {
@@ -248,15 +255,14 @@ describe("CreateOrEditExperimentComponent", () => {
   });
 
   describe("cancel", () => {
-    it("should call close on dialog", async () => {
+    it("should dispatch closeAddOrEditExperimentDialog action", async () => {
       // arrange in beforeEach
-      const spy = spyOn(dialogMock, "close").and.callThrough();
 
       // act
       component.cancel();
 
       // assert
-      expect(spy).toHaveBeenCalled();
+      expect(dispatchSpy).toHaveBeenCalledWith(closeAddOrEditExperimentDialog());
     });
   });
 
@@ -330,18 +336,28 @@ describe("CreateOrEditExperimentComponent", () => {
   });
 
   describe("save", () => {
-    it("should update form tags to component tags and call close with form values", async () => {
+    it("should dispatch editExperiment action", async () => {
       // arrange in beforeEach
-      const spy = spyOn(dialogMock, "close").and.callThrough();
       component.tags = ["firstTag", "secondTag", "thirdTag"];
-      const tagsControl: AbstractControl = component.form.get("tags");
+      component.isEditMode = true;
 
       // act
       component.save();
 
       // assert
-      expect(tagsControl.value).toEqual(component.tags);
-      expect(spy).toHaveBeenCalledWith(component.form.value);
+      expect(dispatchSpy).toHaveBeenCalledWith(editExperiment({ experiment: component.form.value }));
+    });
+
+    it("should dispatch addExperiment action", async () => {
+      // arrange in beforeEach
+      component.tags = ["firstTag", "secondTag", "thirdTag"];
+      component.isEditMode = false;
+
+      // act
+      component.save();
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(addExperiment({ experiment: component.form.value }));
     });
   });
 
@@ -481,7 +497,7 @@ describe("CreateOrEditExperimentComponent", () => {
         const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.key }));
 
         // assert
-        expect(await input.isReadonly()).toEqual(formData.keyReadonly);
+        expect(await input.isReadonly()).toEqual(formData.isEditMode);
       });
 
       it("should set experiment key input to readonly if keyReadonly is true", async () => {

@@ -24,21 +24,15 @@ describe("ArtifactsListComponent", () => {
   let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-
     // arrange fakes & stubs
     // setup fakes
     fakeProject = await getRandomProject();
     fakeArtifacts = await getRandomArtifacts(3);
 
-    // setup state
-    const initialState = {
-      artifacts: null,
-    };
-
     await TestBed.configureTestingModule({
       declarations: [ArtifactsListComponent, MockComponent(ArtifactsListTableComponent)],
       providers: [
-        provideMockStore({ initialState }),
+        provideMockStore(),
       ],
     }).compileComponents();
 
