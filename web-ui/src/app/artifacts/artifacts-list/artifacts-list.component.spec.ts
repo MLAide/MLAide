@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ActivatedRoute, ParamMap } from "@angular/router";
-import { MockComponent } from "ng-mocks";
-import { Observable, Subscription } from "rxjs";
-import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
+import { MockComponent, ngMocks } from "ng-mocks";
+import { Artifact } from "@mlaide/entities/artifact.model";
 import { Project } from "@mlaide/entities/project.model";
-import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
-import { getRandomProject } from "src/app/mocks/fake-generator";
+import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
 
 import { ArtifactsListComponent } from "./artifacts-list.component";
 import { ArtifactsListTableComponent } from "@mlaide/shared/components/artifacts-list-table/artifacts-list-table.component";
-import { ArtifactsApiService } from "@mlaide/shared/api";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { selectArtifacts, selectIsLoadingArtifacts } from "@mlaide/state/artifact/artifact.selectors";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { loadArtifacts } from "@mlaide/state/artifact/artifact.actions";
 
 describe("ArtifactsListComponent", () => {
   let component: ArtifactsListComponent;
@@ -17,90 +18,82 @@ describe("ArtifactsListComponent", () => {
 
   // fake
   let fakeProject: Project;
+  let fakeArtifacts: Artifact[];
 
-  // route spy
-  let unsubscriptionSpy: jasmine.Spy<() => void>;
-
-  // service stubs
-  let artifactsApiServiceStub: jasmine.SpyObj<ArtifactsApiService>;
-
-  // data source mocks
-  let artifactListDataSourceMock: ListDataSourceMock<Artifact, ArtifactListResponse> = new ListDataSourceMock();
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    // mock active route params
-    const paramMapObservable = new Observable<ParamMap>();
-    const paramMapSubscription = new Subscription();
-    unsubscriptionSpy = spyOn(paramMapSubscription, "unsubscribe").and.callThrough();
-    spyOn(paramMapObservable, "subscribe").and.callFake((fn): Subscription => {
-      fn({ projectKey: fakeProject.key });
-      return paramMapSubscription;
-    });
-
-    // stub services
-    artifactsApiServiceStub = jasmine.createSpyObj("artifactsApiService", ["getArtifacts"]);
-
     // arrange fakes & stubs
     // setup fakes
     fakeProject = await getRandomProject();
-
-    // setup artifacts api
-    artifactsApiServiceStub.getArtifacts.and.returnValue(artifactListDataSourceMock);
+    fakeArtifacts = await getRandomArtifacts(3);
 
     await TestBed.configureTestingModule({
       declarations: [ArtifactsListComponent, MockComponent(ArtifactsListTableComponent)],
       providers: [
-        { provide: ActivatedRoute, useValue: { params: paramMapObservable } },
-        { provide: ArtifactsApiService, useValue: artifactsApiServiceStub },
+        provideMockStore(),
       ],
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+
+    store.overrideSelector(selectArtifacts, fakeArtifacts);
+    store.overrideSelector(selectCurrentProjectKey, fakeProject.key);
+    store.overrideSelector(selectIsLoadingArtifacts, true);
+
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ArtifactsListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  afterEach(() => {
-    artifactListDataSourceMock.emulate([]);
-  });
+  })
 
   it("should create", () => {
     expect(component).toBeTruthy();
   });
 
-  // TODO: Fix Tests
-  /*
   describe("ngOnInit", () => {
-    it("should load artifacts with projectKey defined in active route", async () => {
+    it("should select artifacts from store correctly", async (done) => {
       // arrange + act in beforeEach
 
       // assert
-      expect(component.projectKey).toBe(fakeProject.key);
-      expect(artifactsApiServiceStub.getArtifacts).toHaveBeenCalledWith(fakeProject.key, false);
+      component.artifacts$.subscribe((artifacts) => {
+        expect(artifacts).toBe(fakeArtifacts);
+        done();
+      });
     });
 
-    it("should load all artifacts of the current project", async () => {
+    it("should select projectKey from store correctly", async (done) => {
       // arrange + act in beforeEach
 
       // assert
-      expect(component.artifactListDataSource).toBe(artifactListDataSourceMock);
+      component.projectKey$.subscribe((projectKey) => {
+        expect(projectKey).toBe(fakeProject.key);
+        done();
+      });
     });
-  });
 
-  describe("ngOnDestroy", () => {
-    it("should unsubscribe from routeParamsSubscription", async () => {
-      // arrange in beforeEach
-
-      // act
-      component.ngOnDestroy();
+    it("should select isLoadingArtifacts from store correctly", async (done) => {
+      // arrange + act in beforeEach
 
       // assert
-      expect(unsubscriptionSpy).toHaveBeenCalled();
+      component.isLoadingArtifacts$.subscribe((isLoading) => {
+        expect(isLoading).toBe(true);
+        done();
+      });
+    });
+
+    it("should dispatch loadArtifacts action", () => {
+      // ngOnInit will be called in beforeEach while creating the component
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(loadArtifacts());
     });
   });
-*/
+
   describe("component rendering", () => {
     it("should contain components title", async () => {
       // arrange + act also in beforeEach
@@ -112,13 +105,14 @@ describe("ArtifactsListComponent", () => {
 
     it("should contain child component - app-artifacts-list-table", async () => {
       // arrange
-      const childComponent: HTMLElement = fixture.nativeElement.querySelector("app-artifacts-list-table");
+      const artifactsListTableComponent = ngMocks
+        .find<ArtifactsListTableComponent>('app-artifacts-list-table')
+        .componentInstance;
 
       // assert
-      expect(childComponent).toBeTruthy();
-      expect(childComponent.getAttribute("ng-reflect-project-key")).toEqual(fakeProject.key);
-      expect(childComponent.getAttribute("ng-reflect-artifact-list-data-source")).not.toBeUndefined();
-      expect(childComponent.getAttribute("ng-reflect-artifact-list-data-source")).not.toBeNull();
+      expect(artifactsListTableComponent.artifacts$).toBe(component.artifacts$);
+      expect(artifactsListTableComponent.projectKey).toBe(fakeProject.key);
+      expect(artifactsListTableComponent.isLoading$).toBe(component.isLoadingArtifacts$);
     });
   });
 });
