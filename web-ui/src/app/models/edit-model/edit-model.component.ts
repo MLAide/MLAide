@@ -1,8 +1,7 @@
 import { Component, Inject } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Artifact, ModelStage } from "@mlaide/entities/artifact.model";
-import { closeAddOrEditExperimentDialog, editExperiment } from "@mlaide/state/experiment/experiment.actions";
 import { closeEditModelDialog, editModel } from "@mlaide/state/artifact/artifact.actions";
 import { Store } from "@ngrx/store";
 
@@ -17,8 +16,7 @@ export class EditModelComponent {
   public modelStage = ModelStage;
   public note = "";
 
-  constructor(private dialogRef: MatDialogRef<EditModelComponent>,
-              private formBuilder: FormBuilder,
+  constructor(private formBuilder: FormBuilder,
               @Inject(MAT_DIALOG_DATA) public data: { artifact: Artifact; title: string },
               private store: Store) {
     this.currentStage = data.artifact.model.stage;
