@@ -1,5 +1,20 @@
 import { AppState } from "../app.state";
+import { createFeatureSelector, createSelector } from "@ngrx/store";
+import { ProjectMemberState } from "@mlaide/state/project-member/project-member.state";
 
-export const selectCurrentProjectMember = (state: AppState) => state.projectMembers.currentProjectMember;
-export const selectIsLoadingProjectMembers = (state: AppState) => state.projectMembers.isLoading;
-export const selectProjectMembers = (state: AppState) => state.projectMembers.items;
+const projectMemberState = createFeatureSelector<AppState, ProjectMemberState>("projectMembers")
+
+export const selectCurrentProjectMember = createSelector(
+  projectMemberState,
+  (projectMemberState) => projectMemberState.currentProjectMember
+);
+
+export const selectIsLoadingProjectMembers = createSelector(
+  projectMemberState,
+  (projectMemberState) => projectMemberState.isLoading
+);
+
+export const selectProjectMembers = createSelector(
+  projectMemberState,
+  (projectMemberState) => projectMemberState.items
+);
