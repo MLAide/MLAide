@@ -61,7 +61,8 @@ describe("AddOrEditExperimentComponent", () => {
       providers: [
         FormBuilder,
         { provide: MAT_DIALOG_DATA, useValue: formData },
-        provideMockStore({ initialState })],
+        provideMockStore({ initialState })
+      ],
       imports: [
         BrowserAnimationsModule,
         FormsModule,
