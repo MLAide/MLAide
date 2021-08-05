@@ -5,7 +5,7 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonHarness } from "@angular/material/button/testing";
 import { MatOptionHarness } from "@angular/material/core/testing";
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MatDialogModule, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatFormFieldHarness } from "@angular/material/form-field/testing";
 import { MatInputModule } from "@angular/material/input";
@@ -13,35 +13,36 @@ import { MatInputHarness } from "@angular/material/input/testing";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { of } from "rxjs";
 import { ProjectMember } from "@mlaide/entities/projectMember.model";
 import { getRandomProjectMember } from "src/app/mocks/fake-generator";
 
 import { AddOrEditProjectMemberComponent } from "./add-or-edit-project-member.component";
 import { ProjectMemberRoleI18nComponent } from "@mlaide/shared/components/project-member-role-i18n/project-member-role-i18n.component";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { AppState } from "@mlaide/state/app.state";
+
+import {
+  addProjectMember,
+  closeAddOrEditProjectMemberDialog,
+  editProjectMember
+} from "@mlaide/state/project-member/project-member.actions";
 
 describe("EditProjectMemberComponent", () => {
   let component: AddOrEditProjectMemberComponent;
   let fixture: ComponentFixture<AddOrEditProjectMemberComponent>;
 
-  // dialog mock
-  // https://github.com/angular/quickstart/issues/320#issuecomment-404705258
-  // https://stackoverflow.com/questions/54108924/this-dialogref-close-is-not-a-function-error/54109919
-  let dialogMock;
-
   // fakes
   let fakeProjectMember: ProjectMember;
   let randomCreate: boolean;
-  let formData: { create: boolean; projectMember: ProjectMember; title: string };
+  let formData: { projectMember: ProjectMember; title: string };
+
+  // mocks
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    // prepare dialog mock object
-    dialogMock = {
-      open: () => ({ afterClosed: () => of(true) }),
-      close: () => {
-        // This is intentional
-      },
-    };
+    const initialState: Partial<AppState> = {};
 
     // setup fakes
     fakeProjectMember = await getRandomProjectMember();
@@ -49,14 +50,17 @@ describe("EditProjectMemberComponent", () => {
 
     // setup formData
     formData = {
-      create: randomCreate,
       projectMember: fakeProjectMember,
       title: "Project Member",
     };
 
     await TestBed.configureTestingModule({
       declarations: [AddOrEditProjectMemberComponent, ProjectMemberRoleI18nComponent],
-      providers: [{ provide: MatDialogRef, useValue: dialogMock }, FormBuilder, { provide: MAT_DIALOG_DATA, useValue: formData }],
+      providers: [
+        FormBuilder,
+        { provide: MAT_DIALOG_DATA, useValue: formData },
+        provideMockStore({ initialState })
+      ],
       imports: [
         BrowserAnimationsModule,
         FormsModule,
@@ -67,6 +71,9 @@ describe("EditProjectMemberComponent", () => {
         ReactiveFormsModule,
       ],
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -143,18 +150,49 @@ describe("EditProjectMemberComponent", () => {
       // assert
       expect(control.valid).toBeFalsy();
     });
+
+    describe("isEdit", () => {
+      it("should set isEdit to false if projectMember is provided", async () => {
+        // arrange in beforeEach
+
+        // assert
+        expect(component.isEditMode).toBeTrue();
+      });
+
+      it("should set isEdit to false if projectMember is undefined", async () => {
+        // arrange in beforeEach
+        formData.projectMember = undefined;
+        // TODO Raman: Können wir das so lassen anstatt das beforeEach (Zeile 79) in dem die Component instanziiert wird in eine Methode auszulagern oder ist das sehr unsauber gelöst?
+        fixture = TestBed.createComponent(AddOrEditProjectMemberComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        // assert
+        expect(component.isEditMode).toBeFalse();
+      });
+
+      it("should set isEdit to false if projectMember is null", async () => {
+        // arrange in beforeEach
+        formData.projectMember = null;
+        fixture = TestBed.createComponent(AddOrEditProjectMemberComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        // assert
+        expect(component.isEditMode).toBeFalse();
+      });
+    });
   });
 
   describe("cancel", () => {
-    it("should call close on dialog", async () => {
+    it("should dispatch closeAddOrEditProjectMemberDialog action", async () => {
       // arrange in beforeEach
-      const spy = spyOn(dialogMock, "close").and.callThrough();
 
       // act
       component.cancel();
 
       // assert
-      expect(spy).toHaveBeenCalled();
+      expect(dispatchSpy).toHaveBeenCalledWith(closeAddOrEditProjectMemberDialog());
     });
   });
 
@@ -204,15 +242,26 @@ describe("EditProjectMemberComponent", () => {
   });
 
   describe("save", () => {
-    it("should call close with form values", async () => {
+    it("should dispatch editProjectMember action", async () => {
       // arrange in beforeEach
-      const spy = spyOn(dialogMock, "close").and.callThrough();
+      component.isEditMode = true;
 
       // act
       component.save();
 
       // assert
-      expect(spy).toHaveBeenCalledWith(component.form.value);
+      expect(dispatchSpy).toHaveBeenCalledWith(editProjectMember({ projectMember: component.form.value }));
+    });
+
+    it("should dispatch addProjectMember action", async () => {
+      // arrange in beforeEach
+      component.isEditMode = false;
+
+      // act
+      component.save();
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(addProjectMember({ projectMember: component.form.value }));
     });
   });
 
@@ -225,16 +274,16 @@ describe("EditProjectMemberComponent", () => {
       expect(h1.textContent).toEqual(formData.title);
     });
 
-    describe("crete or eddit project member form", () => {
+    describe("create or edit project member form", () => {
       let loader: HarnessLoader;
 
       beforeEach(() => {
         loader = TestbedHarnessEnvironment.loader(fixture);
       });
 
-      it("should have 3 form fields with labels if form data create is set to false", async () => {
+      it("should have 3 form fields with labels if isEditMode is set to true", async () => {
         // arrange
-        formData.create = false;
+        component.isEditMode = true;
         const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(MatFormFieldHarness);
 
         // assert
@@ -244,9 +293,9 @@ describe("EditProjectMemberComponent", () => {
         });
       });
 
-      it("should have 2 form fields with labels if form data create is set to true", async () => {
+      it("should have 2 form fields with labels if isEditMode is set to false", async () => {
         // arrange
-        formData.create = true;
+        component.isEditMode = false;
         const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(MatFormFieldHarness);
 
         // assert
@@ -256,9 +305,9 @@ describe("EditProjectMemberComponent", () => {
         });
       });
 
-      it("should have prefilled readonly form field -- nickname if form data create is false", async () => {
+      it("should have prefilled readonly form field -- nickname if isEditMode is true", async () => {
         // arrange
-        formData.create = false;
+        component.isEditMode = true;
         const formField: MatFormFieldHarness = await loader.getHarness(
           MatFormFieldHarness.with({ floatingLabelText: "Nickname" })
         );
@@ -390,26 +439,26 @@ describe("EditProjectMemberComponent", () => {
           expect(await addOrEditExperimentButton.isDisabled()).toBeFalsy();
         });
 
-        it("should have create button if form data create is true", async () => {
+        it("should have create button if isEditMode is false", async () => {
           // arrange also in beforeEach
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({ selector: "#add-or-edit-project-member-save-button" })
           );
 
           // act
-          formData.create = true;
+          component.isEditMode = false;
 
           // assert
           expect(await cancelButton.getText()).toEqual("Create");
         });
 
-        it("should have create button if form data create is false", async () => {
+        it("should have create button if isEditMode is true", async () => {
           // arrange also in beforeEach
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({ selector: "#add-or-edit-project-member-save-button" })
           );
 
-          formData.create = false;
+          component.isEditMode = true;
 
           // assert
           expect(await cancelButton.getText()).toEqual("Update");
