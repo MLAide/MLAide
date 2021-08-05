@@ -37,6 +37,7 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
 
+  <!-- TODO Raman: sollte man diesen Code nicht in  eine Shared Component auslagern?-->
   <mat-card *ngIf="(isLoadingArtifacts$ | async)" fxLayoutAlign="center center">
     <mat-progress-spinner
       color="primary"
