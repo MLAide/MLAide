@@ -8,16 +8,29 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatTableModule } from "@angular/material/table";
 import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { ActivatedRoute, ParamMap, Router } from "@angular/router";
-import { EMPTY, Observable, of, Subject, Subscription } from "rxjs";
+import { of } from "rxjs";
 import { Project } from "@mlaide/entities/project.model";
-import { ProjectMember, ProjectMemberListResponse, ProjectMemberRole } from "@mlaide/entities/projectMember.model";
-import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
-import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
+import { ProjectMember, ProjectMemberRole } from "@mlaide/entities/projectMember.model";
 import { getRandomProject, getRandomProjectMember, getRandomProjectMembers } from "src/app/mocks/fake-generator";
 import { ProjectMemberRoleI18nComponent } from "src/app/shared/components/project-member-role-i18n/project-member-role-i18n.component";
-import { ProjectsApiService } from "@mlaide/shared/api";
 import { ProjectMembersListComponent } from "./project-members-list.component";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import {
+  selectCurrentProjectMember,
+  selectIsLoadingProjectMembers,
+  selectProjectMembers
+} from "@mlaide/state/project-member/project-member.selectors";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { MatCardModule } from "@angular/material/card";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import {
+  addProjectMember,
+  deleteProjectMember,
+  loadProjectMembers, openAddProjectMemberDialog, openEditProjectMemberDialog
+} from "@mlaide/state/project-member/project-member.actions";
+import { MatCardHarness } from "@angular/material/card/testing";
+import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
 
 describe("ProjectMembersListComponent", () => {
   let component: ProjectMembersListComponent;
@@ -28,226 +41,178 @@ describe("ProjectMembersListComponent", () => {
   let fakeProjectMembers: ProjectMember[];
   let fakeProjectMemberForCurrentUser: ProjectMember;
 
-  // route spy
-  let unsubscriptionSpy: jasmine.Spy<() => void>;
-  const routerSpy = jasmine.createSpyObj("Router", ["navigateByUrl"]);
-
-  // service stubs
-  let projectsApiServiceStub: jasmine.SpyObj<ProjectsApiService>;
-  let spinnerUiServiceStub: jasmine.SpyObj<SpinnerUiService>;
-  let snackBarUiServiceStub: jasmine.SpyObj<SnackbarUiService>;
-
-  // data source mocks
-  let projectMemberDataSourceMock: ListDataSourceMock<ProjectMember, ProjectMemberListResponse> = new ListDataSourceMock();
+  // mocks
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    // stub services
-    projectsApiServiceStub = jasmine.createSpyObj("projectsApiService", [
-      "deleteProjectMember",
-      "getProject",
-      "getProjectMembers",
-      "getProjectMemberForCurrentUser",
-    ]);
-    snackBarUiServiceStub = jasmine.createSpyObj("snackBarUiService", ["showSuccesfulSnackbar", "showErrorSnackbar"]);
-    spinnerUiServiceStub = jasmine.createSpyObj("spinnerUiService", ["showSpinner", "stopSpinner"]);
-
     // setup project fakes
     fakeProject = await getRandomProject();
     fakeProjectMembers = await getRandomProjectMembers();
     fakeProjectMemberForCurrentUser = await getRandomProjectMember();
-    // fakeProjectMemberForCurrentUser.role = ProjectMemberRole.OWNER;
-
-    // mock active route params
-    const paramMapObservable = new Observable<ParamMap>();
-    const paramMapSubscription = new Subscription();
-    unsubscriptionSpy = spyOn(paramMapSubscription, "unsubscribe").and.callThrough();
-    spyOn(paramMapObservable, "subscribe").and.callFake((fn): Subscription => {
-      fn({ projectKey: fakeProject.key });
-      return paramMapSubscription;
-    });
-
-    // setup projects api
-    projectsApiServiceStub.getProject.and.returnValue(of(fakeProject));
-    projectsApiServiceStub.getProjectMemberForCurrentUser
-      .withArgs(fakeProject.key)
-      .and.returnValue(of(fakeProjectMemberForCurrentUser));
-    projectsApiServiceStub.getProjectMembers.withArgs(fakeProject.key).and.returnValue(projectMemberDataSourceMock);
-    projectMemberDataSourceMock.emulate(fakeProjectMembers);
 
     await TestBed.configureTestingModule({
       declarations: [ProjectMembersListComponent, ProjectMemberRoleI18nComponent],
       providers: [
-        { provide: ActivatedRoute, useValue: { params: paramMapObservable } },
-        { provide: ProjectsApiService, useValue: projectsApiServiceStub },
-        { provide: Router, useValue: routerSpy },
-        { provide: SnackbarUiService, useValue: snackBarUiServiceStub },
-        { provide: SpinnerUiService, useValue: spinnerUiServiceStub },
+        provideMockStore(),
       ],
-      imports: [BrowserAnimationsModule, MatButtonModule, MatDialogModule, MatIconModule, MatTableModule],
+      imports: [
+        BrowserAnimationsModule,
+        MatButtonModule,
+        MatCardModule,
+        MatDialogModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        MatTableModule
+      ],
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+
+    store.overrideSelector(selectProjectMembers, fakeProjectMembers);
+    store.overrideSelector(selectCurrentProjectKey, fakeProject.key);
+    store.overrideSelector(selectIsLoadingProjectMembers, true);
+    store.overrideSelector(selectCurrentProjectMember, fakeProjectMemberForCurrentUser);
+
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
-  afterEach(() => {
-    projectMemberDataSourceMock.emulate([]);
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ProjectMembersListComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it("should create", () => {
     // arrange + act
-    fixture = TestBed.createComponent(ProjectMembersListComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
 
     // assert
     expect(component).toBeTruthy();
   });
-// TODO: Fix Tests
-  /*
+
   describe("ngOnInit", () => {
     describe("projectMemberForCurrentUser.role does not matter", () => {
-      beforeEach(() => {
-        fixture = TestBed.createComponent(ProjectMembersListComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-      });
-
-      it("should load project with projectKey defined in active route", async () => {
+      it("should select project members from store correctly", async (done) => {
         // arrange + act in beforeEach
 
         // assert
-        expect(component.project).toBe(fakeProject);
-        expect(projectsApiServiceStub.getProject).toHaveBeenCalledWith(fakeProject.key);
+        component.projectMembers$.subscribe((projectMembers) => {
+          expect(projectMembers).toBe(fakeProjectMembers);
+          done();
+        });
       });
 
-      it("should load project member for current user with projectKey defined in active route", async () => {
+      it("should select project key from store correctly", async (done) => {
         // arrange + act in beforeEach
 
         // assert
-        expect(component.projectMemberForCurrentUser).toBe(fakeProjectMemberForCurrentUser);
-        expect(projectsApiServiceStub.getProjectMemberForCurrentUser).toHaveBeenCalledWith(fakeProject.key);
+        component.projectKey$.subscribe((projectKey) => {
+          expect(projectKey).toBe(fakeProject.key);
+          done();
+        });
       });
 
-      it("should load projectMembers with projectKey defined in active route", async () => {
+      it("should select isLoading from store correctly", async (done) => {
         // arrange + act in beforeEach
 
         // assert
-        expect(component.dataSource.data).toBe(fakeProjectMembers);
-        expect(projectsApiServiceStub.getProjectMembers).toHaveBeenCalledWith(fakeProject.key);
+        component.isLoading$.subscribe((isLoading) => {
+          expect(isLoading).toBe(true);
+          done();
+        });
+      });
+
+      it("should select current project member from store correctly", async (done) => {
+        // arrange + act in beforeEach
+
+        // assert
+        component.currentProjectMember$.subscribe((currentProjectMember) => {
+          expect(currentProjectMember).toBe(fakeProjectMemberForCurrentUser);
+          done();
+        });
+      });
+
+      it("should dispatch loadProjectMembers action", () => {
+        // ngOnInit will be called in beforeEach while creating the component
+
+        // assert
+        expect(dispatchSpy).toHaveBeenCalledWith(loadProjectMembers());
       });
     });
 
-    describe("projectMemberForCurrentUser.role is OWNER", () => {
-      beforeEach(() => {
+    describe("projectMemberForCurrentUser.role is OWNER",  () => {
+      it("should set correct table columns", async (done) => {
+        // arrange + act in beforeEach
         fakeProjectMemberForCurrentUser.role = ProjectMemberRole.OWNER;
+        // TODO Raman: Können wir das so lassen oder ist das zu unsauber?
         fixture = TestBed.createComponent(ProjectMembersListComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-      });
-
-      it("should set correct table columns", async () => {
-        // arrange + act in beforeEach
 
         // assert
-        expect(component.displayedColumns).toEqual(["nickName", "email", "role", "actions"]);
+        component.displayedColumns$.subscribe((displayedColumns) => {
+          expect(displayedColumns).toEqual(["nickName", "email", "role", "actions"]);
+          done();
+        });
       });
     });
+
 
     describe("projectMemberForCurrentUser.role is not OWNER", () => {
-      beforeEach(() => {
+      it("should set correct table columns", async (done) => {
+        // arrange + act in beforeEach
         fakeProjectMemberForCurrentUser.role = ProjectMemberRole.CONTRIBUTOR;
+        // TODO Raman: Können wir das so lassen oder ist das zu unsauber?
         fixture = TestBed.createComponent(ProjectMembersListComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-      });
-
-      it("should set correct table columns", async () => {
-        // arrange + act in beforeEach
 
         // assert
-        expect(component.displayedColumns).toEqual(["nickName", "email", "role"]);
+        component.displayedColumns$.subscribe((displayedColumns) => {
+          expect(displayedColumns).toEqual(["nickName", "email", "role"]);
+          done();
+        });
       });
     });
   });
 
-  describe("ngAfterViewInit", () => {
-    beforeEach(() => {
-      fixture = TestBed.createComponent(ProjectMembersListComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-    });
+  describe("addProjectMember", () => {
+    it("should dispatch openAddProjectMemberDialog action ", async () => {
+      // arrange in beforeEach
 
-    it("should set datasource sort", () => {
-      // arrange + act in beforeEach
+      // act
+      component.addProjectMember();
 
       // assert
-      expect(component.dataSource.sort).toEqual(component.sort);
+      expect(dispatchSpy).toHaveBeenCalledWith(openAddProjectMemberDialog());
     });
   });
-*/
-  describe("removeProjectMember", () => {
-    describe("projectMemberForCurrentUser.role does not matter", () => {
-      beforeEach(() => {
-        fixture = TestBed.createComponent(ProjectMembersListComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-      });
 
-      it("should call deleteProjectMember with project key and provided project member email", async () => {
-        // arrange + act in beforeEach
-        projectsApiServiceStub.deleteProjectMember.withArgs(fakeProject.key, fakeProjectMembers[0].email).and.returnValue(EMPTY);
+  describe("editProjectMember", () => {
+    it("should dispatch openEditProjectMemberDialog action with provided project member", async () => {
+      // arrange in beforeEach
 
-        // act
-        component.removeProjectMember(fakeProjectMembers[0]);
+      // act
+      component.editProjectMember(fakeProjectMembers[0]);
 
-        // assert
-        expect(projectsApiServiceStub.deleteProjectMember).toHaveBeenCalledWith(fakeProject.key, fakeProjectMembers[0].email);
-      });
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(openEditProjectMemberDialog({
+        projectMember: fakeProjectMembers[0]
+      }));
+    });
+  });
 
-      it("should display snackbar with success message if project member was removed", async () => {
-        // arrange + act in beforeEach
-        const subject = new Subject<void>();
-        projectsApiServiceStub.deleteProjectMember.and.returnValue(subject.asObservable());
+  describe("deleteProjectMember", () => {
+    it("should dispatch deleteProjectMember action with provided project member", async () => {
+      // arrange in beforeEach
 
-        // act
-        component.removeProjectMember(fakeProjectMembers[0]);
-        subject.next();
+      // act
+      component.deleteProjectMember(fakeProjectMembers[0]);
 
-        // assert
-        expect(spinnerUiServiceStub.showSpinner).toHaveBeenCalled();
-        expect(spinnerUiServiceStub.stopSpinner).toHaveBeenCalled();
-        expect(snackBarUiServiceStub.showSuccesfulSnackbar).toHaveBeenCalledWith("Successfully updated project members!");
-      });
-
-      it("should display snackbar with error message if project member could not be removed", async () => {
-        // arrange + act in beforeEach
-        const subject = new Subject<void>();
-        projectsApiServiceStub.deleteProjectMember.and.returnValue(subject.asObservable());
-
-        // act
-        component.removeProjectMember(fakeProjectMembers[0]);
-        subject.error("This is a test error thrown in project-settings.component.spec.ts");
-
-        // assert
-        expect(spinnerUiServiceStub.showSpinner).toHaveBeenCalled();
-        expect(spinnerUiServiceStub.stopSpinner).toHaveBeenCalled();
-        expect(snackBarUiServiceStub.showErrorSnackbar).toHaveBeenCalledWith("Error while updating project members.");
-      });
-
-      it("should navigate to projects overview if deleted current project member", async () => {
-        // arrange + act in beforeEach
-        const subject = new Subject<void>();
-        projectsApiServiceStub.deleteProjectMember
-          .withArgs(fakeProject.key, fakeProjectMemberForCurrentUser.email)
-          .and.returnValue(subject.asObservable());
-
-        // act
-        component.removeProjectMember(fakeProjectMemberForCurrentUser);
-        subject.next();
-        const spy = routerSpy.navigateByUrl as jasmine.Spy;
-
-        // assert
-        //expect(spy.calls.count()).toBe(1, "expected navigation router to be called once");
-        expect(spy.calls.first().args[0]).toBe("/projects");
-      });
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(deleteProjectMember({
+        projectMember: fakeProjectMembers[0]
+      }));
     });
   });
 
@@ -256,9 +221,6 @@ describe("ProjectMembersListComponent", () => {
 
     describe("projectMemberForCurrentUser.role does not matter", () => {
       beforeEach(() => {
-        fixture = TestBed.createComponent(ProjectMembersListComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
         loader = TestbedHarnessEnvironment.loader(fixture);
       });
 
@@ -269,6 +231,30 @@ describe("ProjectMembersListComponent", () => {
         // assert
         expect(h1.textContent).toEqual("Project Members");
       });
+
+      describe("progress spinner", () => {
+        it("should contain progress spinner if isLoading$ is true", async () => {
+          // arrange + act also in beforeEach
+          component.isLoading$ = of(true);
+          let card: MatCardHarness[] = await loader.getAllHarnesses(MatCardHarness);
+          let progressSpinner: MatProgressSpinnerHarness[] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
+
+          // assert
+          expect(card.length).toBe(1);
+          expect(progressSpinner.length).toBe(1);
+        });
+
+        it("should not contain progress spinner if isLoading$ is false", async () => {
+          // arrange + act also in beforeEach
+          component.isLoading$ = of(false);
+          let card: MatCardHarness[] = await loader.getAllHarnesses(MatCardHarness);
+          let progressSpinner: MatProgressSpinnerHarness[] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
+
+          // assert
+          expect(card.length).toBe(0);
+          expect(progressSpinner.length).toBe(0);
+        });
+      });
     });
 
     describe("projectMemberForCurrentUser.role is OWNER", () => {
@@ -279,8 +265,7 @@ describe("ProjectMembersListComponent", () => {
         fixture.detectChanges();
         loader = TestbedHarnessEnvironment.loader(fixture);
       });
-// TODO: Fix Tests
-      /*
+
       describe("add project member", () => {
         const addProjectMemberButtonTitle = "Add Project Member";
 
@@ -295,7 +280,7 @@ describe("ProjectMembersListComponent", () => {
 
         it("should call openAddProjectMemberDialog on clicking the add project member button", async () => {
           // arrange + act also in beforeEach
-          spyOn(component, "openAddProjectMemberDialog");
+          spyOn(component, "addProjectMember");
           const addProjectButton = await loader.getHarness(MatButtonHarness.with({ text: addProjectMemberButtonTitle }));
 
           // act
@@ -303,11 +288,11 @@ describe("ProjectMembersListComponent", () => {
 
           // assert
           fixture.whenStable().then(() => {
-            expect(component.openAddProjectMemberDialog).toHaveBeenCalled();
+            expect(component.addProjectMember).toHaveBeenCalled();
           });
         });
       });
-*/
+
       describe("project members table", () => {
         it("should contain the project member table", () => {
           // arrange + act also in beforeEach
@@ -353,9 +338,7 @@ describe("ProjectMembersListComponent", () => {
 
         it("should call deleteProjectMember on clicking delete button in row", async () => {
           // arrange + act also in beforeEach
-          projectsApiServiceStub.deleteProjectMember
-            .withArgs(fakeProject.key, fakeProjectMembers[fakeProjectMembers.length - 1].email)
-            .and.returnValue(of());
+          spyOn(component, "deleteProjectMember");
           const deleteButtons: MatButtonHarness[] = await loader.getAllHarnesses(MatButtonHarness.with({ text: "delete" }));
 
           // act
@@ -363,18 +346,15 @@ describe("ProjectMembersListComponent", () => {
 
           // assert
           fixture.whenStable().then(() => {
-            expect(projectsApiServiceStub.deleteProjectMember).toHaveBeenCalledWith(
-              fakeProject.key,
-              fakeProjectMembers[fakeProjectMembers.length - 1].email
+            expect(component.deleteProjectMember).toHaveBeenCalledWith(
+              fakeProjectMembers[fakeProjectMembers.length - 1]
             );
           });
         });
 
-        // TODO: Fix Tests
-        /*
-        it("should call openEditProjectMemberDialog on clicking edit button in row", async () => {
+        it("should call editProjectMember on clicking edit button in row", async () => {
           // arrange + act also in beforeEach
-          spyOn(component, "openEditProjectMemberDialog");
+          spyOn(component, "editProjectMember");
           const editButtons: MatButtonHarness[] = await loader.getAllHarnesses(MatButtonHarness.with({ text: "edit" }));
 
           // act
@@ -382,21 +362,7 @@ describe("ProjectMembersListComponent", () => {
 
           // assert
           fixture.whenStable().then(() => {
-            expect(component.openEditProjectMemberDialog).toHaveBeenCalledWith(fakeProjectMembers[fakeProjectMembers.length - 1]);
-          });
-        });
-*/
-        it("should call removeProjectMember on clicking delete button in row", async () => {
-          // arrange + act also in beforeEach
-          spyOn(component, "removeProjectMember");
-          const deleteButtons: MatButtonHarness[] = await loader.getAllHarnesses(MatButtonHarness.with({ text: "delete" }));
-
-          // act
-          await deleteButtons[deleteButtons.length - 1].click();
-
-          // assert
-          fixture.whenStable().then(() => {
-            expect(component.removeProjectMember).toHaveBeenCalledWith(fakeProjectMembers[fakeProjectMembers.length - 1]);
+            expect(component.editProjectMember).toHaveBeenCalledWith(fakeProjectMembers[fakeProjectMembers.length - 1]);
           });
         });
       });
@@ -478,23 +444,4 @@ describe("ProjectMembersListComponent", () => {
       });
     });
   });
-// TODO: Fix Tests
-  /*
-  describe("ngOnDestroy", () => {
-    beforeEach(() => {
-      fixture = TestBed.createComponent(ProjectMembersListComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-    });
-
-    it("should unsubscribe from routeParamsSubscription", async () => {
-      // arrange in beforeEach
-
-      // act
-      component.ngOnDestroy();
-
-      // assert
-      expect(unsubscriptionSpy).toHaveBeenCalled();
-    });
-  });*/
 });

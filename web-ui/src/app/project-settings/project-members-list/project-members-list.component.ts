@@ -42,7 +42,7 @@ export class ProjectMembersListComponent implements OnInit {
     this.store.dispatch(openEditProjectMemberDialog({ projectMember }));
   }
 
-  public removeProjectMember(projectMember: ProjectMember): void {
+  public deleteProjectMember(projectMember: ProjectMember): void {
     this.store.dispatch(deleteProjectMember({ projectMember }));
   }
 }
