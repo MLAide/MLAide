@@ -12,7 +12,7 @@ import {
 } from "@mlaide/state/experiment/experiment.actions";
 
 @Component({
-  selector: "app-create-or-update-experiment",
+  selector: "app-add-or-edit-experiment",
   templateUrl: "./add-or-edit-experiment.component.html",
   styleUrls: ["./add-or-edit-experiment.component.scss"],
 })
