@@ -46,6 +46,7 @@ export class ExperimentsListComponent implements OnInit, OnDestroy, AfterViewIni
 
     this.isLoading$ = this.store.select(selectIsLoadingExperiments);
 
+    // TODO Raman: Warum ist hier eine Subscription notwendig?
     this.experimentsSubscription = this.store.select(selectExperiments)
       .subscribe((experiments) => this.dataSource.data = experiments);
 

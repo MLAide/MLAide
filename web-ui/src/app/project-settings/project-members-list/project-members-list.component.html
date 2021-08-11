@@ -12,6 +12,7 @@
   </div>
 
   <div fxLayout="column" class="example-container mat-elevation-z2">
+    <!-- TODO Raman: Ist die Tabelle sortierbar? -->
     <table mat-table matSort [dataSource]="projectMembers$" aria-label="Project members overview">
       <ng-container matColumnDef="nickName">
         <th id="nickname" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Nickname</th>
@@ -37,7 +38,7 @@
           >
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-button (click)="removeProjectMember(element)" aria-label="Icon button to delete user from project">
+          <button mat-button (click)="deleteProjectMember(element)" aria-label="Icon button to delete user from project">
             <mat-icon>delete</mat-icon>
           </button>
         </td>
@@ -54,5 +55,5 @@
       </mat-progress-spinner>
     </mat-card>
   </div>
-  
+
 </div>

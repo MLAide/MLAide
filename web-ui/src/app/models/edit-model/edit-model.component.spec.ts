@@ -4,7 +4,7 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonHarness } from "@angular/material/button/testing";
 import { MatOptionHarness } from "@angular/material/core/testing";
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MatDialogModule, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatFormFieldHarness } from "@angular/material/form-field/testing";
 import { MatInputModule } from "@angular/material/input";
@@ -12,33 +12,28 @@ import { MatInputHarness } from "@angular/material/input/testing";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { of } from "rxjs";
 import { Artifact } from "@mlaide/entities/artifact.model";
 import { getRandomArtifact } from "src/app/mocks/fake-generator";
 import { EditModelComponent } from "./edit-model.component";
 import { ModelStageI18nComponent } from "@mlaide/shared/components/model-stage-i18n/model-stage-i18n.component";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { AppState } from "@mlaide/state/app.state";
+import { closeEditModelDialog, editModel } from "@mlaide/state/artifact/artifact.actions";
 
 describe("EditModelComponent", () => {
   let component: EditModelComponent;
   let fixture: ComponentFixture<EditModelComponent>;
 
-  // dialog mock
-  // https://github.com/angular/quickstart/issues/320#issuecomment-404705258
-  // https://stackoverflow.com/questions/54108924/this-dialogref-close-is-not-a-function-error/54109919
-  let dialogMock;
-
   // fakes
   let fakeArtifact: Artifact;
   let formData: { artifact: Artifact; title: string };
 
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
+
   beforeEach(async () => {
-    // prepare dialog mock object
-    dialogMock = {
-      open: () => ({ afterClosed: () => of(true) }),
-      close: () => {
-        // This is intentional
-      },
-    };
+    const initialState: Partial<AppState> = {};
 
     // setup experiment fake
     fakeArtifact = await getRandomArtifact();
@@ -50,8 +45,15 @@ describe("EditModelComponent", () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [EditModelComponent, ModelStageI18nComponent],
-      providers: [{ provide: MatDialogRef, useValue: dialogMock }, FormBuilder, { provide: MAT_DIALOG_DATA, useValue: formData }],
+      declarations: [
+        EditModelComponent,
+        ModelStageI18nComponent
+      ],
+      providers: [
+        FormBuilder,
+        { provide: MAT_DIALOG_DATA, useValue: formData },
+        provideMockStore({ initialState })
+      ],
       imports: [
         BrowserAnimationsModule,
         FormsModule,
@@ -62,6 +64,9 @@ describe("EditModelComponent", () => {
         ReactiveFormsModule,
       ],
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -112,22 +117,20 @@ describe("EditModelComponent", () => {
   });
 
   describe("cancel", () => {
-    it("should call close on dialog", async () => {
+    it("should dispatch closeEditModelDialog action", async () => {
       // arrange in beforeEach
-      const spy = spyOn(dialogMock, "close").and.callThrough();
 
       // act
       component.cancel();
 
       // assert
-      expect(spy).toHaveBeenCalled();
+      expect(dispatchSpy).toHaveBeenCalledWith(closeEditModelDialog());
     });
   });
 
   describe("update", () => {
     it("should update form note to component note and call close with form values", async () => {
       // arrange in beforeEach
-      const spy = spyOn(dialogMock, "close").and.callThrough();
       component.note = "This is a test note";
       const control: AbstractControl = component.form.get("note");
 
@@ -136,7 +139,7 @@ describe("EditModelComponent", () => {
 
       // assert
       expect(control.value).toEqual(component.note);
-      expect(spy).toHaveBeenCalledWith(component.form.value);
+      expect(dispatchSpy).toHaveBeenCalledWith(editModel( component.form.value ));
     });
   });
 

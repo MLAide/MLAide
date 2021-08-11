@@ -20,6 +20,7 @@ import {
 })
 export class ModelsListComponent implements OnInit {
   public displayedColumns: string[] = ["modelName", "version", "stage", "runName", "actions"];
+  // TODO Raman: Müssen wir hier nicht das sort in AfterViewInit setzen wie z.B. in experiments-list.component?
   @ViewChild(MatSort) public sort: MatSort;
   public stages = ModelStage;
 

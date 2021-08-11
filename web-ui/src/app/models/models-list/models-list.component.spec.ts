@@ -9,17 +9,19 @@ import { MatSortModule } from "@angular/material/sort";
 import { MatTableModule } from "@angular/material/table";
 import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { ActivatedRoute, ParamMap } from "@angular/router";
-import { Observable, Subscription } from "rxjs";
-import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
-import { Project } from "@mlaide/entities/project.model";
-import { SpinnerUiService } from "@mlaide/shared/services";
-import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
-import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
+import { of } from "rxjs";
+import { Artifact } from "@mlaide/entities/artifact.model";
+import { getRandomArtifacts } from "src/app/mocks/fake-generator";
 import { ModelStageI18nComponent } from "../../shared/components/model-stage-i18n/model-stage-i18n.component";
-
 import { ModelsListComponent } from "./models-list.component";
-import { ArtifactsApiService } from "@mlaide/shared/api";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { selectIsLoadingArtifacts, selectModels } from "@mlaide/state/artifact/artifact.selectors";
+import { MatCardModule } from "@angular/material/card";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { loadModels, openEditModelDialog, openModelStageLogDialog } from "@mlaide/state/artifact/artifact.actions";
+import { MatCardHarness } from "@angular/material/card/testing";
+import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
 
 describe("ModelsListComponent", () => {
   let component: ModelsListComponent;
@@ -27,50 +29,38 @@ describe("ModelsListComponent", () => {
 
   // fakes
   let fakeArtifacts: Artifact[];
-  let fakeProject: Project;
 
-  // route spy
-  let unsubscriptionSpy: jasmine.Spy<() => void>;
-
-  // service stubs
-  let artifactsApiServiceStub: jasmine.SpyObj<ArtifactsApiService>;
-  let spinnerUiServiceStub: jasmine.SpyObj<SpinnerUiService>;
-
-  // data source mocks
-  let artifactListDataSourceMock: ListDataSourceMock<Artifact, ArtifactListResponse> = new ListDataSourceMock();
+  // mocks
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    // mock active route params
-    const paramMapObservable = new Observable<ParamMap>();
-    const paramMapSubscription = new Subscription();
-    unsubscriptionSpy = spyOn(paramMapSubscription, "unsubscribe").and.callThrough();
-    spyOn(paramMapObservable, "subscribe").and.callFake((fn): Subscription => {
-      fn({ projectKey: fakeProject.key });
-      return paramMapSubscription;
-    });
-
-    // stub services
-    artifactsApiServiceStub = jasmine.createSpyObj("artifactsApiService", ["getArtifacts"]);
-    spinnerUiServiceStub = jasmine.createSpyObj("spinnerUiService", ["showSpinner", "stopSpinner"]);
-
-    // arrange fakes & stubs
-    // setup experiment fakes
-    fakeProject = await getRandomProject();
+    // arrange fakes
     fakeArtifacts = await getRandomArtifacts(3);
-
-    // setup artifacts api
-    artifactsApiServiceStub.getArtifacts.and.returnValue(artifactListDataSourceMock);
-    artifactListDataSourceMock.emulate(fakeArtifacts);
 
     await TestBed.configureTestingModule({
       declarations: [ModelsListComponent, ModelStageI18nComponent],
       providers: [
-        { provide: ActivatedRoute, useValue: { params: paramMapObservable } },
-        { provide: ArtifactsApiService, useValue: artifactsApiServiceStub },
-        { provide: SpinnerUiService, useValue: spinnerUiServiceStub },
+        provideMockStore(),
       ],
-      imports: [BrowserAnimationsModule, MatButtonModule, MatDialogModule, MatIconModule, MatTableModule, MatSortModule],
+      imports: [
+        BrowserAnimationsModule,
+        MatButtonModule,
+        MatCardModule,
+        MatDialogModule,
+        MatIconModule,
+        MatTableModule,
+        MatSortModule,
+        MatProgressSpinnerModule
+      ],
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+
+    store.overrideSelector(selectModels, fakeArtifacts);
+    store.overrideSelector(selectIsLoadingArtifacts, true);
+
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -79,55 +69,75 @@ describe("ModelsListComponent", () => {
     fixture.detectChanges();
   });
 
-  afterEach(() => {
-    artifactListDataSourceMock.emulate([]);
-  });
 
   it("should create", () => {
     expect(component).toBeTruthy();
   });
 
-  // TODO: Fix Tests
-  /*
   describe("ngOnInit", () => {
-    it("should load artifacts with projectKey defined in active route", async () => {
+    it("should select models from store correctly", async (done) => {
       // arrange + act in beforeEach
 
       // assert
-      expect(artifactsApiServiceStub.getArtifacts).toHaveBeenCalledWith(fakeProject.key, true);
+      component.models$.subscribe((models) => {
+        expect(models).toBe(fakeArtifacts);
+        done();
+      });
     });
 
-    it("should load all artifacts of the current project", async () => {
+    it("should select isLoadingArtifacts$ from store correctly", async (done) => {
       // arrange + act in beforeEach
 
       // assert
-      expect(component.dataSource.data).toBe(fakeArtifacts);
+      component.isLoadingArtifacts$.subscribe((isLoading) => {
+        expect(isLoading).toBe(true);
+        done();
+      });
+    });
+
+    it("should dispatch loadModels action", () => {
+      // ngOnInit will be called in beforeEach while creating the component
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(loadModels());
     });
   });
 
-  describe("ngAfterViewInit", () => {
-    it("should set datasource sort", () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(component.dataSource.sort).toEqual(component.sort);
-    });
-  });
-
-  describe("ngOnDestroy", () => {
-    it("should unsubscribe from routeParamsSubscription", async () => {
+  describe("openEditModelDialog", () => {
+    it("should dispatch openEditModelDialog action with provided artifact", async () => {
       // arrange in beforeEach
 
       // act
-      component.ngOnDestroy();
+      component.openEditModelDialog(fakeArtifacts[0]);
 
       // assert
-      expect(unsubscriptionSpy).toHaveBeenCalled();
+      expect(dispatchSpy).toHaveBeenCalledWith(openEditModelDialog({
+        artifact: fakeArtifacts[0]
+      }));
     });
   });
-  */
+
+  describe("openModelStageLog", () => {
+    it("should dispatch openModelStageLogDialog action with provided artifact's model revisions", async () => {
+      // arrange in beforeEach
+
+      // act
+      component.openModelStageLog(fakeArtifacts[0]);
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(openModelStageLogDialog({
+        modelRevisions: fakeArtifacts[0].model.modelRevisions
+      }));
+    });
+  });
 
   describe("component rendering", () => {
+    let loader: HarnessLoader;
+
+    beforeEach(() => {
+      loader = TestbedHarnessEnvironment.loader(fixture);
+    });
+
     it("should contain components title", async () => {
       // arrange + act also in beforeEach
       let h1: HTMLElement = fixture.nativeElement.querySelector("h1");
@@ -137,12 +147,6 @@ describe("ModelsListComponent", () => {
     });
 
     describe("models table", () => {
-      let loader: HarnessLoader;
-
-      beforeEach(() => {
-        loader = TestbedHarnessEnvironment.loader(fixture);
-      });
-
       it("should contain the models table", () => {
         // arrange + act also in beforeEach
         let table: HTMLElement = fixture.nativeElement.querySelector("table");
@@ -214,6 +218,30 @@ describe("ModelsListComponent", () => {
         fixture.whenStable().then(() => {
           expect(component.openModelStageLog).toHaveBeenCalledWith(fakeArtifacts[fakeArtifacts.length - 1]);
         });
+      });
+    });
+
+    describe("progress spinner", () => {
+      it("should contain progress spinner if isLoading$ is true", async () => {
+        // arrange + act also in beforeEach
+        component.isLoadingArtifacts$ = of(true);
+        let card: MatCardHarness[] = await loader.getAllHarnesses(MatCardHarness);
+        let progressSpinner: MatProgressSpinnerHarness[] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
+
+        // assert
+        expect(card.length).toBe(1);
+        expect(progressSpinner.length).toBe(1);
+      });
+
+      it("should not contain progress spinner if isLoading$ is false", async () => {
+        // arrange + act also in beforeEach
+        component.isLoadingArtifacts$ = of(false);
+        let card: MatCardHarness[] = await loader.getAllHarnesses(MatCardHarness);
+        let progressSpinner: MatProgressSpinnerHarness[] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
+
+        // assert
+        expect(card.length).toBe(0);
+        expect(progressSpinner.length).toBe(0);
       });
     });
   });

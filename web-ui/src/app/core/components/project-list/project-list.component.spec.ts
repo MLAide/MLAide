@@ -18,6 +18,11 @@ import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { AppState } from "@mlaide/state/app.state";
 import { loadProjects, openAddProjectDialog } from "@mlaide/state/project/project.actions";
 import { Action } from "@ngrx/store";
+import { of } from "rxjs";
+import { MatCardHarness } from "@angular/material/card/testing";
+import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
+import { MatCardModule } from "@angular/material/card";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 describe("ProjectListComponent", () => {
   let component: ProjectListComponent;
@@ -37,7 +42,7 @@ describe("ProjectListComponent", () => {
         { provide: Router, useValue: routerSpy },
         provideMockStore({ initialState })
       ],
-      imports: [BrowserAnimationsModule, MatButtonModule, MatDialogModule, MatSnackBarModule, MatTableModule, MomentModule],
+      imports: [BrowserAnimationsModule, MatButtonModule, MatCardModule, MatDialogModule, MatProgressSpinnerModule, MatSnackBarModule, MatTableModule, MomentModule],
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
@@ -169,6 +174,31 @@ describe("ProjectListComponent", () => {
       const spy = routerSpy.navigateByUrl as jasmine.Spy;
       expect(spy.calls.count()).toBe(1, "expected navigation router to be called once");
       expect(spy.calls.first().args[0]).toBe("/projects/my-project");
+    });
+  });
+
+  describe("progress spinner", () => {
+    it("should contain progress spinner if isLoading$ is true", async () => {
+      // arrange + act also in beforeEach
+      store.setState(createAppState([], true));
+
+      let card: MatCardHarness[] = await loader.getAllHarnesses(MatCardHarness);
+      let progressSpinner: MatProgressSpinnerHarness[] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
+
+      // assert
+      expect(card.length).toBe(1);
+      expect(progressSpinner.length).toBe(1);
+    });
+
+    it("should not contain progress spinner if isLoading$ is false", async () => {
+      // arrange + act also in beforeEach
+      store.setState(createAppState([], false));
+      let card: MatCardHarness[] = await loader.getAllHarnesses(MatCardHarness);
+      let progressSpinner: MatProgressSpinnerHarness[] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
+
+      // assert
+      expect(card.length).toBe(0);
+      expect(progressSpinner.length).toBe(0);
     });
   });
 

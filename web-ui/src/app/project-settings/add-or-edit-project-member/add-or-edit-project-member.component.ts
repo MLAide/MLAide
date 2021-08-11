@@ -7,7 +7,7 @@ import { addProjectMember, closeAddOrEditProjectMemberDialog, editProjectMember 
 import { Store } from "@ngrx/store";
 
 @Component({
-  selector: "app-create-or-edit-project-member",
+  selector: "app-add-or-edit-project-member",
   templateUrl: "./add-or-edit-project-member.component.html",
   styleUrls: ["./add-or-edit-project-member.component.scss"],
 })

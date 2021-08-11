@@ -8,21 +8,30 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTableModule } from "@angular/material/table";
 import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
-import { ActivatedRoute, ParamMap, RouterModule } from "@angular/router";
+import { RouterModule } from "@angular/router";
 import { MockModule, ngMocks } from "ng-mocks";
 import { MatChipHarness, MatChipListHarness } from "@angular/material/chips/testing";
-import { Observable, Subscription } from "rxjs";
-import { Experiment, ExperimentListResponse } from "@mlaide/entities/experiment.model";
+import { of } from "rxjs";
+import { Experiment, ExperimentStatus } from "@mlaide/entities/experiment.model";
 import { Project } from "@mlaide/entities/project.model";
-import { SpinnerUiService } from "@mlaide/shared/services";
-import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomExperiments, getRandomProject } from "src/app/mocks/fake-generator";
 import { ExperimentStatusI18nComponent } from "../experiment-status-i18n/experiment-status-i18n.component";
 
 import { ExperimentsListComponent } from "./experiments-list.component";
 import { MatSortModule } from "@angular/material/sort";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { ExperimentsApiService } from "@mlaide/shared/api";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { selectExperiments, selectIsLoadingExperiments } from "@mlaide/state/experiment/experiment.selectors";
+import {
+  loadExperiments,
+  openAddOrEditExperimentDialog
+} from "@mlaide/state/experiment/experiment.actions";
+import { MatCardModule } from "@angular/material/card";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatCardHarness } from "@angular/material/card/testing";
+import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
 
 describe("ExperimentsListComponent", () => {
   let component: ExperimentsListComponent;
@@ -33,60 +42,44 @@ describe("ExperimentsListComponent", () => {
   let fakeExperiments: Experiment[];
   let fakeProject: Project;
 
-  // route spy
-  let unsubscriptionSpy: jasmine.Spy<() => void>;
-
-  // service stubs
-  let experimentsApiServiceStub: jasmine.SpyObj<ExperimentsApiService>;
-  let spinnerUiServiceStub: jasmine.SpyObj<SpinnerUiService>;
-
-  // data source mocks
-  let experimentListDataSourceMock: ListDataSourceMock<Experiment, ExperimentListResponse> = new ListDataSourceMock();
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    // stub services
-    experimentsApiServiceStub = jasmine.createSpyObj("experimentsApiService", ["getExperiments"]);
-    spinnerUiServiceStub = jasmine.createSpyObj("spinnerUiService", ["showSpinner", "stopSpinner"]);
-
     // arrange fakes & stubs
     // setup experiment fakes
     fakeProject = await getRandomProject();
     fakeExperiments = await getRandomExperiments(3);
 
-    // mock and setup active route
-    const paramMapObservable = new Observable<ParamMap>();
-    const paramMapSubscription = new Subscription();
-    unsubscriptionSpy = spyOn(paramMapSubscription, "unsubscribe").and.callThrough();
-    spyOn(paramMapObservable, "subscribe").and.callFake((fn): Subscription => {
-      fn({ projectKey: fakeProject.key });
-      return paramMapSubscription;
-    });
-
-    // setup experiment api
-    experimentsApiServiceStub.getExperiments.withArgs(fakeProject.key).and.returnValue(experimentListDataSourceMock);
-    experimentListDataSourceMock.emulate(fakeExperiments);
-
     TestBed.configureTestingModule({
       declarations: [ExperimentsListComponent, ExperimentStatusI18nComponent],
 
       providers: [
-        { provide: ActivatedRoute, useValue: { params: paramMapObservable } },
-        { provide: ExperimentsApiService, useValue: experimentsApiServiceStub },
-        { provide: SpinnerUiService, useValue: spinnerUiServiceStub },
+        provideMockStore(),
       ],
       imports: [
         MatButtonModule,
+        MatCardModule,
         MatChipsModule,
         MatDialogModule,
         MatIconModule,
-        MatTableModule,
+        MatProgressSpinnerModule,
         MatSortModule,
+        MatTableModule,
         BrowserAnimationsModule,
         // To prevent Error: 'Can't bind to 'routerLink' since it isn't a known property of 'a'.'
         // https://ng-mocks.github.io/how-to-test-a-component.html
         MockModule(RouterModule.forRoot([])),
       ],
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+
+    store.overrideSelector(selectIsLoadingExperiments, true);
+    store.overrideSelector(selectExperiments, fakeExperiments);
+    store.overrideSelector(selectCurrentProjectKey, fakeProject.key);
+
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -96,10 +89,6 @@ describe("ExperimentsListComponent", () => {
     fixture.detectChanges();
   });
 
-  afterEach(() => {
-    experimentListDataSourceMock.emulate([]);
-  });
-
   it("should create", () => {
     // arrange + act
 
@@ -107,21 +96,8 @@ describe("ExperimentsListComponent", () => {
     expect(component).toBeTruthy();
   });
 
-  describe("ngOnInit", () => {
-    it("should load experiment with projectKey defined in active route", async () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(component.projectKey).toBe(fakeProject.key);
-      expect(experimentsApiServiceStub.getExperiments).toHaveBeenCalledWith(fakeProject.key);
-    });
-
-    it("should load all experiment of the current project", async () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(component.dataSource.data).toBe(fakeExperiments);
-    });
+  describe("ngOnDestroy", () => {
+    // TODO Raman: Write tests for unsubscription
   });
 
   describe("ngAfterViewInit", () => {
@@ -130,6 +106,76 @@ describe("ExperimentsListComponent", () => {
 
       // assert
       expect(component.dataSource.sort).toEqual(component.sort);
+    });
+  });
+
+  describe("ngOnInit", () => {
+    it("should dispatch loadExperiments action", () => {
+      // ngOnInit will be called in beforeEach while creating the component
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(loadExperiments());
+    });
+
+    it("should select isLoadingExperiments from store correctly", async (done) => {
+      // arrange + act in beforeEach
+
+      // assert
+      component.isLoading$.subscribe((isLoading) => {
+        expect(isLoading).toBe(true);
+        done();
+      });
+    });
+
+    it("should select projectKey from store correctly", async () => {
+      // arrange + act in beforeEach
+
+      // assert
+      expect(component.projectKey).toBe(fakeProject.key);
+    });
+
+    it("should select experiments from store correctly", async () => {
+      // arrange + act in beforeEach
+
+      // assert
+      expect(component.dataSource.data).toBe(fakeExperiments);
+    });
+  });
+
+  describe("openCreateExperimentDialog", () => {
+    it("should dispatch openAddOrEditExperimentDialog action", async () => {
+      // arrange in beforeEach
+
+      // act
+      component.openCreateExperimentDialog();
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(openAddOrEditExperimentDialog({
+        title: "Add Experiment",
+        experiment: {
+          name: "",
+          key: "",
+          tags: [],
+          status: ExperimentStatus.TODO,
+        },
+        isEditMode: false
+      }));
+    });
+  });
+
+  describe("openEditExperimentDialog", () => {
+    it("should dispatch openAddOrEditExperimentDialog action", async () => {
+      // arrange in beforeEach
+
+      // act
+      component.openEditExperimentDialog(fakeExperiments[0]);
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(openAddOrEditExperimentDialog({
+        title: "Edit Experiment",
+        experiment: fakeExperiments[0],
+        isEditMode: true
+      }));
     });
   });
 
@@ -220,13 +266,13 @@ describe("ExperimentsListComponent", () => {
         // assert
         expect(links.length).toBe(3);
         expect(ngMocks.input(links[0], "routerLink")).toEqual([
-          "/projects/" + fakeProject.key + "/experiment/" + fakeExperiments[0].key,
+          "/projects/" + fakeProject.key + "/experiments/" + fakeExperiments[0].key,
         ]);
         expect(ngMocks.input(links[1], "routerLink")).toEqual([
-          "/projects/" + fakeProject.key + "/experiment/" + fakeExperiments[1].key,
+          "/projects/" + fakeProject.key + "/experiments/" + fakeExperiments[1].key,
         ]);
         expect(ngMocks.input(links[2], "routerLink")).toEqual([
-          "/projects/" + fakeProject.key + "/experiment/" + fakeExperiments[2].key,
+          "/projects/" + fakeProject.key + "/experiments/" + fakeExperiments[2].key,
         ]);
       });
 
@@ -244,17 +290,29 @@ describe("ExperimentsListComponent", () => {
         });
       });
     });
-  });
 
-  describe("ngOnDestroy", () => {
-    it("should unsubscribe from routeParamsSubscription", async () => {
-      // arrange in beforeEach
+    describe("progress spinner", () => {
+      it("should contain progress spinner if isLoading$ is true", async () => {
+        // arrange + act also in beforeEach
+        component.isLoading$ = of(true);
+        let card: MatCardHarness[] = await loader.getAllHarnesses(MatCardHarness);
+        let progressSpinner: MatProgressSpinnerHarness[] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
 
-      // act
-      component.ngOnDestroy();
+        // assert
+        expect(card.length).toBe(1);
+        expect(progressSpinner.length).toBe(1);
+      });
 
-      // assert
-      expect(unsubscriptionSpy).toHaveBeenCalled();
+      it("should not contain progress spinner if isLoading$ is false", async () => {
+        // arrange + act also in beforeEach
+        component.isLoading$ = of(false);
+        let card: MatCardHarness[] = await loader.getAllHarnesses(MatCardHarness);
+        let progressSpinner: MatProgressSpinnerHarness[] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
+
+        // assert
+        expect(card.length).toBe(0);
+        expect(progressSpinner.length).toBe(0);
+      });
     });
   });
 });
