@@ -53,14 +53,12 @@ export class ArtifactApi {
     );
   }
 
-  download(
-    projectKey: string,
-    artifactName: string,
-    artifactVersion: number,
-    fileId?: string
-  ): Observable<HttpResponse<ArrayBuffer>> {
+  public download(projectKey: string,
+                  artifactName: string,
+                  artifactVersion: number,
+                  fileId?: string): Observable<HttpResponse<ArrayBuffer>> {
     return this.http.get(
-      `${this.baseUrl}/projects/${projectKey}/artifacts/${artifactName}/${artifactVersion}/files/${fileId}`,
+      `${this.baseUrl}/projects/${projectKey}/artifacts/${artifactName}/${artifactVersion}/files/${fileId || ""}`,
       {
         observe: "response",
         responseType: "arraybuffer",

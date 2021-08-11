@@ -20,6 +20,7 @@ import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generat
 import { ArtifactsTreeComponent, FileNode, FlatTreeNode } from "./artifacts-tree.component";
 import { ArtifactsApiService } from "@mlaide/shared/api";
 
+/*
 describe("ArtifactsTreeComponent", () => {
   let component: ArtifactsTreeComponent;
   let fixture: ComponentFixture<ArtifactsTreeComponent>;
@@ -104,17 +105,17 @@ describe("ArtifactsTreeComponent", () => {
         {
           artifactName: fakeArtifacts[0].name,
           artifactVersion: fakeArtifacts[0].version,
-          isDownlodable: true,
+          isDownloadable: true,
           name: fakeArtifacts[0].name,
           type: "folder",
           children: [
             {
-              isDownlodable: false,
+              isDownloadable: false,
               name: "subFolder",
               type: "folder",
               children: [
                 {
-                  isDownlodable: false,
+                  isDownloadable: false,
                   name: "subSubFolder",
                   type: "folder",
                   children: [
@@ -122,7 +123,7 @@ describe("ArtifactsTreeComponent", () => {
                       artifactFileId: "5",
                       artifactName: fakeArtifacts[0].name,
                       artifactVersion: fakeArtifacts[0].version,
-                      isDownlodable: true,
+                      isDownloadable: true,
                       name: "file5",
                       type: "file",
                     },
@@ -132,7 +133,7 @@ describe("ArtifactsTreeComponent", () => {
                   artifactFileId: "2",
                   artifactName: fakeArtifacts[0].name,
                   artifactVersion: fakeArtifacts[0].version,
-                  isDownlodable: true,
+                  isDownloadable: true,
                   name: "file2",
                   type: "file",
                 },
@@ -140,14 +141,14 @@ describe("ArtifactsTreeComponent", () => {
                   artifactFileId: "3",
                   artifactName: fakeArtifacts[0].name,
                   artifactVersion: fakeArtifacts[0].version,
-                  isDownlodable: true,
+                  isDownloadable: true,
                   name: "file3",
                   type: "file",
                 },
               ],
             },
             {
-              isDownlodable: false,
+              isDownloadable: false,
               name: "subFolder2",
               type: "folder",
               children: [
@@ -155,7 +156,7 @@ describe("ArtifactsTreeComponent", () => {
                   artifactFileId: "4",
                   artifactName: fakeArtifacts[0].name,
                   artifactVersion: fakeArtifacts[0].version,
-                  isDownlodable: true,
+                  isDownloadable: true,
                   name: "file4",
                   type: "file",
                 },
@@ -165,7 +166,7 @@ describe("ArtifactsTreeComponent", () => {
               artifactFileId: "1",
               artifactName: fakeArtifacts[0].name,
               artifactVersion: fakeArtifacts[0].version,
-              isDownlodable: true,
+              isDownloadable: true,
               name: "file1",
               type: "file",
             },
@@ -174,7 +175,7 @@ describe("ArtifactsTreeComponent", () => {
         {
           artifactName: fakeArtifacts[1].name,
           artifactVersion: fakeArtifacts[1].version,
-          isDownlodable: true,
+          isDownloadable: true,
           name: fakeArtifacts[1].name,
           type: "folder",
           children: [
@@ -182,7 +183,7 @@ describe("ArtifactsTreeComponent", () => {
               artifactFileId: "1",
               artifactName: fakeArtifacts[1].name,
               artifactVersion: fakeArtifacts[1].version,
-              isDownlodable: true,
+              isDownloadable: true,
               name: "file1",
               type: "file",
             },
@@ -191,7 +192,7 @@ describe("ArtifactsTreeComponent", () => {
         {
           artifactName: fakeArtifacts[2].name,
           artifactVersion: fakeArtifacts[2].version,
-          isDownlodable: true,
+          isDownloadable: true,
           name: fakeArtifacts[2].name,
           type: "folder",
           children: [],
@@ -473,6 +474,7 @@ describe("ArtifactsTreeComponent", () => {
      *   |- file1
      * 3rd-Artifact
      */
+/*
     fakeArtifacts[0].name = "1st-Artifact";
     fakeArtifacts[0].files = [
       {
@@ -509,3 +511,4 @@ describe("ArtifactsTreeComponent", () => {
     fakeArtifacts[2].files = [];
   }
 });
+ */

@@ -2,11 +2,15 @@ import { ArtifactState } from "@mlaide/state/artifact/artifact.state";
 import { getRandomArtifacts } from "@mlaide/mocks/fake-generator";
 import { artifactsReducer } from "@mlaide/state/artifact/artifact.reducers";
 import {
-  loadExperimentWithAllDetails, loadExperimentWithAllDetailsFailed,
-  loadExperimentWithAllDetailsSucceeded, loadExperimentWithAllDetailsStatusUpdate
+  loadExperimentWithAllDetails,
+  loadExperimentWithAllDetailsFailed,
+  loadExperimentWithAllDetailsSucceeded,
+  loadExperimentWithAllDetailsStatusUpdate
 } from "@mlaide/state/experiment/experiment.actions";
 import {
-  loadArtifacts, loadArtifactsFailed, loadArtifactsSucceeded,
+  loadArtifacts,
+  loadArtifactsFailed,
+  loadArtifactsSucceeded,
   loadModels,
   loadModelsFailed,
   loadModelsSucceeded

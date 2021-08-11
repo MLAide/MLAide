@@ -6,8 +6,8 @@ import { RunApi } from "./run.api";
 import { Store } from "@ngrx/store";
 import * as runActions from "@mlaide/state/run/run.actions";
 import { selectCurrentProjectKey } from "../project/project.selectors";
-import { showErrorMessage } from "../shared/shared.actions";
-import { selectSelectedRunKeys } from "./run.selectors";
+import { showErrorMessage, showSuccessMessage } from "../shared/shared.actions";
+import { selectCurrentRunKey, selectSelectedRunKeys } from "./run.selectors";
 
 @Injectable({ providedIn: "root" })
 export class RunEffects {
@@ -56,6 +56,62 @@ export class RunEffects {
         error: error
       })),
       map(showErrorMessage)
+    )
+  );
+
+  loadCurrentRun$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(runActions.loadCurrentRun),
+      concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
+      concatLatestFrom(() => this.store.select(selectCurrentRunKey)),
+      mergeMap(([[action, projectKey], runKey]) => this.runApi.getRun(projectKey, runKey)),
+      map((run) => runActions.loadCurrentRunSucceeded({ run: run })),
+      catchError((error) => of(runActions.loadCurrentRunFailed({ payload: error })))
+    )
+  );
+
+  loadCurrentRunFailed$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(runActions.loadCurrentRunFailed),
+      map((action) => action.payload),
+      map((error) => ({
+        message: "Could not load run. A unknown error occurred.",
+        error: error
+      })),
+      map(showErrorMessage)
+    )
+  );
+
+  editRunNote$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(runActions.editRunNote),
+      concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
+      concatLatestFrom(() => this.store.select(selectCurrentRunKey)),
+      mergeMap(([[action, projectKey], runKey]) => this.runApi.updateRunNote(projectKey, runKey, action.note)),
+      map(note => runActions.editRunNoteSucceeded({ note })),
+      catchError((error) => of(runActions.editRunNoteFailed({ payload: error })))
+    )
+  );
+
+  editRunNoteFailed$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(runActions.editRunNoteFailed),
+      map((action) => action.payload),
+      map((error) => ({
+        message: "Could not update run note. A unknown error occurred.",
+        error: error
+      })),
+      map(showErrorMessage)
+    )
+  );
+
+  editRunNoteSucceeded$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(runActions.editRunNoteSucceeded),
+      map(() => ({
+        message: "Successfully saved note!"
+      })),
+      map(showSuccessMessage)
     )
   );
 

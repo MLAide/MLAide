@@ -1,0 +1,26 @@
+<div fxLayout="column" (focusout)="unfocusedNoteTextarea()">
+  <h3 class="mat-h3"><span></span></h3>
+  <div fxLayout="row">
+    <mat-form-field fxFlex="50" appearance="outline">
+      <mat-label i18n>Note</mat-label>
+      <textarea
+        matInput
+        cdkTextareaAutosize
+        #notes
+        #autosize="cdkTextareaAutosize"
+        (focus)="focusedNoteTextarea()"
+        (input)="currentNote = $event.target.value"
+        placeholder="Write down your thoughts..."
+        [(value)]="currentNote"
+      ></textarea>
+    </mat-form-field>
+  </div>
+  <div fxLayout="row" *ngIf="showNoteActionButtons">
+    <div fxFlex="50" fxLayoutAlign="end">
+      <!-- // https://stackoverflow.com/questions/52037475/focusout-on-an-element-conflicting-with-click-on-other-in-angular -->
+      <button mat-raised-button (mousedown)="cancel()" i18n>Cancel</button>
+      <span class="margin-right-sm"></span>
+      <button mat-raised-button color="primary" (mousedown)="save()" i18n>Save</button>
+    </div>
+  </div>
+</div>

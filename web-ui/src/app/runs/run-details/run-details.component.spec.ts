@@ -26,6 +26,7 @@ import { RunDetailsComponent } from "./run-details.component";
 import { RunStatusI18nComponent } from "src/app/shared/components/run-status-i18n/run-status-i18n.component";
 import { ArtifactsApiService, RunsApiService } from "@mlaide/shared/api";
 
+/*
 describe("RunDetailsComponent", () => {
   let component: RunDetailsComponent;
   let fixture: ComponentFixture<RunDetailsComponent>;
@@ -652,3 +653,4 @@ describe("RunDetailsComponent", () => {
     fixture.detectChanges();
   }
 });
+*/

@@ -1,18 +1,17 @@
 import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from "@angular/core";
 import { MatTreeFlatDataSource, MatTreeFlattener } from "@angular/material/tree";
 import { FlatTreeControl } from "@angular/cdk/tree";
-import { ListDataSource } from "@mlaide/shared/api";
-import { Subscription } from "rxjs";
-import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
+import { Observable, Subscription } from "rxjs";
 import { Store } from "@ngrx/store";
 import { downloadArtifact } from "@mlaide/state/artifact/artifact.actions";
+import { Artifact } from "@mlaide/state/artifact/artifact.models";
 
 /** File node data with possible child nodes. */
 export interface FileNode {
   artifactFileId?: string;
   artifactName?: string;
   artifactVersion?: number;
-  isDownlodable: boolean;
+  isDownloadable: boolean;
   name: string;
   type: string;
   children?: FileNode[];
@@ -39,10 +38,10 @@ export interface FlatTreeNode {
   styleUrls: ["./artifacts-tree.component.scss"],
 })
 export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
-  @Input() public artifactListDataSource: ListDataSource<ArtifactListResponse>;
+  @Input() public artifacts$: Observable<Artifact[]>;
   @Input() public projectKey: string;
-  private artifactListSubscription: Subscription;
   public artifactNodes: FileNode[] = [];
+  private artifactsSubscription: Subscription;
 
   /** The TreeControl controls the expand/collapse state of tree nodes.  */
   treeControl: FlatTreeControl<FlatTreeNode>;
@@ -61,13 +60,13 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.artifactListDataSource) {
-      if (this.artifactListSubscription) {
-        this.artifactListSubscription.unsubscribe();
+    if (changes.artifacts$) {
+      if (this.artifactsSubscription) {
+        this.artifactsSubscription.unsubscribe();
       }
 
-      this.artifactListSubscription = this.artifactListDataSource?.items$.subscribe((artifacts) => {
-        this.buildFileNodes(artifacts?.items);
+      this.artifactsSubscription = this.artifacts$.subscribe((artifacts) => {
+        this.buildFileNodes(artifacts);
         if (this.artifactNodes) {
           this.sortTree(this.artifactNodes);
           this.dataSource.data = this.artifactNodes;
@@ -77,9 +76,9 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.artifactListSubscription) {
-      this.artifactListSubscription.unsubscribe();
-      this.artifactListSubscription = null;
+    if (this.artifactsSubscription) {
+      this.artifactsSubscription.unsubscribe();
+      this.artifactsSubscription = null;
     }
   }
 
@@ -103,7 +102,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
       artifactFileId: node.artifactFileId,
       artifactName: node.artifactName,
       artifactVersion: node.artifactVersion,
-      downloadable: node.isDownlodable,
+      downloadable: node.isDownloadable,
       name: node.name,
       type: node.type,
       level: level,
@@ -132,7 +131,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
       root = {
         artifactName: artifact.name,
         artifactVersion: artifact.version,
-        isDownlodable: true,
+        isDownloadable: true,
         name: artifact.name,
         type: "folder",
         children: [],
@@ -147,7 +146,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
               artifactFileId: file.fileId,
               artifactName: artifact.name,
               artifactVersion: artifact.version,
-              isDownlodable: true,
+              isDownloadable: true,
               name: fileDirPart,
               type: "file",
             });
@@ -156,7 +155,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
 
             if (child === undefined) {
               child = {
-                isDownlodable: false,
+                isDownloadable: false,
                 name: fileDirPart,
                 type: "folder",
                 children: [],

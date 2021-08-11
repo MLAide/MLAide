@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FlexLayoutModule } from "@angular/flex-layout";
+import { FormsModule } from "@angular/forms";
 import { MatTableModule } from "@angular/material/table";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
@@ -21,12 +22,24 @@ import { RunsCompareComponent } from "./runs-compare/runs-compare.component";
 import { ArtifactsTreeComponent } from "./artifacts-tree/artifacts-tree.component";
 
 import { SharedModule } from "@mlaide/shared/shared.module";
+import { RunNoteComponent } from './run-note/run-note.component';
+import { MetricsTableComponent } from './metrics-table/metrics-table.component';
+import { ParametersTableComponent } from './parameters-table/parameters-table.component';
 
 @NgModule({
-  declarations: [ArtifactsTreeComponent, RunDetailsComponent, RunsCompareComponent, RunsListComponent],
+  declarations: [
+    ArtifactsTreeComponent,
+    RunDetailsComponent,
+    RunsCompareComponent,
+    RunsListComponent,
+    RunNoteComponent,
+    MetricsTableComponent,
+    ParametersTableComponent
+  ],
   imports: [
     CommonModule,
     MomentModule,
+    FormsModule,
 
     RunsRoutingModule,
     SharedModule,

@@ -43,4 +43,17 @@ export class RunApi {
       }
     )
   }
+
+  public getRun(projectKey: string, runKey: number): Observable<Run> {
+    return this.http.get<Run>(`${this.baseUrl}/projects/${projectKey}/runs/${runKey}`);
+  }
+
+  public updateRunNote(projectKey: string, runKey: number, note: string): Observable<string> {
+    return this.http.put(`${this.baseUrl}/projects/${projectKey}/runs/${runKey}/note`, note, {
+      headers: {
+        "content-type": "text/plain",
+      },
+      responseType: "text",
+    });
+  }
 }

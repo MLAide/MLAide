@@ -13,32 +13,51 @@ import Spy = jasmine.Spy;
 import {
   getRandomArtifact,
   getRandomArtifacts,
-  getRandomProject
+  getRandomProject, getRandomRun
 } from "@mlaide/mocks/fake-generator";
 import {
   closeEditModelDialog,
-  editModel, editModelFailed,
-  editModelSucceeded, loadArtifacts, loadArtifactsFailed, loadArtifactsSucceeded,
+  downloadArtifact,
+  downloadArtifactFailed,
+  downloadArtifactSucceeded,
+  editModel,
+  editModelFailed,
+  editModelSucceeded,
+  loadArtifacts,
+  loadArtifactsFailed,
+  loadArtifactsOfCurrentRun, loadArtifactsOfCurrentRunFailed,
+  loadArtifactsOfCurrentRunSucceeded,
+  loadArtifactsSucceeded,
   loadModels,
   loadModelsFailed,
-  loadModelsSucceeded, openEditModelDialog, openModelStageLogDialog
+  loadModelsSucceeded,
+  openEditModelDialog,
+  openModelStageLogDialog
 } from "@mlaide/state/artifact/artifact.actions";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 import { CreateOrUpdateModel } from "@mlaide/state/artifact/artifact.models";
 import { ModelStageLogComponent } from "@mlaide/models/model-stage-log/model-stage-log.component";
+import { HttpHeaders, HttpResponse } from "@angular/common/http";
+import { FileSaverService } from "ngx-filesaver";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { selectCurrentRunKey } from "@mlaide/state/run/run.selectors";
+import { Run } from "@mlaide/state/run/run.models";
+import { Project } from "@mlaide/state/project/project.models";
 
 describe("ArtifactEffects", () => {
   let actions$ = new Observable<Action>();
   let effects: ArtifactEffects;
   let artifactApiStub: jasmine.SpyObj<ArtifactApi>;
+  let fileSaverServiceStub: jasmine.SpyObj<FileSaverService>;
   let matDialog: MatDialog;
 
   let closeAllDialogSpy: Spy<() => void>;
   let store: MockStore;
 
   beforeEach(() => {
-    artifactApiStub = jasmine.createSpyObj<ArtifactApi>("ArtifactApi", ["getArtifacts", "putModel"]);
+    artifactApiStub = jasmine.createSpyObj<ArtifactApi>("ArtifactApi", ["getArtifacts", "putModel", "download", "getArtifactsByRunKeys"]);
+    fileSaverServiceStub = jasmine.createSpyObj<FileSaverService>("FileSaverService", ["save"]);
 
     TestBed.configureTestingModule({
       imports: [
@@ -51,7 +70,8 @@ describe("ArtifactEffects", () => {
           initialState: {
           }
         }),
-        { provide: ArtifactApi, useValue: artifactApiStub }
+        { provide: ArtifactApi, useValue: artifactApiStub },
+        { provide: FileSaverService, useValue: fileSaverServiceStub }
       ],
     });
 
@@ -382,5 +402,179 @@ describe("ArtifactEffects", () => {
         });
       });
     })
+  });
+
+  describe("downloadArtifact$", () => {
+    let project;
+
+    beforeEach(async () => {
+      project = await getRandomProject();
+      store.setState({
+        router: {
+          state: {
+            root: {
+              firstChild: {
+                params: {
+                  projectKey: project.key
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+
+    it("should trigger downloadArtifactSucceeded action containing artifact binary if api call is successful", async (done) => {
+      // arrange
+      const artifact = await getRandomArtifact();
+      actions$ = of(downloadArtifact({
+        projectKey: project.key,
+        artifactName: artifact.name,
+        artifactVersion: artifact.version,
+        artifactFileId: artifact.files[0].fileId
+      }));
+      const headers: HttpHeaders = new HttpHeaders({
+        "Content-Disposition": 'attachment; filename="data.csv"',
+        "Content-Type": "text/csv",
+      });
+      const returnBuffer: ArrayBufferLike = new Uint16Array([1, 2, 3]).buffer;
+      const response = new HttpResponse<ArrayBuffer>({
+        body: returnBuffer,
+        headers: headers,
+      });
+      artifactApiStub.download.withArgs(project.key, artifact.name, artifact.version, artifact.files[0].fileId).and.returnValue(of(response));
+
+      // act
+      effects.downloadArtifact$.subscribe(action => {
+        // assert
+        const expectedBlob = new Blob([new Uint16Array([1, 2, 3])]);
+        expect(action).toEqual(downloadArtifactSucceeded({ blob: expectedBlob, fileName: "data.csv" }));
+        expect(artifactApiStub.download).toHaveBeenCalledWith(project.key, artifact.name, artifact.version, artifact.files[0].fileId);
+
+        done();
+      });
+    });
+
+    it("should trigger downloadArtifactFailed action if api call is not successful", async (done) => {
+      // arrange
+      const artifact = await getRandomArtifact();
+      actions$ = of(downloadArtifact({
+        projectKey: project.key,
+        artifactName: artifact.name,
+        artifactVersion: artifact.version,
+        artifactFileId: artifact.files[0].fileId
+      }));
+      artifactApiStub.download.withArgs(project.key, artifact.name, artifact.version, artifact.files[0].fileId).and.returnValue(throwError("failed"));
+
+      // act
+      effects.downloadArtifact$.subscribe(action => {
+        // assert
+        expect(action).toEqual(downloadArtifactFailed({ payload: "failed" }));
+        expect(artifactApiStub.download).toHaveBeenCalledWith(project.key, artifact.name, artifact.version, artifact.files[0].fileId);
+
+        done();
+      });
+    });
+  });
+
+  describe("downloadArtifactFailed$", () => {
+    it("should map to 'showError' action", async (done) => {
+      // arrange
+      const error = "the error";
+      actions$ = of(downloadArtifactFailed({ payload: error }));
+
+      // act
+      effects.downloadArtifactFailed$.subscribe(action => {
+        // assert
+        expect(action).toEqual(showErrorMessage({
+          message: "Could not download artifact. A unknown error occurred.",
+          error: error
+        }));
+
+        done();
+      });
+    });
+  });
+
+  describe("saveArtifact$", () => {
+    it("should invoke FileSaverService with downloaded file", async (done) => {
+      // arrange
+      const blob = new Blob([new Uint16Array([1, 2, 3])]);
+      const fileName = "foo.txt";
+      actions$ = of(downloadArtifactSucceeded({ blob, fileName }));
+
+      // act
+      effects.saveArtifact$.subscribe(() => {
+        // assert
+        expect(fileSaverServiceStub.save).toHaveBeenCalledOnceWith(blob, fileName);
+
+        done();
+      });
+    });
+  });
+
+  describe("loadArtifactsOfCurrentRun$", () => {
+    let project: Project;
+    let run: Run;
+
+    beforeEach(async () => {
+      project = await getRandomProject();
+      store.overrideSelector(selectCurrentProjectKey, project.key);
+
+      run = await getRandomRun();
+      store.overrideSelector(selectCurrentRunKey, run.key);
+    });
+
+    it("should trigger loadArtifactsOfCurrentRunSucceeded action containing artifacts if api call is successful", async (done) => {
+      // arrange
+      actions$ = of(loadArtifactsOfCurrentRun());
+      const artifacts = await getRandomArtifacts(3);
+      const response: ArtifactListResponse = { items: artifacts };
+      artifactApiStub.getArtifactsByRunKeys.withArgs(project.key, [run.key]).and.returnValue(of(response));
+
+
+      // act
+      effects.loadArtifactsOfCurrentRun$.subscribe(action => {
+        // assert
+        expect(action).toEqual(loadArtifactsOfCurrentRunSucceeded({ artifacts }));
+        expect(artifactApiStub.getArtifactsByRunKeys).toHaveBeenCalledWith(project.key, [run.key]);
+
+        done();
+      });
+    });
+
+    it("should trigger loadArtifactsOfCurrentRunFailed action if api call is not successful", async (done) => {
+      // arrange
+      actions$ = of(loadArtifactsOfCurrentRun());
+      artifactApiStub.getArtifactsByRunKeys.withArgs(project.key, [run.key]).and.returnValue(throwError("failed"));
+
+      // act
+      effects.loadArtifactsOfCurrentRun$.subscribe(action => {
+        // assert
+        expect(action).toEqual(loadArtifactsOfCurrentRunFailed({ payload: "failed" }));
+        expect(artifactApiStub.getArtifactsByRunKeys).toHaveBeenCalledWith(project.key, [run.key]);
+
+        done();
+      });
+    });
+  });
+
+  describe("loadArtifactsOfCurrentRunFailed$", () => {
+    it("should map to 'showError' action", async (done) => {
+      // arrange
+      const error = "the error";
+      actions$ = of(loadArtifactsOfCurrentRunFailed({ payload: error }));
+
+      // act
+      effects.loadArtifactsOfCurrentRunFailed$.subscribe(action => {
+        // assert
+        expect(action).toEqual(showErrorMessage({
+          message: "Could not load artifacts. A unknown error occurred.",
+          error: error
+        }));
+
+        done();
+      });
+    });
   });
 });

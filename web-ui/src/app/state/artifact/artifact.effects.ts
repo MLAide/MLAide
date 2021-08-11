@@ -12,6 +12,8 @@ import { EditModelComponent } from "@mlaide/models/edit-model/edit-model.compone
 import { CreateOrUpdateModel } from "@mlaide/entities/artifact.model";
 import { ModelStageLogComponent } from "@mlaide/models/model-stage-log/model-stage-log.component";
 import { FileSaverService } from "ngx-filesaver";
+import { loadArtifactsOfCurrentRun } from "@mlaide/state/artifact/artifact.actions";
+import { selectCurrentRunKey } from "@mlaide/state/run/run.selectors";
 
 @Injectable({ providedIn: "root" })
 export class ArtifactEffects {
@@ -146,16 +148,55 @@ export class ArtifactEffects {
 
         return { blob, fileName };
       }),
-      map((downloadResult) => artifactActions.downloadArtifactSucceeded(downloadResult))
+      map((downloadResult) => artifactActions.downloadArtifactSucceeded(downloadResult)),
+      catchError((error) => of(artifactActions.downloadArtifactFailed({payload: error})))
+    )
+  );
+
+  downloadArtifactFailed$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(artifactActions.downloadArtifactFailed),
+      map((action) => action.payload),
+      map((error) => ({
+        message: "Could not download artifact. A unknown error occurred.",
+        error: error
+      })),
+      map(showErrorMessage)
     )
   );
 
   saveArtifact$ = createEffect(() =>
     this.actions$.pipe(
       ofType(artifactActions.downloadArtifactSucceeded),
-      tap((action) => this.fileSaverService.save(action.blob, action.fileName))
+      tap((action) => {
+        this.fileSaverService.save(action.blob, action.fileName);
+      })
     ),
     { dispatch: false }
+  );
+
+  loadArtifactsOfCurrentRun$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(artifactActions.loadArtifactsOfCurrentRun),
+      concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
+      concatLatestFrom(() => this.store.select(selectCurrentRunKey)),
+      mergeMap(([[action, projectKey], runKey]) => this.artifactApi.getArtifactsByRunKeys(projectKey, [runKey])),
+      map((response) => response.items),
+      map((artifacts) => artifactActions.loadArtifactsOfCurrentRunSucceeded({ artifacts })),
+      catchError((error) => of(artifactActions.loadArtifactsOfCurrentRunFailed({payload: error})))
+    )
+  );
+
+  loadArtifactsOfCurrentRunFailed$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(artifactActions.loadArtifactsOfCurrentRunFailed),
+      map((action) => action.payload),
+      map((error) => ({
+        message: "Could not load artifacts. A unknown error occurred.",
+        error: error
+      })),
+      map(showErrorMessage)
+    )
   );
 
   public constructor(private readonly actions$: Actions,

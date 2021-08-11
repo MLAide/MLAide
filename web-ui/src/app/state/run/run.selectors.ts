@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector, DefaultProjectorFn, MemoizedSelector } from "@ngrx/store";
 import { AppState } from "../app.state";
-import { selectQueryParam } from "../router.selectors";
+import { selectQueryParam, selectRouteParam } from "../router.selectors";
 import { RunState } from "@mlaide/state/run/run.state";
 
 const runState = createFeatureSelector<AppState, RunState>("runs")
@@ -16,6 +16,15 @@ export const selectRuns = createSelector(
 export const selectRunsOfCurrentExperiment = createSelector(
   runState,
   (runState) => runState.runsOfCurrentExperiment
+);
+export const selectCurrentRun = createSelector(
+  runState,
+  (runState) => runState.currentRun
+);
+
+export const selectCurrentRunKey = createSelector(
+  selectRouteParam("runKey"),
+  (runKey) => parseInt(runKey)
 );
 
 // override the response type because runKeys query param will always be an array of strings
