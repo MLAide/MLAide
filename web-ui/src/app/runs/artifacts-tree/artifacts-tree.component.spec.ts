@@ -1,7 +1,6 @@
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { CdkTreeModule } from "@angular/cdk/tree";
-import { HttpHeaders, HttpResponse } from "@angular/common/http";
 import { SimpleChange } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatButtonModule } from "@angular/material/button";
@@ -10,17 +9,18 @@ import { MatCardModule } from "@angular/material/card";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTreeModule } from "@angular/material/tree";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { FileSaverService } from "ngx-filesaver";
 import { of } from "rxjs";
-import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
+import { Artifact } from "@mlaide/entities/artifact.model";
 import { Project } from "@mlaide/entities/project.model";
-import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
 
 import { ArtifactsTreeComponent, FileNode, FlatTreeNode } from "./artifacts-tree.component";
-import { ArtifactsApiService } from "@mlaide/shared/api";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { Subscription } from "rxjs/internal/Subscription";
+import { downloadArtifact } from "@mlaide/state/artifact/artifact.actions";
 
-/*
+
 describe("ArtifactsTreeComponent", () => {
   let component: ArtifactsTreeComponent;
   let fixture: ComponentFixture<ArtifactsTreeComponent>;
@@ -29,42 +29,34 @@ describe("ArtifactsTreeComponent", () => {
   let fakeArtifacts: Artifact[];
   let fakeProject: Project;
 
-  // service stubs
-  let artifactsApiServiceStub: jasmine.SpyObj<ArtifactsApiService>;
-  let fileSaverServiceStub: jasmine.SpyObj<FileSaverService>;
-
-  // data source mocks
-  let artifactListDataSourceMock: ListDataSourceMock<Artifact, ArtifactListResponse> = new ListDataSourceMock();
-  fileSaverServiceStub = jasmine.createSpyObj("fileSaverServiceStub", ["save"]);
+  // mocks
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
     // setup fakes
     fakeArtifacts = await getRandomArtifacts(3);
     fakeProject = await getRandomProject();
 
-    // stub services
-    artifactsApiServiceStub = jasmine.createSpyObj("artifactsApiService", ["download"]);
-
     TestBed.configureTestingModule({
       declarations: [ArtifactsTreeComponent],
       providers: [
-        { provide: ArtifactsApiService, useValue: artifactsApiServiceStub },
-        { provide: FileSaverService, useValue: fileSaverServiceStub },
+        provideMockStore(),
       ],
       imports: [BrowserAnimationsModule, CdkTreeModule, MatButtonModule, MatCardModule, MatIconModule, MatTreeModule],
     }).compileComponents();
 
+    store = TestBed.inject(MockStore);
+    dispatchSpy = spyOn(store, 'dispatch');
+  });
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(ArtifactsTreeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
 
     // setup mocks
-    component.artifactListDataSource = artifactListDataSourceMock;
     component.projectKey = fakeProject.key;
-  });
-
-  afterEach(() => {
-    artifactListDataSourceMock.emulate([]);
   });
 
   it("should compile", () => {
@@ -79,16 +71,46 @@ describe("ArtifactsTreeComponent", () => {
     });
   });
 
+
   describe("ngOnChanges", () => {
-    it("should load component's artifactNodes to data source if changes include artifactListDataSource", async () => {
+    it("should call unsubscribe if artifacts$ changes detected", async () => {
+      // arrange in beforeEach
+      const artifacts$ = of([]);
+      component.artifacts$ = artifacts$;
+
+      const subscription = new Subscription();
+      const unsubscribeSpy = spyOn(subscription, "unsubscribe").and.callThrough();
+      spyOn(artifacts$, "subscribe").and.callFake(() => {
+        return subscription;
+      });
+
+      // We need to do this twice because otherwise unsubscribe is not called
+      component.ngOnChanges({
+        artifacts$: new SimpleChange(null, artifacts$, true),
+      });
+
+      fixture.detectChanges();
+
+      // act
+      component.ngOnChanges({
+        artifacts$: new SimpleChange(null, artifacts$, true),
+      });
+
+      fixture.detectChanges();
+
+      // assert
+      expect(unsubscribeSpy).toHaveBeenCalled();
+    });
+
+    it("should load component's artifactNodes to data source if changes include artifact$", async () => {
       // arrange + act also in beforeEach
       const spy = spyOn(component, "ngOnChanges").and.callThrough();
-      artifactListDataSourceMock.emulate(fakeArtifacts);
+      component.artifacts$ = of(fakeArtifacts);
 
       // act
       //directly call ngOnChanges
       component.ngOnChanges({
-        artifactListDataSource: new SimpleChange(null, artifactListDataSourceMock, true),
+        artifacts$: new SimpleChange(null, of(fakeArtifacts), true),
       });
       fixture.detectChanges();
 
@@ -199,12 +221,12 @@ describe("ArtifactsTreeComponent", () => {
         },
       ];
 
-      artifactListDataSourceMock.emulate(fakeArtifacts);
+      component.artifacts$ = of(fakeArtifacts);
 
       // act
       // directly call ngOnChanges
       component.ngOnChanges({
-        artifactListDataSource: new SimpleChange(null, artifactListDataSourceMock, true),
+        artifacts$: new SimpleChange(null, of(fakeArtifacts), true),
       });
       fixture.detectChanges();
 
@@ -213,15 +235,15 @@ describe("ArtifactsTreeComponent", () => {
       expect(component.dataSource.data).toEqual(expectedNodes);
     });
 
-    it("should not load new data from data source if changes do not include artifactListDataSource", async () => {
+    it("should not load new data from data source if changes do not include artifacts$", async () => {
       // arrange + act also in beforeEach
       const spy = spyOn(component, "ngOnChanges").and.callThrough();
-      artifactListDataSourceMock.emulate(fakeArtifacts);
+      component.artifacts$ = of(fakeArtifacts);
 
       // act
       //directly call ngOnChanges
       component.ngOnChanges({
-        projectKey: new SimpleChange(null, artifactListDataSourceMock, true),
+        projectKey: new SimpleChange(null, of(fakeArtifacts), true),
       });
       fixture.detectChanges();
 
@@ -231,7 +253,58 @@ describe("ArtifactsTreeComponent", () => {
     });
   });
 
+  describe("ngOnDestroy", () => {
+    it("should unsubscribe from artifactsSubscription", async () => {
+      // arrange in beforeEach
+      const artifacts$ = of([]);
+      component.artifacts$ = artifacts$;
+
+      const subscription = new Subscription();
+      const unsubscribeSpy = spyOn(subscription, "unsubscribe").and.callThrough();
+      spyOn(artifacts$, "subscribe").and.callFake(() => {
+        return subscription;
+      });
+      component.ngOnChanges({
+        artifacts$: new SimpleChange(null, artifacts$, true),
+      });
+
+      fixture.detectChanges();
+
+      // act
+      component.ngOnDestroy();
+
+      // assert
+      expect(unsubscribeSpy).toHaveBeenCalled();
+    });
+  });
+
   describe("download", () => {
+    it("should dispatch downloadArtifact action with provided node", async () => {
+      // arrange in beforeEach
+      const node: FlatTreeNode = {
+        artifactName: fakeArtifacts[0].name,
+        artifactVersion: fakeArtifacts[0].version,
+        artifactFileId: fakeArtifacts[0].files[0].fileId,
+        name: fakeArtifacts[0].name,
+        downloadable: true,
+        type: "file",
+        level: 1,
+        expandable: false,
+      };
+
+      // act
+      component.download(node);
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(downloadArtifact({
+        projectKey: component.projectKey,
+        artifactName: node.artifactName,
+        artifactVersion: node.artifactVersion,
+        artifactFileId: node.artifactFileId
+      }));
+    });
+    /*
+    // TODO Raman: Sollten diese Tests nicht auch in artifact.effects.spec.ts unter download rein?
     it("should call download with fileId if it is set", async () => {
       // arrange + act also in beforeEach
       // setup artifacts api
@@ -318,7 +391,9 @@ describe("ArtifactsTreeComponent", () => {
         done();
       });
     });
+    */
   });
+
 
   describe("hasChild", () => {
     it("should return true if node has child", () => {
@@ -361,12 +436,14 @@ describe("ArtifactsTreeComponent", () => {
 
       assignFilesOfFakeArtifact();
 
-      artifactListDataSourceMock.emulate(fakeArtifacts);
+      component.artifacts$ = of(fakeArtifacts);
+
       component.ngOnChanges({
-        artifactListDataSource: new SimpleChange(null, artifactListDataSourceMock, true),
+        artifacts$: new SimpleChange(null, of(fakeArtifacts), true),
       });
       fixture.detectChanges();
     });
+
 
     it("should contain the artifacts tree", () => {
       // arrange + act also in beforeEach
@@ -474,7 +551,7 @@ describe("ArtifactsTreeComponent", () => {
      *   |- file1
      * 3rd-Artifact
      */
-/*
+
     fakeArtifacts[0].name = "1st-Artifact";
     fakeArtifacts[0].files = [
       {
@@ -511,4 +588,3 @@ describe("ArtifactsTreeComponent", () => {
     fakeArtifacts[2].files = [];
   }
 });
- */

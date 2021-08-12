@@ -61,9 +61,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.artifacts$) {
-      if (this.artifactsSubscription) {
-        this.artifactsSubscription.unsubscribe();
-      }
+      this.unsubscribeArtifacts();
 
       this.artifactsSubscription = this.artifacts$.subscribe((artifacts) => {
         this.buildFileNodes(artifacts);
@@ -76,10 +74,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.artifactsSubscription) {
-      this.artifactsSubscription.unsubscribe();
-      this.artifactsSubscription = null;
-    }
+    this.unsubscribeArtifacts();
   }
 
   public download(node: FlatTreeNode) {
@@ -211,6 +206,13 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
       return 1;
     } else {
       return 0;
+    }
+  }
+
+  private unsubscribeArtifacts() {
+    if (this.artifactsSubscription) {
+      this.artifactsSubscription.unsubscribe();
+      this.artifactsSubscription = null;
     }
   }
 }
