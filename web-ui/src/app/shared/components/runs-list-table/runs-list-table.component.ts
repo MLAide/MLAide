@@ -23,6 +23,7 @@ export class RunsListTableComponent implements OnChanges, OnDestroy {
   public selection = new SelectionModel<Run>(true, []);
 
   private runsSubscription: Subscription;
+// TODO Raman: Auf Redux umstellen
 
   constructor(
     private router: Router,

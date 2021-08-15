@@ -1,7 +1,6 @@
 import { HarnessLoader, TestElement } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { DatePipe } from "@angular/common";
-import { SimpleChange } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatButtonModule } from "@angular/material/button";
 import { MatButtonHarness } from "@angular/material/button/testing";
@@ -10,12 +9,16 @@ import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableH
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouterTestingModule } from "@angular/router/testing";
 import { MockPipe } from "ng-mocks";
-import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
+import { Artifact } from "@mlaide/entities/artifact.model";
 import { Project } from "@mlaide/entities/project.model";
-import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
 
 import { ArtifactsListTableComponent } from "./artifacts-list-table.component";
+import { of } from "rxjs";
+import { MatCardHarness } from "@angular/material/card/testing";
+import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatCardModule } from "@angular/material/card";
 
 describe("ArtifactsListTableComponent", () => {
   let component: ArtifactsListTableComponent;
@@ -25,30 +28,34 @@ describe("ArtifactsListTableComponent", () => {
   let fakeArtifacts: Artifact[];
   let fakeProject: Project;
 
-  // data source mocks
-  let artifactListDataSourceMock: ListDataSourceMock<Artifact, ArtifactListResponse> = new ListDataSourceMock();
-
   beforeEach(async () => {
     // setup fakes
     fakeArtifacts = await getRandomArtifacts(3);
     fakeProject = await getRandomProject();
 
     await TestBed.configureTestingModule({
-      declarations: [ArtifactsListTableComponent, MockPipe(DatePipe, (v) => v)],
-      imports: [BrowserAnimationsModule, MatButtonModule, MatTableModule, RouterTestingModule],
+      declarations: [
+        ArtifactsListTableComponent,
+        MockPipe(DatePipe, (v) => v)
+      ],
+      imports: [
+        BrowserAnimationsModule,
+        MatButtonModule,
+        MatCardModule,
+        MatProgressSpinnerModule,
+        MatTableModule,
+        RouterTestingModule
+      ],
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(ArtifactsListTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
 
     // setup mocks
-    // component.artifactListDataSource = artifactListDataSourceMock;
     component.projectKey = fakeProject.key;
-  });
-
-  afterEach(() => {
-    artifactListDataSourceMock.emulate([]);
   });
 
   it("should create", () => {
@@ -56,64 +63,12 @@ describe("ArtifactsListTableComponent", () => {
 
     expect(component).toBeTruthy();
   });
-// TODO: Fix Tests
-/*
-  describe("ngAfterViewInit", () => {
-    it("should set datasource sort", () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(component.dataSource.sort).toEqual(component.sort);
-    });
-  });
-
-  describe("ngOnChanges", () => {
-    it("should load new data from data source if changes include artifactListDataSource", async () => {
-      // arrange + act also in beforeEach
-      const spy = spyOn(component, "ngOnChanges").and.callThrough();
-      artifactListDataSourceMock.emulate(fakeArtifacts);
-
-      //directly call ngOnChanges
-      component.ngOnChanges({
-        artifactListDataSource: new SimpleChange(null, artifactListDataSourceMock, true),
-      });
-      fixture.detectChanges();
-
-      expect(spy).toHaveBeenCalled();
-      expect(component.dataSource.data.length).toEqual(3);
-      expect(component.dataSource.data).toEqual(fakeArtifacts);
-    });
-
-    it("should not load new data from data source if changes do not include artifactListDataSource", async () => {
-      // arrange + act also in beforeEach
-      const spy = spyOn(component, "ngOnChanges").and.callThrough();
-      artifactListDataSourceMock.emulate(fakeArtifacts);
-
-      //directly call ngOnChanges
-      component.ngOnChanges({
-        projectKey: new SimpleChange(null, artifactListDataSourceMock, true),
-      });
-      fixture.detectChanges();
-
-      expect(spy).toHaveBeenCalled();
-      expect(component.dataSource.data.length).toEqual(0);
-    });
-  });
-  */
 
   describe("component rendering", () => {
     let loader: HarnessLoader;
     beforeEach(() => {
       loader = TestbedHarnessEnvironment.loader(fixture);
-
-      artifactListDataSourceMock.emulate(fakeArtifacts);
-      // TODO: Fix Tests
-      /*component.ngOnChanges({
-        artifactListDataSource: new SimpleChange(null, artifactListDataSourceMock, true),
-      });*/
-      fixture.detectChanges();
     });
-
 
     describe("artifacts table", () => {
       it("should contain the artifacts list table", () => {
@@ -142,12 +97,14 @@ describe("ArtifactsListTableComponent", () => {
 
       it("should show row for each artifact", async () => {
         // arrange + act also in beforeEach
+        component.artifacts$ = of(fakeArtifacts);
+        fixture.detectChanges();
         const table: MatTableHarness = await loader.getHarness(MatTableHarness);
         const rows: MatRowHarness[] = await table.getRows();
 
         // assert
         expect(rows.length).toBe(fakeArtifacts.length);
-        fakeArtifacts.forEach(async (fakeArtifact, index) => {
+        await Promise.all(fakeArtifacts.map(async (fakeArtifact, index) => {
           const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
 
           expect(row.createdAt).toEqual(String(fakeArtifact.createdAt));
@@ -156,24 +113,50 @@ describe("ArtifactsListTableComponent", () => {
           expect(row.runName).toEqual(fakeArtifact.runName);
           expect(row.runKey).toEqual(fakeArtifact.runKey);
           expect(row.type).toEqual(fakeArtifact.type);
-        });
+        }))
       });
 
-      it("should have correct router link to details for each run", async (done) => {
+      it("should have correct router link to details for each run", async () => {
         // arrange + act also in beforeEach
+        component.artifacts$ = of(fakeArtifacts);
+        fixture.detectChanges();
 
         // assert
-        fakeArtifacts.forEach(async (artifact, index) => {
+        await Promise.all(fakeArtifacts.map(async (artifact) => {
           const runLink: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ text: artifact.runName }));
           const aElement: TestElement = await runLink.host();
 
           expect(runLink).toBeTruthy();
           expect(await aElement.getAttribute("href")).toEqual(`/projects/${fakeProject.key}/runs/${artifact.runKey}`);
+        }));
+      });
+    });
 
-          if (index == fakeArtifacts.length - 1) {
-            done();
-          }
-        });
+    describe("progress spinner", () => {
+      it("should contain progress spinner if isLoading$ is true", async () => {
+        // arrange + act also in beforeEach
+        component.isLoading$ = of(true);
+        fixture.detectChanges();
+
+        let card: MatCardHarness[] = await loader.getAllHarnesses(MatCardHarness);
+        let progressSpinner: MatProgressSpinnerHarness[] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
+
+        // assert
+        expect(card.length).toBe(1);
+        expect(progressSpinner.length).toBe(1);
+      });
+
+      it("should not contain progress spinner if isLoading$ is false", async () => {
+        // arrange + act also in beforeEach
+        component.isLoading$ = of(false);
+        fixture.detectChanges();
+
+        let card: MatCardHarness[] = await loader.getAllHarnesses(MatCardHarness);
+        let progressSpinner: MatProgressSpinnerHarness[] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
+
+        // assert
+        expect(card.length).toBe(0);
+        expect(progressSpinner.length).toBe(0);
       });
     });
   });
