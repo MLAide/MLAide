@@ -6,7 +6,7 @@ import { DatePipe } from "@angular/common";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonHarness } from "@angular/material/button/testing";
-import { MatDialogModule, MatDialogRef } from "@angular/material/dialog";
+import { MatDialogModule } from "@angular/material/dialog";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatFormFieldHarness } from "@angular/material/form-field/testing";
@@ -16,56 +16,39 @@ import { MatInputModule } from "@angular/material/input";
 import { MatInputHarness } from "@angular/material/input/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MockPipe } from "ng-mocks";
-import { of } from "rxjs";
 import { ApiKey } from "@mlaide/entities/apiKey.model";
-import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
 import { getRandomApiKey } from "src/app/mocks/fake-generator";
 
 import { AddApiKeyComponent } from "./add-api-key.component";
-import { UsersApiService } from "@mlaide/shared/api";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { AppState } from "@mlaide/state/app.state";
+import { selectNewCreatedApiKey } from "@mlaide/state/api-key/api-key.selectors";
+import { addApiKey, closeAddApiKeyDialog } from "@mlaide/state/api-key/api-key.actions";
+import { showSuccessMessage } from "@mlaide/state/shared/shared.actions";
 
 describe("CreateApiKeyComponent", () => {
   let component: AddApiKeyComponent;
   let fixture: ComponentFixture<AddApiKeyComponent>;
 
-  // dialog mock
-  // https://github.com/angular/quickstart/issues/320#issuecomment-404705258
-  // https://stackoverflow.com/questions/54108924/this-dialogref-close-is-not-a-function-error/54109919
-  let dialogMock;
-
   // fakes
   let fakeApiKey: ApiKey;
 
-  // stubs
-  let spinnerUiServiceStub: jasmine.SpyObj<SpinnerUiService>;
-  let snackbarUiServiceStub: jasmine.SpyObj<SnackbarUiService>;
-  let usersApiServiceStub: jasmine.SpyObj<UsersApiService>;
+  // mocks
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    // prepare dialog mock object
-    dialogMock = {
-      open: () => ({ afterClosed: () => of(true) }),
-      close: () => {
-        // This is intentional
-      },
-    };
+    const initialState: Partial<AppState> = {};
 
     // setup fakes
     fakeApiKey = await getRandomApiKey();
 
-    // setup stubs
-    spinnerUiServiceStub = jasmine.createSpyObj("spinnerUiService", ["showSpinner", "stopSpinner"]);
-    snackbarUiServiceStub = jasmine.createSpyObj("snackBarUiService", ["showSuccesfulSnackbar", "showErrorSnackbar"]);
-    usersApiServiceStub = jasmine.createSpyObj("usersApiService", ["createApiKey"]);
-
     await TestBed.configureTestingModule({
       declarations: [AddApiKeyComponent, MockPipe(DatePipe, (v) => v)],
       providers: [
-        { provide: MatDialogRef, useValue: dialogMock },
         FormBuilder,
-        { provide: SnackbarUiService, useValue: snackbarUiServiceStub },
-        { provide: SpinnerUiService, useValue: spinnerUiServiceStub },
-        { provide: UsersApiService, useValue: usersApiServiceStub },
+        provideMockStore({ initialState })
       ],
       imports: [
         BrowserAnimationsModule,
@@ -79,6 +62,12 @@ describe("CreateApiKeyComponent", () => {
         ReactiveFormsModule,
       ],
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+
+    store.overrideSelector(selectNewCreatedApiKey, fakeApiKey);
+
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -89,6 +78,18 @@ describe("CreateApiKeyComponent", () => {
 
   it("should create", () => {
     expect(component).toBeTruthy();
+  });
+
+  describe("ngOnInit", () => {
+    it("should select apiKey$ from store correctly", async (done) => {
+      // arrange + act in beforeEach
+
+      // assert
+      component.apiKey$.subscribe((apiKey) => {
+        expect(apiKey).toBe(fakeApiKey);
+        done();
+      });
+    });
   });
 
   describe("constructor", () => {
@@ -121,33 +122,34 @@ describe("CreateApiKeyComponent", () => {
   });
 
   describe("close", () => {
-    it("should call close on dialog", async () => {
+    it("should dispatch closeAddApiKeyDialog action", async () => {
       // arrange in beforeEach
-      const spy = spyOn(dialogMock, "close");
 
       // act
       component.close();
 
       // assert
-      expect(spy).toHaveBeenCalled();
+      expect(dispatchSpy).toHaveBeenCalledWith(closeAddApiKeyDialog());
     });
   });
 
   describe("copy", () => {
-    it("should call showSuccesfulSnackbar", async () => {
+    it("should dispatch showSuccessMessage action with correct message", async () => {
       // arrange in beforeEach
 
       // act
       component.copy();
 
       // assert
-      expect(snackbarUiServiceStub.showSuccesfulSnackbar).toHaveBeenCalledWith("Successfully copied to clipboard!");
+      expect(dispatchSpy).toHaveBeenCalledWith(showSuccessMessage({
+        message: "Successfully copied to clipboard!"
+      }));
     });
   });
-// TODO: Fix Tests
-  /*
+
+
   describe("create", () => {
-    it("should request api key with expiration date", async () => {
+    it("should dispatch addApiKey action with api key that has expiration date", async () => {
       // arrange in beforeEach
       const description = fakeApiKey.description;
       const expiresAt = new Date(Date.now());
@@ -165,18 +167,17 @@ describe("CreateApiKeyComponent", () => {
 
       fakeApiKey.description = description;
       fakeApiKey.expiresAt = expiresAt;
-      usersApiServiceStub.createApiKey.withArgs(apiKey).and.returnValue(of(fakeApiKey));
 
       // act
       component.create();
 
       // assert
-      expect(component.apiKey).toEqual(fakeApiKey.apiKey);
-      expect(spinnerUiServiceStub.showSpinner).toHaveBeenCalled();
-      expect(spinnerUiServiceStub.stopSpinner).toHaveBeenCalled();
+      expect(dispatchSpy).toHaveBeenCalledWith(addApiKey({
+        apiKey: apiKey
+      }));
     });
 
-    it("should request api key without expiration date", async () => {
+    it("should dispatch addApiKey action with api key that has no expiration date", async () => {
       // arrange in beforeEach
       const description = fakeApiKey.description;
       component.form.setValue({
@@ -192,18 +193,16 @@ describe("CreateApiKeyComponent", () => {
       };
 
       fakeApiKey.description = description;
-      usersApiServiceStub.createApiKey.withArgs(apiKey).and.returnValue(of(fakeApiKey));
 
       // act
       component.create();
 
       // assert
-      expect(component.apiKey).toEqual(fakeApiKey.apiKey);
-      expect(spinnerUiServiceStub.showSpinner).toHaveBeenCalled();
-      expect(spinnerUiServiceStub.stopSpinner).toHaveBeenCalled();
+      expect(dispatchSpy).toHaveBeenCalledWith(addApiKey({
+        apiKey: apiKey
+      }));
     });
   });
-  */
 
   describe("keyDown", () => {
     it("should call create if pushed enter on a valid form and apiKey is not set", async () => {
@@ -218,14 +217,13 @@ describe("CreateApiKeyComponent", () => {
       // assert
       expect(component.create).toHaveBeenCalled();
     });
-    // TODO: Fix Tests
-/*
+
     it("should call close if pushed enter on a valid form and apiKey is set", async () => {
       // arrange also in beforeEach
       spyOn(component, "close");
       const control: AbstractControl = component.form.get("description");
       control.patchValue("any");
-      component.apiKey = fakeApiKey.apiKey;
+      component.create();
 
       // act
       component.keyDown({ keyCode: ENTER });
@@ -233,7 +231,8 @@ describe("CreateApiKeyComponent", () => {
       // assert
       expect(component.close).toHaveBeenCalled();
     });
-*/
+
+
     it("should set all fields to markAsTouched if pushed enter on invalid form", async () => {
       // arrange also in beforeEach
       spyOn(component, "close");
@@ -264,6 +263,7 @@ describe("CreateApiKeyComponent", () => {
       expect(component.create).not.toHaveBeenCalled();
     });
   });
+
   describe("component rendering", () => {
     it("should contain components title", async () => {
       // arrange + act also in beforeEach
@@ -280,15 +280,19 @@ describe("CreateApiKeyComponent", () => {
         loader = TestbedHarnessEnvironment.loader(fixture);
       });
       describe("apiKey is not set", () => {
+        beforeEach(() => {
+          component.apiKey$ = undefined;
+        });
         it("should have 2 form fields with labels", async () => {
           // arrange + act also in beforeEach
+          fixture.detectChanges();
           const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(MatFormFieldHarness);
 
           // assert
           expect(formFields.length).toBe(2);
-          formFields.forEach(async (formField) => {
+          await Promise.all(formFields.map(async (formField) => {
             expect(await formField.hasLabel()).toBeTruthy();
-          });
+          }));
         });
 
         it("should have empty and required form field -- description", async () => {
@@ -428,25 +432,22 @@ describe("CreateApiKeyComponent", () => {
 
       describe("apiKey is set", () => {
         beforeEach(() => {
-          // TODO: Fix Tests
+
           //component.apiKey = fakeApiKey.apiKey;
           fixture.detectChanges();
         });
 
-        // TODO: Fix Tests
-        /*
         it("should have 3 form fields with labels", async () => {
           // arrange + act also in beforeEach
-          component.apiKey = fakeApiKey.apiKey;
+          // component.apiKey = fakeApiKey.apiKey;
           const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(MatFormFieldHarness);
 
           // assert
           expect(formFields.length).toBe(3);
-          formFields.forEach(async (formField) => {
+          await Promise.all(formFields.map(async (formField) => {
             expect(await formField.hasLabel()).toBeTruthy();
-          });
+          }));
         });
-        */
 
         it("should have a subtitle", async () => {
           // arrange + act also in beforeEach
@@ -500,7 +501,6 @@ describe("CreateApiKeyComponent", () => {
 
         it("should have a hint for apiKey field", async () => {
           // arrange + act also in beforeEach
-          // TODO: Fix Tests
           // component.apiKey = fakeApiKey.apiKey;
           fixture.detectChanges();
           let matHint: HTMLElement = fixture.nativeElement.querySelector("mat-hint");
