@@ -1,7 +1,5 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MockComponent, ngMocks } from "ng-mocks";
-import { Artifact } from "@mlaide/entities/artifact.model";
-import { Project } from "@mlaide/entities/project.model";
 import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
 
 import { ArtifactsListComponent } from "./artifacts-list.component";
@@ -11,6 +9,8 @@ import { Action } from "@ngrx/store";
 import { selectArtifacts, selectIsLoadingArtifacts } from "@mlaide/state/artifact/artifact.selectors";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { loadArtifacts } from "@mlaide/state/artifact/artifact.actions";
+import { Project } from "@mlaide/state/project/project.models";
+import { Artifact } from "@mlaide/state/artifact/artifact.models";
 
 describe("ArtifactsListComponent", () => {
   let component: ArtifactsListComponent;
