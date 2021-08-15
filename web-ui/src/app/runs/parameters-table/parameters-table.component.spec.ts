@@ -4,8 +4,6 @@ import { ParametersTableComponent } from './parameters-table.component';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatTableModule } from "@angular/material/table";
 import { of } from "rxjs";
-import { Subscription } from "rxjs/internal/Subscription";
-import { SimpleChange } from "@angular/core";
 import { getRandomRun } from "@mlaide/mocks/fake-generator";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
@@ -41,99 +39,11 @@ describe('ParametersTableComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe("ngOnChanges", () => {
-    it("should call unsubscribe if parameters$ changes detected", async () => {
-      // arrange in beforeEach
-      const parameters$ = of([]);
-      component.parameters$ = parameters$;
-
-      const subscription = new Subscription();
-      const unsubscribeSpy = spyOn(subscription, "unsubscribe").and.callThrough();
-      spyOn(parameters$, "subscribe").and.callFake(() => {
-        return subscription;
-      });
-
-      // We need to do this twice because otherwise unsubscribe is not called
-      component.ngOnChanges({
-        parameters$: new SimpleChange(null, parameters$, true),
-      });
-
-      fixture.detectChanges();
-
-      // act
-      component.ngOnChanges({
-        parameters$: new SimpleChange(null, parameters$, true),
-      });
-
-      fixture.detectChanges();
-
-      // assert
-      expect(unsubscribeSpy).toHaveBeenCalled();
-    });
-
-    it("should load component's parameters$ to data source if changes include parameters$", async () => {
-      // arrange + act also in beforeEach
-      const spy = spyOn(component, "ngOnChanges").and.callThrough();
-      const fakeRun = await getRandomRun();
-      const fakeParameters = Object.entries(fakeRun.parameters).map(([key, value]) =>
-        ({
-          key: key,
-          value: value
-        })
-      );
-      component.parameters$ = of(fakeParameters);
-
-      // act
-      //directly call ngOnChanges
-      component.ngOnChanges({
-        parameters$: new SimpleChange(null, of(fakeParameters), true),
-      });
-      fixture.detectChanges();
-
-      // assert
-      expect(spy).toHaveBeenCalled();
-      expect(component.dataSource.data).toEqual(fakeParameters);
-    });
-  });
-
-  describe("ngOnDestroy", () => {
-    it("should unsubscribe from parametersSubscription", async () => {
-      // arrange in beforeEach
-      const parameters$ = of([]);
-      component.parameters$ = parameters$;
-
-      const subscription = new Subscription();
-      const unsubscribeSpy = spyOn(subscription, "unsubscribe").and.callThrough();
-      spyOn(parameters$, "subscribe").and.callFake(() => {
-        return subscription;
-      });
-      component.ngOnChanges({
-        parameters$: new SimpleChange(null, parameters$, true),
-      });
-
-      fixture.detectChanges();
-
-      // act
-      component.ngOnDestroy();
-
-      // assert
-      expect(unsubscribeSpy).toHaveBeenCalled();
-    });
-  });
-
   describe("component rendering", () => {
     let loader: HarnessLoader;
 
     beforeEach(async () => {
       loader = TestbedHarnessEnvironment.loader(fixture);
-    });
-
-    it("should contain parameters title", async () => {
-      // arrange + act also in beforeEach
-      let title: HTMLElement = fixture.nativeElement.querySelector("#parameters-title");
-
-      // assert
-      expect(title.textContent).toEqual("Parameters");
     });
 
     it("should contain the parameters table", () => {
@@ -168,10 +78,6 @@ describe('ParametersTableComponent', () => {
       component.parameters$ = of(fakeParameters);
 
       // act
-      //directly call ngOnChanges
-      component.ngOnChanges({
-        parameters$: new SimpleChange(null, of(fakeParameters), true),
-      });
       fixture.detectChanges();
 
       const table: MatTableHarness = await loader.getHarness(MatTableHarness.with({ selector: "#parameters-table" }));
