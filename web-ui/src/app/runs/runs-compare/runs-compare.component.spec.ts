@@ -1,15 +1,16 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ActivatedRoute, ParamMap } from "@angular/router";
-import { MockComponent } from "ng-mocks";
-import { Observable, Subscription } from "rxjs";
+import { MockComponent, ngMocks } from "ng-mocks";
 import { Project } from "@mlaide/entities/project.model";
-import { Run, RunListResponse } from "@mlaide/entities/run.model";
-import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
+import { Run } from "@mlaide/entities/run.model";
 import { getRandomProject, getRandomRuns } from "src/app/mocks/fake-generator";
 import { RunParamsMetricsTableComponent } from "../../shared/components/run-params-metrics-table/run-params-metrics-table.component";
 
 import { RunsCompareComponent } from "./runs-compare.component";
-import { RunsApiService } from "@mlaide/shared/api";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { selectIsLoadingRuns, selectRuns } from "@mlaide/state/run/run.selectors";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { loadRunsByRunKeys } from "@mlaide/state/run/run.actions";
 
 describe("RunsCompareComponent", () => {
   let component: RunsCompareComponent;
@@ -19,66 +20,58 @@ describe("RunsCompareComponent", () => {
   let fakeProject: Project;
   let fakeRuns: Run[];
 
-  // data source mocks
-  let runListDataSourceMock: ListDataSourceMock<Run, RunListResponse> = new ListDataSourceMock();
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
-  // router stubs
-  let unsubscriptionSpy: jasmine.Spy<() => void>;
-  let unsubscriptionQueryParamsSpy: jasmine.Spy<() => void>;
+  beforeEach(async () => {
+    // setup fakes
+    fakeProject = await getRandomProject();
+    fakeRuns = await getRandomRuns(3);
 
-  // service stubs
-  let runsApiServiceStub: jasmine.SpyObj<RunsApiService>;
+    await TestBed.configureTestingModule({
+      declarations: [
+        RunsCompareComponent,
+        MockComponent(RunParamsMetricsTableComponent)
+      ],
+      providers: [
+        provideMockStore(),
+      ],
+    }).compileComponents();
 
-  afterEach(() => {
-    runListDataSourceMock.emulate([]);
+    store = TestBed.inject(MockStore);
+
+    store.overrideSelector(selectRuns, fakeRuns);
+    store.overrideSelector(selectCurrentProjectKey, fakeProject.key);
+    store.overrideSelector(selectIsLoadingRuns, true);
+
+    dispatchSpy = spyOn(store, 'dispatch');
+  });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(RunsCompareComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it("should create", async () => {
-    // arrange
-    await setupStubsAndMocks();
+    // arrange + act in beforeEach
 
+    // assert
     expect(component).toBeTruthy();
   });
-  // TODO Raman: Fix Tests
-/*
+
   describe("ngOnInit", () => {
-    it("should set metrics columns with provided runs", async () => {
-      // arrange
-      await setupStubsAndMocks();
-      const columns = ["metrics"];
-      fakeRuns.forEach((fakeRun) => {
-        columns.push(`${fakeRun.name}-${fakeRun.key}`);
-      });
+    it("should select runs from store correctly", async (done) => {
+      // arrange + act in beforeEach
 
       // assert
-      expect(component.displayedMetricsColumns).toEqual(columns);
-    });
-
-    it("should set parameters columns with provided runs", async () => {
-      // arrange
-      await setupStubsAndMocks();
-      const columns = ["parameter"];
-      fakeRuns.forEach((fakeRun) => {
-        columns.push(`${fakeRun.name}-${fakeRun.key}`);
+      component.runs$.subscribe((runs) => {
+        expect(runs).toBe(fakeRuns);
+        done();
       });
-
-      // assert
-      expect(component.displayedParametersColumns).toEqual(columns);
     });
 
-    it("should set start time columns with provided runs", async () => {
-      // arrange
-      await setupStubsAndMocks();
-      const columns = [" " as any];
-      fakeRuns.forEach((fakeRun) => {
-        columns.push(fakeRun.startTime);
-      });
-
-      // assert
-      expect(component.displayedColumnsStartTime).toEqual(columns);
-    });
-
-    it("should setup metrics datasource with unique metrics and correct values from provided runs", async () => {
+    it("should setup metrics datasource with unique metrics and correct values from provided runs", async (done) => {
       // arrange
       fakeRuns = await getRandomRuns(2);
       const dateFirstRun = new Date(Date.now());
@@ -100,8 +93,14 @@ describe("RunsCompareComponent", () => {
         date: dateSecondRun,
         uniqueMetricSecondRun: "lalala",
       };
+
       let runs = [fakeRuns[0], fakeRuns[1]];
-      await setupStubsAndMocks(runs);
+      store.overrideSelector(selectRuns, runs);
+
+      fixture = TestBed.createComponent(RunsCompareComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
       const expectedData = [
         ["bool", true, false],
         ["number", 123, 34],
@@ -113,11 +112,13 @@ describe("RunsCompareComponent", () => {
       ];
 
       // assert
-      expect(component.dataSourceMetrics.data).toEqual(expectedData);
+      component.metrics$.subscribe((metrics) => {
+        expect(metrics).toEqual(expectedData);
+        done()
+      });
     });
 
-
-    it("should setup parameters datasource with unique metrics and correct values from provided runs", async () => {
+    it("should setup parameters datasource with unique metrics and correct values from provided runs", async (done) => {
       // arrange
       fakeRuns = await getRandomRuns(2);
       const dateFirstRun = new Date(Date.now());
@@ -139,8 +140,14 @@ describe("RunsCompareComponent", () => {
         date: dateSecondRun,
         uniqueMetricSecondRun: "lalala",
       };
+
       let runs = [fakeRuns[0], fakeRuns[1]];
-      await setupStubsAndMocks(runs);
+      store.overrideSelector(selectRuns, runs);
+
+      fixture = TestBed.createComponent(RunsCompareComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
       const expectedData = [
         ["bool", true, false],
         ["number", 123, 34],
@@ -152,28 +159,85 @@ describe("RunsCompareComponent", () => {
       ];
 
       // assert
-      expect(component.dataSourceParameters.data).toEqual(expectedData);
+      component.parameters$.subscribe((parameters) => {
+        expect(parameters).toEqual(expectedData);
+        done()
+      });
     });
-  });
 
-  describe("ngOnDestroy", () => {
-    it("should unsubscribe from routeParamsSubscription", async () => {
+    it("should set metrics columns with provided runs", async (done) => {
       // arrange
-      await setupStubsAndMocks();
-
-      // act
-      component.ngOnDestroy();
+      const columns = ["metrics"];
+      fakeRuns.forEach((fakeRun) => {
+        columns.push(`${fakeRun.name}-${fakeRun.key}`);
+      });
 
       // assert
-      expect(unsubscriptionSpy).toHaveBeenCalled();
+      component.displayedMetricsColumns$.subscribe((displayedMetricsColumns) => {
+        expect(displayedMetricsColumns).toEqual(columns);
+        done()
+      });
+    });
+
+    it("should set parameters columns with provided runs", async (done) => {
+      // arrange
+      const columns = ["parameters"];
+      fakeRuns.forEach((fakeRun) => {
+        columns.push(`${fakeRun.name}-${fakeRun.key}`);
+      });
+
+      // assert
+      component.displayedParametersColumns$.subscribe((displayedParametersColumns) => {
+        expect(displayedParametersColumns).toEqual(columns);
+        done()
+      });
+    });
+
+    it("should set start time columns with provided runs", async (done) => {
+      // arrange
+      const columns = [" " as any];
+      fakeRuns.forEach((fakeRun) => {
+        columns.push(fakeRun.startTime);
+      });
+
+      // assert
+      component.displayedColumnsStartTime$.subscribe((displayedColumnsStartTime) => {
+        expect(displayedColumnsStartTime).toEqual(columns);
+        done()
+      });
+    });
+
+    it("should select projectKey from store correctly", async (done) => {
+      // arrange + act in beforeEach
+
+      // assert
+      component.projectKey$.subscribe((projectKey) => {
+        expect(projectKey).toBe(fakeProject.key);
+        done();
+      });
+    });
+
+    it("should select selectIsLoadingRuns from store correctly", async (done) => {
+      // arrange + act in beforeEach
+
+      // assert
+      component.isLoadingRuns$.subscribe((isLoading) => {
+        expect(isLoading).toBe(true);
+        done();
+      });
+    });
+
+    it("should dispatch loadRunsByRunKeys action", () => {
+      // ngOnInit will be called in beforeEach while creating the component
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(loadRunsByRunKeys());
     });
   });
-  */
 
   describe("component rendering", () => {
     it("should contain components title", async () => {
       // arrange
-      await setupStubsAndMocks();
       let h1: HTMLElement = fixture.nativeElement.querySelector("h1");
 
       // assert
@@ -182,109 +246,44 @@ describe("RunsCompareComponent", () => {
 
     it("should have title for run-params-metrics-table - Metrics", async () => {
       // arrange
-      await setupStubsAndMocks();
+      //await setupStubsAndMocks();
       let title: HTMLElement = fixture.nativeElement.querySelector("#metrics-title");
 
       // assert
       expect(title.textContent).toEqual("Metrics");
     });
 
-    it("should contain child component - app-run-params-metrics-table for metrics", async () => {
+    it("should contain child component with correct attributes - app-run-params-metrics-table for metrics", async () => {
       // arrange
-      await setupStubsAndMocks();
-      const childComponent: HTMLElement = fixture.nativeElement.querySelector("#run-metrics-table");
+      const runParamsMetricsTableComponent = ngMocks
+        .find<RunParamsMetricsTableComponent>("#run-metrics-table" )
+        .componentInstance;
 
       // assert
-      expect(childComponent).toBeTruthy();
-      expect(childComponent.getAttribute("ng-reflect-data-source")).not.toBeUndefined();
-      expect(childComponent.getAttribute("ng-reflect-data-source")).not.toBeNull();
-      expect(childComponent.getAttribute("ng-reflect-displayed-columns-name")).not.toBeUndefined();
-      // ng-reflect-displayed-columns-name is too long, thus return null
+      expect(runParamsMetricsTableComponent.data$).toBe(component.metrics$);
+      expect(runParamsMetricsTableComponent.displayedColumnsName$).toBe(component.displayedMetricsColumns$);
+      expect(runParamsMetricsTableComponent.displayedColumnsStartTime$).toBe(component.displayedColumnsStartTime$);
     });
 
     it("should have title for run-params-metrics-table - Parameters", async () => {
       // arrange
-      await setupStubsAndMocks();
+      //await setupStubsAndMocks();
       let title: HTMLElement = fixture.nativeElement.querySelector("#parameters-title");
 
       // assert
       expect(title.textContent).toEqual("Parameters");
     });
 
-    it("should contain child component - app-run-params-metrics-table for parameters", async () => {
+    it("should contain child component with correct attributes - app-run-params-metrics-table for parameters", async () => {
       // arrange
-      await setupStubsAndMocks();
-      const childComponent: HTMLElement = fixture.nativeElement.querySelector("#run-parameters-table");
+      const runParamsMetricsTableComponent = ngMocks
+        .find<RunParamsMetricsTableComponent>("#run-parameters-table" )
+        .componentInstance;
 
       // assert
-      expect(childComponent).toBeTruthy();
-      expect(childComponent.getAttribute("ng-reflect-data-source")).not.toBeUndefined();
-      expect(childComponent.getAttribute("ng-reflect-data-source")).not.toBeNull();
-      expect(childComponent.getAttribute("ng-reflect-displayed-columns-name")).not.toBeUndefined();
-      // ng-reflect-displayed-columns-name is too long, thus return null
+      expect(runParamsMetricsTableComponent.data$).toBe(component.parameters$);
+      expect(runParamsMetricsTableComponent.displayedColumnsName$).toBe(component.displayedParametersColumns$);
+      expect(runParamsMetricsTableComponent.displayedColumnsStartTime$).toBe(component.displayedColumnsStartTime$);
     });
   });
-
-  // We need this function because in some tests the returned run needs to be modifed before the component is created
-  async function setupStubsAndMocks(runs?: Run[]) {
-    // setup fakes
-    fakeProject = await getRandomProject();
-    fakeRuns = await getRandomRuns(3);
-    let fakeRunKeys: number[] = [];
-
-    // setup api
-    runsApiServiceStub = jasmine.createSpyObj("runsApiService", ["getRunsByRunKeys"]);
-
-    if (runs) {
-      runs.forEach((fakeRun) => {
-        fakeRunKeys.push(fakeRun.key);
-      });
-
-      // setup runs api
-      runsApiServiceStub.getRunsByRunKeys.withArgs(fakeProject.key, fakeRunKeys).and.returnValue(runListDataSourceMock);
-      runListDataSourceMock.emulate(runs);
-    } else {
-      fakeRuns.forEach((fakeRun) => {
-        fakeRunKeys.push(fakeRun.key);
-      });
-
-      // setup runs api
-      runsApiServiceStub.getRunsByRunKeys.withArgs(fakeProject.key, fakeRunKeys).and.returnValue(runListDataSourceMock);
-      runListDataSourceMock.emulate(fakeRuns);
-    }
-
-    // mock active route params
-    const paramMapObservable = new Observable<ParamMap>();
-    const paramMapSubscription = new Subscription();
-    unsubscriptionSpy = spyOn(paramMapSubscription, "unsubscribe").and.callThrough();
-    spyOn(paramMapObservable, "subscribe").and.callFake(function (fn): Subscription {
-      fn({ projectKey: fakeProject.key });
-      return paramMapSubscription;
-    });
-
-    const queryParamMapObservable = new Observable<ParamMap>();
-    unsubscriptionQueryParamsSpy = spyOn(new Subscription(), "unsubscribe").and.callThrough();
-    spyOn(queryParamMapObservable, "subscribe").and.callFake(function (fn): Subscription {
-      fn({ runKeys: fakeRunKeys });
-      return paramMapSubscription;
-    });
-
-    await TestBed.configureTestingModule({
-      declarations: [RunsCompareComponent, MockComponent(RunParamsMetricsTableComponent)],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            params: paramMapObservable,
-            queryParams: queryParamMapObservable,
-          },
-        },
-        { provide: RunsApiService, useValue: runsApiServiceStub },
-      ],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(RunsCompareComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  }
 });
