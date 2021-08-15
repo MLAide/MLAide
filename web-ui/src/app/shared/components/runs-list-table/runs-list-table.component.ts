@@ -25,6 +25,7 @@ export class RunsListTableComponent implements AfterViewInit, OnChanges, OnDestr
   @ViewChild(MatSort) public sort: MatSort;
 
   private runsSubscription: Subscription;
+// TODO Raman: Auf Redux umstellen
 
   constructor(
     private router: Router,
