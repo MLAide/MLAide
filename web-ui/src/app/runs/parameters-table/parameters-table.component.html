@@ -1,0 +1,26 @@
+<div>
+  <table
+    id="parameters-table"
+    fxFlex="50"
+    mat-table
+    class="mat-elevation-z2"
+    [dataSource]="parameters$ | async"
+    aria-label="Run parameters overview"
+  >
+    <ng-container matColumnDef="parametersKey">
+      <th id="parameter-key" mat-header-cell *matHeaderCellDef i18n>Key</th>
+      <td headers="parameter-key" mat-cell *matCellDef="let element">
+        {{ element.key }}
+      </td>
+    </ng-container>
+    <!-- https://angular.io/api/common/KeyValuePipe -->
+    <ng-container matColumnDef="parametersValue">
+      <th id="parameter-value" mat-header-cell *matHeaderCellDef i18n>Value</th>
+      <td headers="parameter-value" mat-cell *matCellDef="let element">
+        {{ element.value }}
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="parameterColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: parameterColumns"></tr>
+  </table>
+</div>

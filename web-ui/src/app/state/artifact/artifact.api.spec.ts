@@ -155,6 +155,49 @@ describe("ArtifactApi", () => {
     });
   });
 
+  describe("download", () => {
+    it("fileId has valid value should execute request with URL containing fileId", async (done) => {
+      // arrange
+      const fakeProject: Project = await getRandomProject();
+      const fakeArtifact: Artifact = await getRandomArtifact();
+      const fileId = fakeArtifact.files[0].fileId;
+
+      // act
+      const apiCall$ = artifactApi.download(fakeProject.key, fakeArtifact.name, fakeArtifact.version, fileId);
+
+      // assert
+      apiCall$.subscribe((response) => {
+        done();
+      });
+
+      const req: TestRequest = httpMock.expectOne(
+        `${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects/${fakeProject.key}/artifacts/${fakeArtifact.name}/${fakeArtifact.version}/files/${fileId}`
+      );
+      expect(req.request.method).toBe("GET");
+      req.flush(null);
+    });
+
+    it("fileId is undefined should execute request with URL that does not contain fileId", async (done) => {
+      // arrange
+      const fakeProject: Project = await getRandomProject();
+      const fakeArtifact: Artifact = await getRandomArtifact();
+
+      // act
+      const apiCall$ = artifactApi.download(fakeProject.key, fakeArtifact.name, fakeArtifact.version, undefined);
+
+      // assert
+      apiCall$.subscribe((response) => {
+        done();
+      });
+
+      const req: TestRequest = httpMock.expectOne(
+        `${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects/${fakeProject.key}/artifacts/${fakeArtifact.name}/${fakeArtifact.version}/files/`
+      );
+      expect(req.request.method).toBe("GET");
+      req.flush(null);
+    });
+  });
+
   function checkThatItemsLengthAndResponseMatch(response: ArtifactListResponse, fakeArtifacts: Artifact[], dummyResponse: ArtifactListResponse) {
     expect(response.items.length).toBe(fakeArtifacts.length);
     expect(response).toEqual(dummyResponse);

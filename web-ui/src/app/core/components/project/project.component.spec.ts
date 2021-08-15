@@ -90,6 +90,7 @@ describe("ProjectComponent", () => {
     expect(component).toBeTruthy();
   });
 
+  // TODO Fix Tests:
   /*
   describe("ngOnInit", () => {
     it("should load project with projectKey defined in active route", async () => {

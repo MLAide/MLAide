@@ -16,6 +16,10 @@ export const selectArtifactsByRunKeys = createSelector(
   artifactState,
   (artifactState) => artifactState.artifactsByRunKeys
 );
+export const selectArtifactsOfCurrentRun = createSelector(
+  artifactState,
+  (artifactState) => artifactState.artifactsOfCurrentRun
+);
 export const selectModels = createSelector(
   artifactState,
   (artifactState) => artifactState.models

@@ -1,7 +1,6 @@
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { CdkTreeModule } from "@angular/cdk/tree";
-import { HttpHeaders, HttpResponse } from "@angular/common/http";
 import { SimpleChange } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatButtonModule } from "@angular/material/button";
@@ -10,15 +9,17 @@ import { MatCardModule } from "@angular/material/card";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTreeModule } from "@angular/material/tree";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { FileSaverService } from "ngx-filesaver";
 import { of } from "rxjs";
-import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
+import { Artifact } from "@mlaide/entities/artifact.model";
 import { Project } from "@mlaide/entities/project.model";
-import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
 
 import { ArtifactsTreeComponent, FileNode, FlatTreeNode } from "./artifacts-tree.component";
-import { ArtifactsApiService } from "@mlaide/shared/api";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { Subscription } from "rxjs/internal/Subscription";
+import { downloadArtifact } from "@mlaide/state/artifact/artifact.actions";
+
 
 describe("ArtifactsTreeComponent", () => {
   let component: ArtifactsTreeComponent;
@@ -28,42 +29,34 @@ describe("ArtifactsTreeComponent", () => {
   let fakeArtifacts: Artifact[];
   let fakeProject: Project;
 
-  // service stubs
-  let artifactsApiServiceStub: jasmine.SpyObj<ArtifactsApiService>;
-  let fileSaverServiceStub: jasmine.SpyObj<FileSaverService>;
-
-  // data source mocks
-  let artifactListDataSourceMock: ListDataSourceMock<Artifact, ArtifactListResponse> = new ListDataSourceMock();
-  fileSaverServiceStub = jasmine.createSpyObj("fileSaverServiceStub", ["save"]);
+  // mocks
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
     // setup fakes
     fakeArtifacts = await getRandomArtifacts(3);
     fakeProject = await getRandomProject();
 
-    // stub services
-    artifactsApiServiceStub = jasmine.createSpyObj("artifactsApiService", ["download"]);
-
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [ArtifactsTreeComponent],
       providers: [
-        { provide: ArtifactsApiService, useValue: artifactsApiServiceStub },
-        { provide: FileSaverService, useValue: fileSaverServiceStub },
+        provideMockStore(),
       ],
       imports: [BrowserAnimationsModule, CdkTreeModule, MatButtonModule, MatCardModule, MatIconModule, MatTreeModule],
     }).compileComponents();
 
+    store = TestBed.inject(MockStore);
+    dispatchSpy = spyOn(store, 'dispatch');
+  });
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(ArtifactsTreeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
 
     // setup mocks
-    component.artifactListDataSource = artifactListDataSourceMock;
     component.projectKey = fakeProject.key;
-  });
-
-  afterEach(() => {
-    artifactListDataSourceMock.emulate([]);
   });
 
   it("should compile", () => {
@@ -78,16 +71,46 @@ describe("ArtifactsTreeComponent", () => {
     });
   });
 
+
   describe("ngOnChanges", () => {
-    it("should load component's artifactNodes to data source if changes include artifactListDataSource", async () => {
+    it("should call unsubscribe if artifacts$ changes detected", async () => {
+      // arrange in beforeEach
+      const artifacts$ = of([]);
+      component.artifacts$ = artifacts$;
+
+      const subscription = new Subscription();
+      const unsubscribeSpy = spyOn(subscription, "unsubscribe").and.callThrough();
+      spyOn(artifacts$, "subscribe").and.callFake(() => {
+        return subscription;
+      });
+
+      // We need to do this twice because otherwise unsubscribe is not called
+      component.ngOnChanges({
+        artifacts$: new SimpleChange(null, artifacts$, true),
+      });
+
+      fixture.detectChanges();
+
+      // act
+      component.ngOnChanges({
+        artifacts$: new SimpleChange(null, artifacts$, true),
+      });
+
+      fixture.detectChanges();
+
+      // assert
+      expect(unsubscribeSpy).toHaveBeenCalled();
+    });
+
+    it("should load component's artifactNodes to data source if changes include artifact$", async () => {
       // arrange + act also in beforeEach
       const spy = spyOn(component, "ngOnChanges").and.callThrough();
-      artifactListDataSourceMock.emulate(fakeArtifacts);
+      component.artifacts$ = of(fakeArtifacts);
 
       // act
       //directly call ngOnChanges
       component.ngOnChanges({
-        artifactListDataSource: new SimpleChange(null, artifactListDataSourceMock, true),
+        artifacts$: new SimpleChange(null, of(fakeArtifacts), true),
       });
       fixture.detectChanges();
 
@@ -104,17 +127,17 @@ describe("ArtifactsTreeComponent", () => {
         {
           artifactName: fakeArtifacts[0].name,
           artifactVersion: fakeArtifacts[0].version,
-          isDownlodable: true,
+          isDownloadable: true,
           name: fakeArtifacts[0].name,
           type: "folder",
           children: [
             {
-              isDownlodable: false,
+              isDownloadable: false,
               name: "subFolder",
               type: "folder",
               children: [
                 {
-                  isDownlodable: false,
+                  isDownloadable: false,
                   name: "subSubFolder",
                   type: "folder",
                   children: [
@@ -122,7 +145,7 @@ describe("ArtifactsTreeComponent", () => {
                       artifactFileId: "5",
                       artifactName: fakeArtifacts[0].name,
                       artifactVersion: fakeArtifacts[0].version,
-                      isDownlodable: true,
+                      isDownloadable: true,
                       name: "file5",
                       type: "file",
                     },
@@ -132,7 +155,7 @@ describe("ArtifactsTreeComponent", () => {
                   artifactFileId: "2",
                   artifactName: fakeArtifacts[0].name,
                   artifactVersion: fakeArtifacts[0].version,
-                  isDownlodable: true,
+                  isDownloadable: true,
                   name: "file2",
                   type: "file",
                 },
@@ -140,14 +163,14 @@ describe("ArtifactsTreeComponent", () => {
                   artifactFileId: "3",
                   artifactName: fakeArtifacts[0].name,
                   artifactVersion: fakeArtifacts[0].version,
-                  isDownlodable: true,
+                  isDownloadable: true,
                   name: "file3",
                   type: "file",
                 },
               ],
             },
             {
-              isDownlodable: false,
+              isDownloadable: false,
               name: "subFolder2",
               type: "folder",
               children: [
@@ -155,7 +178,7 @@ describe("ArtifactsTreeComponent", () => {
                   artifactFileId: "4",
                   artifactName: fakeArtifacts[0].name,
                   artifactVersion: fakeArtifacts[0].version,
-                  isDownlodable: true,
+                  isDownloadable: true,
                   name: "file4",
                   type: "file",
                 },
@@ -165,7 +188,7 @@ describe("ArtifactsTreeComponent", () => {
               artifactFileId: "1",
               artifactName: fakeArtifacts[0].name,
               artifactVersion: fakeArtifacts[0].version,
-              isDownlodable: true,
+              isDownloadable: true,
               name: "file1",
               type: "file",
             },
@@ -174,7 +197,7 @@ describe("ArtifactsTreeComponent", () => {
         {
           artifactName: fakeArtifacts[1].name,
           artifactVersion: fakeArtifacts[1].version,
-          isDownlodable: true,
+          isDownloadable: true,
           name: fakeArtifacts[1].name,
           type: "folder",
           children: [
@@ -182,7 +205,7 @@ describe("ArtifactsTreeComponent", () => {
               artifactFileId: "1",
               artifactName: fakeArtifacts[1].name,
               artifactVersion: fakeArtifacts[1].version,
-              isDownlodable: true,
+              isDownloadable: true,
               name: "file1",
               type: "file",
             },
@@ -191,19 +214,19 @@ describe("ArtifactsTreeComponent", () => {
         {
           artifactName: fakeArtifacts[2].name,
           artifactVersion: fakeArtifacts[2].version,
-          isDownlodable: true,
+          isDownloadable: true,
           name: fakeArtifacts[2].name,
           type: "folder",
           children: [],
         },
       ];
 
-      artifactListDataSourceMock.emulate(fakeArtifacts);
+      component.artifacts$ = of(fakeArtifacts);
 
       // act
       // directly call ngOnChanges
       component.ngOnChanges({
-        artifactListDataSource: new SimpleChange(null, artifactListDataSourceMock, true),
+        artifacts$: new SimpleChange(null, of(fakeArtifacts), true),
       });
       fixture.detectChanges();
 
@@ -212,15 +235,15 @@ describe("ArtifactsTreeComponent", () => {
       expect(component.dataSource.data).toEqual(expectedNodes);
     });
 
-    it("should not load new data from data source if changes do not include artifactListDataSource", async () => {
+    it("should not load new data from data source if changes do not include artifacts$", async () => {
       // arrange + act also in beforeEach
       const spy = spyOn(component, "ngOnChanges").and.callThrough();
-      artifactListDataSourceMock.emulate(fakeArtifacts);
+      component.artifacts$ = of(fakeArtifacts);
 
       // act
       //directly call ngOnChanges
       component.ngOnChanges({
-        projectKey: new SimpleChange(null, artifactListDataSourceMock, true),
+        projectKey: new SimpleChange(null, of(fakeArtifacts), true),
       });
       fixture.detectChanges();
 
@@ -230,10 +253,34 @@ describe("ArtifactsTreeComponent", () => {
     });
   });
 
+  describe("ngOnDestroy", () => {
+    it("should unsubscribe from artifactsSubscription", async () => {
+      // arrange in beforeEach
+      const artifacts$ = of([]);
+      component.artifacts$ = artifacts$;
+
+      const subscription = new Subscription();
+      const unsubscribeSpy = spyOn(subscription, "unsubscribe").and.callThrough();
+      spyOn(artifacts$, "subscribe").and.callFake(() => {
+        return subscription;
+      });
+      component.ngOnChanges({
+        artifacts$: new SimpleChange(null, artifacts$, true),
+      });
+
+      fixture.detectChanges();
+
+      // act
+      component.ngOnDestroy();
+
+      // assert
+      expect(unsubscribeSpy).toHaveBeenCalled();
+    });
+  });
+
   describe("download", () => {
-    it("should call download with fileId if it is set", async () => {
-      // arrange + act also in beforeEach
-      // setup artifacts api
+    it("should dispatch downloadArtifact action with provided node", async () => {
+      // arrange in beforeEach
       const node: FlatTreeNode = {
         artifactName: fakeArtifacts[0].name,
         artifactVersion: fakeArtifacts[0].version,
@@ -244,78 +291,17 @@ describe("ArtifactsTreeComponent", () => {
         level: 1,
         expandable: false,
       };
-      artifactsApiServiceStub.download.and.returnValue(of());
-
-      // act
-      //directly call ngOnChanges
-      component.download(node);
-
-      // assert
-      expect(artifactsApiServiceStub.download).toHaveBeenCalledWith(
-        fakeProject.key,
-        node.artifactName,
-        node.artifactVersion,
-        node.artifactFileId
-      );
-    });
-
-    it("should call download without fileId if it is not set", async () => {
-      // arrange + act also in beforeEach
-      // setup artifacts api
-      const node: FlatTreeNode = {
-        artifactName: fakeArtifacts[0].name,
-        artifactVersion: fakeArtifacts[0].version,
-        name: fakeArtifacts[0].name,
-        downloadable: true,
-        type: "file",
-        level: 1,
-        expandable: false,
-      };
-      artifactsApiServiceStub.download.and.returnValue(of());
-
-      // act
-      //directly call ngOnChanges
-      component.download(node);
-
-      // assert
-      expect(artifactsApiServiceStub.download).toHaveBeenCalledWith(fakeProject.key, node.artifactName, node.artifactVersion);
-    });
-
-    it("should call FileSaver saveAs with correct blob, filename and content disposition", async (done) => {
-      // arrange + act also in beforeEach
-      // setup artifacts api
-      const node: FlatTreeNode = {
-        artifactName: fakeArtifacts[0].name,
-        artifactVersion: fakeArtifacts[0].version,
-        name: fakeArtifacts[0].name,
-        downloadable: true,
-        type: "file",
-        level: 1,
-        expandable: false,
-      };
-
-      const headers: HttpHeaders = new HttpHeaders({
-        "Content-Disposition": 'attachment; filename="data.csv"',
-        "Content-Type": "text/csv",
-      });
-      const returnBuffer: ArrayBufferLike = new Uint16Array([1, 2, 3]).buffer;
-      const response = new HttpResponse<ArrayBuffer>({
-        body: returnBuffer,
-        headers: headers,
-      });
-      artifactsApiServiceStub.download.and.returnValue(of(response));
 
       // act
       component.download(node);
 
       // assert
-      expect(fileSaverServiceStub.save).toHaveBeenCalledWith(jasmine.any(Blob), "data.csv");
-      const actualBlob = fileSaverServiceStub.save.calls.argsFor(0)[0];
-      expect(actualBlob.type).toBe("text/csv");
-      actualBlob.arrayBuffer().then((buffer) => {
-        expect(buffer).toEqual(returnBuffer);
-        done();
-      });
+      expect(dispatchSpy).toHaveBeenCalledWith(downloadArtifact({
+        projectKey: component.projectKey,
+        artifactName: node.artifactName,
+        artifactVersion: node.artifactVersion,
+        artifactFileId: node.artifactFileId
+      }));
     });
   });
 
@@ -360,12 +346,14 @@ describe("ArtifactsTreeComponent", () => {
 
       assignFilesOfFakeArtifact();
 
-      artifactListDataSourceMock.emulate(fakeArtifacts);
+      component.artifacts$ = of(fakeArtifacts);
+
       component.ngOnChanges({
-        artifactListDataSource: new SimpleChange(null, artifactListDataSourceMock, true),
+        artifacts$: new SimpleChange(null, of(fakeArtifacts), true),
       });
       fixture.detectChanges();
     });
+
 
     it("should contain the artifacts tree", () => {
       // arrange + act also in beforeEach
@@ -473,6 +461,7 @@ describe("ArtifactsTreeComponent", () => {
      *   |- file1
      * 3rd-Artifact
      */
+
     fakeArtifacts[0].name = "1st-Artifact";
     fakeArtifacts[0].files = [
       {

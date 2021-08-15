@@ -1,18 +1,17 @@
 import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from "@angular/core";
 import { MatTreeFlatDataSource, MatTreeFlattener } from "@angular/material/tree";
 import { FlatTreeControl } from "@angular/cdk/tree";
-import { ArtifactsApiService, ListDataSource } from "@mlaide/shared/api";
 import { Observable, Subscription } from "rxjs";
-import { Artifact, ArtifactListResponse } from "@mlaide/entities/artifact.model";
-import { HttpResponse } from "@angular/common/http";
-import { FileSaverService } from "ngx-filesaver";
+import { Store } from "@ngrx/store";
+import { downloadArtifact } from "@mlaide/state/artifact/artifact.actions";
+import { Artifact } from "@mlaide/state/artifact/artifact.models";
 
 /** File node data with possible child nodes. */
 export interface FileNode {
   artifactFileId?: string;
   artifactName?: string;
   artifactVersion?: number;
-  isDownlodable: boolean;
+  isDownloadable: boolean;
   name: string;
   type: string;
   children?: FileNode[];
@@ -39,10 +38,10 @@ export interface FlatTreeNode {
   styleUrls: ["./artifacts-tree.component.scss"],
 })
 export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
-  @Input() artifactListDataSource: ListDataSource<ArtifactListResponse>;
-  private artifactListSubscription: Subscription;
-  @Input() projectKey: string;
+  @Input() public artifacts$: Observable<Artifact[]>;
+  @Input() public projectKey: string;
   public artifactNodes: FileNode[] = [];
+  private artifactsSubscription: Subscription;
 
   /** The TreeControl controls the expand/collapse state of tree nodes.  */
   treeControl: FlatTreeControl<FlatTreeNode>;
@@ -53,7 +52,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
   /** The MatTreeFlatDataSource connects the control and flattener to provide data. */
   dataSource: MatTreeFlatDataSource<FileNode, FlatTreeNode>;
 
-  constructor(private artifactsApiService: ArtifactsApiService, private fileSaverService: FileSaverService) {
+  constructor(private store: Store) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
 
     this.treeControl = new FlatTreeControl(this.getLevel, this.isExpandable);
@@ -61,13 +60,11 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.artifactListDataSource) {
-      if (this.artifactListSubscription) {
-        this.artifactListSubscription.unsubscribe();
-      }
+    if (changes.artifacts$) {
+      this.unsubscribeArtifacts();
 
-      this.artifactListSubscription = this.artifactListDataSource?.items$.subscribe((artifacts) => {
-        this.buildFileNodes(artifacts?.items);
+      this.artifactsSubscription = this.artifacts$.subscribe((artifacts) => {
+        this.buildFileNodes(artifacts);
         if (this.artifactNodes) {
           this.sortTree(this.artifactNodes);
           this.dataSource.data = this.artifactNodes;
@@ -77,37 +74,16 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.artifactListSubscription) {
-      this.artifactListSubscription.unsubscribe();
-      this.artifactListSubscription = null;
-    }
+    this.unsubscribeArtifacts();
   }
 
   public download(node: FlatTreeNode) {
-    let observable: Observable<HttpResponse<ArrayBuffer>>;
-
-    if (node.artifactFileId) {
-      observable = this.artifactsApiService.download(
-        this.projectKey,
-        node.artifactName,
-        node.artifactVersion,
-        node.artifactFileId
-      );
-    } else {
-      observable = this.artifactsApiService.download(this.projectKey, node.artifactName, node.artifactVersion);
-    }
-
-    observable.subscribe((response: any) => {
-      const blob = new Blob([response], {
-        type: response.headers.get("Content-Type"),
-      });
-      const contentDisposition: string = response.headers.get("Content-Disposition");
-      // https://stackoverflow.com/questions/23054475/javascript-regex-for-extracting-filename-from-content-disposition-header/23054920
-      const regEx = new RegExp(/filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/gi);
-
-      const fileName = regEx.exec(contentDisposition)[1];
-      this.fileSaverService.save(blob, fileName);
-    });
+    this.store.dispatch(downloadArtifact({
+      projectKey: this.projectKey,
+      artifactName: node.artifactName,
+      artifactVersion: node.artifactVersion,
+      artifactFileId: node.artifactFileId
+    }));
   }
 
   /** Get whether the node has children or not. */
@@ -121,7 +97,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
       artifactFileId: node.artifactFileId,
       artifactName: node.artifactName,
       artifactVersion: node.artifactVersion,
-      downloadable: node.isDownlodable,
+      downloadable: node.isDownloadable,
       name: node.name,
       type: node.type,
       level: level,
@@ -150,13 +126,13 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
       root = {
         artifactName: artifact.name,
         artifactVersion: artifact.version,
-        isDownlodable: true,
+        isDownloadable: true,
         name: artifact.name,
         type: "folder",
         children: [],
       };
       artifact.files?.forEach((file) => {
-        const fileDir = this.separateFileDir(file.fileName);
+        const fileDir = ArtifactsTreeComponent.separateFileDir(file.fileName);
         let fileNode = root;
 
         fileDir?.forEach((fileDirPart, index, fileDirArray) => {
@@ -165,7 +141,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
               artifactFileId: file.fileId,
               artifactName: artifact.name,
               artifactVersion: artifact.version,
-              isDownlodable: true,
+              isDownloadable: true,
               name: fileDirPart,
               type: "file",
             });
@@ -174,7 +150,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
 
             if (child === undefined) {
               child = {
-                isDownlodable: false,
+                isDownloadable: false,
                 name: fileDirPart,
                 type: "folder",
                 children: [],
@@ -191,7 +167,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
     });
   }
 
-  private separateFileDir(fileDir: string): string[] {
+  private static separateFileDir(fileDir: string): string[] {
     return fileDir.split("/");
   }
 
@@ -204,14 +180,14 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
       return;
     }
 
-    artifactNodes.sort(this.compare);
+    artifactNodes.sort(ArtifactsTreeComponent.compare);
 
     artifactNodes.forEach((node) => {
       this.sortTree(node.children);
     });
   }
 
-  private compare(objectA: FileNode, objectB: FileNode) {
+  private static compare(objectA: FileNode, objectB: FileNode) {
     /*
      * If one object is a folder and the other is not, the folder is sorted higher
      */
@@ -230,6 +206,13 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
       return 1;
     } else {
       return 0;
+    }
+  }
+
+  private unsubscribeArtifacts() {
+    if (this.artifactsSubscription) {
+      this.artifactsSubscription.unsubscribe();
+      this.artifactsSubscription = null;
     }
   }
 }

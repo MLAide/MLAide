@@ -20,9 +20,9 @@ export class RunsCompareComponent implements OnInit {
   public displayedMetricsColumns$: Observable<string[]>;
   public displayedParametersColumns$: Observable<string[]>;
   public displayedColumnsStartTime$: Observable<any>;
-  
-  public metrics$: Observable<string[][]>;
-  public parameters$: Observable<string[][]>;
+
+  public metrics$: Observable<any[][]>;
+  public parameters$: Observable<any[][]>;
 
   constructor(private store: Store) {}
 

@@ -1,19 +1,19 @@
 import { SelectionModel } from "@angular/cdk/collections";
-import { AfterViewInit, Component, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild } from "@angular/core";
+import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
 import { Observable, Subscription } from "rxjs";
-import { FileSaverService } from "ngx-filesaver";
-import { RunsApiService } from "@mlaide/shared/api";
-import { Run, } from "@mlaide/entities/run.model";
+import { Run } from "@mlaide/state/run/run.models";
+import { Store } from "@ngrx/store";
+import { AppState } from "@mlaide/state/app.state";
+import { exportRuns } from "@mlaide/state/run/run.actions";
+import { MatTableDataSource } from "@angular/material/table";
 
 @Component({
   selector: "app-runs-list-table",
   templateUrl: "./runs-list-table.component.html",
   styleUrls: ["./runs-list-table.component.scss"],
 })
-export class RunsListTableComponent implements AfterViewInit, OnChanges, OnDestroy {
+export class RunsListTableComponent implements OnChanges, OnDestroy {
   @Input() public projectKey: string;
   @Input() public runs$: Observable<Run[]>;
   @Input() public isLoading$: Observable<boolean>;
@@ -22,20 +22,14 @@ export class RunsListTableComponent implements AfterViewInit, OnChanges, OnDestr
   public displayedColumns: string[] = ["select", "name", "status", "startTime", "runTime", "metrics", "createdBy", "experiments"];
   public hideParameters = true;
   public selection = new SelectionModel<Run>(true, []);
-  @ViewChild(MatSort) public sort: MatSort;
 
   private runsSubscription: Subscription;
 
   constructor(
+    private store: Store<AppState>,
     private router: Router,
-    private runsApiService: RunsApiService,
-    private route: ActivatedRoute,
-    private fileSaverService: FileSaverService
+    private route: ActivatedRoute
   ) {}
-
-  public ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
-  }
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes.runs$) {
@@ -69,14 +63,8 @@ export class RunsListTableComponent implements AfterViewInit, OnChanges, OnDestr
   }
 
   public exportSelectedRuns(): void {
-    const runKeys = [];
-    this.selection.selected.forEach((run) => runKeys.push(run.key));
-
-    this.runsApiService.exportRunsByRunKeys(this.projectKey, runKeys).subscribe((data: any) => {
-      const blob = new Blob([data], { type: "application/octet-stream" });
-      const fileName = `ExportedRuns_${new Date().toISOString()}.json`;
-      this.fileSaverService.save(blob, fileName);
-    });
+    const runKeys = this.selection.selected.map((run) => run.key);
+    this.store.dispatch(exportRuns({ runKeys }));
   }
 
   public goToRunCompareComponent(): void {

@@ -39,7 +39,7 @@ export interface RunParameter {
   value: any;
 }
 
-export interface RunMetrics {
+export interface RunMetric {
   key: string;
   value: any;
 }

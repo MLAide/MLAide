@@ -1,116 +1,66 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { MatTableDataSource } from "@angular/material/table";
-import { ActivatedRoute } from "@angular/router";
-import { Observable, Subscription } from "rxjs";
-import { ArtifactListResponse } from "@mlaide/entities/artifact.model";
-import { SnackbarUiService } from "@mlaide/shared/services/snackbar-ui.service";
+import { Component, OnInit } from "@angular/core";
+import { Observable } from "rxjs";
 import { Run, RunMetrics, RunParameter } from "@mlaide/entities/run.model";
-import { ArtifactsApiService, ListDataSource, RunsApiService } from "@mlaide/shared/api";
+import { AppState } from "@mlaide/state/app.state";
+import { Store } from "@ngrx/store";
+import { selectCurrentRun } from "@mlaide/state/run/run.selectors";
+import { selectArtifactsOfCurrentRun } from "@mlaide/state/artifact/artifact.selectors";
+import { editRunNote, loadCurrentRun } from "@mlaide/state/run/run.actions";
+import { loadArtifactsOfCurrentRun } from "@mlaide/state/artifact/artifact.actions";
+import { Artifact } from "@mlaide/state/artifact/artifact.models";
+import { filter, map } from "rxjs/operators";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 
 @Component({
   selector: "app-run-details",
   templateUrl: "./run-details.component.html",
   styleUrls: ["./run-details.component.scss"],
 })
-export class RunDetailsComponent implements OnInit, OnDestroy {
-  public cancledEditNote = false;
-  public metrics: RunMetrics[] = [];
-  public metricsColumns: string[] = ["metricsKey", "metricsValue"];
-  public metricsDataSource: MatTableDataSource<RunParameter> = new MatTableDataSource<RunParameter>();
-  public note = "";
-  public parameterColumns: string[] = ["parametersKey", "parametersValue"];
-  public parameters: RunParameter[] = [];
-  public parametersDataSource: MatTableDataSource<RunParameter> = new MatTableDataSource<RunParameter>();
-  public run: Run;
-  public showButtons = false;
-  private routeParamsSubscription: Subscription;
-  public projectKey: string;
-  private runKey: number;
-  public artifactListDataSource: ListDataSource<ArtifactListResponse>;
+export class RunDetailsComponent implements OnInit {
+  public run$: Observable<Run>;
+  public artifacts$: Observable<Artifact[]>;
+  public projectKey$: Observable<string>;
+  public parameters$: Observable<RunParameter[]>;
+  public metrics$: Observable<RunMetrics[]>;
 
-  constructor(
-    private artifactsApiService: ArtifactsApiService,
-    private runsApiService: RunsApiService,
-    private route: ActivatedRoute,
-    private snackBarUiService: SnackbarUiService
-  ) {}
+  constructor(private store: Store<AppState>) {}
 
-  ngOnInit() {
-    this.routeParamsSubscription = this.route.params.subscribe((params) => {
-      this.projectKey = params.projectKey;
-      this.runKey = params.runKey;
+  public ngOnInit() {
+    this.run$ = this.store.select(selectCurrentRun);
+    this.artifacts$ = this.store.select(selectArtifactsOfCurrentRun);
+    this.projectKey$ = this.store.select(selectCurrentProjectKey);
+    this.parameters$ = this.run$.pipe(
+      filter(run => !!run), // only continue if run has value
+      map(run => run.parameters),
+      filter(parameters => !!parameters), // only continue if parameters has value
+      map(parameters =>
+        Object.entries(parameters).map(([key, value]) =>
+          ({
+            key: key,
+            value: value
+          })
+        )
+      )
+    );
+    this.metrics$ = this.run$.pipe(
+      filter(run => !!run), // only continue if run has value
+      map(run => run.metrics),
+      filter(metrics => !!metrics), // only continue if metrics has value
+      map(metrics =>
+        Object.entries(metrics).map(([key, value]) =>
+          ({
+            key: key,
+            value: value
+          })
+        )
+      )
+    );
 
-      this.runsApiService.getRun(this.projectKey, this.runKey).subscribe((run) => {
-        this.run = run;
-        if (run.parameters) {
-          for (const [key, value] of Object.entries(run.parameters)) {
-            this.parameters.push({ key, value });
-          }
-        }
-        if (run.metrics) {
-          for (const [key, value] of Object.entries(run.metrics)) {
-            this.metrics.push({ key, value });
-          }
-        }
-
-        this.parametersDataSource.data = this.parameters;
-        this.metricsDataSource.data = this.metrics;
-
-        if (run.note) {
-          this.note = run.note;
-        }
-
-        this.artifactListDataSource = this.artifactsApiService.getArtifactsByRunKeys(this.projectKey, [run.key]);
-      });
-    });
+    this.store.dispatch(loadCurrentRun());
+    this.store.dispatch(loadArtifactsOfCurrentRun());
   }
 
-  ngOnDestroy(): void {
-    if (this.routeParamsSubscription) {
-      this.routeParamsSubscription.unsubscribe();
-    }
-  }
-
-  public cancel() {
-    this.cancledEditNote = true;
-    if (this.run.note) {
-      this.note = this.run.note;
-    } else {
-      this.note = "";
-    }
-  }
-
-  public focusedNoteTextarea() {
-    this.showButtons = true;
-  }
-
-  public save() {
-    if (this.run.note !== this.note && this.note) {
-      this.run.note = this.note;
-      const patchRunObservable: Observable<string> = this.runsApiService.updateNoteInRun(
-        this.projectKey,
-        this.run.key,
-        this.run.note
-      );
-
-      const subscription: Subscription = patchRunObservable.subscribe(
-        (response: any) => {
-          this.snackBarUiService.showSuccesfulSnackbar("Successfully saved note!");
-          subscription.unsubscribe();
-        },
-        (error) => {
-          this.snackBarUiService.showErrorSnackbar("Error while saving note.");
-          subscription.unsubscribe();
-        }
-      );
-    }
-  }
-
-  public unfocusedNoteTextarea() {
-    this.showButtons = false;
-    if (!this.cancledEditNote) {
-      this.save();
-    }
-    this.cancledEditNote = false;
+  public updateNote(note: string) {
+    this.store.dispatch(editRunNote({ note }));
   }
 }

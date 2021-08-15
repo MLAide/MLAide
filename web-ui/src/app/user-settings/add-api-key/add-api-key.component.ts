@@ -1,30 +1,27 @@
 import { ENTER } from "@angular/cdk/keycodes";
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { MatDialogRef } from "@angular/material/dialog";
 import { ApiKey } from "@mlaide/entities/apiKey.model";
-import { UsersApiService } from "@mlaide/shared/api";
-import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
 import { addApiKey, closeAddApiKeyDialog } from "@mlaide/state/api-key/api-key.actions";
 import { selectNewCreatedApiKey } from "@mlaide/state/api-key/api-key.selectors";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
+import { showSuccessMessage } from "@mlaide/state/shared/shared.actions";
 
 @Component({
   selector: "app-create-api-key",
   templateUrl: "./add-api-key.component.html",
   styleUrls: ["./add-api-key.component.scss"],
 })
-export class AddApiKeyComponent {
+export class AddApiKeyComponent implements OnInit {
   public form: FormGroup;
   public today = new Date(Date.now());
-  public apiKey$: Observable<ApiKey> = this.store.select(selectNewCreatedApiKey);
+  public apiKey$: Observable<ApiKey>;
 
   private isApiKeyCreated: boolean = false;
 
   constructor(
     private readonly formBuilder: FormBuilder,
-    private readonly snackbarUiService: SnackbarUiService,
     private readonly store: Store
   ) {
     this.form = this.formBuilder.group({
@@ -39,12 +36,16 @@ export class AddApiKeyComponent {
     });
   }
 
+  ngOnInit(): void {
+   this.apiKey$ = this.store.select(selectNewCreatedApiKey);
+  }
+
   public close() {
     this.store.dispatch(closeAddApiKeyDialog());
   }
 
   public copy() {
-    this.snackbarUiService.showSuccesfulSnackbar("Successfully copied to clipboard!");
+    this.store.dispatch(showSuccessMessage({message: "Successfully copied to clipboard!"}));
   }
 
   public create() {

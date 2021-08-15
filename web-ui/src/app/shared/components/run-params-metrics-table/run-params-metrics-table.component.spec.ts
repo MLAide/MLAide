@@ -11,6 +11,7 @@ import { Run } from "@mlaide/entities/run.model";
 import { getRandomRuns } from "src/app/mocks/fake-generator";
 
 import { RunParamsMetricsTableComponent } from "./run-params-metrics-table.component";
+import { of } from "rxjs";
 
 describe("RunParamsMetricsTableComponent", () => {
   let component: RunParamsMetricsTableComponent;
@@ -34,16 +35,6 @@ describe("RunParamsMetricsTableComponent", () => {
   });
 
   // TODO: Fix Tests
-  /*
-  describe("ngAfterViewInit", () => {
-    it("should set datasource sort", () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(component.dataSource.sort).toEqual(component.sort);
-    });
-  });
-  */
 
   describe("valuesInRowDiffer", () => {
     it("should return false if row's length is < 1", () => {
@@ -142,16 +133,14 @@ describe("RunParamsMetricsTableComponent", () => {
         dateSecondRun = new Date(Date.now());
       });
 
-      it("should contain the comparison table", () => {
+      it("should contain the comparison table", async () => {
         // arrange + act also in beforeEach
-        let table: HTMLElement = fixture.nativeElement.querySelector("table");
+        const table: MatTableHarness = await loader.getHarness(MatTableHarness);
 
         // assert
-        expect(table.textContent).toBeTruthy();
+        expect(table).toBeTruthy();
       });
 
-      // TODO: Fix Tests
-      /*
       it("should have defined headers", async () => {
         // arrange + act also in beforeEach
         let parametersAndMetricsColumns;
@@ -167,8 +156,12 @@ describe("RunParamsMetricsTableComponent", () => {
           startTimeColumns.push(String(fakeRun.startTime));
         });
 
-        component.displayedColumnsName = parametersAndMetricsColumns;
-        component.displayedColumnsStartTime = startTimeColumns;
+        // need to set this, otherwise an exception occurs
+        component.data$ = of([]);
+
+        component.displayedColumnsName$ = of(parametersAndMetricsColumns);
+        component.displayedColumnsStartTime$ = of(startTimeColumns);
+        fixture.detectChanges();
 
         const table: MatTableHarness = await loader.getHarness(MatTableHarness);
         const headers: MatHeaderRowHarness[] = await table.getHeaderRows();
@@ -189,9 +182,7 @@ describe("RunParamsMetricsTableComponent", () => {
           }
         });
       });
-      */
-// TODO: Fix Tests
-      /*
+
       it("should show row for each metric / parameter", async () => {
         // arrange + act also in beforeEach
         const expectedData = [
@@ -201,21 +192,23 @@ describe("RunParamsMetricsTableComponent", () => {
           ["float", "12.34", "12.35"],
           ["date", String(dateFirstRun), String(dateSecondRun)],
         ];
-        component.displayedColumnsName = ["name", "run1", "run2"];
-        component.displayedColumnsStartTime = ["date1", "date2", "date3"];
-        component.dataSource.data = expectedData;
+        component.displayedColumnsName$ = of(["name", "run1", "run2"]);
+        component.displayedColumnsStartTime$ = of(["date1", "date2", "date3"]);
+        component.data$ = of(expectedData);
         fixture.detectChanges();
         const table: MatTableHarness = await loader.getHarness(MatTableHarness);
         const rows: MatRowHarness[] = await table.getRows();
 
         // assert
         expect(rows.length).toBe(5);
-        rows.forEach(async (row, rowIndex) => {
-          const cells = await row.getCells();
-          cells.forEach(async (cell, cellIndex) => {
-            expect(await cell.getText()).toEqual(String(expectedData[rowIndex][cellIndex]));
-          });
-        });
+        await Promise.all(rows.map(
+          async (row, rowIndex) => {
+            const cells = await row.getCells();
+            await Promise.all(cells.map(async (cell, cellIndex) => {
+              expect(await cell.getText()).toEqual(String(expectedData[rowIndex][cellIndex]));
+            }));
+          }
+        ));
       });
 
       it("should change value to - if it is not defined", async () => {
@@ -225,26 +218,26 @@ describe("RunParamsMetricsTableComponent", () => {
           ["number", "123", "34"],
           ["string", "anyvalue", undefined],
         ];
-        component.displayedColumnsName = ["name", "run1", "run2"];
-        component.displayedColumnsStartTime = ["date1", "date2", "date3"];
-        component.dataSource.data = expectedData;
+        component.displayedColumnsName$ = of(["name", "run1", "run2"]);
+        component.displayedColumnsStartTime$ = of(["date1", "date2", "date3"]);
+        component.data$ = of(expectedData);
         fixture.detectChanges();
         const table: MatTableHarness = await loader.getHarness(MatTableHarness);
         const rows: MatRowHarness[] = await table.getRows();
 
         // assert
         expect(rows.length).toBe(3);
-        rows.forEach(async (row, rowIndex) => {
+        await Promise.all(rows.map(async (row, rowIndex) => {
           const cells = await row.getCells();
-          cells.forEach(async (cell, cellIndex) => {
+          await Promise.all(cells.map(async (cell, cellIndex) => {
             const expectedValue = String(expectedData[rowIndex][cellIndex]);
             if (expectedValue === "undefined") {
               expect(await cell.getText()).toEqual("-");
             } else {
               expect(await cell.getText()).toEqual(String(expectedData[rowIndex][cellIndex]));
             }
-          });
-        });
+          }));
+        }));
       });
 
       it("should change set css class of row cells to make-bg-divergent if valuesInRowMatch returns false", async () => {
@@ -253,9 +246,9 @@ describe("RunParamsMetricsTableComponent", () => {
           ["bool", "true", "false"],
           ["number", "123", "123"],
         ];
-        component.displayedColumnsName = ["name", "run1", "run2"];
-        component.displayedColumnsStartTime = ["date1", "date2", "date3"];
-        component.dataSource.data = expectedData;
+        component.displayedColumnsName$ = of(["name", "run1", "run2"]);
+        component.displayedColumnsStartTime$ = of(["date1", "date2", "date3"]);
+        component.data$ = of(expectedData);
         fixture.detectChanges();
         const table: MatTableHarness = await loader.getHarness(MatTableHarness);
         const rows: MatRowHarness[] = await table.getRows();
@@ -264,13 +257,12 @@ describe("RunParamsMetricsTableComponent", () => {
         await assertHasDivergentCssClass(rows[0], true);
         await assertHasDivergentCssClass(rows[1], false);
       });
-      */
 
       async function assertHasDivergentCssClass(row: MatRowHarness, hasDivergentClass: boolean) {
-        (await row.getCells()).forEach(async (cell) => {
+        await Promise.all((await row.getCells()).map(async (cell) => {
           const cellTE: TestElement = await cell.host();
           expect(await cellTE.hasClass("make-bg-divergent")).toBe(hasDivergentClass);
-        });
+        }));
       }
     });
   });

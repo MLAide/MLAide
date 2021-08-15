@@ -1,10 +1,6 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { MatSort } from "@angular/material/sort";
-import { ActivatedRoute } from "@angular/router";
+import { Component, OnInit } from "@angular/core";
 import { Observable} from "rxjs";
 import { Artifact, ModelStage } from "@mlaide/entities/artifact.model";
-import { ArtifactsApiService } from "@mlaide/shared/api";
 import { Store } from "@ngrx/store";
 import { selectIsLoadingArtifacts, selectModels } from "@mlaide/state/artifact/artifact.selectors";
 import {
@@ -20,8 +16,6 @@ import {
 })
 export class ModelsListComponent implements OnInit {
   public displayedColumns: string[] = ["modelName", "version", "stage", "runName", "actions"];
-  // TODO Raman: Müssen wir hier nicht das sort in AfterViewInit setzen wie z.B. in experiments-list.component?
-  @ViewChild(MatSort) public sort: MatSort;
   public stages = ModelStage;
 
   public models$: Observable<Artifact[]>;

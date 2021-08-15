@@ -1,0 +1,26 @@
+<div>
+  <table
+    id="metrics-table"
+    fxFlex="50"
+    mat-table
+    class="mat-elevation-z2"
+    [dataSource]="metrics$ | async"
+    aria-label="Run metrics overview"
+  >
+    <ng-container matColumnDef="metricsKey">
+      <th id="metric-key" mat-header-cell *matHeaderCellDef i18n>Key</th>
+      <td headers="metric-key" mat-cell *matCellDef="let element">
+        {{ element.key }}
+      </td>
+    </ng-container>
+    <!-- https://angular.io/api/common/KeyValuePipe -->
+    <ng-container matColumnDef="metricsValue">
+      <th id="metric-value" mat-header-cell *matHeaderCellDef i18n>Value</th>
+      <td headers="metric-value" mat-cell *matCellDef="let element">
+        {{ element.value }}
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="metricsColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: metricsColumns"></tr>
+  </table>
+</div>

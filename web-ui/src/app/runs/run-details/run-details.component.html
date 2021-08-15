@@ -1,137 +1,76 @@
-<div fxLayout="row" fxLayoutAlign="space-between start">
-  <h1 class="mat-display-2">{{ run?.name }}</h1>
-</div>
-<div fxLayout="column">
-  <div>
-    <h3 class="mat-h3" i18n>Meta data</h3>
+<div *ngIf="run$ | async; let run">
+  <div fxLayout="row" fxLayoutAlign="space-between start">
+    <h1 class="mat-display-2">{{ run.name }}</h1>
   </div>
-  <div fxLayout="row" fxLayoutAlign="space-between end">
-    <div fxLayout="column">
-      <span id="author-label" class="mat-small" i18n>Author</span>
-      <span id="author-value" class="mat-body">{{ run?.createdBy.nickName }}</span>
+
+  <!-- run metadata -->
+  <div fxLayout="column">
+    <div>
+      <h3 class="mat-h3" i18n>Meta data</h3>
     </div>
-    <div fxLayout="column">
-      <span id="status-label" class="mat-small" i18n>Status</span>
-      <span id="status-value" class="mat-body">
-        <app-run-status-i18n [key]="run?.status"></app-run-status-i18n>
+    <div fxLayout="row" fxLayoutAlign="space-between end">
+      <div fxLayout="column">
+        <span id="author-label" class="mat-small" i18n>Author</span>
+        <span id="author-value" class="mat-body">{{ run.createdBy.nickName }}</span>
+      </div>
+      <div fxLayout="column">
+        <span id="status-label" class="mat-small" i18n>Status</span>
+        <span id="status-value" class="mat-body">
+        <app-run-status-i18n [key]="run.status"></app-run-status-i18n>
       </span>
-    </div>
-    <div fxLayout="column">
-      <span id="start-time-label" class="mat-small" i18n>Start Time</span>
-      <span id="start-time-value" class="mat-body">{{ run?.startTime | amTimeAgo }}</span>
-    </div>
-    <div fxLayout="column">
-      <span id="run-time-label" class="mat-small" i18n>Run Time</span>
-      <span id="run-time-value" class="mat-body">{{ run?.endTime ? (run?.startTime | duration: run?.endTime) : "-" }}</span>
-    </div>
-    <div fxLayout="column">
-      <span id="experiments-label" class="mat-small" i18n>Experiments</span>
-      <span id="experiments-value">
+      </div>
+      <div fxLayout="column">
+        <span id="start-time-label" class="mat-small" i18n>Start Time</span>
+        <span id="start-time-value" class="mat-body">{{ run.startTime | amTimeAgo }}</span>
+      </div>
+      <div fxLayout="column">
+        <span id="run-time-label" class="mat-small" i18n>Run Time</span>
+        <span id="run-time-value" class="mat-body">{{ run.endTime ? (run.startTime | duration: run.endTime) : "-" }}</span>
+      </div>
+      <div fxLayout="column">
+        <span id="experiments-label" class="mat-small" i18n>Experiments</span>
+        <span id="experiments-value">
         <mat-chip-list #tagList aria-label="Experiments">
-          <mat-chip *ngFor="let experimentRef of run?.experimentRefs" [selectable]="true" [removable]="false">
+          <mat-chip *ngFor="let experimentRef of run.experimentRefs" [selectable]="true" [removable]="false">
             {{ experimentRef.experimentKey }}
           </mat-chip>
         </mat-chip-list>
       </span>
+      </div>
     </div>
   </div>
+
+  <!-- run note -->
+  <app-run-note [note]="run.note" (updateNote)="updateNote($event)"></app-run-note>
 </div>
-<div fxLayout="column" (focusout)="unfocusedNoteTextarea()">
-  <h3 class="mat-h3"><span></span></h3>
-  <div fxLayout="row">
-    <mat-form-field fxFlex="50" appearance="outline">
-      <mat-label i18n>Note</mat-label>
-      <textarea
-        matInput
-        cdkTextareaAutosize
-        #notes
-        #autosize="cdkTextareaAutosize"
-        (focus)="focusedNoteTextarea()"
-        (input)="note = $event.target.value"
-        placeholder="Write down your thoughts..."
-        [(value)]="note"
-      ></textarea>
-    </mat-form-field>
-  </div>
-  <div fxLayout="row" *ngIf="showButtons">
-    <div fxFlex="50" *ngIf="showButtons" fxLayoutAlign="end">
-      <!-- // https://stackoverflow.com/questions/52037475/focusout-on-an-element-conflicting-with-click-on-other-in-angular -->
-      <button mat-raised-button (mousedown)="cancel()" i18n>Cancel</button>
-      <span class="margin-right-sm"></span>
-      <button mat-raised-button color="primary" (mousedown)="save()" i18n>Save</button>
-    </div>
-  </div>
-</div>
+
+<!-- parameters table -->
 <div fxLayout="column">
   <div>
     <h3 id="parameters-title" class="mat-h3" i18n>Parameters</h3>
   </div>
   <div>
-    <table
-      id="parameters-table"
-      fxFlex="50"
-      mat-table
-      matSort
-      class="mat-elevation-z2"
-      [dataSource]="parametersDataSource"
-      aria-label="Run parameters overview"
-    >
-      <ng-container matColumnDef="parametersKey">
-        <th id="parameter-key" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Key</th>
-        <td headers="parameter-key" mat-cell *matCellDef="let element">
-          {{ element.key }}
-        </td>
-      </ng-container>
-      <!-- https://angular.io/api/common/KeyValuePipe -->
-      <ng-container matColumnDef="parametersValue">
-        <th id="parameter-value" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Value</th>
-        <td headers="parameter-value" mat-cell *matCellDef="let element">
-          {{ element.value }}
-        </td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="parameterColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: parameterColumns"></tr>
-    </table>
+    <app-parameters-table [parameters$]="parameters$"></app-parameters-table>
   </div>
 </div>
+
+<!-- metrics table -->
 <div fxLayout="column">
   <div>
     <h3 id="metrics-title" class="mat-h3" i18n>Metrics</h3>
   </div>
   <div>
-    <table
-      id="metrics-table"
-      fxFlex="50"
-      mat-table
-      matSort
-      class="mat-elevation-z2"
-      [dataSource]="metricsDataSource"
-      aria-label="Run metrics overview"
-    >
-      <ng-container matColumnDef="metricsKey">
-        <th id="metric-key" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Key</th>
-        <td headers="metric-key" mat-cell *matCellDef="let element">
-          {{ element.key }}
-        </td>
-      </ng-container>
-      <!-- https://angular.io/api/common/KeyValuePipe -->
-      <ng-container matColumnDef="metricsValue">
-        <th id="metric-value" mat-header-cell *matHeaderCellDef mat-sort-header i18n>Value</th>
-        <td headers="metric-value" mat-cell *matCellDef="let element">
-          {{ element.value }}
-        </td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="metricsColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: metricsColumns"></tr>
-    </table>
+    <app-metrics-table [metrics$]="metrics$"></app-metrics-table>
   </div>
 </div>
+
+<!-- artifacts tree -->
 <div fxLayout="column">
   <div>
     <h3 id="artifacts-tree-title" class="mat-h3" i18n>Artifacts</h3>
   </div>
   <div>
-    <app-artifacts-tree fxFlex="50" [artifactListDataSource]="artifactListDataSource" [projectKey]="projectKey">
+    <app-artifacts-tree fxFlex="50" [artifacts$]="artifacts$" [projectKey]="projectKey$ | async">
     </app-artifacts-tree>
   </div>
 </div>
