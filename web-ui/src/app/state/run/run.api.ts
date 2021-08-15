@@ -3,6 +3,7 @@ import { Run } from "@mlaide/state/run/run.models";
 import { APP_CONFIG, AppConfig } from "@mlaide/config/app-config.model";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
 export class RunListResponse {
   items: Run[];
@@ -55,5 +56,27 @@ export class RunApi {
       },
       responseType: "text",
     });
+  }
+
+  public exportRunsByRunKeys(projectKey: string, runKeys: number[]): Observable<ArrayBuffer> {
+    let params = {};
+    if (runKeys !== null) {
+      const runKeysParam = runKeys.join(",");
+      params = {
+        runKeys: runKeysParam,
+      };
+    }
+
+    return this.http
+      .get(`${this.baseUrl}/projects/${projectKey}/runs`, {
+        observe: "body",
+        params,
+        responseType: "arraybuffer",
+      })
+      .pipe(
+        map((file: ArrayBuffer) => {
+          return file;
+        })
+      );
   }
 }
