@@ -1,5 +1,20 @@
 import { AppState } from "../app.state";
+import { createFeatureSelector, createSelector } from "@ngrx/store";
+import { ApiKeyState } from "@mlaide/state/api-key/api-key.state";
 
-export const selectApiKeys = (state: AppState) => state.apiKeys.items;
-export const selectIsLoadingApiKeys = (state: AppState) => state.apiKeys.isLoading;
-export const selectNewCreatedApiKey = (state: AppState) => state.apiKeys.newCreatedApiKey;
+const apiKeyState = createFeatureSelector<AppState, ApiKeyState>("apiKeys")
+
+export const selectApiKeys = createSelector(
+  apiKeyState,
+  (apiKeyState) => apiKeyState.items
+);
+
+export const selectIsLoadingApiKeys = createSelector(
+  apiKeyState,
+  (apiKeyState) => apiKeyState.isLoading
+);
+
+export const selectNewCreatedApiKey = createSelector(
+  apiKeyState,
+  (apiKeyState) => apiKeyState.newCreatedApiKey
+);
