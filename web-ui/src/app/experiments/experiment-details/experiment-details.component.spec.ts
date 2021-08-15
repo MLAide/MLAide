@@ -47,7 +47,7 @@ describe("ExperimentDetailsComponent", () => {
     fakeRuns = await getRandomRuns(3);
 
     // configure test bed with all dependencies
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [
         ExperimentDetailsComponent,
         MockComponent(ExperimentLineageVisualizationComponent),

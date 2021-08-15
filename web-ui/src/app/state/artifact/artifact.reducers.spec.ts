@@ -29,7 +29,7 @@ describe("ArtifactReducer", () => {
       const newState = artifactsReducer(initialState as ArtifactState, action);
 
       // assert
-      await expect(newState.isLoading).toBeTrue();
+      expect(newState.isLoading).toBeTrue();
     });
   });
 

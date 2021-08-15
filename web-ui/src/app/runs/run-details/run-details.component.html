@@ -45,10 +45,24 @@
 </div>
 
 <!-- parameters table -->
-<app-parameters-table [parameters$]="parameters$"></app-parameters-table>
+<div fxLayout="column">
+  <div>
+    <h3 id="parameters-title" class="mat-h3" i18n>Parameters</h3>
+  </div>
+  <div>
+    <app-parameters-table [parameters$]="parameters$"></app-parameters-table>
+  </div>
+</div>
 
 <!-- metrics table -->
-<app-metrics-table [metrics$]="metrics$"></app-metrics-table>
+<div fxLayout="column">
+  <div>
+    <h3 id="metrics-title" class="mat-h3" i18n>Metrics</h3>
+  </div>
+  <div>
+    <app-metrics-table [metrics$]="metrics$"></app-metrics-table>
+  </div>
+</div>
 
 <!-- artifacts tree -->
 <div fxLayout="column">

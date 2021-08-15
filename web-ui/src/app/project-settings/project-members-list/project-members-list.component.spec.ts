@@ -144,7 +144,6 @@ describe("ProjectMembersListComponent", () => {
       it("should set correct table columns", async (done) => {
         // arrange + act in beforeEach
         fakeProjectMemberForCurrentUser.role = ProjectMemberRole.OWNER;
-        // TODO Raman: Können wir das so lassen oder ist das zu unsauber?
         fixture = TestBed.createComponent(ProjectMembersListComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -162,7 +161,6 @@ describe("ProjectMembersListComponent", () => {
       it("should set correct table columns", async (done) => {
         // arrange + act in beforeEach
         fakeProjectMemberForCurrentUser.role = ProjectMemberRole.CONTRIBUTOR;
-        // TODO Raman: Können wir das so lassen oder ist das zu unsauber?
         fixture = TestBed.createComponent(ProjectMembersListComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();

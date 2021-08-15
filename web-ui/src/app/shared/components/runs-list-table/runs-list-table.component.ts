@@ -1,7 +1,6 @@
 import { SelectionModel } from "@angular/cdk/collections";
-import { AfterViewInit, Component, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild } from "@angular/core";
+import { Component, Input, OnChanges, OnDestroy, SimpleChanges } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { Observable, Subscription } from "rxjs";
 import { FileSaverService } from "ngx-filesaver";
@@ -13,7 +12,7 @@ import { Run, } from "@mlaide/entities/run.model";
   templateUrl: "./runs-list-table.component.html",
   styleUrls: ["./runs-list-table.component.scss"],
 })
-export class RunsListTableComponent implements AfterViewInit, OnChanges, OnDestroy {
+export class RunsListTableComponent implements OnChanges, OnDestroy {
   @Input() public projectKey: string;
   @Input() public runs$: Observable<Run[]>;
   @Input() public isLoading$: Observable<boolean>;
@@ -22,7 +21,6 @@ export class RunsListTableComponent implements AfterViewInit, OnChanges, OnDestr
   public displayedColumns: string[] = ["select", "name", "status", "startTime", "runTime", "metrics", "createdBy", "experiments"];
   public hideParameters = true;
   public selection = new SelectionModel<Run>(true, []);
-  @ViewChild(MatSort) public sort: MatSort;
 
   private runsSubscription: Subscription;
 
@@ -32,10 +30,6 @@ export class RunsListTableComponent implements AfterViewInit, OnChanges, OnDestr
     private route: ActivatedRoute,
     private fileSaverService: FileSaverService
   ) {}
-
-  public ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
-  }
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes.runs$) {

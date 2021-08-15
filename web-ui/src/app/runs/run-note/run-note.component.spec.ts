@@ -41,17 +41,16 @@ describe('RunNoteComponent', () => {
       expect(component.currentNote).toEqual("");
     });
 
-    // TODO Raman: Wieso funktioniert das nicht?
-    /*
     it('should set currentNote to input string is empty', () => {
-      // arrange + act in beforeEach
+      // arrange in beforeEach
       component.note = "anyNote";
-      fixture.detectChanges();
+
+      // act
+      component.ngOnInit();
 
       // assert
       expect(component.currentNote).toEqual("anyNote");
     });
-    */
   });
 
   describe("focusedNoteTextarea", () => {

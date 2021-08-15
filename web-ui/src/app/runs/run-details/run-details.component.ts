@@ -17,42 +17,45 @@ import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors
   styleUrls: ["./run-details.component.scss"],
 })
 export class RunDetailsComponent implements OnInit {
-  // TODO Raman: Warum wird hier das Select ausgeführt und nicht im ngOnInit?
-  public run$: Observable<Run> = this.store.select(selectCurrentRun);
-  public artifacts$: Observable<Artifact[]> = this.store.select(selectArtifactsOfCurrentRun);
-  public projectKey$: Observable<string> = this.store.select(selectCurrentProjectKey);
-
-  public parameters$: Observable<RunParameter[]> = this.run$.pipe(
-    filter(run => !!run), // only continue if run has value
-    map(run => run.parameters),
-    filter(parameters => !!parameters), // only continue if parameters has value
-    map(parameters =>
-      Object.entries(parameters).map(([key, value]) =>
-        ({
-          key: key,
-          value: value
-        })
-      )
-    )
-  );
-
-  public metrics$: Observable<RunMetrics[]> = this.run$.pipe(
-    filter(run => !!run), // only continue if run has value
-    map(run => run.metrics),
-    filter(metrics => !!metrics), // only continue if metrics has value
-    map(metrics =>
-      Object.entries(metrics).map(([key, value]) =>
-        ({
-          key: key,
-          value: value
-        })
-      )
-    )
-  );
+  public run$: Observable<Run>;
+  public artifacts$: Observable<Artifact[]>;
+  public projectKey$: Observable<string>;
+  public parameters$: Observable<RunParameter[]>;
+  public metrics$: Observable<RunMetrics[]>;
 
   constructor(private store: Store<AppState>) {}
 
   public ngOnInit() {
+    this.run$ = this.store.select(selectCurrentRun);
+    this.artifacts$ = this.store.select(selectArtifactsOfCurrentRun);
+    this.projectKey$ = this.store.select(selectCurrentProjectKey);
+    this.parameters$ = this.run$.pipe(
+      filter(run => !!run), // only continue if run has value
+      map(run => run.parameters),
+      filter(parameters => !!parameters), // only continue if parameters has value
+      map(parameters =>
+        Object.entries(parameters).map(([key, value]) =>
+          ({
+            key: key,
+            value: value
+          })
+        )
+      )
+    );
+    this.metrics$ = this.run$.pipe(
+      filter(run => !!run), // only continue if run has value
+      map(run => run.metrics),
+      filter(metrics => !!metrics), // only continue if metrics has value
+      map(metrics =>
+        Object.entries(metrics).map(([key, value]) =>
+          ({
+            key: key,
+            value: value
+          })
+        )
+      )
+    );
+
     this.store.dispatch(loadCurrentRun());
     this.store.dispatch(loadArtifactsOfCurrentRun());
   }

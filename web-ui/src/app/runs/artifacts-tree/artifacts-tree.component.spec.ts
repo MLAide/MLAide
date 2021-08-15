@@ -38,7 +38,7 @@ describe("ArtifactsTreeComponent", () => {
     fakeArtifacts = await getRandomArtifacts(3);
     fakeProject = await getRandomProject();
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [ArtifactsTreeComponent],
       providers: [
         provideMockStore(),
@@ -303,97 +303,7 @@ describe("ArtifactsTreeComponent", () => {
         artifactFileId: node.artifactFileId
       }));
     });
-    /*
-    // TODO Raman: Sollten diese Tests nicht auch in artifact.effects.spec.ts unter download rein?
-    it("should call download with fileId if it is set", async () => {
-      // arrange + act also in beforeEach
-      // setup artifacts api
-      const node: FlatTreeNode = {
-        artifactName: fakeArtifacts[0].name,
-        artifactVersion: fakeArtifacts[0].version,
-        artifactFileId: fakeArtifacts[0].files[0].fileId,
-        name: fakeArtifacts[0].name,
-        downloadable: true,
-        type: "file",
-        level: 1,
-        expandable: false,
-      };
-      artifactsApiServiceStub.download.and.returnValue(of());
-
-      // act
-      //directly call ngOnChanges
-      component.download(node);
-
-      // assert
-      expect(artifactsApiServiceStub.download).toHaveBeenCalledWith(
-        fakeProject.key,
-        node.artifactName,
-        node.artifactVersion,
-        node.artifactFileId
-      );
-    });
-
-    it("should call download without fileId if it is not set", async () => {
-      // arrange + act also in beforeEach
-      // setup artifacts api
-      const node: FlatTreeNode = {
-        artifactName: fakeArtifacts[0].name,
-        artifactVersion: fakeArtifacts[0].version,
-        name: fakeArtifacts[0].name,
-        downloadable: true,
-        type: "file",
-        level: 1,
-        expandable: false,
-      };
-      artifactsApiServiceStub.download.and.returnValue(of());
-
-      // act
-      //directly call ngOnChanges
-      component.download(node);
-
-      // assert
-      expect(artifactsApiServiceStub.download).toHaveBeenCalledWith(fakeProject.key, node.artifactName, node.artifactVersion);
-    });
-
-    it("should call FileSaver saveAs with correct blob, filename and content disposition", async (done) => {
-      // arrange + act also in beforeEach
-      // setup artifacts api
-      const node: FlatTreeNode = {
-        artifactName: fakeArtifacts[0].name,
-        artifactVersion: fakeArtifacts[0].version,
-        name: fakeArtifacts[0].name,
-        downloadable: true,
-        type: "file",
-        level: 1,
-        expandable: false,
-      };
-
-      const headers: HttpHeaders = new HttpHeaders({
-        "Content-Disposition": 'attachment; filename="data.csv"',
-        "Content-Type": "text/csv",
-      });
-      const returnBuffer: ArrayBufferLike = new Uint16Array([1, 2, 3]).buffer;
-      const response = new HttpResponse<ArrayBuffer>({
-        body: returnBuffer,
-        headers: headers,
-      });
-      artifactsApiServiceStub.download.and.returnValue(of(response));
-
-      // act
-      component.download(node);
-
-      // assert
-      expect(fileSaverServiceStub.save).toHaveBeenCalledWith(jasmine.any(Blob), "data.csv");
-      const actualBlob = fileSaverServiceStub.save.calls.argsFor(0)[0];
-      expect(actualBlob.type).toBe("text/csv");
-      actualBlob.arrayBuffer().then((buffer) => {
-        expect(buffer).toEqual(returnBuffer);
-        done();
-      });
-    });
-    */
   });
-
 
   describe("hasChild", () => {
     it("should return true if node has child", () => {

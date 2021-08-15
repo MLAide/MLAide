@@ -100,15 +100,6 @@ describe("RunsListTableComponent", () => {
     expect(component).toBeTruthy();
   });
 
-  describe("ngAfterViewInit", () => {
-    it("should set datasource sort", () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(component.dataSource.sort).toEqual(component.sort);
-    });
-  });
-
   describe("ngOnChanges", () => {
     it("should load new data from data source if changes include runListDataSource", async () => {
       // arrange + act also in beforeEach
