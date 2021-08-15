@@ -1,58 +1,47 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ActivatedRoute, ParamMap } from "@angular/router";
-import { MockComponent } from "ng-mocks";
-import { Observable, Subscription } from "rxjs";
+import { MockComponent, ngMocks } from "ng-mocks";
 import { Project } from "@mlaide/entities/project.model";
-import { Run, RunListResponse } from "@mlaide/entities/run.model";
-import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
-import { getRandomProject } from "src/app/mocks/fake-generator";
+import { Run } from "@mlaide/entities/run.model";
+import { getRandomProject, getRandomRuns } from "src/app/mocks/fake-generator";
 import { RunsListComponent } from "./runs-list.component";
 import { RunsListTableComponent } from "src/app/shared/components/runs-list-table/runs-list-table.component";
-import { RunsApiService } from "@mlaide/shared/api";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { selectIsLoadingRuns, selectRuns } from "@mlaide/state/run/run.selectors";
+import { loadRuns } from "@mlaide/state/run/run.actions";
 
 describe("RunsListComponent", () => {
   let component: RunsListComponent;
   let fixture: ComponentFixture<RunsListComponent>;
 
   // fake
+  let fakeRuns: Run[];
   let fakeProject: Project;
 
-  // route spy
-  let unsubscriptionSpy: jasmine.Spy<() => void>;
-
-  // service stubs
-  let runsApiServiceStub: jasmine.SpyObj<RunsApiService>;
-
-  // data source mocks
-  let runListDataSourceMock: ListDataSourceMock<Run, RunListResponse> = new ListDataSourceMock();
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    // mock active route params
-    const paramMapObservable = new Observable<ParamMap>();
-    const paramMapSubscription = new Subscription();
-    unsubscriptionSpy = spyOn(paramMapSubscription, "unsubscribe").and.callThrough();
-    spyOn(paramMapObservable, "subscribe").and.callFake((fn): Subscription => {
-      fn({ projectKey: fakeProject.key });
-      return paramMapSubscription;
-    });
-
-    // stub services
-    runsApiServiceStub = jasmine.createSpyObj("runsApiService", ["getRuns"]);
-
     // arrange fakes & stubs
     // setup fakes
+    fakeRuns = await getRandomRuns(3);
     fakeProject = await getRandomProject();
-
-    // setup artifacts api
-    runsApiServiceStub.getRuns.and.returnValue(runListDataSourceMock);
 
     await TestBed.configureTestingModule({
       declarations: [RunsListComponent, MockComponent(RunsListTableComponent)],
       providers: [
-        { provide: ActivatedRoute, useValue: { params: paramMapObservable } },
-        { provide: RunsApiService, useValue: runsApiServiceStub },
+        provideMockStore(),
       ],
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+
+    store.overrideSelector(selectRuns, fakeRuns);
+    store.overrideSelector(selectCurrentProjectKey, fakeProject.key);
+    store.overrideSelector(selectIsLoadingRuns, true);
+
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -65,37 +54,45 @@ describe("RunsListComponent", () => {
     expect(component).toBeTruthy();
   });
 
-  // TODO: Fix Tests
-  /*
   describe("ngOnInit", () => {
-    it("should load runs with projectKey defined in active route and save it to component projectKey", async () => {
+    it("should select runs from store correctly", async (done) => {
       // arrange + act in beforeEach
 
       // assert
-      expect(component.projectKey).toBe(fakeProject.key);
-      expect(runsApiServiceStub.getRuns).toHaveBeenCalledWith(fakeProject.key);
+      component.runs$.subscribe((runs) => {
+        expect(runs).toBe(fakeRuns);
+        done();
+      });
     });
 
-    it("should load all artifacts of the current project", async () => {
+    it("should select projectKey from store correctly", async (done) => {
       // arrange + act in beforeEach
 
       // assert
-      expect(component.runListDataSource).toBe(runListDataSourceMock);
+      component.projectKey$.subscribe((projectKey) => {
+        expect(projectKey).toBe(fakeProject.key);
+        done();
+      });
     });
-  });
 
-  describe("ngOnDestroy", () => {
-    it("should unsubscribe from routeParamsSubscription", async () => {
-      // arrange in beforeEach
-
-      // act
-      component.ngOnDestroy();
+    it("should select selectIsLoadingRuns from store correctly", async (done) => {
+      // arrange + act in beforeEach
 
       // assert
-      expect(unsubscriptionSpy).toHaveBeenCalled();
+      component.isLoadingRuns$.subscribe((isLoading) => {
+        expect(isLoading).toBe(true);
+        done();
+      });
+    });
+
+    it("should dispatch loadRuns action", () => {
+      // ngOnInit will be called in beforeEach while creating the component
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(loadRuns());
     });
   });
-*/
+
   describe("component rendering", () => {
     it("should contain components title", async () => {
       // arrange + act also in beforeEach
@@ -105,15 +102,16 @@ describe("RunsListComponent", () => {
       expect(h1.textContent).toEqual("Runs");
     });
 
-    it("should contain child component - app-runs-list-table ", async () => {
+    it("should contain child component with correct attributes - app-artifacts-list-table", async () => {
       // arrange
-      const childComponent: HTMLElement = fixture.nativeElement.querySelector("app-runs-list-table");
+      const runsListTableComponent = ngMocks
+        .find<RunsListTableComponent>('app-runs-list-table')
+        .componentInstance;
 
       // assert
-      expect(childComponent).toBeTruthy();
-      expect(childComponent.getAttribute("ng-reflect-project-key")).toEqual(fakeProject.key);
-      expect(childComponent.getAttribute("ng-reflect-run-list-data-source")).not.toBeUndefined();
-      expect(childComponent.getAttribute("ng-reflect-run-list-data-source")).not.toBeNull();
+      expect(runsListTableComponent.runs$).toBe(component.runs$);
+      expect(runsListTableComponent.projectKey).toBe(fakeProject.key);
+      expect(runsListTableComponent.isLoading$).toBe(component.isLoadingRuns$);
     });
   });
 });
