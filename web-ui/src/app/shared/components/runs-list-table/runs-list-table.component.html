@@ -1,4 +1,5 @@
 <div fxLayout="column" fxFlex="100">
+
   <div fxLayout="row" fxLayoutAlign="end center">
     <h3 class="mat-h3">
       <a id="compare-button" mat-stroked-button [disabled]="selectedLessThanTwoRows()" (click)="goToRunCompareComponent()" i18n>
@@ -15,6 +16,7 @@
       </button>
     </h3>
   </div>
+
   <div fxLayout="column" class="example-container mat-elevation-z2">
     <table mat-table [dataSource]="dataSource" *ngIf="dataSource" aria-label="Runs overvies">
       <!-- Checkbox Column -->

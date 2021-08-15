@@ -4,7 +4,7 @@
     fxFlex="50"
     mat-table
     class="mat-elevation-z2"
-    [dataSource]="dataSource"
+    [dataSource]="metrics$ | async"
     aria-label="Run metrics overview"
   >
     <ng-container matColumnDef="metricsKey">

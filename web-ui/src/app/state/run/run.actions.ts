@@ -16,3 +16,7 @@ export const loadRunsByRunKeysFailed = createAction("@mlaide/actions/runs-by-run
 export const editRunNote = createAction("@mlaide/actions/runs/edit-note", props<{ note: string }>());
 export const editRunNoteSucceeded = createAction("@mlaide/actions/runs/edit-note/succeeded", props<{ note: string }>());
 export const editRunNoteFailed = createAction("@mlaide/actions/runs/edit-note/failed", props<{ payload }>());
+
+export const exportRuns = createAction("@mlaide/actions/runs/export", props<{ runKeys: number[] }>());
+export const exportRunsSucceeded = createAction("@mlaide/actions/runs/export/succeeded");
+export const exportRunsFailed = createAction("@mlaide/actions/runs/export/failed", props<{ payload }>());

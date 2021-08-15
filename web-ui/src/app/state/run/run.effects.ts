@@ -1,13 +1,15 @@
 import { Injectable } from "@angular/core";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
-import { catchError, map, mergeMap } from "rxjs/operators";
+import { catchError, map, mergeMap, tap } from "rxjs/operators";
 import { RunApi } from "./run.api";
 import { Store } from "@ngrx/store";
 import * as runActions from "@mlaide/state/run/run.actions";
 import { selectCurrentProjectKey } from "../project/project.selectors";
 import { showErrorMessage, showSuccessMessage } from "../shared/shared.actions";
 import { selectCurrentRunKey, selectSelectedRunKeys } from "./run.selectors";
+import * as artifactActions from "@mlaide/state/artifact/artifact.actions";
+import { FileSaverService } from "ngx-filesaver";
 
 @Injectable({ providedIn: "root" })
 export class RunEffects {
@@ -115,7 +117,35 @@ export class RunEffects {
     )
   );
 
+  exportRuns$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(runActions.exportRuns),
+      concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
+      mergeMap(([action, projectKey]) => this.runApi.exportRunsByRunKeys(projectKey, action.runKeys)),
+      tap((arrayBuffer) => {
+        const blob = new Blob([arrayBuffer], { type: "application/octet-stream" });
+        const fileName = `ExportedRuns_${new Date().toISOString()}.json`;
+        this.fileSaverService.save(blob, fileName);
+      }),
+      map(() => runActions.exportRunsSucceeded()),
+      catchError((error) => of(runActions.exportRunsFailed({payload: error})))
+    )
+  );
+
+  exportRunsFailed$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(runActions.exportRunsFailed),
+      map((action) => action.payload),
+      map((error) => ({
+        message: "Could not export runs. A unknown error occurred.",
+        error: error
+      })),
+      map(showErrorMessage)
+    )
+  );
+
   public constructor(private readonly actions$: Actions,
+                     private readonly fileSaverService: FileSaverService,
                      private readonly runApi: RunApi,
                      private readonly store: Store) {}
 }
