@@ -51,7 +51,7 @@ describe("ExperimentsListComponent", () => {
     fakeProject = await getRandomProject();
     fakeExperiments = await getRandomExperiments(3);
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [ExperimentsListComponent, ExperimentStatusI18nComponent],
 
       providers: [
@@ -96,19 +96,6 @@ describe("ExperimentsListComponent", () => {
     expect(component).toBeTruthy();
   });
 
-  describe("ngOnDestroy", () => {
-    // TODO Raman: Write tests for unsubscription
-  });
-
-  describe("ngAfterViewInit", () => {
-    it("should set datasource sort", () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(component.dataSource.sort).toEqual(component.sort);
-    });
-  });
-
   describe("ngOnInit", () => {
     it("should dispatch loadExperiments action", () => {
       // ngOnInit will be called in beforeEach while creating the component
@@ -127,18 +114,24 @@ describe("ExperimentsListComponent", () => {
       });
     });
 
-    it("should select projectKey from store correctly", async () => {
+    it("should select projectKey from store correctly", async (done) => {
       // arrange + act in beforeEach
 
       // assert
-      expect(component.projectKey).toBe(fakeProject.key);
+      component.projectKey$.subscribe(projectKey => {
+        expect(projectKey).toBe(fakeProject.key);
+        done();
+      });
     });
 
-    it("should select experiments from store correctly", async () => {
+    it("should select experiments from store correctly", async (done) => {
       // arrange + act in beforeEach
 
       // assert
-      expect(component.dataSource.data).toBe(fakeExperiments);
+      component.experiments$.subscribe((experiments) => {
+        expect(experiments).toBe(fakeExperiments);
+        done();
+      });
     });
   });
 
@@ -245,18 +238,18 @@ describe("ExperimentsListComponent", () => {
         // assert
         expect(rows.length).toBe(fakeExperiments.length);
         expect(editButtons.length).toBe(fakeExperiments.length);
-        fakeExperiments.forEach(async (fakeExperiment, index) => {
+        await Promise.all(fakeExperiments.map(async (fakeExperiment, index) => {
           const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
           const chips: MatChipHarness[] = await chipLists[index].getChips();
 
           expect(row.key).toEqual(fakeExperiment.key);
           expect(row.name).toEqual(fakeExperiment.name);
           expect(row.status.toUpperCase().replace(" ", "_")).toEqual(fakeExperiment.status);
-          chips.forEach(async (chip, chipIndex) => {
+          await Promise.all(chips.map(async (chip, chipIndex) => {
             expect(await chip.getText()).toEqual(fakeExperiment.tags[chipIndex]);
-          });
+          }));
           expect(row.actions).toBe("edit");
-        });
+        }));
       });
 
       it("should have correct router link to details for each experiment", async () => {

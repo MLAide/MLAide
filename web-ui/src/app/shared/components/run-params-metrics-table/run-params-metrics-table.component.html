@@ -16,10 +16,10 @@
   <h3 class="mat-h3"></h3>
 </div>
 <div fxLayout="column" class="example-container mat-elevation-z2">
-  <table mat-table matSort [dataSource]="data$" aria-label="Run comparison">
+  <table mat-table [dataSource]="data$" aria-label="Run comparison">
     <!-- https://github.com/angular/components/issues/6159 -->
     <ng-container [matColumnDef]="column" *ngFor="let column of (displayedColumnsName$ | async); let i = index">
-      <th [id]="column" mat-header-cell mat-sort-header *matHeaderCellDef style="border-bottom: none">
+      <th [id]="column" mat-header-cell *matHeaderCellDef style="border-bottom: none">
         {{ column ? column : " " }}
       </th>
       <td [headers]="column" mat-cell *matCellDef="let element" [class.make-bg-divergent]="!valuesInRowDiffer(element)">

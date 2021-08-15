@@ -32,6 +32,7 @@ import {
   openEditProjectMemberDialog
 } from "@mlaide/state/project-member/project-member.actions";
 import { Router } from "@angular/router";
+import { isEmpty } from "rxjs/operators";
 
 describe("ProjectMemberEffects", () => {
   let actions$ = new Observable<Action>();
@@ -482,6 +483,28 @@ describe("ProjectMemberEffects", () => {
       });
     });
 
-    // TODO Raman: Wir sollten auch testen, dass nicht navigiert wird, wenn die user sich unterscheiden
+    it(`should not navigate to projects if provided project member for deleteProjectMemberSucceeded action is not current user`, async (done) => {
+      // arrange
+      let projectMember = await getRandomProjectMember();
+      actions$ = of(deleteProjectMemberSucceeded({projectMember}));
+      const user = await getRandomUser();
+      user.email = "not-the-same-email-as-the-other@something.com";
+      store.setState({
+        user: {
+          currentUser: user
+        }
+      })
+
+      // act
+      // we have to check that the effect does not emit a event - isEmpty() is a helper function for that
+      // https://stackoverflow.com/questions/66332252/how-to-test-if-returned-observable-is-empty
+      effects.goToProjectOverviewIfDeletedUserIsCurrentUser$.pipe(isEmpty()).subscribe(res => {
+        // assert
+        expect(res).toBeTrue();
+        expect(router.navigate).not.toHaveBeenCalled();
+
+        done();
+      });
+    });
   });
 });

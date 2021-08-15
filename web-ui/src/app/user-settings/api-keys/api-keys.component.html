@@ -10,9 +10,9 @@
     </div>
   </div>
   <div fxLayout="column" class="example-container mat-elevation-z2">
-    <table mat-table matSort [dataSource]="apiKeys$" aria-label="API keys overview">
+    <table mat-table [dataSource]="apiKeys$" aria-label="API keys overview">
       <ng-container matColumnDef="description">
-        <th id="description" mat-header-cell *matHeaderCellDef mat-sort-header aria-label="API Key Description" i18n>
+        <th id="description" mat-header-cell *matHeaderCellDef aria-label="API Key Description" i18n>
           Description
         </th>
         <td headers="description" mat-cell *matCellDef="let element">
@@ -20,7 +20,7 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="createdAt">
-        <th id="created-at" mat-header-cell *matHeaderCellDef mat-sort-header aria-label="API Key Creation Date" i18n>
+        <th id="created-at" mat-header-cell *matHeaderCellDef aria-label="API Key Creation Date" i18n>
           Created at
         </th>
         <td headers="created-at" mat-cell *matCellDef="let element">
@@ -28,7 +28,7 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="expiresAt">
-        <th id="expires-at" mat-header-cell *matHeaderCellDef mat-sort-header aria-label="API Key Expiration Date" i18n>
+        <th id="expires-at" mat-header-cell *matHeaderCellDef aria-label="API Key Expiration Date" i18n>
           Expires at
         </th>
         <td headers="expires-at" mat-cell *matCellDef="let element">
@@ -36,7 +36,7 @@
         </td>
       </ng-container>
       <ng-container matColumnDef="actions" [stickyEnd]="true">
-        <th id="actions" mat-header-cell *matHeaderCellDef mat-sort-header aria-label="API Key actions" i18n>Actions</th>
+        <th id="actions" mat-header-cell *matHeaderCellDef aria-label="API Key actions" i18n>Actions</th>
         <td headers="actions" mat-cell *matCellDef="let element">
           <button mat-button (click)="deleteApiKey(element)" aria-label="Icon button to delete api key">
             <mat-icon>delete</mat-icon>

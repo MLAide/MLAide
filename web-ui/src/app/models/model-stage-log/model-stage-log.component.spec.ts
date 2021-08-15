@@ -17,7 +17,6 @@ import { ModelStageI18nComponent } from "../../shared/components/model-stage-i18
 
 import { ModelStageLogComponent } from "./model-stage-log.component";
 
-// TODO Raman: Fix Tests
 describe("ModelStageLogComponent", () => {
   let component: ModelStageLogComponent;
   let fixture: ComponentFixture<ModelStageLogComponent>;
@@ -67,24 +66,6 @@ describe("ModelStageLogComponent", () => {
 
   it("should create", () => {
     expect(component).toBeTruthy();
-  });
-
-  describe("ngOnInit", () => {
-    it("should set datasource to provided mode revisions", () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(component.dataSource.data).toEqual(formData.modelRevisions);
-    });
-  });
-
-  describe("ngAfterViewInit", () => {
-    it("should set datasource sort", () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(component.dataSource.sort).toEqual(component.sort);
-    });
   });
 
   describe("close", () => {
@@ -146,7 +127,7 @@ describe("ModelStageLogComponent", () => {
 
         // assert
         expect(rows.length).toBe(fakeModelRevisions.length);
-        fakeModelRevisions.forEach(async (fakeModelRevision, index) => {
+        await Promise.all(fakeModelRevisions.map(async (fakeModelRevision, index) => {
           const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
 
           expect(row.createdAt).toEqual(String(fakeModelRevision.createdAt));
@@ -154,8 +135,9 @@ describe("ModelStageLogComponent", () => {
           expect(row.oldStage.toUpperCase().replace(" ", "_")).toEqual(fakeModelRevision.oldStage);
           expect(row.newStage.toUpperCase().replace(" ", "_")).toEqual(fakeModelRevision.newStage);
           expect(row.note).toEqual(fakeModelRevision.note);
-        });
+        }));
       });
+
       describe("close button", () => {
         it("should have close button", async () => {
           // arrange also in beforeEach

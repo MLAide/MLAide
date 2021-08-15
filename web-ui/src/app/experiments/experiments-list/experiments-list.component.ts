@@ -1,7 +1,5 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
-import { Observable, Subscription } from "rxjs";
+import { Component, OnInit } from "@angular/core";
+import { Observable } from "rxjs";
 import { Experiment, ExperimentStatus } from "@mlaide/entities/experiment.model";
 import { Store } from "@ngrx/store";
 import { loadExperiments, openAddOrEditExperimentDialog } from "@mlaide/state/experiment/experiment.actions";
@@ -13,45 +11,22 @@ import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors
   templateUrl: "./experiments-list.component.html",
   styleUrls: ["./experiments-list.component.scss"],
 })
-export class ExperimentsListComponent implements OnInit, OnDestroy, AfterViewInit {
+export class ExperimentsListComponent implements OnInit {
   public isLoading$: Observable<boolean>;
-  public dataSource: MatTableDataSource<Experiment> = new MatTableDataSource<Experiment>();
+  public experiments$: Observable<Experiment[]>;
+  public projectKey$: Observable<string>;
   public displayedColumns: string[] = ["key", "name", "status", "tags", "actions"];
-  public projectKey: string;
-  @ViewChild(MatSort) public sort: MatSort;
-
-  private experimentsSubscription: Subscription;
-  private currentProjectKeySubscription: Subscription;
 
   constructor(private store: Store) {}
-
-  ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
-  }
-
-  ngOnDestroy() {
-    if (this.experimentsSubscription) {
-      this.experimentsSubscription.unsubscribe();
-      this.experimentsSubscription = null;
-    }
-
-    if (this.currentProjectKeySubscription) {
-      this.currentProjectKeySubscription.unsubscribe();
-      this.currentProjectKeySubscription = null;
-    }
-  }
 
   ngOnInit() {
     this.store.dispatch(loadExperiments());
 
     this.isLoading$ = this.store.select(selectIsLoadingExperiments);
 
-    // TODO Raman: Warum ist hier eine Subscription notwendig?
-    this.experimentsSubscription = this.store.select(selectExperiments)
-      .subscribe((experiments) => this.dataSource.data = experiments);
+    this.experiments$ = this.store.select(selectExperiments);
 
-    this.currentProjectKeySubscription = this.store.select(selectCurrentProjectKey)
-      .subscribe((projectKey) => this.projectKey = projectKey);
+    this.projectKey$ = this.store.select(selectCurrentProjectKey);
   }
 
   openCreateExperimentDialog(): void {

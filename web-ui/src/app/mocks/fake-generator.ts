@@ -47,28 +47,29 @@ const modelSchemaFunction = (faker) => {
   return {
     createdAt: faker.date.past(),
     createdBy: userSchemaFunction(faker),
-    modelRevisions: modelRevisionFunction(faker),
+    modelRevisions: [
+      {
+        function() {
+          return artifactsRefSchemaFunction(this.faker);
+        },
+        length: 3,
+        fixedLength: false,
+      },
+    ],
+    // modelRevisions: modelRevisionFunction(faker),
     stage: faker.random.arrayElement(Object.values(ModelStage)),
     updatedAt: faker.date.past(),
   };
 };
 
 const modelRevisionFunction = (faker) => {
-  let modelRevisions = [];
-
-  for (let i = 0; i < 3; i++) {
-    modelRevisions.push(
-      {
-        createdAt: faker.date.past(),
-        createdBy: userSchemaFunction(faker),
-        newStage: faker.random.arrayElement(Object.values(ModelStage)),
-        note: faker.lorem.paragraph(),
-        oldStage: faker.random.arrayElement(Object.values(ModelStage)),
-      }
-    )
+  return {
+    createdAt: faker.date.past(),
+    createdBy: userSchemaFunction(faker),
+    newStage: faker.random.arrayElement(Object.values(ModelStage)),
+    note: faker.lorem.paragraph(),
+    oldStage: faker.random.arrayElement(Object.values(ModelStage)),
   }
-
-  return modelRevisions;
 };
 
 const userSchemaFunction = (faker) => {

@@ -162,7 +162,6 @@ describe("EditProjectMemberComponent", () => {
       it("should set isEdit to false if projectMember is undefined", async () => {
         // arrange in beforeEach
         formData.projectMember = undefined;
-        // TODO Raman: Können wir das so lassen anstatt das beforeEach (Zeile 79) in dem die Component instanziiert wird in eine Methode auszulagern oder ist das sehr unsauber gelöst?
         fixture = TestBed.createComponent(AddOrEditProjectMemberComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
