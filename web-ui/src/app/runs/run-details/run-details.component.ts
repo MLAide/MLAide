@@ -17,6 +17,7 @@ import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors
   styleUrls: ["./run-details.component.scss"],
 })
 export class RunDetailsComponent implements OnInit {
+  // TODO Raman: Warum wird hier das Select ausgeführt und nicht im ngOnInit?
   public run$: Observable<Run> = this.store.select(selectCurrentRun);
   public artifacts$: Observable<Artifact[]> = this.store.select(selectArtifactsOfCurrentRun);
   public projectKey$: Observable<string> = this.store.select(selectCurrentProjectKey);

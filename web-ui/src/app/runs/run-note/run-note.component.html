@@ -18,9 +18,9 @@
   <div fxLayout="row" *ngIf="showNoteActionButtons">
     <div fxFlex="50" fxLayoutAlign="end">
       <!-- // https://stackoverflow.com/questions/52037475/focusout-on-an-element-conflicting-with-click-on-other-in-angular -->
-      <button mat-raised-button (mousedown)="cancel()" i18n>Cancel</button>
+      <button id="update-note-cancel-button" mat-raised-button (mousedown)="cancel()" i18n>Cancel</button>
       <span class="margin-right-sm"></span>
-      <button mat-raised-button color="primary" (mousedown)="save()" i18n>Save</button>
+      <button id="update-note-save-button" mat-raised-button color="primary" (mousedown)="save()" i18n>Save</button>
     </div>
   </div>
 </div>

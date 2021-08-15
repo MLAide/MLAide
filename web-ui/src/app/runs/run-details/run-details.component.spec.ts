@@ -231,18 +231,6 @@ describe("RunDetailsComponent", () => {
       });
     });
 
-    describe("focusedNoteTextarea", () => {
-      it("should set component's showButtons to true", async () => {
-        // arrange
-        await setupStubsAndMocks();
-
-        // act
-        component.focusedNoteTextarea();
-
-        // assert
-        expect(component.showButtons).toBeTruthy();
-      });
-    });
     describe("save", () => {
       beforeEach(async () => {
         await setupStubsAndMocks();
@@ -329,54 +317,6 @@ describe("RunDetailsComponent", () => {
           expect(snackBarUiServiceStub.showSuccesfulSnackbar).not.toHaveBeenCalled();
           expect(snackBarUiServiceStub.showErrorSnackbar).not.toHaveBeenCalled();
         });
-      });
-    });
-
-    describe("unfocusedNoteTextarea", () => {
-      beforeEach(async () => {
-        await setupStubsAndMocks();
-      });
-      it("should set component's showButtons to false", async () => {
-        // arrange + act in beforeEach
-
-        // act
-        component.unfocusedNoteTextarea();
-
-        // assert
-        expect(component.showButtons).toBeFalsy();
-      });
-
-      it("should call save if component's cancledEditNote is false", async () => {
-        // arrange + act also in beforeEach
-        const spy = spyOn(component, "save").and.callThrough();
-
-        // act
-        component.unfocusedNoteTextarea();
-
-        // assert
-        expect(spy).toHaveBeenCalled();
-      });
-
-      it("should not call save if component's cancledEditNote is true", async () => {
-        // arrange + act also in beforeEach
-        const spy = spyOn(component, "save").and.callThrough();
-        component.cancledEditNote = true;
-
-        // act
-        component.unfocusedNoteTextarea();
-
-        // assert
-        expect(spy).not.toHaveBeenCalled();
-      });
-
-      it("should set component's cancledEditNote to false", async () => {
-        // arrange + act in beforeEach
-
-        // act
-        component.unfocusedNoteTextarea();
-
-        // assert
-        expect(component.cancledEditNote).toBeFalsy();
       });
     });
 
