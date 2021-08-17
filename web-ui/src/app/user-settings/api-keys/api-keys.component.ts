@@ -13,12 +13,15 @@ import { deleteApiKey, loadApiKeys, openAddApiKeyDialog } from "@mlaide/state/ap
 export class ApiKeysComponent implements OnInit {
   public displayedColumns: string[] = ["description", "createdAt", "expiresAt", "actions"];
 
-  public apiKeys$: Observable<ApiKey[]> = this.store.select(selectApiKeys);
-  public isLoading$: Observable<boolean> = this.store.select(selectIsLoadingApiKeys);
+  public apiKeys$: Observable<ApiKey[]>;
+  public isLoading$: Observable<boolean>;
 
   constructor(private readonly store: Store) {}
 
   public ngOnInit(): void {
+    this.apiKeys$ = this.store.select(selectApiKeys);
+    this.isLoading$ = this.store.select(selectIsLoadingApiKeys);
+
     this.store.dispatch(loadApiKeys());
   }
 
@@ -26,7 +29,7 @@ export class ApiKeysComponent implements OnInit {
     this.store.dispatch(deleteApiKey({ apiKey }));
   }
 
-  public createApiKey(): void {
+  public addApiKey(): void {
     this.store.dispatch(openAddApiKeyDialog());
   }
 }

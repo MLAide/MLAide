@@ -31,6 +31,7 @@ export class ExperimentLineageVisualizationComponent implements OnChanges, OnDes
 
   constructor(private lineageGraphService: LineageGraphUiService) { }
 
+// TODO Raman: Können wir hier auch alles entfernen und so einkürzen wie in ArtifactsListTableComponent?
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes.runs$) {
       this.unsubscribeRuns();

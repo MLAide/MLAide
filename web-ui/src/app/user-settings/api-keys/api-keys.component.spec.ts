@@ -10,14 +10,19 @@ import { MatTableModule } from "@angular/material/table";
 import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MockPipe } from "ng-mocks";
-import { EMPTY, of, Subject } from "rxjs";
-import { ApiKey, ApiKeyListResponse } from "@mlaide/entities/apiKey.model";
-import { SnackbarUiService } from "@mlaide/shared/services";
-import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
+import { of } from "rxjs";
+import { ApiKey } from "@mlaide/entities/apiKey.model";
 import { getRandomApiKeys } from "src/app/mocks/fake-generator";
 
 import { ApiKeysComponent } from "./api-keys.component";
-import { UsersApiService } from "@mlaide/shared/api";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { selectApiKeys, selectIsLoadingApiKeys } from "@mlaide/state/api-key/api-key.selectors";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatCardModule } from "@angular/material/card";
+import { addApiKey, deleteApiKey, loadApiKeys, openAddApiKeyDialog } from "@mlaide/state/api-key/api-key.actions";
+import { MatCardHarness } from "@angular/material/card/testing";
+import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
 
 describe("ApiKeysComponent", () => {
   let component: ApiKeysComponent;
@@ -27,38 +32,35 @@ describe("ApiKeysComponent", () => {
   // fakeVariables
   let fakeApiKeys: ApiKey[];
 
-  // service stubs
-  let usersApiServiceStub: jasmine.SpyObj<UsersApiService>;
-  let snackBarUiServiceStub: jasmine.SpyObj<SnackbarUiService>;
-
-  // data source mocks
-  let apiKeyListDataSourceMock: ListDataSourceMock<ApiKey, ApiKeyListResponse> = new ListDataSourceMock();
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    // stub services - but do not setup every stub behaviour; this will be done partly in the test itself
-    usersApiServiceStub = jasmine.createSpyObj("usersApiService", ["getApiKeys", "deleteApiKey"]);
-    snackBarUiServiceStub = jasmine.createSpyObj("snackBarUiService", ["showSuccesfulSnackbar", "showErrorSnackbar"]);
-
     // arrange fakes & stubs
     // setup users fakes
     fakeApiKeys = await getRandomApiKeys();
 
-    // setup users api
-    usersApiServiceStub.getApiKeys.and.returnValue(apiKeyListDataSourceMock);
-    apiKeyListDataSourceMock.emulate(fakeApiKeys);
-
     await TestBed.configureTestingModule({
       declarations: [ApiKeysComponent, MockPipe(DatePipe, (v) => v)],
       providers: [
-        { provide: SnackbarUiService, useValue: snackBarUiServiceStub },
-        { provide: UsersApiService, useValue: usersApiServiceStub },
+        provideMockStore(),
       ],
-      imports: [BrowserAnimationsModule, MatButtonModule, MatDialogModule, MatIconModule, MatTableModule],
+      imports: [
+        BrowserAnimationsModule,
+        MatButtonModule,
+        MatCardModule,
+        MatDialogModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        MatTableModule],
     }).compileComponents();
-  });
 
-  afterEach(() => {
-    apiKeyListDataSourceMock.emulate([]);
+    store = TestBed.inject(MockStore);
+
+    store.overrideSelector(selectApiKeys, fakeApiKeys);
+    store.overrideSelector(selectIsLoadingApiKeys, true);
+
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -71,17 +73,59 @@ describe("ApiKeysComponent", () => {
   it("should create", () => {
     expect(component).toBeTruthy();
   });
-  // TODO: Fix Tests
-/*
+
   describe("ngOnInit", () => {
-    it("should set datasource to loaded api keys", async () => {
+    it("should select api keys from store correctly", async (done) => {
       // arrange + act in beforeEach
 
       // assert
-      expect(component.dataSource.data).toBe(fakeApiKeys);
+      component.apiKeys$.subscribe((apiKeys) => {
+        expect(apiKeys).toBe(fakeApiKeys);
+        done();
+      });
+    });
+
+    it("should select selectIsLoadingApiKeys from store correctly", async (done) => {
+      // arrange + act in beforeEach
+
+      // assert
+      component.isLoading$.subscribe((isLoading) => {
+        expect(isLoading).toBe(true);
+        done();
+      });
+    });
+
+    it("should dispatch loadApiKeys action", () => {
+      // ngOnInit will be called in beforeEach while creating the component
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(loadApiKeys());
     });
   });
-  */
+
+  describe("deleteApiKey", () => {
+    it("should dispatch deleteApiKey action with provided api key", async () => {
+      // arrange + act in beforeEach
+
+      // act
+      component.deleteApiKey(fakeApiKeys[0]);
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(deleteApiKey({apiKey: fakeApiKeys[0]}));
+    });
+  });
+
+  describe("addApiKey", () => {
+    it("should dispatch addApiKey action", async () => {
+      // arrange + act in beforeEach
+
+      // act
+      component.addApiKey();
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(openAddApiKeyDialog());
+    });
+  });
 
   describe("component rendering", () => {
     it("should contain components title", async () => {
@@ -91,8 +135,7 @@ describe("ApiKeysComponent", () => {
       // assert
       expect(h1.textContent).toEqual("API Keys");
     });
-    // TODO: Fix Tests
-/*
+
     describe("add api key", () => {
       const addApiKeyButtonTitle = "Add API Key";
       it("should contain add api key button", () => {
@@ -106,17 +149,17 @@ describe("ApiKeysComponent", () => {
 
       it("should call openCreateProjectDialog on clicking the add api key button", async () => {
         // arrange + act also in beforeEach
-        spyOn(component, "openCreateApiKeyDialog");
+        spyOn(component, "addApiKey");
         const addApiKeyButton = await loader.getHarness(MatButtonHarness.with({ text: addApiKeyButtonTitle }));
 
         // act
         await addApiKeyButton.click();
         // assert
         fixture.whenStable().then(() => {
-          expect(component.openCreateApiKeyDialog).toHaveBeenCalled();
+          expect(component.addApiKey).toHaveBeenCalled();
         });
       });
-    });*/
+    });
 
     describe("api keys table", () => {
       it("should contain the api keys table", () => {
@@ -167,7 +210,7 @@ describe("ApiKeysComponent", () => {
         const firstRow: MatRowHarnessColumnsText = await rows[0].getCellTextByColumnName();
 
         // assert
-        expect(firstRow.expiresAt).toEqual("-");
+        expect(firstRow.expiresAt).toEqual("never");
       });
 
       it('should show "-" in expires at cell if it is null', async () => {
@@ -178,12 +221,12 @@ describe("ApiKeysComponent", () => {
         const firstRow: MatRowHarnessColumnsText = await rows[0].getCellTextByColumnName();
 
         // assert
-        expect(firstRow.expiresAt).toEqual("-");
+        expect(firstRow.expiresAt).toEqual("never");
       });
 
       it("should call deleteApiKey on clicking delete button in row", async () => {
         // arrange + act also in beforeEach
-        usersApiServiceStub.deleteApiKey.withArgs(fakeApiKeys[fakeApiKeys.length - 1]).and.returnValue(of());
+        spyOn(component, "deleteApiKey");
         const deleteButtons: MatButtonHarness[] = await loader.getAllHarnesses(MatButtonHarness.with({ text: "delete" }));
 
         // act
@@ -191,47 +234,34 @@ describe("ApiKeysComponent", () => {
 
         // assert
         fixture.whenStable().then(() => {
-          expect(usersApiServiceStub.deleteApiKey).toHaveBeenCalledWith(fakeApiKeys[fakeApiKeys.length - 1]);
+          expect(component.deleteApiKey).toHaveBeenCalledWith(fakeApiKeys[fakeApiKeys.length - 1]);
         });
       });
     });
 
-    describe("deleteApiKey", () => {
-      it("should call deleteApiKey with provided api key", async () => {
-        // arrange + act in beforeEach
-        usersApiServiceStub.deleteApiKey.withArgs(fakeApiKeys[0]).and.returnValue(EMPTY);
+    describe("progress spinner", () => {
+      it("should contain progress spinner if isLoading$ is true", async () => {
+        // arrange + act also in beforeEach
+        component.isLoading$ = of(true);
 
-        // act
-        component.deleteApiKey(fakeApiKeys[0]);
+        let card: MatCardHarness[] = await loader.getAllHarnesses(MatCardHarness);
+        let progressSpinner: MatProgressSpinnerHarness[] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
 
         // assert
-        expect(usersApiServiceStub.deleteApiKey).toHaveBeenCalledWith(fakeApiKeys[0]);
+        expect(card.length).toBe(1);
+        expect(progressSpinner.length).toBe(1);
       });
 
-      it("should display snackbar with success message if api key was deleted", async () => {
-        // arrange + act in beforeEach
-        const subject = new Subject<void>();
-        usersApiServiceStub.deleteApiKey.and.returnValue(subject.asObservable());
+      it("should not contain progress spinner if isLoading$ is false", async () => {
+        // arrange + act also in beforeEach
+        component.isLoading$ = of(false);
 
-        // act
-        component.deleteApiKey(fakeApiKeys[0]);
-        subject.next();
+        let card: MatCardHarness[] = await loader.getAllHarnesses(MatCardHarness);
+        let progressSpinner: MatProgressSpinnerHarness[] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
 
         // assert
-        expect(snackBarUiServiceStub.showSuccesfulSnackbar).toHaveBeenCalledWith("Successfully deleted API Key!");
-      });
-
-      it("should display snackbar with error message if api key could not be deleted", async () => {
-        // arrange + act in beforeEach
-        const subject = new Subject<void>();
-        usersApiServiceStub.deleteApiKey.and.returnValue(subject.asObservable());
-
-        // act
-        component.deleteApiKey(fakeApiKeys[0]);
-        subject.error("This is a test error thrown in api-keys.component.spec.ts");
-
-        // assert
-        expect(snackBarUiServiceStub.showErrorSnackbar).toHaveBeenCalledWith("Error while deleted API Key.");
+        expect(card.length).toBe(0);
+        expect(progressSpinner.length).toBe(0);
       });
     });
   });

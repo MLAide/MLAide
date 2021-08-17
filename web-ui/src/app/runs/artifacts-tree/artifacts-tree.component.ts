@@ -59,6 +59,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
   }
 
+  // TODO Raman: Können wir hier auch alles entfernen und so einkürzen wie in ArtifactsListTableComponent?
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.artifacts$) {
       this.unsubscribeArtifacts();
