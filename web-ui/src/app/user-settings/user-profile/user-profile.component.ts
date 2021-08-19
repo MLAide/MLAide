@@ -4,6 +4,7 @@ import { Store } from "@ngrx/store";
 import { Subscription } from "rxjs";
 import { selectCurrentUser } from "@mlaide/state/user/user.selectors";
 import { editUserProfile } from "@mlaide/state/user/user.actions";
+import { User } from "@mlaide/state/user/user.models";
 
 @Component({
   selector: "app-user-profile",
@@ -13,6 +14,7 @@ import { editUserProfile } from "@mlaide/state/user/user.actions";
 export class UserProfileComponent implements OnInit, OnDestroy {
   public userForm: FormGroup;
   private userSubscription: Subscription;
+  private user: User;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -20,11 +22,12 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   ) {}
 
   public cancel() {
-    this.userForm.reset();
+    this.userForm.setValue(this.user);
   }
 
   public ngOnInit(): void {
     this.userSubscription = this.store.select(selectCurrentUser).subscribe(user => {
+      this.user = user;
       this.userForm = this.formBuilder.group({
         email: [user?.email, []],
         firstName: [user?.firstName, []],

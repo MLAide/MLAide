@@ -2,14 +2,12 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { AbstractControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { SnackbarUiService } from "@mlaide/shared/services";
 import { MatFormFieldHarness } from "@angular/material/form-field/testing";
 import { MatInputHarness } from "@angular/material/input/testing";
 
 import { UserProfileComponent } from "./user-profile.component";
 import { User } from "@mlaide/entities/user.model";
-import { getRandomUser } from "src/app/mocks/fake-generator";
-import { of, Subject } from "rxjs";
+import { getRandomUser } from "@mlaide/mocks/fake-generator";
 import { MatInputModule } from "@angular/material/input";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatButtonHarness } from "@angular/material/button/testing";
@@ -17,7 +15,10 @@ import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { DebugElement } from "@angular/core";
 import { By } from "@angular/platform-browser";
-import { UsersApiService } from "@mlaide/shared/api";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { selectCurrentUser } from "@mlaide/state/user/user.selectors";
+import { editUserProfile } from "@mlaide/state/user/user.actions";
 
 describe("UserComponent", () => {
   let fixture: ComponentFixture<UserProfileComponent>;
@@ -26,30 +27,34 @@ describe("UserComponent", () => {
   // fakeVariables
   let fakeUser: User;
 
-  // service stubs
-  let snackBarUiServiceStub: jasmine.SpyObj<SnackbarUiService>;
-  let usersApiServiceStub: jasmine.SpyObj<UsersApiService>;
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    // stub services - but do not setup every stub behaviour; this will be done partly in the test itself
-    snackBarUiServiceStub = jasmine.createSpyObj("snackBarUiService", ["showSuccesfulSnackbar", "showErrorSnackbar"]);
-    usersApiServiceStub = jasmine.createSpyObj("usersApiService", ["getCurrentUser", "updateCurrentUser"]);
-
     // arrange fakes & stubs
     // setup users fakes
     fakeUser = await getRandomUser();
 
-    // setup users api
-    usersApiServiceStub.getCurrentUser.and.returnValue(of(fakeUser));
-
     await TestBed.configureTestingModule({
       declarations: [UserProfileComponent],
       providers: [
-        { provide: SnackbarUiService, useValue: snackBarUiServiceStub },
-        { provide: UsersApiService, useValue: usersApiServiceStub },
+        provideMockStore(),
       ],
-      imports: [BrowserAnimationsModule, FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
+      imports: [
+        BrowserAnimationsModule,
+        FormsModule,
+        MatButtonModule,
+        MatFormFieldModule,
+        MatInputModule,
+        ReactiveFormsModule
+      ],
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+
+    store.overrideSelector(selectCurrentUser, fakeUser);
+
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -66,16 +71,6 @@ describe("UserComponent", () => {
   });
 
   describe("ngOnInit", () => {
-    // TODO: Fix Tests
-    /*
-    it("should load current user", async () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(component.user).toBe(fakeUser);
-    });
-    */
-
     it("should init form group with loaded user", async () => {
       // arrange + act also in beforeEach
       // delete id to easily test equality
@@ -122,53 +117,20 @@ describe("UserComponent", () => {
   });
 
   describe("save", async () => {
-    it("should update user variable and call updateUser with updated user variable", async () => {
+    it("should dispatch editUserProfile action with provided forms values", () => {
       // arrange also in beforeEach
-      // delete id of fakeUser from beforeEach to easily test equality
-      delete fakeUser.id;
-      const fakeUser2 = await getRandomUser();
-      fakeUser2.email = fakeUser.email;
-      delete fakeUser2.id;
-      usersApiServiceStub.updateCurrentUser.withArgs(fakeUser2).and.returnValue(of());
-      snackBarUiServiceStub.showSuccesfulSnackbar.withArgs("Successfully saved user info!");
-
-      // act
-      component.userForm.get("firstName").setValue(fakeUser2.firstName);
-      component.userForm.get("lastName").setValue(fakeUser2.lastName);
-      component.userForm.get("nickName").setValue(fakeUser2.nickName);
-      component.save();
-
-      // assert
-      expect(component.userForm.value).toEqual(fakeUser2);
-      expect(usersApiServiceStub.updateCurrentUser).toHaveBeenCalledWith(fakeUser2);
-    });
-
-    it("should show successful snackbar if successfuly updated the users", async () => {
-      // arrange also in beforeEach
-      const subject = new Subject<void>();
-      usersApiServiceStub.updateCurrentUser.and.returnValue(subject.asObservable());
+      component.userForm.get("firstName").setValue(fakeUser.firstName);
+      component.userForm.get("lastName").setValue(fakeUser.lastName);
+      component.userForm.get("nickName").setValue(fakeUser.nickName);
 
       // act
       component.save();
-      subject.next();
 
       // assert
-      expect(snackBarUiServiceStub.showSuccesfulSnackbar).toHaveBeenCalledWith("Successfully saved user info!");
-    });
-
-    it("should show error snackbar if error is thrown when updating user", async () => {
-      // arrange also in beforeEach
-      const subject = new Subject<void>();
-      usersApiServiceStub.updateCurrentUser.and.returnValue(subject.asObservable());
-
-      // act
-      component.save();
-      subject.error("This is a test error thrown in user.component.spec.ts");
-
-      // assert
-      expect(snackBarUiServiceStub.showErrorSnackbar).toHaveBeenCalledWith("Error while saving user info.");
+      expect(dispatchSpy).toHaveBeenCalledWith(editUserProfile({ user: component.userForm.value }));
     });
   });
+
 
   describe("component rendering", () => {
     it("should contain components title", async () => {
