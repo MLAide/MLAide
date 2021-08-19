@@ -1,6 +1,18 @@
 import { AppState } from "../app.state";
 import { selectRouteParam } from "@mlaide/state/router.selectors";
+import { createFeatureSelector, createSelector } from "@ngrx/store";
+import { ProjectState } from "@mlaide/state/project/project.state";
 
-export const selectIsLoadingProjects = (state: AppState) => state.projects.isLoading;
+const projectState = createFeatureSelector<AppState, ProjectState>("projects")
+
+export const selectIsLoadingProjects = createSelector(
+  projectState,
+  (projectState) => projectState.isLoading
+);
+
 export const selectCurrentProjectKey = selectRouteParam("projectKey");
-export const selectProjects = (state: AppState) => state.projects.items;
+
+export const selectProjects = createSelector(
+  projectState,
+  (projectState) => projectState.items
+);

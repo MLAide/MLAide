@@ -1,3 +1,10 @@
 import { AppState } from "../app.state";
+import { createFeatureSelector, createSelector } from "@ngrx/store";
+import { AuthState } from "@mlaide/state/auth/auth.state";
 
-export const selectIsUserAuthenticated = (state: AppState) => state.auth.isUserAuthenticated;
+const authState = createFeatureSelector<AppState, AuthState>("auth")
+
+export const selectIsUserAuthenticated = createSelector(
+  authState,
+  (authState) => authState.isUserAuthenticated
+);

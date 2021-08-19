@@ -87,7 +87,7 @@ describe("ArtifactsListComponent", () => {
     });
 
     it("should dispatch loadArtifacts action", () => {
-      // ngOnInit will be called in beforeEach while creating the component
+      // arrange + act in beforeEach
 
       // assert
       expect(dispatchSpy).toHaveBeenCalledWith(loadArtifacts());

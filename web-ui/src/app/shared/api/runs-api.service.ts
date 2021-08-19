@@ -56,6 +56,7 @@ export class RunsApiService {
     return new RunListDataSource(this.API_URL, this.API_VERSION, this.http, projectKey, runKeys);
   }
 
+  // TODO Raman: Do we need this in the web ui?
   patchRun(projectKey: string, runKey: number, runToPatch: {}): Observable<Run> {
     return this.http.patch<Run>(`${this.API_URL}/api/${this.API_VERSION}/projects/${projectKey}/runs/${runKey}`, runToPatch, {
       headers: {

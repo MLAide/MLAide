@@ -18,6 +18,7 @@ export class ModelStageLogComponent {
     this.modelRevisions = data.modelRevisions;
   }
 
+  // TODO Raman: müssen wir das nicht anders machen mit Redux (inkl. Tests)? Siehe alle anderen Dialoge.
   close() {
     this.dialogRef.close();
   }
