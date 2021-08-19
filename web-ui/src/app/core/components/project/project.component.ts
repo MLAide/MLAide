@@ -13,6 +13,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   private routeParamsSubscription: any;
   constructor(private projectApiService: ProjectsApiService, private route: ActivatedRoute) {}
 
+  // TODO Raman: Umstellen auf Redux + Tests fixen
   ngOnInit() {
     this.routeParamsSubscription = this.route.params.subscribe((params) => {
       const projectKey = params.projectKey;

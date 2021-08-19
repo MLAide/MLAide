@@ -75,7 +75,7 @@ describe("UserSettingsComponent", () => {
       expect(sideNavLinks.length).toBe(2);
     });
 
-    it("first link should contain icon face and text profile and href /user-settings/user", async () => {
+    it("first link should contain icon face and text profile and href /user-profile", async () => {
       // arrange
       const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
       const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
@@ -84,14 +84,14 @@ describe("UserSettingsComponent", () => {
       const firstIcon: MatIconHarness = icons[0];
 
       // assert
-      expect(await profileLink.getHref()).toEqual("/user-settings/user");
+      expect(await profileLink.getHref()).toEqual("/user-profile");
       expect(await profileLink.hasIcon()).toBeTruthy();
       expect(await firstIcon.getName()).toEqual("face");
       expect((await profileLink.getLinesText()).length).toEqual(1);
       expect((await profileLink.getLinesText())[0]).toContain("Profile");
     });
 
-    it("second link should contain icon vpn_key and text API Keys and href /user-settings/api-keys", async () => {
+    it("second link should contain icon vpn_key and text API Keys and href /api-keys", async () => {
       // arrange
       const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
       const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
@@ -100,7 +100,7 @@ describe("UserSettingsComponent", () => {
       const secondIcon: MatIconHarness = icons[1];
 
       // assert
-      expect(await apiKeysLink.getHref()).toEqual("/user-settings/api-keys");
+      expect(await apiKeysLink.getHref()).toEqual("/api-keys");
       expect(await apiKeysLink.hasIcon()).toBeTruthy();
       expect(await secondIcon.getName()).toEqual("vpn_key");
       expect((await apiKeysLink.getLinesText()).length).toEqual(1);
