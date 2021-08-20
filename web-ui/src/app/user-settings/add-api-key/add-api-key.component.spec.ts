@@ -22,7 +22,6 @@ import { getRandomApiKey } from "src/app/mocks/fake-generator";
 import { AddApiKeyComponent } from "./add-api-key.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
-import { AppState } from "@mlaide/state/app.state";
 import { selectNewCreatedApiKey } from "@mlaide/state/api-key/api-key.selectors";
 import { addApiKey, closeAddApiKeyDialog } from "@mlaide/state/api-key/api-key.actions";
 import { showSuccessMessage } from "@mlaide/state/shared/shared.actions";
@@ -39,8 +38,6 @@ describe("CreateApiKeyComponent", () => {
   let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    const initialState: Partial<AppState> = {};
-
     // setup fakes
     fakeApiKey = await getRandomApiKey();
 
@@ -48,7 +45,7 @@ describe("CreateApiKeyComponent", () => {
       declarations: [AddApiKeyComponent, MockPipe(DatePipe, (v) => v)],
       providers: [
         FormBuilder,
-        provideMockStore({ initialState })
+        provideMockStore()
       ],
       imports: [
         BrowserAnimationsModule,

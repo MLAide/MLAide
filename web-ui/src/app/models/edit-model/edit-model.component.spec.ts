@@ -18,7 +18,6 @@ import { EditModelComponent } from "./edit-model.component";
 import { ModelStageI18nComponent } from "@mlaide/shared/components/model-stage-i18n/model-stage-i18n.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
-import { AppState } from "@mlaide/state/app.state";
 import { closeEditModelDialog, editModel } from "@mlaide/state/artifact/artifact.actions";
 
 describe("EditModelComponent", () => {
@@ -33,8 +32,6 @@ describe("EditModelComponent", () => {
   let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    const initialState: Partial<AppState> = {};
-
     // setup experiment fake
     fakeArtifact = await getRandomArtifact();
 
@@ -52,7 +49,7 @@ describe("EditModelComponent", () => {
       providers: [
         FormBuilder,
         { provide: MAT_DIALOG_DATA, useValue: formData },
-        provideMockStore({ initialState })
+        provideMockStore()
       ],
       imports: [
         BrowserAnimationsModule,

@@ -16,7 +16,6 @@ import { getRandomProject } from "src/app/mocks/fake-generator";
 import { AddProjectComponent } from "./add-project.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
-import { AppState } from "@mlaide/state/app.state";
 import { addProject, closeAddProjectDialog } from "@mlaide/state/project/project.actions";
 
 describe("AddProjectComponent", () => {
@@ -32,8 +31,6 @@ describe("AddProjectComponent", () => {
   let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    const initialState: Partial<AppState> = {};
-
     // setup fakes
     fakeProject = await getRandomProject();
 
@@ -45,7 +42,7 @@ describe("AddProjectComponent", () => {
       providers: [
         FormBuilder,
         { provide: MAT_DIALOG_DATA, useValue: formData },
-        provideMockStore({ initialState })
+        provideMockStore( )
       ],
       imports: [BrowserAnimationsModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
     }).compileComponents();

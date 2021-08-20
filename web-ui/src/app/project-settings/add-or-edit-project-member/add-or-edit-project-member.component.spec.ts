@@ -20,7 +20,6 @@ import { AddOrEditProjectMemberComponent } from "./add-or-edit-project-member.co
 import { ProjectMemberRoleI18nComponent } from "@mlaide/shared/components/project-member-role-i18n/project-member-role-i18n.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
-import { AppState } from "@mlaide/state/app.state";
 
 import {
   addProjectMember,
@@ -42,8 +41,6 @@ describe("EditProjectMemberComponent", () => {
   let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    const initialState: Partial<AppState> = {};
-
     // setup fakes
     fakeProjectMember = await getRandomProjectMember();
     randomCreate = Math.random() < 0.5;
@@ -59,7 +56,7 @@ describe("EditProjectMemberComponent", () => {
       providers: [
         FormBuilder,
         { provide: MAT_DIALOG_DATA, useValue: formData },
-        provideMockStore({ initialState })
+        provideMockStore()
       ],
       imports: [
         BrowserAnimationsModule,
