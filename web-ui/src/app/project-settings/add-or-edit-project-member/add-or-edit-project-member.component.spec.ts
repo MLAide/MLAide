@@ -287,9 +287,9 @@ describe("EditProjectMemberComponent", () => {
 
         // assert
         expect(formFields.length).toBe(3);
-        formFields.forEach(async (formField) => {
+        await Promise.all(formFields.map(async (formField) => {
           expect(await formField.hasLabel()).toBeTruthy();
-        });
+        }));
       });
 
       it("should have 2 form fields with labels if isEditMode is set to false", async () => {
@@ -299,9 +299,9 @@ describe("EditProjectMemberComponent", () => {
 
         // assert
         expect(formFields.length).toBe(2);
-        formFields.forEach(async (formField) => {
+        await Promise.all(formFields.map(async (formField) => {
           expect(await formField.hasLabel()).toBeTruthy();
-        });
+        }));
       });
 
       it("should have prefilled readonly form field -- nickname if isEditMode is true", async () => {

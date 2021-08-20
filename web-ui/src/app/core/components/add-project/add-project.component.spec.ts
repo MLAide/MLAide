@@ -209,9 +209,9 @@ describe("AddProjectComponent", () => {
 
         // assert
         expect(formFields.length).toBe(2);
-        formFields.forEach(async (formField) => {
+        await Promise.all(formFields.map(async (formField) => {
           expect(await formField.hasLabel()).toBeTruthy();
-        });
+        }));
       });
 
       it("should have prefilled and required form field -- project name", async () => {

@@ -164,9 +164,9 @@ describe("EditModelComponent", () => {
 
         // assert
         expect(formFields.length).toBe(5);
-        formFields.forEach(async (formField) => {
+        await Promise.all(formFields.map(async (formField) => {
           expect(await formField.hasLabel()).toBeTruthy();
-        });
+        }));
       });
 
       it("should have prefilled readonly form field -- model name", async () => {

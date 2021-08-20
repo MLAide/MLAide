@@ -289,7 +289,7 @@ describe("AppComponent", () => {
         const menuItems: MatMenuItemHarness[] = await projectsMenu.getItems();
 
         // assert
-        menuItems.forEach(async (menuItem, index) => {
+        await Promise.all(menuItems.map(async (menuItem, index) => {
           const aElement: TestElement = await menuItem.host();
 
           if (index < menuItems.length - 1) {
@@ -298,7 +298,7 @@ describe("AppComponent", () => {
             expect(await aElement.getAttribute("href")).toEqual("/projects");
             done();
           }
-        });
+        }));
       });
 
       it("should have correct links for user menu entries", async () => {

@@ -325,13 +325,13 @@ describe("ProjectMembersListComponent", () => {
           expect(rows.length).toBe(fakeProjectMembers.length);
           expect(editButtons.length).toBe(fakeProjectMembers.length);
           expect(deleteButtons.length).toBe(fakeProjectMembers.length);
-          fakeProjectMembers.forEach(async (fakeProjectMember, index) => {
+          await Promise.all(fakeProjectMembers.map(async (fakeProjectMember, index) => {
             const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
             expect(row.nickName).toEqual(fakeProjectMember.nickName);
             expect(row.email).toEqual(String(fakeProjectMember.email));
             expect(row.role.toUpperCase().replace(" ", "_")).toEqual(String(fakeProjectMember.role));
             expect(row.actions).toBe("editdelete");
-          });
+          }));
         });
 
         it("should call deleteProjectMember on clicking delete button in row", async () => {
@@ -376,8 +376,6 @@ describe("ProjectMembersListComponent", () => {
       });
 
       describe("add project member", () => {
-        const addProjectMemberButtonTitle = "Add Project Member";
-
         it("should not contain add project member button", () => {
           // arrange + act also in beforeEach
           let addProjectMemberButton: HTMLElement = fixture.nativeElement.querySelector("button");
@@ -416,12 +414,12 @@ describe("ProjectMembersListComponent", () => {
 
           // assert
           expect(rows.length).toBe(fakeProjectMembers.length);
-          fakeProjectMembers.forEach(async (fakeProjectMember, index) => {
+          await Promise.all(fakeProjectMembers.map(async (fakeProjectMember, index) => {
             const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
             expect(row.nickName).toEqual(fakeProjectMember.nickName);
             expect(row.email).toEqual(String(fakeProjectMember.email));
             expect(row.role.toUpperCase().replace(" ", "_")).toEqual(String(fakeProjectMember.role));
-          });
+          }));
         });
 
         it("should not have delete button in row", async () => {

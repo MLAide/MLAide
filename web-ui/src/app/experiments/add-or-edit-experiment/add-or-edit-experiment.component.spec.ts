@@ -380,9 +380,9 @@ describe("AddOrEditExperimentComponent", () => {
 
         // assert
         expect(formFields.length).toBe(4);
-        formFields.forEach(async (formField) => {
+        await Promise.all(formFields.map(async (formField) => {
           expect(await formField.hasLabel()).toBeTruthy();
-        });
+        }));
       });
 
       it("should have prefilled and required form field -- experiment name", async () => {
@@ -428,9 +428,9 @@ describe("AddOrEditExperimentComponent", () => {
         expect(input).not.toBeNull();
         expect(await input.getPlaceholder()).toEqual("Experiment tags");
         expect(formField).not.toBeNull();
-        chips.forEach(async (chip, index) => {
+        await Promise.all(chips.map(async (chip, index) => {
           expect(await chip.getText()).toEqual(fakeExperiment.tags[index]);
-        });
+        }));
       });
 
       it("should have prefilled and required form field -- experiment status", async () => {

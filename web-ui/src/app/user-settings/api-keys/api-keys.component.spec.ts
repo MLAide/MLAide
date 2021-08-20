@@ -193,13 +193,13 @@ describe("ApiKeysComponent", () => {
         // assert
         expect(rows.length).toBe(fakeApiKeys.length);
         expect(deleteButtons.length).toBe(fakeApiKeys.length);
-        fakeApiKeys.forEach(async (fakeApiKey, index) => {
+        await Promise.all(fakeApiKeys.map(async (fakeApiKey, index) => {
           const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
           expect(row.description).toEqual(fakeApiKey.description);
           expect(row.createdAt).toEqual(String(fakeApiKey.createdAt));
           expect(row.expiresAt).toEqual(String(fakeApiKey.expiresAt));
           expect(row.actions).toBe("delete");
-        });
+        }));
       });
 
       it('should show "-" in expires at cell if it is undefined', async () => {

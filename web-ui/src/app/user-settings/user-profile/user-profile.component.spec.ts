@@ -161,9 +161,9 @@ describe("UserComponent", () => {
 
         // assert
         expect(formFields.length).toBe(4);
-        formFields.forEach(async (formField) => {
+        await Promise.all(formFields.map(async (formField) => {
           expect(await formField.hasLabel()).toBeTruthy();
-        });
+        }));
       });
 
       it("should have prefilled form field -- first name", async () => {

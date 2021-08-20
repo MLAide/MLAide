@@ -181,7 +181,7 @@ describe("ModelsListComponent", () => {
         expect(rows.length).toBe(fakeArtifacts.length);
         expect(editButtons.length).toBe(fakeArtifacts.length);
         expect(historyButtons.length).toBe(fakeArtifacts.length);
-        fakeArtifacts.forEach(async (fakeArtifact, index) => {
+        await Promise.all(fakeArtifacts.map(async (fakeArtifact, index) => {
           const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
 
           expect(row.modelName).toEqual(fakeArtifact.name);
@@ -189,7 +189,7 @@ describe("ModelsListComponent", () => {
           expect(row.stage.toUpperCase().replace(" ", "_")).toEqual(fakeArtifact.model.stage);
           expect(row.runName).toEqual(fakeArtifact.runName);
           expect(row.actions).toBe("edithistory");
-        });
+        }));
       });
 
       it("should call openEditModelDialog with model on clicking edit button in row", async () => {
