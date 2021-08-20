@@ -9,7 +9,7 @@ import {
 } from "@mlaide/state/experiment/experiment.actions";
 import {
   loadArtifacts,
-  loadArtifactsFailed,
+  loadArtifactsFailed, loadArtifactsOfCurrentRun, loadArtifactsOfCurrentRunFailed, loadArtifactsOfCurrentRunSucceeded,
   loadArtifactsSucceeded,
   loadModels,
   loadModelsFailed,
@@ -172,6 +172,7 @@ describe("ArtifactReducer", () => {
     it("should update all artifacts and set isLoading to false in artifactState", async () => {
       // arrange
       const initialState: Partial<ArtifactState> = {
+        isLoading: false,
         items: await getRandomArtifacts(3)
       };
       const newArtifacts = await getRandomArtifacts(4);
@@ -193,6 +194,57 @@ describe("ArtifactReducer", () => {
         isLoading: true
       };
       const action = loadArtifactsFailed(undefined);
+
+      // act
+      const newState = artifactsReducer(initialState as ArtifactState, action);
+
+      // assert
+      await expect(newState.isLoading).toBeFalse();
+    });
+  });
+
+  describe("loadArtifactsOfCurrentRun action", () => {
+    it("should set isLoading to true in artifactState", async () => {
+      // arrange
+      const initialState: Partial<ArtifactState> = {
+        isLoading: false
+      };
+      const action = loadArtifactsOfCurrentRun();
+
+      // act
+      const newState = artifactsReducer(initialState as ArtifactState, action);
+
+      // assert
+      await expect(newState.isLoading).toBeTrue();
+    });
+  });
+
+  describe("loadArtifactsOfCurrentRunSucceeded action", () => {
+    it("should update all artifactsOfCurrentRun and set isLoading to false in artifactState", async () => {
+      // arrange
+      const initialState: Partial<ArtifactState> = {
+        isLoading: true,
+        artifactsOfCurrentRun: await getRandomArtifacts(3)
+      };
+      const newArtifacts = await getRandomArtifacts(4);
+      const action = loadArtifactsOfCurrentRunSucceeded({ artifacts: newArtifacts } as any);
+
+      // act
+      const newState = artifactsReducer(initialState as ArtifactState, action);
+
+      // assert
+      await expect(newState.artifactsOfCurrentRun).toEqual(newArtifacts);
+      await expect(newState.isLoading).toEqual(false);
+    });
+  });
+
+  describe("loadArtifactsOfCurrentRunFailed action", () => {
+    it("should set isLoading to false in artifactState", async () => {
+      // arrange
+      const initialState: Partial<ArtifactState> = {
+        isLoading: true
+      };
+      const action = loadArtifactsOfCurrentRunFailed(undefined);
 
       // act
       const newState = artifactsReducer(initialState as ArtifactState, action);
