@@ -44,11 +44,13 @@ describe("ProjectMemberEffects", () => {
   let matDialog: MatDialog;
   let openDialogSpy: Spy<(component: ComponentType<AddOrEditProjectMemberComponent>, config?: MatDialogConfig) => MatDialogRef<AddOrEditProjectMemberComponent>>;
   let closeAllDialogSpy: Spy<() => void>;
-  let router = {
-    navigate: jasmine.createSpy('navigate')
-  }
+  let router;
 
   beforeEach(() => {
+    router = {
+      navigate: jasmine.createSpy('navigate')
+    };
+
     projectMemberApiStub = jasmine.createSpyObj<ProjectMemberApi>(
       "ProjectMemberApi",
       ["getProjectMembers", "patchProjectMembers", "deleteProjectMember"]);
@@ -348,19 +350,7 @@ describe("ProjectMemberEffects", () => {
     beforeEach(async () => {
       project = await getRandomProject();
 
-      store.setState({
-        router: {
-          state: {
-            root: {
-              firstChild: {
-                params: {
-                  projectKey: project.key
-                }
-              }
-            }
-          }
-        }
-      });
+      store.overrideSelector(selectCurrentProjectKey, project.key);
     });
 
     it("should trigger deleteProjectMemberSucceeded with provided project member if api call is successful", async (done) => {
@@ -425,7 +415,7 @@ describe("ProjectMemberEffects", () => {
       store.overrideSelector(selectCurrentUser, user);
 
       // act
-      effects.goToProjectOverviewIfDeletedUserIsCurrentUser$.subscribe(action => {
+      effects.goToProjectOverviewIfDeletedUserIsCurrentUser$.subscribe(() => {
         // assert
         expect(router.navigate).toHaveBeenCalledWith(["projects"]);
 
@@ -436,11 +426,10 @@ describe("ProjectMemberEffects", () => {
     it(`should not navigate to projects if provided project member for deleteProjectMemberSucceeded action is not current user`, async (done) => {
       // arrange
       let projectMember = await getRandomProjectMember();
-      actions$ = of(deleteProjectMemberSucceeded({projectMember}));
       const user = await getRandomUser();
       user.email = "not-the-same-email-as-the-other@something.com";
       store.overrideSelector(selectCurrentUser, user);
-
+      actions$ = of(deleteProjectMemberSucceeded({projectMember}));
       // act
       // we have to check that the effect does not emit a event - isEmpty() is a helper function for that
       // https://stackoverflow.com/questions/66332252/how-to-test-if-returned-observable-is-empty
