@@ -1,10 +1,10 @@
 import { AppState } from "@mlaide/state/app.state";
-import { getRandomRuns } from "@mlaide/mocks/fake-generator";
+import { getRandomRun, getRandomRuns } from "@mlaide/mocks/fake-generator";
 import {
   selectRunsOfCurrentExperiment,
   selectIsLoadingRuns,
   selectRuns,
-  selectSelectedRunKeys
+  selectSelectedRunKeys, selectCurrentRun, selectCurrentRunKey
 } from "@mlaide/state/run/run.selectors";
 import { RunState } from "@mlaide/state/run/run.state";
 
@@ -60,6 +60,48 @@ describe("RunSelectors", () => {
 
       // assert
       expect(runs).toBe(state.runs.runsOfCurrentExperiment);
+    });
+  });
+
+  describe("selectCurrentRun", () => {
+    it("should select current run from state", async () => {
+      // arrange
+      const partialRunState: Partial<RunState> = {
+        currentRun: await getRandomRun()
+      };
+      const state: Partial<AppState> = {
+        runs: partialRunState as RunState
+      };
+
+      // act
+      const run = selectCurrentRun(state as AppState);
+
+      // assert
+      expect(run).toBe(state.runs.currentRun);
+    });
+  });
+
+  describe("selectCurrentRunKey", () => {
+    it("should select current run key from router state", async () => {
+      // arrange
+      const state = {
+        router: {
+          state: {
+            url: "",
+            root: {
+              params: {
+                runKey: 1
+              }
+            }
+          }
+        }
+      };
+
+      // act
+      const runKey = selectCurrentRunKey(state as any);
+
+      // assert
+      expect(runKey).toBe(1);
     });
   });
 
