@@ -10,41 +10,49 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
 import { MomentModule, TimeAgoPipe } from "ngx-moment";
 import { ProjectListComponent } from "./project-list.component";
-import { Project } from "@mlaide/entities/project.model";
 import { getRandomProjects } from "src/app/mocks/fake-generator";
 import { MockPipe } from "ng-mocks";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
-import { AppState } from "@mlaide/state/app.state";
 import { loadProjects, openAddProjectDialog } from "@mlaide/state/project/project.actions";
 import { Action } from "@ngrx/store";
 import { MatCardHarness } from "@angular/material/card/testing";
 import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
 import { MatCardModule } from "@angular/material/card";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import {
+  selectIsLoadingProjects,
+  selectProjects
+} from "@mlaide/state/project/project.selectors";
+import { of } from "rxjs";
 
 describe("ProjectListComponent", () => {
   let component: ProjectListComponent;
   let fixture: ComponentFixture<ProjectListComponent>;
   let loader: HarnessLoader;
+  let fakeProjects;
 
   const routerSpy = jasmine.createSpyObj("Router", ["navigateByUrl"]);
   let store: MockStore;
   let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    const initialState = createAppState([]);
+    fakeProjects = await getRandomProjects(3);
 
     await TestBed.configureTestingModule({
       declarations: [ProjectListComponent, MockPipe(TimeAgoPipe, (v) => String(v))],
       providers: [
         { provide: Router, useValue: routerSpy },
-        provideMockStore({ initialState })
+        provideMockStore( )
       ],
       imports: [BrowserAnimationsModule, MatButtonModule, MatCardModule, MatDialogModule, MatProgressSpinnerModule, MatSnackBarModule, MatTableModule, MomentModule],
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
+
+    store.overrideSelector(selectProjects, fakeProjects);
+    store.overrideSelector(selectIsLoadingProjects, true);
+
     dispatchSpy = spyOn(store, 'dispatch');
   });
 
@@ -61,8 +69,27 @@ describe("ProjectListComponent", () => {
   });
 
   describe("ngOnInit", () => {
+    it("should select projects from store correctly", async (done) => {
+      // arrange + act in beforeEach
+
+      // assert
+      component.projects$.subscribe((projects) => {
+        expect(projects).toBe(fakeProjects);
+        done();
+      });
+    });
+
+    it("should select isLoadingProjects from store correctly", async (done) => {
+      // arrange + act in beforeEach
+
+      // assert
+      component.isLoading$.subscribe((isLoading) => {
+        expect(isLoading).toBe(true);
+        done();
+      });
+    });
     it("should dispatch loadProjects action", () => {
-      // ngOnInit will be called in beforeEach while creating the component
+      // arrange + act in beforeEach
 
       // assert
       expect(dispatchSpy).toHaveBeenCalledWith(loadProjects());
@@ -137,19 +164,14 @@ describe("ProjectListComponent", () => {
     });
 
     it("should show row for each project", async () => {
-      // arrange
-      const projects = await getRandomProjects(3);
-      store.setState(createAppState(projects));
-
-      // act
-      fixture.detectChanges();
+      // arrange + act also in beforeEach
 
       // assert
       const table: MatTableHarness = await loader.getHarness(MatTableHarness);
       const rows: MatRowHarness[] = await table.getRows();
-      expect(rows.length).toBe(projects.length);
-      for (let index = 0; index < projects.length; index++) {
-        const project = projects[index];
+      expect(rows.length).toBe(fakeProjects.length);
+      for (let index = 0; index < fakeProjects.length; index++) {
+        const project = fakeProjects[index];
 
         const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
 
@@ -160,27 +182,22 @@ describe("ProjectListComponent", () => {
     });
 
     it("should navigate to project experiment page on clicking the project button", async () => {
-      // arrange data for projects table
-      const projects = [{ key: "my-project", name: "My Project", createdAt: new Date() }];
-      store.setState(createAppState(projects));
+      // arrange + act also in beforeEach
 
       // act
-      fixture.detectChanges();
-      const projectButton = await loader.getHarness(MatButtonHarness.with({ text: projects[0].name }));
+      const projectButton = await loader.getHarness(MatButtonHarness.with({ text: fakeProjects[0].name }));
       await projectButton.click();
 
       // assert
       const spy = routerSpy.navigateByUrl as jasmine.Spy;
       expect(spy.calls.count()).toBe(1, "expected navigation router to be called once");
-      expect(spy.calls.first().args[0]).toBe("/projects/my-project");
+      expect(spy.calls.first().args[0]).toBe(`/projects/${fakeProjects[0].key}`);
     });
   });
 
   describe("progress spinner", () => {
     it("should contain progress spinner if isLoading$ is true", async () => {
       // arrange + act also in beforeEach
-      store.setState(createAppState([], true));
-
       let card: MatCardHarness[] = await loader.getAllHarnesses(MatCardHarness);
       let progressSpinner: MatProgressSpinnerHarness[] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
 
@@ -191,7 +208,7 @@ describe("ProjectListComponent", () => {
 
     it("should not contain progress spinner if isLoading$ is false", async () => {
       // arrange + act also in beforeEach
-      store.setState(createAppState([], false));
+      component.isLoading$ = of(false);
       let card: MatCardHarness[] = await loader.getAllHarnesses(MatCardHarness);
       let progressSpinner: MatProgressSpinnerHarness[] = await loader.getAllHarnesses(MatProgressSpinnerHarness);
 
@@ -200,13 +217,4 @@ describe("ProjectListComponent", () => {
       expect(progressSpinner.length).toBe(0);
     });
   });
-
-  function createAppState(projects: Project[], isLoading = false): Partial<AppState> {
-    return {
-      projects: {
-        items: projects,
-        isLoading: isLoading
-      }
-    };
-  }
 });

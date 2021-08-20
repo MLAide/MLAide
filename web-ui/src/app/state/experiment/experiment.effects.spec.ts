@@ -147,15 +147,25 @@ describe("experiment effects", () => {
       return artifacts;
     }
 
+    let experiment;
+    let runs;
+    let runKeys;
+    let artifacts;
+
+    beforeEach(async () => {
+      experiment = await stubExperiment(project);
+      runs = await stubRuns(project, experiment);
+      runKeys = runs.map(r => r.key);
+      artifacts = await stubArtifacts(project, runKeys);
+
+      store.overrideSelector(selectCurrentProjectKey, project.key);
+      store.overrideSelector(selectCurrentExperimentKey, experiment.key);
+    });
+
+
     it(`should trigger loadExperimentWithAllDetailsSucceeded action if api call is successful`, async (done) => {
       // arrange
       actions$ = of(loadExperimentWithAllDetails());
-      const experiment = await stubExperiment(project);
-      const runs = await stubRuns(project, experiment);
-      const runKeys = runs.map(r => r.key);
-      const artifacts = await stubArtifacts(project, runKeys);
-
-      setProjectKeyAndExperimentKeyInRouterState(store, project.key, experiment.key);
 
       // act
       effects.loadExperimentWithAllDetails$.subscribe(action => {
@@ -178,12 +188,7 @@ describe("experiment effects", () => {
     it(`should trigger loadExperimentWithAllDetailsFailed action if loading artifacts fails`, async (done) => {
       // arrange
       actions$ = of(loadExperimentWithAllDetails());
-      const experiment = await stubExperiment(project);
-      const runs = await stubRuns(project, experiment);
-      const runKeys = runs.map(r => r.key);
       artifactApiStub.getArtifactsByRunKeys.withArgs(project.key, runKeys).and.returnValue(throwError("failed"));
-
-      setProjectKeyAndExperimentKeyInRouterState(store, project.key, experiment.key);
 
       // act
       effects.loadExperimentWithAllDetails$.subscribe(action => {
@@ -204,10 +209,7 @@ describe("experiment effects", () => {
     it(`should trigger loadExperimentWithAllDetailsFailed action if loading runs fails`, async (done) => {
       // arrange
       actions$ = of(loadExperimentWithAllDetails());
-      const experiment = await stubExperiment(project);
       runApiStub.getRunsByExperimentKey.withArgs(project.key, experiment.key).and.returnValue(throwError("failed"));
-
-      setProjectKeyAndExperimentKeyInRouterState(store, project.key, experiment.key);
 
       // act
       effects.loadExperimentWithAllDetails$.subscribe(action => {
@@ -228,10 +230,7 @@ describe("experiment effects", () => {
     it(`should trigger loadExperimentWithAllDetailsFailed action if loading experiment fails`, async (done) => {
       // arrange
       actions$ = of(loadExperimentWithAllDetails());
-      const experiment = await getRandomExperiment();
       experimentsApiStub.getExperiment.withArgs(project.key, experiment.key).and.returnValue(throwError("failed"));
-
-      setProjectKeyAndExperimentKeyInRouterState(store, project.key, experiment.key);
 
       // act
       effects.loadExperimentWithAllDetails$.subscribe(action => {
@@ -252,13 +251,10 @@ describe("experiment effects", () => {
     it(`should trigger loadExperimentWithAllDetailsFailed action if experiment does not exist`, async (done) => {
       // arrange
       actions$ = of(loadExperimentWithAllDetails());
-      const experiment = await getRandomExperiment();
       const httpError404: HttpErrorResponse = new HttpErrorResponse({
         status: 404
       });
       experimentsApiStub.getExperiment.withArgs(project.key, experiment.key).and.returnValue(throwError(httpError404));
-
-      setProjectKeyAndExperimentKeyInRouterState(store, project.key, experiment.key);
 
       // act
       effects.loadExperimentWithAllDetails$.subscribe(action => {
@@ -279,15 +275,7 @@ describe("experiment effects", () => {
     it(`should dispatch loadExperimentWithAllDetailsStatusUpdate after each api call`, async (done) => {
       // arrange
       actions$ = of(loadExperimentWithAllDetails());
-
-      const experiment = await stubExperiment(project);
-      const runs = await stubRuns(project, experiment);
-      const runKeys = runs.map(r => r.key);
-      const artifacts = await stubArtifacts(project, runKeys);
-
       const storeSpy = spyOn(store, 'dispatch').and.callThrough();
-
-      setProjectKeyAndExperimentKeyInRouterState(store, project.key, experiment.key);
 
       // act
       effects.loadExperimentWithAllDetails$.subscribe(() => {
@@ -602,8 +590,3 @@ describe("experiment effects", () => {
     });
   });
 });
-
-function setProjectKeyAndExperimentKeyInRouterState(store: MockStore, projectKey: string, experimentKey: string) {
-  store.overrideSelector(selectCurrentProjectKey, projectKey);
-  store.overrideSelector(selectCurrentExperimentKey, experimentKey);
-}

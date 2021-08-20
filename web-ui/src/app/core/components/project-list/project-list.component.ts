@@ -13,12 +13,15 @@ import { Project } from "@mlaide/state/model";
 })
 export class ProjectListComponent implements OnInit {
   public displayedColumns: string[] = ["name", "key", "createdAt"];
-  public projects$: Observable<Project[]> = this.store.select(selectProjects);
-  public isLoading$: Observable<boolean> = this.store.select(selectIsLoadingProjects);
+  public projects$: Observable<Project[]>;
+  public isLoading$: Observable<boolean>;
 
   constructor(private router: Router, private readonly store: Store) {}
 
   public ngOnInit() {
+   this.projects$ = this.store.select(selectProjects);
+   this.isLoading$ = this.store.select(selectIsLoadingProjects);
+
     this.store.dispatch(loadProjects());
   }
 
