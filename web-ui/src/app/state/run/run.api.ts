@@ -19,6 +19,32 @@ export class RunApi {
     this.baseUrl = `${appConfig.apiServer.uri}/api/${appConfig.apiServer.version}`;
   }
 
+  public exportRunsByRunKeys(projectKey: string, runKeys: number[]): Observable<ArrayBuffer> {
+    let params = {};
+    if (runKeys !== null) {
+      const runKeysParam = runKeys.join(",");
+      params = {
+        runKeys: runKeysParam,
+      };
+    }
+
+    return this.http
+      .get(`${this.baseUrl}/projects/${projectKey}/runs`, {
+        observe: "body",
+        params,
+        responseType: "arraybuffer",
+      })
+      .pipe(
+        map((file: ArrayBuffer) => {
+          return file;
+        })
+      );
+  }
+
+  public getRun(projectKey: string, runKey: number): Observable<Run> {
+    return this.http.get<Run>(`${this.baseUrl}/projects/${projectKey}/runs/${runKey}`);
+  }
+
   public getRuns(projectKey: string): Observable<RunListResponse> {
     return this.http.get<RunListResponse>(`${this.baseUrl}/projects/${projectKey}/runs`)
   }
@@ -45,10 +71,6 @@ export class RunApi {
     )
   }
 
-  public getRun(projectKey: string, runKey: number): Observable<Run> {
-    return this.http.get<Run>(`${this.baseUrl}/projects/${projectKey}/runs/${runKey}`);
-  }
-
   public updateRunNote(projectKey: string, runKey: number, note: string): Observable<string> {
     return this.http.put(`${this.baseUrl}/projects/${projectKey}/runs/${runKey}/note`, note, {
       headers: {
@@ -56,27 +78,5 @@ export class RunApi {
       },
       responseType: "text",
     });
-  }
-
-  public exportRunsByRunKeys(projectKey: string, runKeys: number[]): Observable<ArrayBuffer> {
-    let params = {};
-    if (runKeys !== null) {
-      const runKeysParam = runKeys.join(",");
-      params = {
-        runKeys: runKeysParam,
-      };
-    }
-
-    return this.http
-      .get(`${this.baseUrl}/projects/${projectKey}/runs`, {
-        observe: "body",
-        params,
-        responseType: "arraybuffer",
-      })
-      .pipe(
-        map((file: ArrayBuffer) => {
-          return file;
-        })
-      );
   }
 }
