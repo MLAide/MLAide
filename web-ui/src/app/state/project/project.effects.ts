@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Actions, createEffect, ofType } from "@ngrx/effects";
+import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
 import { catchError, map, mergeMap, switchMap, tap } from "rxjs/operators";
 import { showErrorMessage } from "../shared/shared.actions";
@@ -9,19 +9,43 @@ import {
   addProject,
   addProjectFailed,
   addProjectSucceeded,
-  closeAddProjectDialog,
+  closeAddProjectDialog, loadProject, loadProjectFailed,
   loadProjects,
   loadProjectsFailed,
-  loadProjectsSucceeded,
+  loadProjectsSucceeded, loadProjectSucceeded,
   openAddProjectDialog
 } from "./project.actions";
 import { ProjectApi } from "./project.api";
 import { MatDialog } from "@angular/material/dialog";
 import { AddProjectComponent } from "@mlaide/core/components/add-project/add-project.component";
 import { currentUserChanged } from "../user/user.actions";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { Store } from "@ngrx/store";
 
 @Injectable({ providedIn: "root" })
 export class ProjectEffects {
+
+  loadProject$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadProject),
+      concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
+      mergeMap(([_, projectKey]) => this.projectApi.getProject(projectKey)),
+      map((project) => loadProjectSucceeded({ project })),
+      catchError((error) => of(loadProjectFailed({ payload: error })))
+    )
+  );
+
+  loadProjectFailed$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadProjectsFailed),
+      map((action) => action.payload),
+      map((error) => ({
+        message: "Could not load project. A unknown error occurred.",
+        error: error
+      })),
+      map(showErrorMessage)
+    )
+  );
 
   loadProjects$ = createEffect(() =>
     this.actions$.pipe(
@@ -121,6 +145,7 @@ export class ProjectEffects {
     )
   );
 
+  // TODO Raman: Write test for this
   loadProjectsOnLoggedInUserChanged = createEffect(() =>
     this.actions$.pipe(
       ofType(currentUserChanged),
@@ -134,5 +159,6 @@ export class ProjectEffects {
 
   public constructor(private readonly actions$: Actions,
                      private readonly dialog: MatDialog,
-                     private readonly projectApi: ProjectApi) {}
+                     private readonly projectApi: ProjectApi,
+  private readonly store: Store) {}
 }

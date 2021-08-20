@@ -1,6 +1,10 @@
 import { createAction, props } from "@ngrx/store";
 import { Project } from "./project.models";
 
+export const loadProject = createAction("@mlaide/actions/project/load");
+export const loadProjectSucceeded = createAction("@mlaide/actions/project/load/succeeded", props<{ project: Project }>());
+export const loadProjectFailed = createAction("@mlaide/actions/project/load/failed", props<{ payload: any }>());
+
 export const loadProjects = createAction("@mlaide/actions/projects/load");
 export const loadProjectsSucceeded = createAction("@mlaide/actions/projects/load/succeeded", props<{ projects: Project[] }>());
 export const loadProjectsFailed = createAction("@mlaide/actions/projects/load/failed", props<{ payload: any }>());

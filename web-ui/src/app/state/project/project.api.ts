@@ -16,11 +16,17 @@ export class ProjectApi {
     this.baseUrl = `${appConfig.apiServer.uri}/api/${appConfig.apiServer.version}`;
   }
 
+  public addProject(project: Project): Observable<Project> {
+    return this.http.post<Project>(`${this.baseUrl}/projects`, project);
+  }
+
+  public getProject(projectKey: string): Observable<Project> {
+    return this.http.get<Project>(`${this.baseUrl}/projects/${projectKey}`);
+  }
+
   public getProjects(): Observable<ProjectListResponse> {
     return this.http.get<ProjectListResponse>(`${this.baseUrl}/projects`);
   }
 
-  public addProject(project: Project): Observable<Project> {
-    return this.http.post<Project>(`${this.baseUrl}/projects`, project);
-  }
+
 }

@@ -4,7 +4,7 @@
       <mat-nav-list>
         <div fxLayout="row" fxLayoutAlign="center center">
           <span i18n>
-            <h2 class="mat-h2" class="primary-font-color">{{ project?.name }}</h2>
+            <h2 class="mat-h2" class="primary-font-color">{{ project?.name | async }}</h2>
           </span>
         </div>
         <mat-divider></mat-divider>

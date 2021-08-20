@@ -1,34 +1,43 @@
-import { getRandomProjects } from "@mlaide/mocks/fake-generator";
+import { getRandomProject, getRandomProjects } from "@mlaide/mocks/fake-generator";
 import { AppState } from "../app.state";
-import { selectCurrentProjectKey, selectIsLoadingProjects, selectProjects } from "./project.selectors";
+import {
+  selectCurrentProject,
+  selectCurrentProjectKey,
+  selectIsLoadingProjects,
+  selectProjects
+} from "./project.selectors";
 import { ProjectState } from "@mlaide/state/project/project.state";
 
 describe("ProjectSelectors", () => {
-  describe("selectIsLoadingProjects", () => {
-    it("should select isLoading from state", async () => {
+  describe("selectCurrentProject", () => {
+    it("should select current project from state", async () => {
       // arrange
       const partialProjectState: Partial<ProjectState> = {
-        isLoading: true
+        currentProject: await getRandomProject()
       }
+
       const state: Partial<AppState> = {
         projects: partialProjectState as ProjectState
       };
 
       // act
-      const isLoading = selectIsLoadingProjects(state as AppState);
+      const project = selectCurrentProject(state as AppState);
 
       // assert
-      expect(isLoading).toBeTrue();
+      expect(project).toBe(state.projects.currentProject);
     });
   });
+
   describe("selectProjects", () => {
     it("should select projects from state", async () => {
       // arrange
-      const state: Partial<AppState> = {
-        projects: {
+      const partialProjectState: Partial<ProjectState> = {
           isLoading: true,
           items: await getRandomProjects(3)
-        }
+      }
+
+      const state: Partial<AppState> = {
+        projects: partialProjectState as ProjectState
       };
 
       // act
@@ -60,6 +69,24 @@ describe("ProjectSelectors", () => {
 
       // assert
       expect(projectKey).toBe("the-project-key");
+    });
+  });
+
+  describe("selectIsLoadingProjects", () => {
+    it("should select isLoading from state", async () => {
+      // arrange
+      const partialProjectState: Partial<ProjectState> = {
+        isLoading: true
+      }
+      const state: Partial<AppState> = {
+        projects: partialProjectState as ProjectState
+      };
+
+      // act
+      const isLoading = selectIsLoadingProjects(state as AppState);
+
+      // assert
+      expect(isLoading).toBeTrue();
     });
   });
 });

@@ -1,9 +1,26 @@
-import { getRandomProjects } from "@mlaide/mocks/fake-generator";
-import { loadProjects, loadProjectsFailed, loadProjectsSucceeded } from "./project.actions";
+import { getRandomProject, getRandomProjects } from "@mlaide/mocks/fake-generator";
+import { loadProjects, loadProjectsFailed, loadProjectsSucceeded, loadProjectSucceeded } from "./project.actions";
 import { projectsReducer } from "./project.reducers";
 import { ProjectState } from "@mlaide/state/project/project.state";
 
 describe("ProjectReducers", () => {
+  describe("loadProjectSucceeded action", () => {
+    it("should update currentProject in projectState", async () => {
+      // arrange
+      const initialState: Partial<ProjectState> = {
+        currentProject: await getRandomProject()
+      };
+      const newProject = await getRandomProject();
+      const action = loadProjectSucceeded({project: newProject});
+
+      // act
+      const newState = projectsReducer(initialState as ProjectState, action);
+
+      // assert
+      expect(newState.currentProject).toEqual(newProject);
+    });
+  });
+
   describe("loadProjects action", () => {
     it("should set isLoading to true in projectState", async () => {
       // arrange
@@ -23,7 +40,7 @@ describe("ProjectReducers", () => {
   describe("loadProjectsSucceeded action", () => {
     it("should update all projects", async () => {
       // arrange
-      const initialState: ProjectState = {
+      const initialState: Partial<ProjectState> = {
         isLoading: true,
         items: await getRandomProjects(3),
       };
@@ -31,10 +48,11 @@ describe("ProjectReducers", () => {
       const action = loadProjectsSucceeded({ projects: newProjects });
 
       // act
-      const newState = projectsReducer(initialState, action);
+      const newState = projectsReducer(initialState as ProjectState, action);
 
       // assert
-      expect(newState).toEqual({ isLoading: false, items: newProjects});
+      expect(newState.isLoading).toEqual(false);
+      expect(newState.items).toEqual(newProjects);
     });
   });
 

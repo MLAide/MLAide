@@ -8,18 +8,32 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from "@ngrx/store";
 import { Observable, of, throwError } from "rxjs";
 import { hideSpinner, showErrorMessage, showSpinner } from "../shared/shared.actions";
-import { addProject, addProjectFailed, addProjectSucceeded, closeAddProjectDialog, loadProjects, loadProjectsFailed, loadProjectsSucceeded, openAddProjectDialog } from "./project.actions";
+import {
+  addProject,
+  addProjectFailed,
+  addProjectSucceeded,
+  closeAddProjectDialog, loadProject, loadProjectFailed,
+  loadProjects,
+  loadProjectsFailed,
+  loadProjectsSucceeded,
+  loadProjectSucceeded,
+  openAddProjectDialog
+} from "./project.actions";
 import { ProjectApi, ProjectListResponse } from "./project.api";
 import { ProjectEffects } from "./project.effects";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { Project } from "@mlaide/state/project/project.models";
 
 describe("project effects", () => {
   let actions$ = new Observable<Action>();
   let effects: ProjectEffects;
-  let projectsApiServiceStub: jasmine.SpyObj<ProjectApi>;
+  let projectsApiStub: jasmine.SpyObj<ProjectApi>;
   let matDialog: MatDialog;
+  let store: MockStore;
 
   beforeEach(() => {
-    projectsApiServiceStub = jasmine.createSpyObj<ProjectApi>("ProjectApi", ["getProjects", "addProject"]);
+    projectsApiStub = jasmine.createSpyObj<ProjectApi>("ProjectApi", ["addProject", "getProject", "getProjects"]);
 
     TestBed.configureTestingModule({
       imports: [
@@ -28,12 +42,53 @@ describe("project effects", () => {
       providers: [
         ProjectEffects,
         provideMockActions(() => actions$),
-        { provide: ProjectApi, useValue: projectsApiServiceStub }
+        provideMockStore(),
+        { provide: ProjectApi, useValue: projectsApiStub }
       ],
     });
 
+    store = TestBed.inject(MockStore);
     effects = TestBed.inject<ProjectEffects>(ProjectEffects);
     matDialog = TestBed.inject<MatDialog>(MatDialog);
+  });
+
+  describe("loadProject$", () => {
+    let fakeProject: Project;
+
+    beforeEach(async () => {
+      fakeProject = await getRandomProject();
+      store.overrideSelector(selectCurrentProjectKey, fakeProject.key);
+    });
+
+    it("should trigger loadProjectSucceeded containing project if api call is successful", async (done) => {
+      // arrange also in beforeEach
+      actions$ = of(loadProject());
+      projectsApiStub.getProject.withArgs(fakeProject.key).and.returnValue(of(fakeProject));
+
+      // act
+      effects.loadProject$.subscribe(action => {
+        // assert
+        expect(action).toEqual(loadProjectSucceeded({project: fakeProject}));
+        expect(projectsApiStub.getProject).toHaveBeenCalledWith(fakeProject.key);
+
+        done();
+      });
+    });
+
+    it("should trigger loadProjectFailed action if api call is not successful", async (done) => {
+      // arrange
+      actions$ = of(loadProject());
+      projectsApiStub.getProject.withArgs(fakeProject.key).and.returnValue(throwError("failed"));
+
+      // act
+      effects.loadProject$.subscribe(action => {
+        // assert
+        expect(action).toEqual(loadProjectFailed({ payload: "failed" }));
+        expect(projectsApiStub.getProject).toHaveBeenCalledWith(fakeProject.key);
+
+        done();
+      });
+    });
   });
 
   describe("loadProjects$", () => {
@@ -45,13 +100,13 @@ describe("project effects", () => {
           actions$ = of(inputAction);
           const projects = await getRandomProjects(3);
           const response: ProjectListResponse = { items: projects };
-          projectsApiServiceStub.getProjects.and.returnValue(of(response));
+          projectsApiStub.getProjects.and.returnValue(of(response));
 
           // act
           effects.loadProjects$.subscribe(action => {
             // assert
             expect(action).toEqual(loadProjectsSucceeded({projects: projects}));
-            expect(projectsApiServiceStub.getProjects).toHaveBeenCalled();
+            expect(projectsApiStub.getProjects).toHaveBeenCalled();
 
             done();
           });
@@ -64,13 +119,13 @@ describe("project effects", () => {
         it(`on '${inputAction.type}' action`, async (done) => {
           // arrange
           actions$ = of(inputAction);
-          projectsApiServiceStub.getProjects.and.returnValue(throwError("failed"));
+          projectsApiStub.getProjects.and.returnValue(throwError("failed"));
 
           // act
           effects.loadProjects$.subscribe(action => {
             // assert
             expect(action).toEqual(loadProjectsFailed({ payload: "failed" }));
-            expect(projectsApiServiceStub.getProjects).toHaveBeenCalled();
+            expect(projectsApiStub.getProjects).toHaveBeenCalled();
 
             done();
           });
@@ -86,14 +141,14 @@ describe("project effects", () => {
         // arrange
         const project = await getRandomProject();
         const createdProject = await getRandomProject();
-        projectsApiServiceStub.addProject.withArgs(project).and.returnValue(of(createdProject));
+        projectsApiStub.addProject.withArgs(project).and.returnValue(of(createdProject));
         actions$ = of(addProject({project}));
 
         // act
         effects.addProject$.subscribe(action => {
           // assert
           expect(action).toEqual(addProjectSucceeded({ project: createdProject }));
-          expect(projectsApiServiceStub.addProject).toHaveBeenCalledOnceWith(project);
+          expect(projectsApiStub.addProject).toHaveBeenCalledOnceWith(project);
 
           done();
         });
@@ -104,14 +159,14 @@ describe("project effects", () => {
       it(`on '${addProject.type}' action`, async (done) => {
         // arrange
         const project = await getRandomProject();
-        projectsApiServiceStub.addProject.withArgs(project).and.returnValue(throwError("failed"));
+        projectsApiStub.addProject.withArgs(project).and.returnValue(throwError("failed"));
         actions$ = of(addProject({project}));
 
         // act
         effects.addProject$.subscribe(action => {
           // assert
           expect(action).toEqual(addProjectFailed({ payload: "failed" }));
-          expect(projectsApiServiceStub.addProject).toHaveBeenCalledOnceWith(project);
+          expect(projectsApiStub.addProject).toHaveBeenCalledOnceWith(project);
 
           done();
         });
@@ -265,6 +320,12 @@ describe("project effects", () => {
           expectedMessage: "Could not load projects. A unknown error occurred.",
           inputAction: loadProjectsFailed({ payload: "Some other error" }),
           effect: (effects) => effects.loadProjectsFailed$
+        },
+        {
+          karmaTitle: "Any other error that is not of type HttpErrorResponse",
+          expectedMessage: "Could not load project. A unknown error occurred.",
+          inputAction: loadProjectsFailed({ payload: "Some other error" }),
+          effect: (effects) => effects.loadProjectFailed$
         }
       ];
 

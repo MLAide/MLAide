@@ -52,6 +52,26 @@ describe("ProjectApi", () => {
     });
   });
 
+  describe("getProject", () => {
+    it("should return a project as observable from api response", async (done) => {
+      // arrange
+      const fakeProject: Project = await getRandomProject();
+
+      // act
+      const project$: Observable<Project> = projectApi.getProject(fakeProject.key);
+
+      // assert
+      project$.subscribe((response) => {
+        expect(response).toEqual(fakeProject);
+        done();
+      });
+
+      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects/${fakeProject.key}`);
+      expect(req.request.method).toBe("GET");
+      req.flush(fakeProject);
+    });
+  });
+
   describe("getProjects", () => {
     it("should return projects as observable from api response", async (done) => {
       // arrange
