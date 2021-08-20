@@ -3,7 +3,7 @@ import { getRandomArtifacts } from "@mlaide/mocks/fake-generator";
 import { ArtifactState } from "@mlaide/state/artifact/artifact.state";
 import {
   selectArtifacts,
-  selectArtifactsByRunKeys,
+  selectArtifactsByRunKeys, selectArtifactsOfCurrentRun,
   selectIsLoadingArtifacts,
   selectModels
 } from "@mlaide/state/artifact/artifact.selectors";
@@ -26,6 +26,7 @@ describe("ArtifactSelectors", () => {
       expect(artifacts).toBe(state.artifacts.items);
     });
   });
+
   describe("selectArtifactsByRunKeys", () => {
     it("should select artifacts for run keys from state", async () => {
       // arrange
@@ -41,6 +42,24 @@ describe("ArtifactSelectors", () => {
 
       // assert
       expect(artifacts).toBe(state.artifacts.artifactsByRunKeys);
+    });
+  });
+
+  describe("selectArtifactsOfCurrentRun", () => {
+    it("should select artifacts for current run from state", async () => {
+      // arrange
+      const partialArtifactState: Partial<ArtifactState> = {
+        artifactsOfCurrentRun: await getRandomArtifacts(3)
+      }
+      const state: Partial<AppState> = {
+        artifacts: partialArtifactState as ArtifactState
+      };
+
+      // act
+      const artifacts = selectArtifactsOfCurrentRun(state as AppState);
+
+      // assert
+      expect(artifacts).toBe(state.artifacts.artifactsOfCurrentRun);
     });
   });
 
