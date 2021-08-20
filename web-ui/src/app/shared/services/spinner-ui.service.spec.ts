@@ -14,7 +14,7 @@ describe("SpinnerUiService", () => {
   let positionStrategy: GlobalPositionStrategy;
 
   beforeEach(() => {
-    overlayRefStub = jasmine.createSpyObj("overlayRef", ["attach", "detach"]);
+    overlayRefStub = jasmine.createSpyObj("overlayRef", ["attach", "detach", "hasAttached"]);
 
     positionStrategy = new GlobalPositionStrategy();
     overlayPositionBuilderStub = jasmine.createSpyObj("overlayPositionBuilder", ["global"]);
@@ -37,8 +37,10 @@ describe("SpinnerUiService", () => {
   });
 
   it("should create overlay ref with correct configuration", () => {
+    // arrange
     const overlayConfig: OverlayConfig = overlayStub.create.calls.mostRecent().args[0];
 
+    // assert
     expect(overlayConfig.hasBackdrop).toBe(true);
     expect(overlayConfig.backdropClass).toBe("dark-backdrop");
     expect(overlayConfig.positionStrategy).toBe(positionStrategy);
@@ -49,8 +51,13 @@ describe("SpinnerUiService", () => {
 
   describe("showSpinner", () => {
     it("should attach spinner to overlay", () => {
+      // arrange
+      overlayRefStub.hasAttached.and.returnValue(false);
+
+      // act
       service.showSpinner();
 
+      // assert
       expect(overlayRefStub.attach).toHaveBeenCalled();
       const attachTo: ComponentPortal<MatSpinner> = overlayRefStub.attach.calls.mostRecent().args[0];
       expect(attachTo.component).toBe(MatSpinner, "expected that spinner is attached to overlay");
@@ -59,8 +66,13 @@ describe("SpinnerUiService", () => {
 
   describe("stopSpinner", () => {
     it("should detach everything from overlay", () => {
+      // arrange
+      overlayRefStub.hasAttached.and.returnValue(true);
+
+      // act
       service.stopSpinner();
 
+      // assert
       expect(overlayRefStub.detach).toHaveBeenCalled();
     });
   });
