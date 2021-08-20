@@ -1,7 +1,5 @@
-import { AfterViewInit, Component, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild } from "@angular/core";
-import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
-import { Observable, Subscription } from "rxjs";
+import { Component, Input } from "@angular/core";
+import { Observable } from "rxjs";
 import { Artifact } from "@mlaide/state/artifact/artifact.models";
 
 @Component({

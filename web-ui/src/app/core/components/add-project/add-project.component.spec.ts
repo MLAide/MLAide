@@ -19,7 +19,7 @@ import { Action } from "@ngrx/store";
 import { AppState } from "@mlaide/state/app.state";
 import { addProject, closeAddProjectDialog } from "@mlaide/state/project/project.actions";
 
-describe("CreateProjectComponent", () => {
+describe("AddProjectComponent", () => {
   let component: AddProjectComponent;
   let fixture: ComponentFixture<AddProjectComponent>;
 

@@ -7,7 +7,7 @@ import { Project } from "@mlaide/entities/project.model";
 import { addProject, closeAddProjectDialog } from "@mlaide/state/project/project.actions";
 
 @Component({
-  selector: "app-create-project",
+  selector: "app-add-project",
   templateUrl: "./add-project.component.html",
   styleUrls: ["./add-project.component.scss"],
 })

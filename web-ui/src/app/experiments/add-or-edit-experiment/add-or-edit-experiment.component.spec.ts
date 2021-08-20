@@ -23,7 +23,6 @@ import { ExperimentStatusI18nComponent } from "../experiment-status-i18n/experim
 import { AddOrEditExperimentComponent } from "./add-or-edit-experiment.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
-import { AppState } from "@mlaide/state/app.state";
 import {
   addExperiment,
   closeAddOrEditExperimentDialog,
@@ -43,8 +42,6 @@ describe("AddOrEditExperimentComponent", () => {
   let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    const initialState: Partial<AppState> = {};
-
     // setup fakes
     fakeExperiment = await getRandomExperiment();
     randomIsEditMode = Math.random() < 0.5;
@@ -61,7 +58,7 @@ describe("AddOrEditExperimentComponent", () => {
       providers: [
         FormBuilder,
         { provide: MAT_DIALOG_DATA, useValue: formData },
-        provideMockStore({ initialState })
+        provideMockStore()
       ],
       imports: [
         BrowserAnimationsModule,

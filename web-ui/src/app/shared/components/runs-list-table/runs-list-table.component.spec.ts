@@ -10,9 +10,8 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { ActivatedRoute, Router } from "@angular/router";
 import { RouterTestingModule } from "@angular/router/testing";
 import { Project } from "@mlaide/entities/project.model";
-import { Run, RunListResponse } from "@mlaide/entities/run.model";
+import { Run } from "@mlaide/entities/run.model";
 import { ActivatedRouteStub } from "src/app/mocks/activated-route.stub";
-import { ListDataSourceMock } from "src/app/mocks/data-source.mock";
 import { getRandomProject, getRandomRuns } from "src/app/mocks/fake-generator";
 import { RunsListTableComponent } from "./runs-list-table.component";
 import { of } from "rxjs";
@@ -27,9 +26,11 @@ import { MatButtonHarness } from "@angular/material/button/testing";
 import { MatIconHarness } from "@angular/material/icon/testing";
 import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
 import { MatChipHarness, MatChipListHarness } from "@angular/material/chips/testing";
-import { FileSaverService } from "ngx-filesaver";
 import { RunStatusI18nComponent } from "../run-status-i18n/run-status-i18n.component";
-import { RunsApiService } from "@mlaide/shared/api";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { exportRuns } from "@mlaide/state/run/run.actions";
+import { Subscription } from "rxjs/internal/Subscription";
 
 describe("RunsListTableComponent", () => {
   let component: RunsListTableComponent;
@@ -39,24 +40,17 @@ describe("RunsListTableComponent", () => {
   let fakeProject: Project;
   let fakeRuns: Run[];
 
-  // data source mocks
-  let runListDataSourceMock: ListDataSourceMock<Run, RunListResponse> = new ListDataSourceMock();
-
   // router stubs
   const activatedRoute: ActivatedRoute = new ActivatedRouteStub() as any;
   const routerSpy = jasmine.createSpyObj("Router", ["navigate"]);
 
-  // service stubs
-  let runsApiServiceStub: jasmine.SpyObj<RunsApiService>;
-  let fileSaverServiceStub: jasmine.SpyObj<FileSaverService>;
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
     // setup fakes
     fakeProject = await getRandomProject();
     fakeRuns = await getRandomRuns(3);
-
-    runsApiServiceStub = jasmine.createSpyObj("runsApiService", ["exportRunsByRunKeys"]);
-    fileSaverServiceStub = jasmine.createSpyObj("fileSaverServiceStub", ["save"]);
 
     await TestBed.configureTestingModule({
       declarations: [
@@ -68,8 +62,7 @@ describe("RunsListTableComponent", () => {
       providers: [
         { provide: ActivatedRoute, useValue: activatedRoute },
         { provide: Router, useValue: routerSpy },
-        { provide: RunsApiService, useValue: runsApiServiceStub },
-        { provide: FileSaverService, useValue: fileSaverServiceStub },
+        provideMockStore(),
       ],
       imports: [
         BrowserAnimationsModule,
@@ -83,53 +76,100 @@ describe("RunsListTableComponent", () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(RunsListTableComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-
-    // setup mocks
-    // component.runListDataSource = runListDataSourceMock;
-    component.projectKey = fakeProject.key;
+    store = TestBed.inject(MockStore);
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
-  afterEach(() => {
-    runListDataSourceMock.emulate([]);
+  beforeEach(async () => {
+    fixture = TestBed.createComponent(RunsListTableComponent);
+    component = fixture.componentInstance;
+    component.runs$ = of(fakeRuns);
+    component.projectKey = fakeProject.key;
+    fixture.detectChanges();
   });
 
   it("should create", () => {
+    // assert
     expect(component).toBeTruthy();
   });
 
-  describe("ngOnChanges", () => {
-    it("should load new data from data source if changes include runListDataSource", async () => {
-      // arrange + act also in beforeEach
-      const spy = spyOn(component, "ngOnChanges").and.callThrough();
-      runListDataSourceMock.emulate(fakeRuns);
+  it("should assign runs", (done) => {
+    // assert
+    component.runs$.subscribe((runs) => {
+      expect(runs).toBe(fakeRuns);
+      done();
+    });
+  });
 
-      //directly call ngOnChanges
-      component.ngOnChanges({
-        runListDataSource: new SimpleChange(null, runListDataSourceMock, true),
+  describe("ngOnChanges", () => {
+    it("should call unsubscribe if runs$ changes detected", async () => {
+      // arrange in beforeEach
+      const runs$ = of(fakeRuns);
+      component.runs$ = runs$;
+
+      const subscription = new Subscription();
+      const unsubscribeSpy = spyOn(subscription, "unsubscribe").and.callThrough();
+      spyOn(runs$, "subscribe").and.callFake(() => {
+        return subscription;
       });
+
+      // We need to do this twice because otherwise unsubscribe is not called
+      component.ngOnChanges({
+        runs$: new SimpleChange(null, runs$, true),
+      });
+
       fixture.detectChanges();
 
-      expect(spy).toHaveBeenCalled();
-      expect(component.dataSource.data.length).toEqual(3);
-      expect(component.dataSource.data).toEqual(fakeRuns);
+      // act
+      component.ngOnChanges({
+        runs$: new SimpleChange(null, runs$, true),
+      });
+
+      fixture.detectChanges();
+
+      // assert
+      expect(unsubscribeSpy).toHaveBeenCalled();
     });
 
-    it("should not load new data from data source if changes do not include runListDataSource", async () => {
-      // arrange + act also in beforeEach
-      const spy = spyOn(component, "ngOnChanges").and.callThrough();
-      runListDataSourceMock.emulate(fakeRuns);
+    it("should call update datasource if runs$ changes detected", async () => {
+      // arrange in beforeEach
+      const runs$ = of(fakeRuns);
+      component.runs$ = runs$;
 
-      //directly call ngOnChanges
+      // act
       component.ngOnChanges({
-        projectKey: new SimpleChange(null, runListDataSourceMock, true),
+        runs$: new SimpleChange(null, runs$, true),
       });
+
       fixture.detectChanges();
 
-      expect(spy).toHaveBeenCalled();
-      expect(component.dataSource.data.length).toEqual(0);
+      // assert
+      expect(component.dataSource.data).toEqual(fakeRuns);
+    });
+  });
+
+  describe("ngOnDestroy", () => {
+    it("should unsubscribe from runsSubscription", async () => {
+      // arrange in beforeEach
+      const runs$ = of([]);
+      component.runs$ = runs$;
+
+      const subscription = new Subscription();
+      const unsubscribeSpy = spyOn(subscription, "unsubscribe").and.callThrough();
+      spyOn(runs$, "subscribe").and.callFake(() => {
+        return subscription;
+      });
+      component.ngOnChanges({
+        runs$: new SimpleChange(null, runs$, true),
+      });
+
+      fixture.detectChanges();
+
+      // act
+      component.ngOnDestroy();
+
+      // assert
+      expect(unsubscribeSpy).toHaveBeenCalled();
     });
   });
 
@@ -138,7 +178,7 @@ describe("RunsListTableComponent", () => {
       // arrange + act also in beforeEach
       const spy = spyOn(component, "isAllSelected");
 
-      // actu
+      // act
       component.checkboxLabel();
 
       // assert
@@ -214,41 +254,18 @@ describe("RunsListTableComponent", () => {
   });
 
   describe("exportSelectedRuns", () => {
-    it("should call exportRunsByRunKeys for component's selected fakeRuns", async () => {
-      // arrange + act also in beforeEach
+    it("should dispatch exportRuns action with component's runKeys", async () => {
+      // arrange in beforeEach
       component.selection.selected.push(fakeRuns[0]);
-
-      const returnBuffer: ArrayBufferLike = new Uint16Array([1, 2, 3]).buffer;
-      runsApiServiceStub.exportRunsByRunKeys.withArgs(fakeProject.key, [fakeRuns[0].key]).and.returnValue(of(returnBuffer));
 
       // act
       component.exportSelectedRuns();
 
       // assert
-      expect(runsApiServiceStub.exportRunsByRunKeys).toHaveBeenCalledWith(fakeProject.key, [fakeRuns[0].key]);
-    });
-
-    it("should call FileSavers saveAs for the information of selected fakeRuns", async () => {
-      // arrange + act also in beforeEach
-      component.selection.selected.push(fakeRuns[0]);
-      jasmine.clock().install();
-      jasmine.clock().mockDate(new Date(Date.now()));
-      const returnBuffer: ArrayBufferLike = new Uint16Array([1, 2, 3]).buffer;
-      runsApiServiceStub.exportRunsByRunKeys.withArgs(fakeProject.key, [fakeRuns[0].key]).and.returnValue(of(returnBuffer));
-
-      // act
-      component.exportSelectedRuns();
-
-      // assert
-      expect(fileSaverServiceStub.save).toHaveBeenCalledWith(
-        new Blob([returnBuffer], { type: "application/octet-stream" }),
-        `ExportedRuns_${new Date().toISOString()}.json`
-      );
-
-      // clean
-      jasmine.clock().uninstall();
+      expect(dispatchSpy).toHaveBeenCalledWith(exportRuns({runKeys: [fakeRuns[0].key]}));
     });
   });
+
 
   describe("goToRunCompareComponent", () => {
     it("should navigate to compare with selected runs", async () => {
@@ -272,13 +289,14 @@ describe("RunsListTableComponent", () => {
     });
   });
 
+
   describe("isAllSelected", () => {
     beforeEach(() => {
-      runListDataSourceMock.emulate(fakeRuns);
+      const runs$ = of(fakeRuns);
+      component.runs$ = runs$;
 
-      //directly call ngOnChanges
       component.ngOnChanges({
-        runListDataSource: new SimpleChange(null, runListDataSourceMock, true),
+        runs$: new SimpleChange(null, runs$, true),
       });
       fixture.detectChanges();
     });
@@ -322,12 +340,12 @@ describe("RunsListTableComponent", () => {
     });
 
     it("should select all runs if isAllSelected() returns false", async () => {
-      // arrange + act also in beforeEach
-      runListDataSourceMock.emulate(fakeRuns);
+      // arrange
+      const runs$ = of(fakeRuns);
+      component.runs$ = runs$;
 
-      //directly call ngOnChanges
       component.ngOnChanges({
-        runListDataSource: new SimpleChange(null, runListDataSourceMock, true),
+        runs$: new SimpleChange(null, runs$, true),
       });
       fixture.detectChanges();
       spyOn(component, "isAllSelected").and.returnValue(false);
@@ -339,6 +357,7 @@ describe("RunsListTableComponent", () => {
       expect(component.selection.selected.length).toEqual(fakeRuns.length);
     });
   });
+
 
   describe("selectedLessThanOneRow", () => {
     it("should return true if less than one row is selected", async () => {
@@ -445,10 +464,11 @@ describe("RunsListTableComponent", () => {
     beforeEach(() => {
       loader = TestbedHarnessEnvironment.loader(fixture);
 
-      runListDataSourceMock.emulate(fakeRuns);
-      //directly call ngOnChanges
+      const runs$ = of(fakeRuns);
+      component.runs$ = runs$;
+
       component.ngOnChanges({
-        runListDataSource: new SimpleChange(null, runListDataSourceMock, true),
+        runs$: new SimpleChange(null, runs$, true),
       });
       fixture.detectChanges();
     });
@@ -595,6 +615,7 @@ describe("RunsListTableComponent", () => {
       });
 
       describe("without parameters", () => {
+
         it("should have defined headers", async () => {
           // arrange + act also in beforeEach
           const table: MatTableHarness = await loader.getHarness(MatTableHarness);
@@ -628,7 +649,8 @@ describe("RunsListTableComponent", () => {
           // +1 because we have master toggle checkbox in the header row
           expect(checkboxes.length).toBe(fakeRuns.length + 1);
           expect(lists.length).toBe(fakeRuns.length);
-          fakeRuns.forEach(async (fakeRun, fakeRunIndex) => {
+
+          await Promise.all(fakeRuns.map(async (fakeRun, fakeRunIndex) => {
             const row: MatRowHarnessColumnsText = await rows[fakeRunIndex].getCellTextByColumnName();
             const chips: MatChipHarness[] = await chipLists[fakeRunIndex].getChips();
 
@@ -641,14 +663,15 @@ describe("RunsListTableComponent", () => {
               }, {});
 
             let metricsString = "";
-            Object.keys(orderedMetricsObject).forEach(async (key, keyIndex) => {
+
+            await Promise.all(Object.keys(orderedMetricsObject).map(async (key, keyIndex) => {
               const keyValueString = ` remove ${key} : ${fakeRun.metrics[key]}`;
               metricsString += keyValueString;
 
               // assert metrics' list elements
               const items = await lists[fakeRunIndex].getItems();
               expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
-            });
+            }));
 
             expect(row.name).toEqual(fakeRun.name);
             expect(row.status.toUpperCase().replace(" ", "_")).toEqual(fakeRun.status);
@@ -657,8 +680,8 @@ describe("RunsListTableComponent", () => {
             expect(row.runTime).toEqual(String(fakeRun.startTime));
             expect(row.metrics).toEqual(metricsString.trim());
             expect(row.createdBy).toEqual(fakeRun.createdBy.nickName);
-            chipsEqualExperimentKeys(chips, fakeRun);
-          });
+            await chipsEqualExperimentKeys(chips, fakeRun);
+          }));
         });
       });
 
@@ -705,7 +728,8 @@ describe("RunsListTableComponent", () => {
           expect(checkboxes.length).toBe(fakeRuns.length + 1);
           expect(parametersLists.length).toBe(fakeRuns.length);
           expect(metricsLists.length).toBe(fakeRuns.length);
-          fakeRuns.forEach(async (fakeRun, fakeRunIndex) => {
+
+          await Promise.all(fakeRuns.map(async (fakeRun, fakeRunIndex) => {
             const row: MatRowHarnessColumnsText = await rows[fakeRunIndex].getCellTextByColumnName();
             const chips: MatChipHarness[] = await chipLists[fakeRunIndex].getChips();
 
@@ -726,24 +750,24 @@ describe("RunsListTableComponent", () => {
               }, {});
 
             let parametersString = "";
-            Object.keys(orderedParametersObject).forEach(async (key, keyIndex) => {
+            await Promise.all(Object.keys(orderedParametersObject).map(async (key, keyIndex) => {
               const keyValueString = ` remove ${key} : ${fakeRun.parameters[key]}`;
               parametersString += keyValueString;
 
               // assert metrics' list elements
               const items = await parametersLists[fakeRunIndex].getItems();
               expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
-            });
+            }));
 
             let metricsString = "";
-            Object.keys(orderedMetricsObject).forEach(async (key, keyIndex) => {
+            await Promise.all(Object.keys(orderedMetricsObject).map(async (key, keyIndex) => {
               const keyValueString = ` remove ${key} : ${fakeRun.metrics[key]}`;
               metricsString += keyValueString;
 
               // assert metrics' list elements
               const items = await metricsLists[fakeRunIndex].getItems();
               expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
-            });
+            }));
 
             expect(row.name).toEqual(fakeRun.name);
             expect(row.status.toUpperCase().replace(" ", "_")).toEqual(fakeRun.status);
@@ -753,8 +777,9 @@ describe("RunsListTableComponent", () => {
             expect(row.parameters).toEqual(parametersString.trim());
             expect(row.metrics).toEqual(metricsString.trim());
             expect(row.createdBy).toEqual(fakeRun.createdBy.nickName);
-            chipsEqualExperimentKeys(chips, fakeRun);
-          });
+            await chipsEqualExperimentKeys(chips, fakeRun);
+          }));
+
         });
       });
 
@@ -779,9 +804,9 @@ describe("RunsListTableComponent", () => {
     });
   });
 
-  function chipsEqualExperimentKeys(chips: MatChipHarness[], run: Run) {
-    chips.forEach(async (chip, index) => {
+  async function chipsEqualExperimentKeys(chips: MatChipHarness[], run: Run) {
+    await Promise.all(chips.map(async (chip, index) => {
       expect(await chip.getText()).toEqual(run.experimentRefs[index].experimentKey);
-    });
+    }));
   }
 });
