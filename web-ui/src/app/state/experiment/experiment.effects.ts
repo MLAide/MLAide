@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { select, Store } from "@ngrx/store";
+import { Store } from "@ngrx/store";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { catchError, map, mergeMap, tap } from "rxjs/operators";
 import { of, throwError } from "rxjs";
@@ -21,7 +21,7 @@ export class ExperimentEffects {
     this.actions$.pipe(
       ofType(experimentActions.loadExperiments),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([action, projectKey]) => this.experimentsApi.getExperiments(projectKey)),
+      mergeMap(([_, projectKey]) => this.experimentsApi.getExperiments(projectKey)),
       map((experimentListResponse) => ({ experiments: experimentListResponse.items })),
       map((experiments) => experimentActions.loadExperimentsSucceeded(experiments)),
       catchError((error) => of(experimentActions.loadExperimentsFailed({ payload: error })))
@@ -33,7 +33,7 @@ export class ExperimentEffects {
       ofType(experimentActions.loadExperimentWithAllDetails),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       concatLatestFrom(() => this.store.select(selectCurrentExperimentKey)),
-      map(([[action, projectKey], experimentKey]) => ({
+      map(([[_, projectKey], experimentKey]) => ({
         projectKey,
         experimentKey
       })),
@@ -105,7 +105,7 @@ export class ExperimentEffects {
     )
   );
 
-  openCreateOrEditDialog$ = createEffect(() =>
+  openAddOrEditDialog$ = createEffect(() =>
     this.actions$.pipe(
       ofType(experimentActions.openAddOrEditExperimentDialog),
       tap((data) => {

@@ -551,7 +551,7 @@ describe("AddOrEditExperimentComponent", () => {
         });
       });
 
-      describe("create or update button", () => {
+      describe("add or update button", () => {
         it("should have disabled save button if the form is invalid -- required fields are empty", async () => {
           // arrange
           const addOrEditExperimentButton: MatButtonHarness = await loader.getHarness(
@@ -595,7 +595,7 @@ describe("AddOrEditExperimentComponent", () => {
           expect(await cancelButton.getText()).toEqual("Update");
         });
 
-        it("should have create button if keyReadonly is false", async () => {
+        it("should have add button if keyReadonly is false", async () => {
           // arrange also in beforeEach
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
@@ -606,7 +606,7 @@ describe("AddOrEditExperimentComponent", () => {
           component.isEditMode = false;
 
           // assert
-          expect(await cancelButton.getText()).toEqual("Create");
+          expect(await cancelButton.getText()).toEqual("Add");
         });
 
         it("should call save when clicking save button", async () => {

@@ -96,12 +96,12 @@ describe("ProjectListComponent", () => {
     });
   });
 
-  describe("openCreateProjectDialog", () => {
+  describe("openAddProjectDialog", () => {
     it("should dispatch openCreateProjectDialog action", async () => {
       // arrange in beforeEach
 
       // act
-      component.openCreateProjectDialog();
+      component.openAddProjectDialog();
 
       // assert
       expect(dispatchSpy).toHaveBeenCalledWith(openAddProjectDialog());
@@ -132,12 +132,12 @@ describe("ProjectListComponent", () => {
     it("should call openCreateProjectDialog when clicking the add project button", async () => {
       // arrange
       const addProjectButton = await loader.getHarness(MatButtonHarness.with({ text: addProjectButtonTitle }));
-      spyOn(component, "openCreateProjectDialog");
+      spyOn(component, "openAddProjectDialog");
       // act
       await addProjectButton.click();
 
       // assert
-      expect(component.openCreateProjectDialog).toHaveBeenCalled();
+      expect(component.openAddProjectDialog).toHaveBeenCalled();
     });
   });
 

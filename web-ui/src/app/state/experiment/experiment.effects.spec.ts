@@ -428,7 +428,7 @@ describe("experiment effects", () => {
       }));
 
       // act
-      effects.openCreateOrEditDialog$.subscribe(() => {
+      effects.openAddOrEditDialog$.subscribe(() => {
         // assert
         const expectedDialogArgs = {
           minWidth: "20%",

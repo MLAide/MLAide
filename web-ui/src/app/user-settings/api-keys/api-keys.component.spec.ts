@@ -147,7 +147,7 @@ describe("ApiKeysComponent", () => {
         expect(addApiKeyButton.textContent).toContain(addApiKeyButtonTitle);
       });
 
-      it("should call openCreateProjectDialog on clicking the add api key button", async () => {
+      it("should call openAddApiKeyDialog on clicking the add api key button", async () => {
         // arrange + act also in beforeEach
         spyOn(component, "addApiKey");
         const addApiKeyButton = await loader.getHarness(MatButtonHarness.with({ text: addApiKeyButtonTitle }));

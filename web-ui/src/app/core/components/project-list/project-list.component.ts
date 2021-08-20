@@ -30,7 +30,7 @@ export class ProjectListComponent implements OnInit {
     await this.router.navigateByUrl(projectUrl);
   }
 
-  openCreateProjectDialog(): void {
+  openAddProjectDialog(): void {
     this.store.dispatch(openAddProjectDialog());
   }
 }
