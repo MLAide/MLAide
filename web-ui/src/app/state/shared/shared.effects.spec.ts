@@ -26,7 +26,7 @@ describe("shared effects", () => {
       providers: [
         SharedEffects,
         provideMockActions(() => actions$),
-        provideMockStore({ initialState: {} }),
+        provideMockStore(),
         { provide: SnackbarUiService, useValue: snackbarUiStub },
         { provide: SpinnerUiService, useValue: spinnerUiStub },
       ],

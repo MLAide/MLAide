@@ -66,10 +66,7 @@ describe("ArtifactEffects", () => {
       providers: [
         ArtifactEffects,
         provideMockActions(() => actions$),
-        provideMockStore({
-          initialState: {
-          }
-        }),
+        provideMockStore(),
         { provide: ArtifactApi, useValue: artifactApiStub },
         { provide: FileSaverService, useValue: fileSaverServiceStub }
       ],
@@ -87,19 +84,7 @@ describe("ArtifactEffects", () => {
 
     beforeEach(async () => {
       project = await getRandomProject();
-      store.setState({
-        router: {
-          state: {
-            root: {
-              firstChild: {
-                params: {
-                  projectKey: project.key
-                }
-              }
-            }
-          }
-        }
-      });
+      store.overrideSelector(selectCurrentProjectKey, project.key);
     });
 
     it("should trigger loadModelsSucceeded action containing models if api call is successful", async (done) => {
@@ -175,19 +160,7 @@ describe("ArtifactEffects", () => {
 
     beforeEach(async () => {
       project = await getRandomProject();
-      store.setState({
-        router: {
-          state: {
-            root: {
-              firstChild: {
-                params: {
-                  projectKey: project.key
-                }
-              }
-            }
-          }
-        }
-      });
+      store.overrideSelector(selectCurrentProjectKey, project.key);
     });
 
     it("should trigger loadArtifactsSucceeded action containing models if api call is successful", async (done) => {
@@ -248,19 +221,7 @@ describe("ArtifactEffects", () => {
 
     beforeEach(async () => {
       project = await getRandomProject();
-      store.setState({
-        router: {
-          state: {
-            root: {
-              firstChild: {
-                params: {
-                  projectKey: project.key
-                }
-              }
-            }
-          }
-        }
-      });
+      store.overrideSelector(selectCurrentProjectKey, project.key);
     });
 
     it("should trigger editModelSucceeded action if api call is successful", async (done) => {
@@ -409,19 +370,7 @@ describe("ArtifactEffects", () => {
 
     beforeEach(async () => {
       project = await getRandomProject();
-      store.setState({
-        router: {
-          state: {
-            root: {
-              firstChild: {
-                params: {
-                  projectKey: project.key
-                }
-              }
-            }
-          }
-        }
-      });
+      store.overrideSelector(selectCurrentProjectKey, project.key);
     });
 
     it("should trigger downloadArtifactSucceeded action containing artifact binary if api call is successful", async (done) => {

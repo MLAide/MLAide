@@ -1,6 +1,5 @@
 import { Observable, of, throwError } from "rxjs";
 import { Action } from "@ngrx/store";
-import { ProjectMemberEffects } from "@mlaide/state/project-member/project-member.effects";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { TestBed } from "@angular/core/testing";
 import { provideMockActions } from "@ngrx/effects/testing";
@@ -16,6 +15,8 @@ import {
   loadRunsSucceeded
 } from "@mlaide/state/run/run.actions";
 import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { selectSelectedRunKeys } from "@mlaide/state/run/run.selectors";
 
 describe("run effects", () => {
   let actions$ = new Observable<Action>();
@@ -32,7 +33,7 @@ describe("run effects", () => {
       providers: [
         RunEffects,
         provideMockActions(() => actions$),
-        provideMockStore({ initialState: {} }),
+        provideMockStore(),
         { provide: RunApi, useValue: runApiStub },
       ],
     });
@@ -46,20 +47,7 @@ describe("run effects", () => {
 
     beforeEach(async () => {
       project = await getRandomProject();
-
-      store.setState({
-        router: {
-          state: {
-            root: {
-              firstChild: {
-                params: {
-                  projectKey: project.key
-                }
-              }
-            }
-          }
-        }
-      });
+      store.overrideSelector(selectCurrentProjectKey, project.key);
     });
 
     it("should trigger loadRunsSucceeded containing runs if api call is successful", async (done) => {
@@ -120,23 +108,8 @@ describe("run effects", () => {
 
     beforeEach(async () => {
       project = await getRandomProject();
-
-      store.setState({
-        router: {
-          state: {
-            root: {
-              firstChild: {
-                params: {
-                  projectKey: project.key
-                }
-              },
-              queryParams: {
-                runKeys: runKeys
-              }
-            }
-          }
-        }
-      });
+      store.overrideSelector(selectCurrentProjectKey, project.key);
+      store.overrideSelector(selectSelectedRunKeys, runKeys);
     });
 
     it("should trigger loadRunsByRunKeysSucceeded containing runs if api call is successful", async (done) => {

@@ -33,6 +33,8 @@ import {
 } from "@mlaide/state/project-member/project-member.actions";
 import { Router } from "@angular/router";
 import { isEmpty } from "rxjs/operators";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { selectCurrentUser } from "@mlaide/state/user/user.selectors";
 
 describe("ProjectMemberEffects", () => {
   let actions$ = new Observable<Action>();
@@ -58,7 +60,7 @@ describe("ProjectMemberEffects", () => {
       providers: [
         ProjectMemberEffects,
         provideMockActions(() => actions$),
-        provideMockStore({ initialState: {} }),
+        provideMockStore(),
         { provide: ProjectMemberApi, useValue: projectMemberApiStub },
         { provide: Router, useValue: router }
       ],
@@ -107,22 +109,9 @@ describe("ProjectMemberEffects", () => {
         actions$ = of(generatedAction);
         const project = await getRandomProject();
         const user = await getRandomUser();
-        store.setState({
-          router: {
-            state: {
-              root: {
-                firstChild: {
-                  params: {
-                    projectKey: project.key
-                  }
-                }
-              }
-            }
-          },
-          user: {
-            currentUser: user
-          }
-        });
+        store.overrideSelector(selectCurrentUser, user);
+        store.overrideSelector(selectCurrentProjectKey, project.key);
+
         const projectMembers = await getRandomProjectMembers(3);
         const response: ProjectMemberListResponse = { items: projectMembers };
         projectMemberApiStub.getProjectMembers.and.returnValue(of(response));
@@ -143,23 +132,8 @@ describe("ProjectMemberEffects", () => {
         actions$ = of(generatedAction);
         const project = await getRandomProject();
         const user = await getRandomUser();
-        store.setState({
-          router: {
-            state: {
-              root: {
-                firstChild: {
-                  params: {
-                    projectKey: project.key
-                  }
-                }
-              }
-            }
-          },
-          user: {
-            currentUser: user
-          }
-        });
-        const projectMembers = await getRandomProjectMembers(3);
+        store.overrideSelector(selectCurrentUser, user);
+        store.overrideSelector(selectCurrentProjectKey, project.key);
         projectMemberApiStub.getProjectMembers.and.returnValue(throwError("failed"));
 
         // act
@@ -178,11 +152,7 @@ describe("ProjectMemberEffects", () => {
       const projectMember = await getRandomProjectMember();
       const user = await getRandomUser();
       user.email = projectMember.email;
-      store.setState({
-        user: {
-          currentUser: user
-        }
-      });
+      store.overrideSelector(selectCurrentUser, user);
       actions$ = of(deleteProjectMemberSucceeded({ projectMember }));
 
       // act
@@ -226,11 +196,7 @@ describe("ProjectMemberEffects", () => {
       actions$ = of(loadProjectMembersSucceeded({projectMembers}));
       const user = await getRandomUser();
       user.email = projectMembers[1].email;
-      store.setState({
-        user: {
-          currentUser: user
-        }
-      })
+      store.overrideSelector(selectCurrentUser, user);
 
       // act
       effects.currentProjectMember$.subscribe(action => {
@@ -267,19 +233,7 @@ describe("ProjectMemberEffects", () => {
     beforeEach(async () => {
       project = await getRandomProject();
 
-      store.setState({
-        router: {
-          state: {
-            root: {
-              firstChild: {
-                params: {
-                  projectKey: project.key
-                }
-              }
-            }
-          }
-        }
-      });
+      store.overrideSelector(selectCurrentProjectKey, project.key);
     });
 
     it("should trigger editProjectMemberSucceeded if api call is successful", async (done) => {
@@ -468,11 +422,7 @@ describe("ProjectMemberEffects", () => {
       actions$ = of(deleteProjectMemberSucceeded({projectMember}));
       const user = await getRandomUser();
       user.email = projectMember.email;
-      store.setState({
-        user: {
-          currentUser: user
-        }
-      })
+      store.overrideSelector(selectCurrentUser, user);
 
       // act
       effects.goToProjectOverviewIfDeletedUserIsCurrentUser$.subscribe(action => {
@@ -489,11 +439,7 @@ describe("ProjectMemberEffects", () => {
       actions$ = of(deleteProjectMemberSucceeded({projectMember}));
       const user = await getRandomUser();
       user.email = "not-the-same-email-as-the-other@something.com";
-      store.setState({
-        user: {
-          currentUser: user
-        }
-      })
+      store.overrideSelector(selectCurrentUser, user);
 
       // act
       // we have to check that the effect does not emit a event - isEmpty() is a helper function for that

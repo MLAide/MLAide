@@ -41,6 +41,8 @@ import { MatDialogConfig } from "@angular/material/dialog/dialog-config";
 import { MatDialogRef } from "@angular/material/dialog/dialog-ref";
 import Spy = jasmine.Spy;
 import { AddOrEditExperimentComponent } from "@mlaide/experiments/add-or-edit-experiment/add-or-edit-experiment.component";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { selectCurrentExperimentKey } from "@mlaide/state/experiment/experiment.selectors";
 
 describe("experiment effects", () => {
   let actions$ = new Observable<Action>();
@@ -68,7 +70,7 @@ describe("experiment effects", () => {
       providers: [
         ExperimentEffects,
         provideMockActions(() => actions$),
-        provideMockStore({ initialState: {} }),
+        provideMockStore(),
         { provide: ArtifactApi, useValue: artifactApiStub },
         { provide: ExperimentApi, useValue: experimentsApiStub },
         { provide: RunApi, useValue: runApiStub }
@@ -84,7 +86,7 @@ describe("experiment effects", () => {
 
   beforeEach(async () => {
     project = await getRandomProject();
-    setProjectKeyInRouterState(store, project.key);
+    store.overrideSelector(selectCurrentProjectKey, project.key);
   });
 
   describe("loadExperiments$", () => {
@@ -601,35 +603,7 @@ describe("experiment effects", () => {
   });
 });
 
-function setProjectKeyInRouterState(store: MockStore, projectKey: string) {
-  store.setState({
-    router: {
-      state: {
-        root: {
-          firstChild: {
-            params: {
-              projectKey: projectKey
-            }
-          }
-        }
-      }
-    }
-  });
-}
-
 function setProjectKeyAndExperimentKeyInRouterState(store: MockStore, projectKey: string, experimentKey: string) {
-  store.setState({
-    router: {
-      state: {
-        root: {
-          firstChild: {
-            params: {
-              projectKey: projectKey,
-              experimentKey: experimentKey
-            }
-          }
-        }
-      }
-    }
-  });
+  store.overrideSelector(selectCurrentProjectKey, projectKey);
+  store.overrideSelector(selectCurrentExperimentKey, experimentKey);
 }
