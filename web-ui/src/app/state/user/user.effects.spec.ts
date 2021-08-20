@@ -58,7 +58,6 @@ describe("user effects", () => {
 
     it("should not try to load user info and trigger nothing if user is not authenticated", async (done) => {
       // arrange
-      const currentUser = await getRandomUser();
       actions$ = of(isUserAuthenticated({ isUserAuthenticated: false }));
       userApiStub.getCurrentUser.and.returnValue(throwError("should not invoke user api"));
 
@@ -150,7 +149,6 @@ describe("user effects", () => {
     it("should map to 'showSuccessMessage' action", async (done) => {
       // arrange
       const user = await getRandomUser();
-      const error = "the error";
       actions$ = of(editUserProfileSucceeded({ user }));
 
       // act

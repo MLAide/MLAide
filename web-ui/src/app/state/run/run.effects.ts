@@ -8,7 +8,6 @@ import * as runActions from "@mlaide/state/run/run.actions";
 import { selectCurrentProjectKey } from "../project/project.selectors";
 import { showErrorMessage, showSuccessMessage } from "../shared/shared.actions";
 import { selectCurrentRunKey, selectSelectedRunKeys } from "./run.selectors";
-import * as artifactActions from "@mlaide/state/artifact/artifact.actions";
 import { FileSaverService } from "ngx-filesaver";
 
 @Injectable({ providedIn: "root" })
@@ -18,7 +17,7 @@ export class RunEffects {
     this.actions$.pipe(
       ofType(runActions.loadRuns),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([action, projectKey]) => this.runApi.getRuns(projectKey)),
+      mergeMap(([_, projectKey]) => this.runApi.getRuns(projectKey)),
       map((runListResponse) => ({ runs: runListResponse.items })),
       map((runs) => runActions.loadRunsSucceeded(runs)),
       catchError((error) => of(runActions.loadRunsFailed({ payload: error })))
@@ -42,7 +41,7 @@ export class RunEffects {
       ofType(runActions.loadRunsByRunKeys),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       concatLatestFrom(() => this.store.select(selectSelectedRunKeys)),
-      mergeMap(([[action, projectKey], runKeys]) => this.runApi.getRunsByRunKeys(projectKey, runKeys)),
+      mergeMap(([[_, projectKey], runKeys]) => this.runApi.getRunsByRunKeys(projectKey, runKeys)),
       map((runListResponse) => ({ runs: runListResponse.items })),
       map((runs) => runActions.loadRunsByRunKeysSucceeded(runs)),
       catchError((error) => of(runActions.loadRunsByRunKeysFailed({ payload: error })))
@@ -66,7 +65,7 @@ export class RunEffects {
       ofType(runActions.loadCurrentRun),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       concatLatestFrom(() => this.store.select(selectCurrentRunKey)),
-      mergeMap(([[action, projectKey], runKey]) => this.runApi.getRun(projectKey, runKey)),
+      mergeMap(([[_, projectKey], runKey]) => this.runApi.getRun(projectKey, runKey)),
       map((run) => runActions.loadCurrentRunSucceeded({ run: run })),
       catchError((error) => of(runActions.loadCurrentRunFailed({ payload: error })))
     )
