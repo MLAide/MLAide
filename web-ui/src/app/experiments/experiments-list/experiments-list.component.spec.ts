@@ -12,10 +12,8 @@ import { RouterModule } from "@angular/router";
 import { MockModule, ngMocks } from "ng-mocks";
 import { MatChipHarness, MatChipListHarness } from "@angular/material/chips/testing";
 import { of } from "rxjs";
-import { Experiment, ExperimentStatus } from "@mlaide/entities/experiment.model";
-import { Project } from "@mlaide/entities/project.model";
-import { getRandomExperiments, getRandomProject } from "src/app/mocks/fake-generator";
-import { ExperimentStatusI18nComponent } from "../experiment-status-i18n/experiment-status-i18n.component";
+import { getRandomExperiments, getRandomProject } from "@mlaide/mocks/fake-generator";
+import { ExperimentStatusI18nComponent } from "@mlaide/shared/components/experiment-status-i18n/experiment-status-i18n.component";
 
 import { ExperimentsListComponent } from "./experiments-list.component";
 import { MatSortModule } from "@angular/material/sort";
@@ -32,6 +30,8 @@ import { MatCardModule } from "@angular/material/card";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatCardHarness } from "@angular/material/card/testing";
 import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
+import { Experiment, ExperimentStatus } from "@mlaide/state/experiment/experiment.models";
+import { Project } from "@mlaide/state/project/project.models";
 
 describe("ExperimentsListComponent", () => {
   let component: ExperimentsListComponent;

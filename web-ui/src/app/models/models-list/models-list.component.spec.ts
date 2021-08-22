@@ -10,9 +10,8 @@ import { MatTableModule } from "@angular/material/table";
 import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { of } from "rxjs";
-import { Artifact } from "@mlaide/entities/artifact.model";
-import { getRandomArtifacts } from "src/app/mocks/fake-generator";
-import { ModelStageI18nComponent } from "../../shared/components/model-stage-i18n/model-stage-i18n.component";
+import { getRandomArtifacts } from "@mlaide/mocks/fake-generator";
+import { ModelStageI18nComponent } from "@mlaide/shared/components/model-stage-i18n/model-stage-i18n.component";
 import { ModelsListComponent } from "./models-list.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
@@ -22,6 +21,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { loadModels, openEditModelDialog, openModelStageLogDialog } from "@mlaide/state/artifact/artifact.actions";
 import { MatCardHarness } from "@angular/material/card/testing";
 import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
+import { Artifact } from "@mlaide/state/artifact/artifact.models";
 
 describe("ModelsListComponent", () => {
   let component: ModelsListComponent;

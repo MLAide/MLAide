@@ -8,10 +8,10 @@ import {
   ViewChild
 } from "@angular/core";
 import { Observable } from "rxjs";
-import { Experiment } from "@mlaide/entities/experiment.model";
-import { Run } from "@mlaide/entities/run.model";
 import { GraphEdge, GraphNode, LineageGraphUiService } from "@mlaide/shared/services";
 import { Subscription } from "rxjs/internal/Subscription";
+import { Experiment } from "@mlaide/state/experiment/experiment.models";
+import { Run } from "@mlaide/state/run/run.models";
 
 @Component({
   selector: 'app-experiment-lineage-visualization',
@@ -31,7 +31,6 @@ export class ExperimentLineageVisualizationComponent implements OnChanges, OnDes
 
   constructor(private lineageGraphService: LineageGraphUiService) { }
 
-// TODO Raman: Können wir hier auch alles entfernen und so einkürzen wie in ArtifactsListTableComponent?
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes.runs$) {
       this.unsubscribeRuns();

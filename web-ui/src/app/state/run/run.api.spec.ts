@@ -1,13 +1,13 @@
-import { RunApi } from "@mlaide/state/run/run.api";
+import { RunApi, RunListResponse } from "@mlaide/state/run/run.api";
 import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@angular/common/http/testing";
 import { appConfigMock } from "@mlaide/mocks/app-config.mock";
 import { TestBed } from "@angular/core/testing";
 import { APP_CONFIG } from "@mlaide/config/app-config.model";
-import { Project } from "@mlaide/entities/project.model";
 import { getRandomExperiment, getRandomProject, getRandomRun, getRandomRuns } from "@mlaide/mocks/fake-generator";
-import { Experiment } from "@mlaide/entities/experiment.model";
-import { Run, RunListResponse } from "@mlaide/entities/run.model";
 import { Observable } from "rxjs";
+import { Project } from "@mlaide/state/project/project.models";
+import { Run } from "@mlaide/state/run/run.models";
+import { Experiment } from "@mlaide/state/experiment/experiment.models";
 
 describe("RunApi", () => {
   let runApi: RunApi;

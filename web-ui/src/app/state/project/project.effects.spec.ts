@@ -24,6 +24,7 @@ import { ProjectEffects } from "./project.effects";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { Project } from "@mlaide/state/project/project.models";
+import { currentUserChanged } from "@mlaide/state/user/user.actions";
 
 describe("project effects", () => {
   let actions$ = new Observable<Action>();
@@ -346,5 +347,20 @@ describe("project effects", () => {
       });
     });
 
+  });
+
+  describe("loadProjectsOnLoggedInUserChanged$", async () => {
+    it("currentUserChanged should map to loadProjects action", async (done) => {
+      // arrange
+      actions$ = of(currentUserChanged({ currentUser: null }));
+
+      // act
+      effects.loadProjectsOnLoggedInUserChanged$.subscribe(action => {
+        // assert
+        expect(action).toEqual(loadProjects());
+
+        done();
+      });
+  });
   });
 });

@@ -31,7 +31,6 @@ export class RunsListTableComponent implements OnChanges, OnDestroy {
     private route: ActivatedRoute
   ) {}
 
-  // TODO Raman: Können wir hier auch alles entfernen und so einkürzen wie in ArtifactsListTableComponent?
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes.runs$) {
       this.unsubscribeRuns();

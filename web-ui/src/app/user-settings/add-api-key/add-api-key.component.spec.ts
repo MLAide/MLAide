@@ -16,7 +16,6 @@ import { MatInputModule } from "@angular/material/input";
 import { MatInputHarness } from "@angular/material/input/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MockPipe } from "ng-mocks";
-import { ApiKey } from "@mlaide/entities/apiKey.model";
 import { getRandomApiKey } from "src/app/mocks/fake-generator";
 
 import { AddApiKeyComponent } from "./add-api-key.component";
@@ -25,6 +24,7 @@ import { Action } from "@ngrx/store";
 import { selectNewCreatedApiKey } from "@mlaide/state/api-key/api-key.selectors";
 import { addApiKey, closeAddApiKeyDialog } from "@mlaide/state/api-key/api-key.actions";
 import { showSuccessMessage } from "@mlaide/state/shared/shared.actions";
+import { ApiKey } from "@mlaide/state/api-key/api-key.models";
 
 describe("CreateApiKeyComponent", () => {
   let component: AddApiKeyComponent;

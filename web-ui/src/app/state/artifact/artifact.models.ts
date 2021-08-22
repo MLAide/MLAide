@@ -1,4 +1,4 @@
-import { UserRef } from "@mlaide/entities/userRef.model";
+import { UserRef } from "@mlaide/state/run/run.models";
 
 export interface Artifact {
   createdAt: Date;

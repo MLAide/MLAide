@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { ExperimentStatus } from "@mlaide/entities/experiment.model";
+import { ExperimentStatus } from "@mlaide/state/experiment/experiment.models";
 
 @Component({
   selector: "app-experiment-status-i18n",

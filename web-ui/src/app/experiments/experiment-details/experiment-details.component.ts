@@ -1,9 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { Observable, Subscription } from "rxjs";
-import { ArtifactListResponse } from "@mlaide/entities/artifact.model";
-import { Experiment } from "../../entities/experiment.model";
-import { Run } from "@mlaide/entities/run.model";
-import { ListDataSource } from "@mlaide/shared/api";
+import { Observable } from "rxjs";
 import { select, Store } from "@ngrx/store";
 import { loadExperimentWithAllDetails } from "@mlaide/state/experiment/experiment.actions";
 import { selectCurrentExperiment } from "@mlaide/state/experiment/experiment.selectors";
@@ -11,6 +7,8 @@ import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors
 import { selectIsLoadingRuns, selectRunsOfCurrentExperiment } from "@mlaide/state/run/run.selectors";
 import { selectArtifactsByRunKeys, selectIsLoadingArtifacts } from "@mlaide/state/artifact/artifact.selectors";
 import { Artifact } from "@mlaide/state/artifact/artifact.models";
+import { Experiment } from "@mlaide/state/experiment/experiment.models";
+import { Run } from "@mlaide/state/run/run.models";
 
 @Component({
   selector: "app-experiment-details",
@@ -25,8 +23,6 @@ export class ExperimentDetailsComponent implements OnInit {
   public runs$: Observable<Run[]>;
   public isLoadingRuns$: Observable<boolean>;
   public isLoadingArtifacts$: Observable<boolean>;
-
-  public artifactListDataSource: ListDataSource<ArtifactListResponse>;
 
   constructor(private store: Store) { }
 

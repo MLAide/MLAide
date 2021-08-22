@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { ModelStage } from "@mlaide/entities/artifact.model";
+import { ModelStage } from "@mlaide/state/artifact/artifact.models";
 
 @Component({
   selector: "app-model-stage-i18n",

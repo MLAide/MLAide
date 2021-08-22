@@ -3,14 +3,10 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatTableModule } from "@angular/material/table";
 import { MatCardModule } from "@angular/material/card";
-import { Artifact } from "@mlaide/entities/artifact.model";
-import { Experiment } from "@mlaide/entities/experiment.model";
 import { getRandomArtifacts, getRandomExperiment, getRandomProject, getRandomRuns } from "src/app/mocks/fake-generator";
-import { Run } from "@mlaide/entities/run.model";
 import { MockComponent, ngMocks } from "ng-mocks";
 
 import { ExperimentDetailsComponent } from "./experiment-details.component";
-import { Project } from "@mlaide/entities/project.model";
 import { ArtifactsListTableComponent } from "src/app/shared/components/artifacts-list-table/artifacts-list-table.component";
 import { RunsListTableComponent } from "src/app/shared/components/runs-list-table/runs-list-table.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
@@ -24,6 +20,10 @@ import { selectCurrentExperiment } from "@mlaide/state/experiment/experiment.sel
 import { selectIsLoadingRuns, selectRunsOfCurrentExperiment } from "@mlaide/state/run/run.selectors";
 import { loadExperimentWithAllDetails } from "@mlaide/state/experiment/experiment.actions";
 import { ExperimentLineageVisualizationComponent } from "@mlaide/experiments/experiment-lineage-visualization/experiment-lineage-visualization.component";
+import { Artifact } from "@mlaide/state/artifact/artifact.models";
+import { Experiment } from "@mlaide/state/experiment/experiment.models";
+import { Project } from "@mlaide/state/project/project.models";
+import { Run } from "@mlaide/state/run/run.models";
 
 describe("ExperimentDetailsComponent", () => {
   let fixture: ComponentFixture<ExperimentDetailsComponent>;

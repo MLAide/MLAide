@@ -3,13 +3,13 @@ import { Component, Inject } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MatChipInputEvent } from "@angular/material/chips";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { Experiment, ExperimentStatus } from "@mlaide/entities/experiment.model";
 import { Store } from "@ngrx/store";
 import {
   addExperiment,
   closeAddOrEditExperimentDialog,
   editExperiment
 } from "@mlaide/state/experiment/experiment.actions";
+import { Experiment, ExperimentStatus } from "@mlaide/state/experiment/experiment.models";
 
 @Component({
   selector: "app-add-or-edit-experiment",

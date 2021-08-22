@@ -3,8 +3,8 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { ENTER } from "@angular/cdk/keycodes";
 import { Store } from "@ngrx/store";
-import { Project } from "@mlaide/entities/project.model";
 import { addProject, closeAddProjectDialog } from "@mlaide/state/project/project.actions";
+import { Project } from "@mlaide/state/project/project.models";
 
 @Component({
   selector: "app-add-project",

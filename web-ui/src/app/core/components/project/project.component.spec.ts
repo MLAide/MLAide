@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ActivatedRoute, ParamMap } from "@angular/router";
 import { MatNavListHarness, MatNavListItemHarness } from "@angular/material/list/testing";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
@@ -13,13 +12,14 @@ import { ProjectComponent } from "./project.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
-import { Project } from "@mlaide/entities/project.model";
-import { Observable, of, Subscription } from "rxjs";
 import { RouterTestingModule } from "@angular/router/testing";
 import { MatButtonHarness } from "@angular/material/button/testing";
-import { ProjectsApiService } from "@mlaide/shared/api";
-import { MockStore } from "@ngrx/store/testing";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
+import { loadProject } from "@mlaide/state/project/project.actions";
+import { AppState } from "@mlaide/state/app.state";
+import { ProjectState } from "@mlaide/state/project/project.state";
+import { Project } from "@mlaide/state/project/project.models";
 
 describe("ProjectComponent", () => {
   let component: ProjectComponent;
@@ -29,39 +29,22 @@ describe("ProjectComponent", () => {
   // fakes
   let fakeProject: Project;
 
-  // route spy
-  let unsubscriptionSpy: jasmine.Spy<() => void>;
-
   let store: MockStore;
   let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
-  // service stubs
-  let projectsApiServiceStub: jasmine.SpyObj<ProjectsApiService>;
-
   beforeEach(async () => {
-    // mock active route params
-    const paramMapObservable = new Observable<ParamMap>();
-    const paramMapSubscription = new Subscription();
-    unsubscriptionSpy = spyOn(paramMapSubscription, "unsubscribe").and.callThrough();
-    spyOn(paramMapObservable, "subscribe").and.callFake((fn): Subscription => {
-      fn({ projectKey: fakeProject.key });
-      return paramMapSubscription;
-    });
-
-    // stub services
-    projectsApiServiceStub = jasmine.createSpyObj("projectsApiService", ["getProject"]);
-
     // setup project fakes
     fakeProject = await getRandomProject();
+    const appState: Partial<AppState> = {
+      projects: {
+        currentProject: fakeProject
+      } as ProjectState
+    }
 
-    // setup users api
-    projectsApiServiceStub.getProject.and.returnValue(of(fakeProject));
-
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       declarations: [ProjectComponent],
       providers: [
-        { provide: ActivatedRoute, useValue: { params: paramMapObservable } },
-        { provide: ProjectsApiService, useValue: projectsApiServiceStub },
+        provideMockStore({ initialState: appState })
       ],
       imports: [
         BrowserAnimationsModule,
@@ -90,17 +73,25 @@ describe("ProjectComponent", () => {
     expect(component).toBeTruthy();
   });
 
-  // TODO Fix Tests:
-  /*
   describe("ngOnInit", () => {
-    it("should load project with projectKey defined in active route", async () => {
+    it("should dispatch load project", async () => {
       // arrange + act in beforeEach
 
       // assert
-      expect(component.project).toEqual(fakeProject);
+      expect(dispatchSpy).toHaveBeenCalledOnceWith(loadProject());
+    });
+
+    it("should subscribe to current project", (done) => {
+      // arrange + act in beforeEach
+
+      // assert
+      component.project$.subscribe(project => {
+        expect(project).toBe(fakeProject);
+
+        done();
+      })
     });
   });
-*/
 
   describe("component rendering", () => {
     describe("side navigation", () => {
@@ -213,18 +204,4 @@ describe("ProjectComponent", () => {
       });
     });
   });
-
-  /*
-  describe("ngOnDestroy", () => {
-    it("should unsubscribe from routeParamsSubscription", async () => {
-      // arrange in beforeEach
-
-      // act
-      component.ngOnDestroy();
-
-      // assert
-      expect(unsubscriptionSpy).toHaveBeenCalled();
-    });
-  });
-  */
 });

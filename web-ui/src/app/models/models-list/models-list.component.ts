@@ -1,6 +1,5 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable} from "rxjs";
-import { Artifact, ModelStage } from "@mlaide/entities/artifact.model";
 import { Store } from "@ngrx/store";
 import { selectIsLoadingArtifacts, selectModels } from "@mlaide/state/artifact/artifact.selectors";
 import {
@@ -8,6 +7,7 @@ import {
   openEditModelDialog,
   openModelStageLogDialog
 } from "@mlaide/state/artifact/artifact.actions";
+import { Artifact, ModelStage } from "@mlaide/state/artifact/artifact.models";
 
 @Component({
   selector: "app-models-list",

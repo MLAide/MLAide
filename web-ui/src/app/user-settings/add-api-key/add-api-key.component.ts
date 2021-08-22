@@ -1,12 +1,12 @@
 import { ENTER } from "@angular/cdk/keycodes";
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { ApiKey } from "@mlaide/entities/apiKey.model";
 import { addApiKey, closeAddApiKeyDialog } from "@mlaide/state/api-key/api-key.actions";
 import { selectNewCreatedApiKey } from "@mlaide/state/api-key/api-key.selectors";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { showSuccessMessage } from "@mlaide/state/shared/shared.actions";
+import { ApiKey } from "@mlaide/state/api-key/api-key.models";
 
 @Component({
   selector: "app-create-api-key",

@@ -11,7 +11,6 @@ import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableH
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MockPipe } from "ng-mocks";
 import { of } from "rxjs";
-import { ApiKey } from "@mlaide/entities/apiKey.model";
 import { getRandomApiKeys } from "src/app/mocks/fake-generator";
 
 import { ApiKeysComponent } from "./api-keys.component";
@@ -23,6 +22,7 @@ import { MatCardModule } from "@angular/material/card";
 import { addApiKey, deleteApiKey, loadApiKeys, openAddApiKeyDialog } from "@mlaide/state/api-key/api-key.actions";
 import { MatCardHarness } from "@angular/material/card/testing";
 import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
+import { ApiKey } from "@mlaide/state/api-key/api-key.models";
 
 describe("ApiKeysComponent", () => {
   let component: ApiKeysComponent;

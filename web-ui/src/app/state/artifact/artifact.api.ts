@@ -2,8 +2,7 @@ import { Inject, Injectable } from "@angular/core";
 import { APP_CONFIG, AppConfig } from "@mlaide/config/app-config.model";
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { Artifact } from "@mlaide/state/artifact/artifact.models";
-import { CreateOrUpdateModel } from "@mlaide/entities/artifact.model";
+import { Artifact, CreateOrUpdateModel } from "@mlaide/state/artifact/artifact.models";
 
 export class ArtifactListResponse {
   items: Artifact[];

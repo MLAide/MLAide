@@ -2,15 +2,15 @@ import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@an
 import { appConfigMock } from "@mlaide/mocks/app-config.mock";
 import { TestBed } from "@angular/core/testing";
 import { APP_CONFIG } from "@mlaide/config/app-config.model";
-import { ProjectMemberApi } from "@mlaide/state/project-member/project-member.api";
-import { Project } from "@mlaide/entities/project.model";
+import { ProjectMemberApi, ProjectMemberListResponse } from "@mlaide/state/project-member/project-member.api";
 import {
   getRandomProject,
   getRandomProjectMember,
   getRandomProjectMembers
 } from "@mlaide/mocks/fake-generator";
-import { ProjectMember, ProjectMemberListResponse } from "@mlaide/entities/projectMember.model";
 import { Observable } from "rxjs";
+import { Project } from "@mlaide/state/project/project.models";
+import { ProjectMember } from "@mlaide/state/project-member/project-member.models";
 
 describe("ProjectMemberApi", () => {
   let projectMemberApi: ProjectMemberApi;
@@ -67,7 +67,7 @@ describe("ProjectMemberApi", () => {
       };
 
       // act
-      const projectMembers$: Observable<ProjectMemberListResponse>= projectMemberApi.getProjectMembers(fakeProject.key);
+      const projectMembers$: Observable<ProjectMemberListResponse> = projectMemberApi.getProjectMembers(fakeProject.key);
 
       // assert
       projectMembers$.subscribe((response) => {

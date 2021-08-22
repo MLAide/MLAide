@@ -1,7 +1,5 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MockComponent, ngMocks } from "ng-mocks";
-import { Project } from "@mlaide/entities/project.model";
-import { Run } from "@mlaide/entities/run.model";
 import { getRandomProject, getRandomRuns } from "src/app/mocks/fake-generator";
 import { RunParamsMetricsTableComponent } from "../../shared/components/run-params-metrics-table/run-params-metrics-table.component";
 
@@ -11,6 +9,8 @@ import { Action } from "@ngrx/store";
 import { selectIsLoadingRuns, selectRuns } from "@mlaide/state/run/run.selectors";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { loadRunsByRunKeys } from "@mlaide/state/run/run.actions";
+import { Project } from "@mlaide/state/project/project.models";
+import { Run } from "@mlaide/state/run/run.models";
 
 describe("RunsCompareComponent", () => {
   let component: RunsCompareComponent;

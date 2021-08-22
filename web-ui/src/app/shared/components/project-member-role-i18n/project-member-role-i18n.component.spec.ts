@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ProjectMemberRole } from "@mlaide/entities/projectMember.model";
-
 import { ProjectMemberRoleI18nComponent } from "./project-member-role-i18n.component";
+import { ProjectMemberRole } from "@mlaide/state/project-member/project-member.models";
 
 describe("ProjectMemberRoleI18nComponent", () => {
   let component: ProjectMemberRoleI18nComponent;

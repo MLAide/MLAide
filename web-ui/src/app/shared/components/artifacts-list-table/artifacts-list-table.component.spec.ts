@@ -9,8 +9,6 @@ import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableH
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouterTestingModule } from "@angular/router/testing";
 import { MockPipe } from "ng-mocks";
-import { Artifact } from "@mlaide/entities/artifact.model";
-import { Project } from "@mlaide/entities/project.model";
 import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
 
 import { ArtifactsListTableComponent } from "./artifacts-list-table.component";
@@ -19,6 +17,8 @@ import { MatCardHarness } from "@angular/material/card/testing";
 import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatCardModule } from "@angular/material/card";
+import { Artifact } from "@mlaide/state/artifact/artifact.models";
+import { Project } from "@mlaide/state/project/project.models";
 
 describe("ArtifactsListTableComponent", () => {
   let component: ArtifactsListTableComponent;

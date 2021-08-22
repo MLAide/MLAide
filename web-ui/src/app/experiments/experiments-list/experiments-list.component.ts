@@ -1,10 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
-import { Experiment, ExperimentStatus } from "@mlaide/entities/experiment.model";
 import { Store } from "@ngrx/store";
 import { loadExperiments, openAddOrEditExperimentDialog } from "@mlaide/state/experiment/experiment.actions";
 import { selectExperiments, selectIsLoadingExperiments } from "@mlaide/state/experiment/experiment.selectors";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { Experiment, ExperimentStatus } from "@mlaide/state/experiment/experiment.models";
 
 @Component({
   selector: "app-experiments-list",

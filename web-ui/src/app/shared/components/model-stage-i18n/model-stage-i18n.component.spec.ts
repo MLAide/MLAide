@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ModelStage } from "../../../entities/artifact.model";
-
 import { ModelStageI18nComponent } from "./model-stage-i18n.component";
+import { ModelStage } from "@mlaide/state/artifact/artifact.models";
 
 describe("ModelStageI18nComponent", () => {
   let component: ModelStageI18nComponent;

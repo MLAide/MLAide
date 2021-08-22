@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { ProjectMemberRole } from "@mlaide/entities/projectMember.model";
+import { ProjectMemberRole } from "@mlaide/state/project-member/project-member.models";
 
 @Component({
   selector: "app-project-member-role-i18n",

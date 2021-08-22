@@ -1,17 +1,17 @@
-import { ArtifactApi } from "@mlaide/state/artifact/artifact.api";
+import { ArtifactApi, ArtifactListResponse } from "@mlaide/state/artifact/artifact.api";
 import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@angular/common/http/testing";
 import { appConfigMock } from "@mlaide/mocks/app-config.mock";
 import { TestBed } from "@angular/core/testing";
 import { APP_CONFIG } from "@mlaide/config/app-config.model";
-import { Project } from "@mlaide/entities/project.model";
 import {
   getRandomProject,
   getRandomArtifacts,
   getRandomArtifact,
   getRandomCreateOrUpdateModel
 } from "@mlaide/mocks/fake-generator";
-import { Artifact, ArtifactListResponse, CreateOrUpdateModel } from "@mlaide/entities/artifact.model";
 import { Observable } from "rxjs";
+import { Project } from "@mlaide/state/project/project.models";
+import { Artifact, CreateOrUpdateModel } from "@mlaide/state/artifact/artifact.models";
 
 describe("ArtifactApi", () => {
   let artifactApi: ArtifactApi;
@@ -166,7 +166,8 @@ describe("ArtifactApi", () => {
       const apiCall$ = artifactApi.download(fakeProject.key, fakeArtifact.name, fakeArtifact.version, fileId);
 
       // assert
-      apiCall$.subscribe((response) => {
+      // TODO: Are the assertions correct?
+      apiCall$.subscribe(() => {
         done();
       });
 
@@ -186,7 +187,8 @@ describe("ArtifactApi", () => {
       const apiCall$ = artifactApi.download(fakeProject.key, fakeArtifact.name, fakeArtifact.version, undefined);
 
       // assert
-      apiCall$.subscribe((response) => {
+      apiCall$.subscribe(() => {
+        expect().nothing();
         done();
       });
 

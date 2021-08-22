@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@angular/core";
 import { APP_CONFIG, AppConfig } from "@mlaide/config/app-config.model";
 import { HttpClient } from "@angular/common/http";
-import { Experiment } from "@mlaide/entities/experiment.model";
 import { Observable } from "rxjs";
+import { Experiment } from "@mlaide/state/experiment/experiment.models";
 
 export class ExperimentListResponse {
   items: Experiment[];

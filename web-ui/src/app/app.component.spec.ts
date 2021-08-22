@@ -5,8 +5,6 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { RouterTestingModule } from "@angular/router/testing";
 import { of } from "rxjs";
 import { AppComponent } from "./app.component";
-import { Project } from "./entities/project.model";
-import { User } from "./entities/user.model";
 import { getRandomProjects, getRandomUser } from "./mocks/fake-generator";
 import { MatToolbarHarness } from "@angular/material/toolbar/testing";
 import { MatMenuHarness, MatMenuItemHarness } from "@angular/material/menu/testing";
@@ -20,6 +18,8 @@ import { selectProjects } from "@mlaide/state/project/project.selectors";
 import { selectCurrentUser } from "@mlaide/state/user/user.selectors";
 import { selectIsUserAuthenticated } from "@mlaide/state/auth/auth.selectors";
 import { initializeLogin, login, logout } from "@mlaide/state/auth/auth.actions";
+import { Project } from "@mlaide/state/project/project.models";
+import { User } from "@mlaide/state/user/user.models";
 
 describe("AppComponent", () => {
   let component: AppComponent;

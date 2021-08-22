@@ -9,8 +9,6 @@ import { MatTableModule } from "@angular/material/table";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { ActivatedRoute, Router } from "@angular/router";
 import { RouterTestingModule } from "@angular/router/testing";
-import { Project } from "@mlaide/entities/project.model";
-import { Run } from "@mlaide/entities/run.model";
 import { ActivatedRouteStub } from "src/app/mocks/activated-route.stub";
 import { getRandomProject, getRandomRuns } from "src/app/mocks/fake-generator";
 import { RunsListTableComponent } from "./runs-list-table.component";
@@ -31,6 +29,8 @@ import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
 import { exportRuns } from "@mlaide/state/run/run.actions";
 import { Subscription } from "rxjs/internal/Subscription";
+import { Project } from "@mlaide/state/project/project.models";
+import { Run } from "@mlaide/state/run/run.models";
 
 describe("RunsListTableComponent", () => {
   let component: RunsListTableComponent;

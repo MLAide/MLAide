@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { RunStatus } from "@mlaide/entities/run.model";
+import { RunStatus } from "@mlaide/state/run/run.models";
 
 @Component({
   selector: "app-run-status-i18n",

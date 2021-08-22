@@ -1,6 +1,9 @@
 import { Component, Inject, } from "@angular/core";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { ModelRevision } from "@mlaide/entities/artifact.model";
+import { MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { Store } from "@ngrx/store";
+import { AppState } from "@mlaide/state/app.state";
+import { closeModelStageLogDialog } from "@mlaide/state/artifact/artifact.actions";
+import { ModelRevision } from "@mlaide/state/artifact/artifact.models";
 
 @Component({
   selector: "app-model-stage-log",
@@ -12,14 +15,13 @@ export class ModelStageLogComponent {
   public readonly modelRevisions: ModelRevision[];
 
   constructor(
-    private dialogRef: MatDialogRef<ModelStageLogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { modelRevisions: ModelRevision[]; title: string }
+    @Inject(MAT_DIALOG_DATA) public data: { modelRevisions: ModelRevision[]; title: string },
+    private store: Store<AppState>
   ) {
     this.modelRevisions = data.modelRevisions;
   }
 
-  // TODO Raman: müssen wir das nicht anders machen mit Redux (inkl. Tests)? Siehe alle anderen Dialoge.
   close() {
-    this.dialogRef.close();
+    this.store.dispatch(closeModelStageLogDialog());
   }
 }

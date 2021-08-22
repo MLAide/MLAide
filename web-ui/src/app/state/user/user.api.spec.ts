@@ -2,11 +2,11 @@ import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@an
 import { appConfigMock } from "@mlaide/mocks/app-config.mock";
 import { TestBed } from "@angular/core/testing";
 import { APP_CONFIG } from "@mlaide/config/app-config.model";
-import { UserApi } from "@mlaide/state/user/user.api";
-import { User } from "@mlaide/entities/user.model";
+import { ApiKeyListResponse, UserApi } from "@mlaide/state/user/user.api";
 import { getRandomApiKey, getRandomApiKeys, getRandomUser } from "@mlaide/mocks/fake-generator";
 import { Observable } from "rxjs";
-import { ApiKey, ApiKeyListResponse } from "@mlaide/entities/apiKey.model";
+import { User } from "@mlaide/state/user/user.models";
+import { ApiKey } from "@mlaide/state/api-key/api-key.models";
 
 describe("UserApi", () => {
   let userApi: UserApi;

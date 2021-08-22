@@ -1,39 +1,23 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
-import { Project } from "@mlaide/entities/project.model";
-import { ProjectsApiService } from "@mlaide/shared/api";
+import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
-import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { selectCurrentProject } from "@mlaide/state/project/project.selectors";
 import { Store } from "@ngrx/store";
 import { loadProject } from "@mlaide/state/project/project.actions";
+import { Project } from "@mlaide/state/project/project.models";
 
 @Component({
   selector: "app-project",
   templateUrl: "./project.component.html",
   styleUrls: ["./project.component.scss"],
 })
-export class ProjectComponent implements OnInit, OnDestroy {
+export class ProjectComponent implements OnInit {
   public project$: Observable<Project>;
-  public projectKey$: Observable<string>;
-  private routeParamsSubscription: any;
-  constructor(private projectApiService: ProjectsApiService, private route: ActivatedRoute, private store: Store) {}
 
-  // TODO Raman: Umstellen auf Redux + Tests fixen
+  constructor(private store: Store) {}
+
   ngOnInit() {
-    this.projectKey$ = this.store.select(selectCurrentProjectKey);
+    this.project$ = this.store.select(selectCurrentProject);
 
     this.store.dispatch(loadProject());
-    /*this.routeParamsSubscription = this.route.params.subscribe((params) => {
-      const projectKey = params.projectKey;
-      this.projectApiService.getProject(projectKey).subscribe((project) => {
-        this.project = project;
-      });
-    });*/
-  }
-
-  ngOnDestroy() {
-    if (this.routeParamsSubscription) {
-      this.routeParamsSubscription.unsubscribe();
-    }
   }
 }

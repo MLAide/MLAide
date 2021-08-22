@@ -10,13 +10,13 @@ import { MatFormFieldHarness } from "@angular/material/form-field/testing";
 import { MatInputModule } from "@angular/material/input";
 import { MatInputHarness } from "@angular/material/input/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { Project } from "@mlaide/entities/project.model";
 import { getRandomProject } from "src/app/mocks/fake-generator";
 
 import { AddProjectComponent } from "./add-project.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
 import { addProject, closeAddProjectDialog } from "@mlaide/state/project/project.actions";
+import { Project } from "@mlaide/state/project/project.models";
 
 describe("AddProjectComponent", () => {
   let component: AddProjectComponent;

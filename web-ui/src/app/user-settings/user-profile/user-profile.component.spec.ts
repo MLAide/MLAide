@@ -6,7 +6,6 @@ import { MatFormFieldHarness } from "@angular/material/form-field/testing";
 import { MatInputHarness } from "@angular/material/input/testing";
 
 import { UserProfileComponent } from "./user-profile.component";
-import { User } from "@mlaide/entities/user.model";
 import { getRandomUser } from "@mlaide/mocks/fake-generator";
 import { MatInputModule } from "@angular/material/input";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
@@ -19,6 +18,7 @@ import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
 import { selectCurrentUser } from "@mlaide/state/user/user.selectors";
 import { editUserProfile } from "@mlaide/state/user/user.actions";
+import { User } from "@mlaide/state/user/user.models";
 
 describe("UserComponent", () => {
   let fixture: ComponentFixture<UserProfileComponent>;
@@ -95,6 +95,20 @@ describe("UserComponent", () => {
 
       // assert
       expect(nickNameControl.valid).toBeFalsy();
+    });
+  });
+
+  describe("ngOnDestroy", () => {
+    it("should unsubscribe from userSubscription", async () => {
+      // arrange in beforeEach
+      const subscription = component["userSubscription"]; // access privat member of component
+      const unsubscribeSpy = spyOn(subscription, "unsubscribe").and.callThrough();
+
+      // act
+      component.ngOnDestroy();
+
+      // assert
+      expect(unsubscribeSpy).toHaveBeenCalled();
     });
   });
 

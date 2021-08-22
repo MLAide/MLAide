@@ -1,11 +1,11 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
-import { Run } from "@mlaide/entities/run.model";
 import { Store } from "@ngrx/store";
 import { loadRunsByRunKeys } from "@mlaide/state/run/run.actions";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectIsLoadingRuns, selectRuns } from "@mlaide/state/run/run.selectors";
 import { map } from "rxjs/operators";
+import { Run } from "@mlaide/state/run/run.models";
 
 @Component({
   selector: "app-runs-compare",

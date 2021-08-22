@@ -44,13 +44,13 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
   private artifactsSubscription: Subscription;
 
   /** The TreeControl controls the expand/collapse state of tree nodes.  */
-  treeControl: FlatTreeControl<FlatTreeNode>;
+  public treeControl: FlatTreeControl<FlatTreeNode>;
 
   /** The TreeFlattener is used to generate the flat list of items from hierarchical data. */
-  treeFlattener: MatTreeFlattener<FileNode, FlatTreeNode>;
+  public treeFlattener: MatTreeFlattener<FileNode, FlatTreeNode>;
 
   /** The MatTreeFlatDataSource connects the control and flattener to provide data. */
-  dataSource: MatTreeFlatDataSource<FileNode, FlatTreeNode>;
+  public dataSource: MatTreeFlatDataSource<FileNode, FlatTreeNode>;
 
   constructor(private store: Store) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
@@ -59,7 +59,6 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
   }
 
-  // TODO Raman: Können wir hier auch alles entfernen und so einkürzen wie in ArtifactsListTableComponent?
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.artifacts$) {
       this.unsubscribeArtifacts();
@@ -199,7 +198,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
     }
 
     /*
-     * If both objects are folders or files, they are sorted alphabeticaly
+     * If both objects are folders or files, they are sorted alphabetically
      */
     if (objectA.name < objectB.name) {
       return -1;

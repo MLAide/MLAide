@@ -37,7 +37,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     });
   }
 
-  // TODO Raman: Write tests for this
   public ngOnDestroy(): void {
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();

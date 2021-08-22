@@ -12,13 +12,13 @@ import { MatInputHarness } from "@angular/material/input/testing";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { Artifact } from "@mlaide/entities/artifact.model";
-import { getRandomArtifact } from "src/app/mocks/fake-generator";
+import { getRandomArtifact } from "@mlaide/mocks/fake-generator";
 import { EditModelComponent } from "./edit-model.component";
 import { ModelStageI18nComponent } from "@mlaide/shared/components/model-stage-i18n/model-stage-i18n.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
 import { closeEditModelDialog, editModel } from "@mlaide/state/artifact/artifact.actions";
+import { Artifact } from "@mlaide/state/artifact/artifact.models";
 
 describe("EditModelComponent", () => {
   let component: EditModelComponent;

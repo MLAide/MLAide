@@ -1,12 +1,12 @@
 import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import { Observable } from "rxjs";
-import { APP_CONFIG } from "src/app/config/app-config.model";
-import { appConfigMock } from "src/app/mocks/app-config.mock";
-import { Experiment, ExperimentListResponse } from "../../entities/experiment.model";
-import { getRandomExperiment, getRandomExperiments, getRandomProject } from "../../mocks/fake-generator";
-import { ExperimentApi } from "./experiment.api";
-import { Project } from "@mlaide/entities/project.model";
+import { APP_CONFIG } from "@mlaide/config/app-config.model";
+import { appConfigMock } from "@mlaide/mocks/app-config.mock";
+import { getRandomExperiment, getRandomExperiments, getRandomProject } from "@mlaide/mocks/fake-generator";
+import { ExperimentApi, ExperimentListResponse } from "./experiment.api";
+import { Project } from "@mlaide/state/project/project.models";
+import { Experiment } from "@mlaide/state/experiment/experiment.models";
 
 describe("ExperimentApi", () => {
   let experimentApi: ExperimentApi;

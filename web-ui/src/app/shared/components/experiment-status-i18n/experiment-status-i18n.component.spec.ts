@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { ExperimentStatus } from "@mlaide/entities/experiment.model";
-
 import { ExperimentStatusI18nComponent } from "./experiment-status-i18n.component";
+import { ExperimentStatus } from "@mlaide/state/model";
 
 describe("ExperimentStatusI18nComponent", () => {
   let component: ExperimentStatusI18nComponent;

@@ -9,11 +9,10 @@ import { of } from "rxjs";
 import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 import { MatDialog } from "@angular/material/dialog";
 import { EditModelComponent } from "@mlaide/models/edit-model/edit-model.component";
-import { CreateOrUpdateModel } from "@mlaide/entities/artifact.model";
 import { ModelStageLogComponent } from "@mlaide/models/model-stage-log/model-stage-log.component";
 import { FileSaverService } from "ngx-filesaver";
-import { loadArtifactsOfCurrentRun } from "@mlaide/state/artifact/artifact.actions";
 import { selectCurrentRunKey } from "@mlaide/state/run/run.selectors";
+import { CreateOrUpdateModel } from "@mlaide/state/artifact/artifact.models";
 
 @Injectable({ providedIn: "root" })
 export class ArtifactEffects {
@@ -103,6 +102,16 @@ export class ArtifactEffects {
               modelRevisions: action.modelRevisions,
             },
           });
+        })
+      ),
+    { dispatch: false }
+  );
+
+  closeModelStageLogDialog$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(artifactActions.closeModelStageLogDialog),
+        tap((action) => {
+          this.dialog.closeAll();
         })
       ),
     { dispatch: false }

@@ -1,9 +1,9 @@
 import { Component, Inject } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { Artifact, ModelStage } from "@mlaide/entities/artifact.model";
 import { closeEditModelDialog, editModel } from "@mlaide/state/artifact/artifact.actions";
 import { Store } from "@ngrx/store";
+import { Artifact, ModelStage } from "@mlaide/state/artifact/artifact.models";
 
 @Component({
   selector: "app-edit-model",

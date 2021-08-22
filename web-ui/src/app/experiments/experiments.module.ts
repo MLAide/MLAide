@@ -25,7 +25,6 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 
 import { AddOrEditExperimentComponent } from "./add-or-edit-experiment/add-or-edit-experiment.component";
 import { ExperimentDetailsComponent } from "./experiment-details/experiment-details.component";
-import { ExperimentStatusI18nComponent } from "./experiment-status-i18n/experiment-status-i18n.component";
 import { ExperimentsListComponent } from "./experiments-list/experiments-list.component";
 import { ExperimentsRoutingModule } from "./experiments-routing.module";
 import { SharedModule } from "@mlaide/shared/shared.module";
@@ -36,7 +35,6 @@ import { ExperimentLineageVisualizationComponent } from './experiment-lineage-vi
     ExperimentsListComponent,
     AddOrEditExperimentComponent,
     ExperimentDetailsComponent,
-    ExperimentStatusI18nComponent,
     ExperimentLineageVisualizationComponent,
   ],
   imports: [

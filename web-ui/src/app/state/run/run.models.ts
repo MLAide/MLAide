@@ -1,4 +1,7 @@
-import { UserRef } from "@mlaide/entities/userRef.model";
+export interface UserRef {
+  id: string;
+  nickName: string;
+}
 
 export interface Run {
   artifacts: {

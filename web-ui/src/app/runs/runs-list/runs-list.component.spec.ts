@@ -1,7 +1,5 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MockComponent, ngMocks } from "ng-mocks";
-import { Project } from "@mlaide/entities/project.model";
-import { Run } from "@mlaide/entities/run.model";
 import { getRandomProject, getRandomRuns } from "src/app/mocks/fake-generator";
 import { RunsListComponent } from "./runs-list.component";
 import { RunsListTableComponent } from "src/app/shared/components/runs-list-table/runs-list-table.component";
@@ -10,6 +8,8 @@ import { Action } from "@ngrx/store";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectIsLoadingRuns, selectRuns } from "@mlaide/state/run/run.selectors";
 import { loadRuns } from "@mlaide/state/run/run.actions";
+import { Run } from "@mlaide/state/run/run.models";
+import { Project } from "@mlaide/state/project/project.models";
 
 describe("RunsListComponent", () => {
   let component: RunsListComponent;

@@ -2,9 +2,9 @@ import { ENTER } from "@angular/cdk/keycodes";
 import { Component, Inject } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { ProjectMember, ProjectMemberRole } from "@mlaide/entities/projectMember.model";
 import { addProjectMember, closeAddOrEditProjectMemberDialog, editProjectMember } from "@mlaide/state/project-member/project-member.actions";
 import { Store } from "@ngrx/store";
+import { ProjectMember, ProjectMemberRole } from "@mlaide/state/project-member/project-member.models";
 
 @Component({
   selector: "app-add-or-edit-project-member",

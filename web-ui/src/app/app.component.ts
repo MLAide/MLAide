@@ -8,12 +8,12 @@ import {
 } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { Observable } from "rxjs";
-import { Project } from "./entities/project.model";
-import { User } from "./entities/user.model";
 import { initializeLogin, login, logout } from "@mlaide/state/auth/auth.actions";
 import { selectIsUserAuthenticated } from "@mlaide/state/auth/auth.selectors";
 import { selectProjects } from "./state/project/project.selectors";
 import { selectCurrentUser } from "./state/user/user.selectors";
+import { Project } from "@mlaide/state/project/project.models";
+import { User } from "@mlaide/state/user/user.models";
 
 @Component({
   selector: "app-root",
@@ -52,7 +52,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   @HostListener("window:scroll", ["$event"])
-  onWindowScroll(e) {
+  onWindowScroll() {
     const element = document.querySelector(".app-toolbar");
     if (window.pageYOffset > 0) {
       element.classList.add("app-toolbar-active");

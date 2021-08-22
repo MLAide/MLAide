@@ -13,7 +13,6 @@ import { MatInputHarness } from "@angular/material/input/testing";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { ProjectMember } from "@mlaide/entities/projectMember.model";
 import { getRandomProjectMember } from "src/app/mocks/fake-generator";
 
 import { AddOrEditProjectMemberComponent } from "./add-or-edit-project-member.component";
@@ -26,6 +25,7 @@ import {
   closeAddOrEditProjectMemberDialog,
   editProjectMember
 } from "@mlaide/state/project-member/project-member.actions";
+import { ProjectMember } from "@mlaide/state/project-member/project-member.models";
 
 describe("EditProjectMemberComponent", () => {
   let component: AddOrEditProjectMemberComponent;

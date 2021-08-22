@@ -9,8 +9,6 @@ import { MatTableModule } from "@angular/material/table";
 import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { of } from "rxjs";
-import { Project } from "@mlaide/entities/project.model";
-import { ProjectMember, ProjectMemberRole } from "@mlaide/entities/projectMember.model";
 import { getRandomProject, getRandomProjectMember, getRandomProjectMembers } from "src/app/mocks/fake-generator";
 import { ProjectMemberRoleI18nComponent } from "src/app/shared/components/project-member-role-i18n/project-member-role-i18n.component";
 import { ProjectMembersListComponent } from "./project-members-list.component";
@@ -31,6 +29,8 @@ import {
 } from "@mlaide/state/project-member/project-member.actions";
 import { MatCardHarness } from "@angular/material/card/testing";
 import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
+import { Project } from "@mlaide/state/project/project.models";
+import { ProjectMember, ProjectMemberRole } from "@mlaide/state/project-member/project-member.models";
 
 describe("ProjectMembersListComponent", () => {
   let component: ProjectMembersListComponent;

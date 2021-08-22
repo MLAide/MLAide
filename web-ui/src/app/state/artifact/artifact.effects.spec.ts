@@ -16,7 +16,7 @@ import {
   getRandomProject, getRandomRun
 } from "@mlaide/mocks/fake-generator";
 import {
-  closeEditModelDialog,
+  closeEditModelDialog, closeModelStageLogDialog,
   downloadArtifact,
   downloadArtifactFailed,
   downloadArtifactSucceeded,
@@ -313,6 +313,21 @@ describe("ArtifactEffects", () => {
             modelRevisions: artifact.model.modelRevisions,
           },
         });
+
+        done();
+      });
+    });
+  });
+
+  describe("closeModelStageLogDialog$", () => {
+    it("closeModelStageLogDialog should close all open MatDialog instances", async (done) => {
+      // arrange
+      actions$ = of(closeModelStageLogDialog());
+
+      // act
+      effects.closeModelStageLogDialog$.subscribe(() => {
+        // assert
+        expect(closeAllDialogSpy).toHaveBeenCalled();
 
         done();
       });

@@ -1,6 +1,5 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
-import { Run, RunMetrics, RunParameter } from "@mlaide/entities/run.model";
 import { AppState } from "@mlaide/state/app.state";
 import { Store } from "@ngrx/store";
 import { selectCurrentRun } from "@mlaide/state/run/run.selectors";
@@ -10,6 +9,7 @@ import { loadArtifactsOfCurrentRun } from "@mlaide/state/artifact/artifact.actio
 import { Artifact } from "@mlaide/state/artifact/artifact.models";
 import { filter, map } from "rxjs/operators";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { Run, RunMetric, RunParameter } from "@mlaide/state/run/run.models";
 
 @Component({
   selector: "app-run-details",
@@ -21,7 +21,7 @@ export class RunDetailsComponent implements OnInit {
   public artifacts$: Observable<Artifact[]>;
   public projectKey$: Observable<string>;
   public parameters$: Observable<RunParameter[]>;
-  public metrics$: Observable<RunMetrics[]>;
+  public metrics$: Observable<RunMetric[]>;
 
   constructor(private store: Store<AppState>) {}
 

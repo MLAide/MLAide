@@ -10,9 +10,6 @@ import { MatTableModule } from "@angular/material/table";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MockComponent, MockPipe, ngMocks } from "ng-mocks";
 import { TimeAgoPipe } from "ngx-moment";
-import { Artifact } from "@mlaide/entities/artifact.model";
-import { Project } from "@mlaide/entities/project.model";
-import { Run } from "@mlaide/entities/run.model";
 import { getRandomArtifacts, getRandomProject, getRandomRun } from "src/app/mocks/fake-generator";
 import { DurationPipe } from "../../shared/pipes/duration.pipe";
 import { ArtifactsTreeComponent } from "../artifacts-tree/artifacts-tree.component";
@@ -28,6 +25,9 @@ import { loadArtifactsOfCurrentRun } from "@mlaide/state/artifact/artifact.actio
 import { AppState } from "@mlaide/state/app.state";
 import { ParametersTableComponent } from "@mlaide/runs/parameters-table/parameters-table.component";
 import { MetricsTableComponent } from "@mlaide/runs/metrics-table/metrics-table.component";
+import { Artifact } from "@mlaide/state/artifact/artifact.models";
+import { Project } from "@mlaide/state/project/project.models";
+import { Run } from "@mlaide/state/run/run.models";
 
 
 describe("RunDetailsComponent", () => {

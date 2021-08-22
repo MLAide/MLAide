@@ -4,41 +4,34 @@ import { DatePipe } from "@angular/common";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatButtonModule } from "@angular/material/button";
 import { MatButtonHarness } from "@angular/material/button/testing";
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MatDialogModule, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatSortModule } from "@angular/material/sort";
 import { MatTableModule } from "@angular/material/table";
 import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MockPipe } from "ng-mocks";
-import { of } from "rxjs";
-import { ModelRevision } from "@mlaide/entities/artifact.model";
-import { getRandomModelRevisions } from "src/app/mocks/fake-generator";
-import { ModelStageI18nComponent } from "../../shared/components/model-stage-i18n/model-stage-i18n.component";
+import { getRandomModelRevisions } from "@mlaide/mocks/fake-generator";
+import { ModelStageI18nComponent } from "@mlaide/shared/components/model-stage-i18n/model-stage-i18n.component";
 
 import { ModelStageLogComponent } from "./model-stage-log.component";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { AppState } from "@mlaide/state/app.state";
+import { closeModelStageLogDialog } from "@mlaide/state/artifact/artifact.actions";
+import { ModelRevision } from "@mlaide/state/artifact/artifact.models";
 
 describe("ModelStageLogComponent", () => {
   let component: ModelStageLogComponent;
   let fixture: ComponentFixture<ModelStageLogComponent>;
 
-  // dialog mock
-  // https://github.com/angular/quickstart/issues/320#issuecomment-404705258
-  // https://stackoverflow.com/questions/54108924/this-dialogref-close-is-not-a-function-error/54109919
-  let dialogMock;
-
   // fakes
   let fakeModelRevisions: ModelRevision[];
   let formData: { modelRevisions: ModelRevision[]; title: string };
 
-  beforeEach(async () => {
-    // prepare dialog mock object
-    dialogMock = {
-      open: () => ({ afterClosed: () => of(true) }),
-      close: () => {
-        // This is intentional
-      },
-    };
+  let store: MockStore<AppState>;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
+  beforeEach(async () => {
     // setup experiment fake
     fakeModelRevisions = await getRandomModelRevisions();
 
@@ -51,11 +44,14 @@ describe("ModelStageLogComponent", () => {
     await TestBed.configureTestingModule({
       declarations: [ModelStageLogComponent, ModelStageI18nComponent, MockPipe(DatePipe, (v) => v)],
       providers: [
-        { provide: MatDialogRef, useValue: dialogMock },
         { provide: MAT_DIALOG_DATA, useValue: formData },
+        provideMockStore()
       ],
       imports: [BrowserAnimationsModule, MatButtonModule, MatDialogModule, MatTableModule, MatSortModule],
     }).compileComponents();
+
+    store = TestBed.inject(MockStore);
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -71,13 +67,12 @@ describe("ModelStageLogComponent", () => {
   describe("close", () => {
     it("should call close on dialog", async () => {
       // arrange in beforeEach
-      const spy = spyOn(dialogMock, "close").and.callThrough();
 
       // act
       component.close();
 
       // assert
-      expect(spy).toHaveBeenCalled();
+      expect(dispatchSpy).toHaveBeenCalledOnceWith(closeModelStageLogDialog());
     });
   });
 

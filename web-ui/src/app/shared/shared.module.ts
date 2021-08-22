@@ -21,11 +21,13 @@ import { ProjectMemberRoleI18nComponent } from "./components/project-member-role
 import { ModelStageI18nComponent } from "./components/model-stage-i18n/model-stage-i18n.component";
 import { MatCardModule } from "@angular/material/card";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { ExperimentStatusI18nComponent } from "@mlaide/shared/components/experiment-status-i18n/experiment-status-i18n.component";
 
 @NgModule({
   declarations: [
     // components
     ArtifactsListTableComponent,
+    ExperimentStatusI18nComponent,
     ModelStageI18nComponent,
     ProjectMemberRoleI18nComponent,
     RunParamsMetricsTableComponent,

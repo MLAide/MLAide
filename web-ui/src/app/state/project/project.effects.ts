@@ -145,8 +145,7 @@ export class ProjectEffects {
     )
   );
 
-  // TODO Raman: Write test for this
-  loadProjectsOnLoggedInUserChanged = createEffect(() =>
+  loadProjectsOnLoggedInUserChanged$ = createEffect(() =>
     this.actions$.pipe(
       ofType(currentUserChanged),
       map(() => loadProjects())

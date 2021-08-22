@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { RunStatus } from "@mlaide/entities/run.model";
 
 import { RunStatusI18nComponent } from "./run-status-i18n.component";
+import { RunStatus } from "@mlaide/state/run/run.models";
 
 describe("RunStatusI18nComponent", () => {
   let component: RunStatusI18nComponent;

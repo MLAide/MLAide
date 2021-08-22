@@ -16,9 +16,8 @@ import { MatInputHarness } from "@angular/material/input/testing";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { getRandomExperiment } from "src/app/mocks/fake-generator";
-import { Experiment } from "../../entities/experiment.model";
-import { ExperimentStatusI18nComponent } from "../experiment-status-i18n/experiment-status-i18n.component";
+import { getRandomExperiment } from "@mlaide/mocks/fake-generator";
+import { ExperimentStatusI18nComponent } from "@mlaide/shared/components/experiment-status-i18n/experiment-status-i18n.component";
 
 import { AddOrEditExperimentComponent } from "./add-or-edit-experiment.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
@@ -28,6 +27,7 @@ import {
   closeAddOrEditExperimentDialog,
   editExperiment
 } from "@mlaide/state/experiment/experiment.actions";
+import { Experiment } from "@mlaide/state/experiment/experiment.models";
 
 describe("AddOrEditExperimentComponent", () => {
   let component: AddOrEditExperimentComponent;

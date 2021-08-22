@@ -10,8 +10,6 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatTreeModule } from "@angular/material/tree";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { of } from "rxjs";
-import { Artifact } from "@mlaide/entities/artifact.model";
-import { Project } from "@mlaide/entities/project.model";
 import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
 
 import { ArtifactsTreeComponent, FileNode, FlatTreeNode } from "./artifacts-tree.component";
@@ -19,6 +17,8 @@ import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
 import { Subscription } from "rxjs/internal/Subscription";
 import { downloadArtifact } from "@mlaide/state/artifact/artifact.actions";
+import { Artifact } from "@mlaide/state/artifact/artifact.models";
+import { Project } from "@mlaide/state/project/project.models";
 
 
 describe("ArtifactsTreeComponent", () => {

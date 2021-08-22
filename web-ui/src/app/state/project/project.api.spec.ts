@@ -1,11 +1,11 @@
 import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import { Observable } from "rxjs";
-import { APP_CONFIG } from "src/app/config/app-config.model";
-import { appConfigMock } from "src/app/mocks/app-config.mock";
-import { Project, ProjectListResponse } from "../../entities/project.model";
-import { getRandomProject, getRandomProjects } from "../../mocks/fake-generator";
-import { ProjectApi } from "./project.api";
+import { APP_CONFIG } from "@mlaide/config/app-config.model";
+import { appConfigMock } from "@mlaide/mocks/app-config.mock";
+import { getRandomProject, getRandomProjects } from "@mlaide/mocks/fake-generator";
+import { Project } from "@mlaide/state/project/project.models";
+import { ProjectApi, ProjectListResponse } from "./project.api";
 
 describe("ProjectApi", () => {
   let projectApi: ProjectApi;
