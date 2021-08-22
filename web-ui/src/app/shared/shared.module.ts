@@ -55,6 +55,7 @@ import { ExperimentStatusI18nComponent } from "@mlaide/shared/components/experim
   ],
   exports: [
     ArtifactsListTableComponent,
+    ExperimentStatusI18nComponent,
     RunsListTableComponent,
     DurationPipe,
     RunParamsMetricsTableComponent,

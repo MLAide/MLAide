@@ -17,7 +17,7 @@ import {
 } from "./project.actions";
 import { ProjectApi } from "./project.api";
 import { MatDialog } from "@angular/material/dialog";
-import { AddProjectComponent } from "@mlaide/core/components/add-project/add-project.component";
+import { AddProjectComponent } from "@mlaide/projects/add-project/add-project.component";
 import { currentUserChanged } from "../user/user.actions";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { Store } from "@ngrx/store";

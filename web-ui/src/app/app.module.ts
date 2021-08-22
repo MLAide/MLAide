@@ -30,10 +30,8 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { AuthModule } from "./auth/auth.module";
 
-import { StoreModule } from "@ngrx/store";
-import { EffectsModule } from "@ngrx/effects";
-import { StoreRouterConnectingModule } from "@ngrx/router-store";
 import { StateModule } from "./state/state.module";
+import { ProjectsModule } from "@mlaide/projects/projects.module";
 
 @NgModule({
   declarations: [AppComponent],
@@ -67,6 +65,7 @@ import { StateModule } from "./state/state.module";
     // mlaide modules
     CoreModule, // core module must be the first mlaide module
     ErrorsModule, // errors module must be the second mlaide module
+    ProjectsModule,
     StateModule,
     AuthModule.forRoot(),
     UserSettingsModule,

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { TestBed } from "@angular/core/testing";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
-import { AddProjectComponent } from "@mlaide/core/components/add-project/add-project.component";
+import { AddProjectComponent } from "@mlaide/projects/add-project/add-project.component";
 import { getRandomProject, getRandomProjects } from "@mlaide/mocks/fake-generator";
 import { getEffectsMetadata } from "@ngrx/effects";
 import { provideMockActions } from '@ngrx/effects/testing';

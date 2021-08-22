@@ -10,7 +10,7 @@ import { MatFormFieldHarness } from "@angular/material/form-field/testing";
 import { MatInputModule } from "@angular/material/input";
 import { MatInputHarness } from "@angular/material/input/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { getRandomProject } from "src/app/mocks/fake-generator";
+import { getRandomProject } from "@mlaide/mocks/fake-generator";
 
 import { AddProjectComponent } from "./add-project.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";

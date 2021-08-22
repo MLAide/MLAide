@@ -10,7 +10,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { Router } from "@angular/router";
 import { MomentModule, TimeAgoPipe } from "ngx-moment";
 import { ProjectListComponent } from "./project-list.component";
-import { getRandomProjects } from "src/app/mocks/fake-generator";
+import { getRandomProjects } from "@mlaide/mocks/fake-generator";
 import { MockPipe } from "ng-mocks";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
