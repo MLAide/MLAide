@@ -3,12 +3,12 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatTableModule } from "@angular/material/table";
 import { MatCardModule } from "@angular/material/card";
-import { getRandomArtifacts, getRandomExperiment, getRandomProject, getRandomRuns } from "src/app/mocks/fake-generator";
+import { getRandomArtifacts, getRandomExperiment, getRandomProject, getRandomRuns } from "@mlaide/mocks/fake-generator";
 import { MockComponent, ngMocks } from "ng-mocks";
 
 import { ExperimentDetailsComponent } from "./experiment-details.component";
-import { ArtifactsListTableComponent } from "src/app/shared/components/artifacts-list-table/artifacts-list-table.component";
-import { RunsListTableComponent } from "src/app/shared/components/runs-list-table/runs-list-table.component";
+import { ArtifactsListTableComponent } from "@mlaide/shared/components/artifacts-list-table/artifacts-list-table.component";
+import { RunsListTableComponent } from "@mlaide/shared/components/runs-list-table/runs-list-table.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
 import {

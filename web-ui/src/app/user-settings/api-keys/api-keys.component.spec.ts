@@ -11,7 +11,7 @@ import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableH
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MockPipe } from "ng-mocks";
 import { of } from "rxjs";
-import { getRandomApiKeys } from "src/app/mocks/fake-generator";
+import { getRandomApiKeys } from "@mlaide/mocks/fake-generator";
 
 import { ApiKeysComponent } from "./api-keys.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";

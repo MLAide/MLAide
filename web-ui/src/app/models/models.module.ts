@@ -6,7 +6,7 @@ import { ModelsListComponent } from "./models-list/models-list.component";
 import { EditModelComponent } from "./edit-model/edit-model.component";
 import { ModelStageLogComponent } from "./model-stage-log/model-stage-log.component";
 import { MatIconModule } from "@angular/material/icon";
-import { SharedModule } from "../shared/shared.module";
+import { SharedModule } from "@mlaide/shared/shared.module";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatCheckboxModule } from "@angular/material/checkbox";

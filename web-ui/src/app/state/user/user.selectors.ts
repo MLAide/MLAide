@@ -1,4 +1,4 @@
-import { AppState } from "../app.state";
+import { AppState } from "@mlaide/state/app.state";
 import { createFeatureSelector, createSelector } from "@ngrx/store";
 import { UserState } from "@mlaide/state/user/user.state";
 

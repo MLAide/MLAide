@@ -13,7 +13,7 @@ import { MatInputHarness } from "@angular/material/input/testing";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSelectHarness } from "@angular/material/select/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { getRandomProjectMember } from "src/app/mocks/fake-generator";
+import { getRandomProjectMember } from "@mlaide/mocks/fake-generator";
 
 import { AddOrEditProjectMemberComponent } from "./add-or-edit-project-member.component";
 import { ProjectMemberRoleI18nComponent } from "@mlaide/shared/components/project-member-role-i18n/project-member-role-i18n.component";

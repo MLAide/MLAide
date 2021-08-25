@@ -1,4 +1,4 @@
-import { AppState } from "../app.state";
+import { AppState } from "@mlaide/state/app.state";
 import { selectRouteParam } from "@mlaide/state/router.selectors";
 import { createFeatureSelector, createSelector } from "@ngrx/store";
 import { ProjectState } from "@mlaide/state/project/project.state";

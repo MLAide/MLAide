@@ -5,8 +5,8 @@ import { catchError, map, mergeMap, tap } from "rxjs/operators";
 import { RunApi } from "./run.api";
 import { Store } from "@ngrx/store";
 import * as runActions from "@mlaide/state/run/run.actions";
-import { selectCurrentProjectKey } from "../project/project.selectors";
-import { showErrorMessage, showSuccessMessage } from "../shared/shared.actions";
+import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
+import { showErrorMessage, showSuccessMessage } from "@mlaide/state/shared/shared.actions";
 import { selectCurrentRunKey, selectSelectedRunKeys } from "./run.selectors";
 import { FileSaverService } from "ngx-filesaver";
 

@@ -7,7 +7,7 @@ import { MatTableModule } from "@angular/material/table";
 import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MockPipe } from "ng-mocks";
-import { getRandomRuns } from "src/app/mocks/fake-generator";
+import { getRandomRuns } from "@mlaide/mocks/fake-generator";
 
 import { RunParamsMetricsTableComponent } from "./run-params-metrics-table.component";
 import { of } from "rxjs";

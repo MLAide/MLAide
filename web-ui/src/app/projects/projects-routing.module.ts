@@ -14,23 +14,23 @@ export const routes: Routes = [
     children: [
       {
         path: "artifacts",
-        loadChildren: () => import("../artifacts/artifacts.module").then((m) => m.ArtifactsModule),
+        loadChildren: () => import("@mlaide/artifacts/artifacts.module").then((m) => m.ArtifactsModule),
       },
       {
         path: "experiments",
-        loadChildren: () => import("../experiments/experiments.module").then((m) => m.ExperimentsModule),
+        loadChildren: () => import("@mlaide/experiments/experiments.module").then((m) => m.ExperimentsModule),
       },
       {
         path: "models",
-        loadChildren: () => import("../models/models.module").then((m) => m.ModelsModule),
+        loadChildren: () => import("@mlaide/models/models.module").then((m) => m.ModelsModule),
       },
       {
         path: "runs",
-        loadChildren: () => import("../runs/runs.module").then((m) => m.RunsModule),
+        loadChildren: () => import("@mlaide/runs/runs.module").then((m) => m.RunsModule),
       },
       {
         path: "settings",
-        loadChildren: () => import("../project-settings/project-settings.module").then((m) => m.ProjectSettingsModule),
+        loadChildren: () => import("@mlaide/project-settings/project-settings.module").then((m) => m.ProjectSettingsModule),
       },
       { path: "", redirectTo: "experiments", pathMatch: "full" },
     ],

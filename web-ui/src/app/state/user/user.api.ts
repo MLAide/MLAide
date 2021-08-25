@@ -4,7 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { User } from "./user.models";
-import { ApiKey } from "../api-key/api-key.models";
+import { ApiKey } from "@mlaide/state/api-key/api-key.models";
 
 export class ApiKeyListResponse {
   items: ApiKey[];
@@ -22,7 +22,7 @@ export class UserApi {
 
   getCurrentUser(): Observable<User> {
     return this.http.get<User>(`${this.baseUrl}/users/current`);
-  }  
+  }
 
   updateCurrentUser(user: User): Observable<User> {
     return this.http.put<void>(`${this.baseUrl}/users/current`, user)

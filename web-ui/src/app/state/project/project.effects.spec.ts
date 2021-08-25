@@ -7,7 +7,7 @@ import { getEffectsMetadata } from "@ngrx/effects";
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from "@ngrx/store";
 import { Observable, of, throwError } from "rxjs";
-import { hideSpinner, showErrorMessage, showSpinner } from "../shared/shared.actions";
+import { hideSpinner, showErrorMessage, showSpinner } from "@mlaide/state/shared/shared.actions";
 import {
   addProject,
   addProjectFailed,

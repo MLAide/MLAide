@@ -4,7 +4,7 @@ import { catchError, filter, map, mergeMap } from "rxjs/operators";
 import { of } from "rxjs";
 import { hideSpinner, showErrorMessage, showSpinner, showSuccessMessage } from "@mlaide/state/shared/shared.actions";
 import { UserApi } from "./user.api";
-import { isUserAuthenticated } from "../auth/auth.actions";
+import { isUserAuthenticated } from "@mlaide/state/auth/auth.actions";
 import { currentUserChanged, editUserProfile, editUserProfileFailed, editUserProfileSucceeded } from "./user.actions";
 
 @Injectable({ providedIn: "root" })

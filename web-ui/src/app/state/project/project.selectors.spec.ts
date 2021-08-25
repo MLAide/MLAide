@@ -1,5 +1,5 @@
 import { getRandomProject, getRandomProjects } from "@mlaide/mocks/fake-generator";
-import { AppState } from "../app.state";
+import { AppState } from "@mlaide/state/app.state";
 import {
   selectCurrentProject,
   selectCurrentProjectKey,

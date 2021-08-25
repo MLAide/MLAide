@@ -5,7 +5,7 @@ import { MatDividerModule } from "@angular/material/divider";
 import { ActivatedRoute } from "@angular/router";
 import { OAuthService } from "angular-oauth2-oidc";
 
-import { ActivatedRouteStub } from "../../mocks/activated-route.stub";
+import { ActivatedRouteStub } from "@mlaide/mocks/activated-route.stub";
 import { HomeComponent } from "./home.component";
 
 describe("HomeComponent", () => {

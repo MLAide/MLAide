@@ -16,7 +16,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatInputHarness } from "@angular/material/input/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MockPipe } from "ng-mocks";
-import { getRandomApiKey } from "src/app/mocks/fake-generator";
+import { getRandomApiKey } from "@mlaide/mocks/fake-generator";
 
 import { AddApiKeyComponent } from "./add-api-key.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";

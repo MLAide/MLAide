@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector, DefaultProjectorFn, MemoizedSelector } from "@ngrx/store";
-import { AppState } from "../app.state";
-import { selectQueryParam, selectRouteParam } from "../router.selectors";
+import { AppState } from "@mlaide/state/app.state";
+import { selectQueryParam, selectRouteParam } from "@mlaide/state/router.selectors";
 import { RunState } from "@mlaide/state/run/run.state";
 
 const runState = createFeatureSelector<AppState, RunState>("runs")

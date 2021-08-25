@@ -3,8 +3,8 @@ import { Injectable } from "@angular/core";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
 import { catchError, map, mergeMap, switchMap, tap } from "rxjs/operators";
-import { showErrorMessage } from "../shared/shared.actions";
-import { hideSpinner, showSpinner } from "../shared/shared.actions";
+import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
+import { hideSpinner, showSpinner } from "@mlaide/state/shared/shared.actions";
 import {
   addProject,
   addProjectFailed,
@@ -18,7 +18,7 @@ import {
 import { ProjectApi } from "./project.api";
 import { MatDialog } from "@angular/material/dialog";
 import { AddProjectComponent } from "@mlaide/projects/add-project/add-project.component";
-import { currentUserChanged } from "../user/user.actions";
+import { currentUserChanged } from "@mlaide/state/user/user.actions";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { Store } from "@ngrx/store";
 

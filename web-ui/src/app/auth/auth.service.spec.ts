@@ -2,7 +2,7 @@ import { TestBed, waitForAsync } from "@angular/core/testing";
 import { Router } from "@angular/router";
 import { RouterTestingModule } from "@angular/router/testing";
 import { EventType, OAuthService } from "angular-oauth2-oidc";
-import { MockOAuthService } from "../mocks/oauth.service.mock";
+import { MockOAuthService } from "@mlaide/mocks/oauth.service.mock";
 import { AuthService } from "./auth.service";
 
 class FakeComponent {}

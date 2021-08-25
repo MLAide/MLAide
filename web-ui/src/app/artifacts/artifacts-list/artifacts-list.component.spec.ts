@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MockComponent, ngMocks } from "ng-mocks";
-import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
+import { getRandomArtifacts, getRandomProject } from "@mlaide/mocks/fake-generator";
 
 import { ArtifactsListComponent } from "./artifacts-list.component";
 import { ArtifactsListTableComponent } from "@mlaide/shared/components/artifacts-list-table/artifacts-list-table.component";

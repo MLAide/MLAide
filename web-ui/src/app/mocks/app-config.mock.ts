@@ -1,4 +1,4 @@
-import { AppConfig } from "../config/app-config.model";
+import { AppConfig } from "@mlaide/config/app-config.model";
 
 export const appConfigMock: AppConfig = {
   env: {

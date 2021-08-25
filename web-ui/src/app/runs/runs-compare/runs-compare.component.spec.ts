@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MockComponent, ngMocks } from "ng-mocks";
-import { getRandomProject, getRandomRuns } from "src/app/mocks/fake-generator";
-import { RunParamsMetricsTableComponent } from "../../shared/components/run-params-metrics-table/run-params-metrics-table.component";
+import { getRandomProject, getRandomRuns } from "@mlaide/mocks/fake-generator";
+import { RunParamsMetricsTableComponent } from "@mlaide/shared/components/run-params-metrics-table/run-params-metrics-table.component";
 
 import { RunsCompareComponent } from "./runs-compare.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";

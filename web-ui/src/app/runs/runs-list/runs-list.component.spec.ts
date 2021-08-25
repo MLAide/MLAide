@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MockComponent, ngMocks } from "ng-mocks";
-import { getRandomProject, getRandomRuns } from "src/app/mocks/fake-generator";
+import { getRandomProject, getRandomRuns } from "@mlaide/mocks/fake-generator";
 import { RunsListComponent } from "./runs-list.component";
-import { RunsListTableComponent } from "src/app/shared/components/runs-list-table/runs-list-table.component";
+import { RunsListTableComponent } from "@mlaide/shared/components/runs-list-table/runs-list-table.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";

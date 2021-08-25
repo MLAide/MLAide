@@ -10,7 +10,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { ProjectMemberApi } from "./project-member.api";
 import { AddOrEditProjectMemberComponent } from "@mlaide/project-settings/add-or-edit-project-member/add-or-edit-project-member.component";
 import { Router } from "@angular/router";
-import { selectCurrentUser } from "../user/user.selectors";
+import { selectCurrentUser } from "@mlaide/state/user/user.selectors";
 
 @Injectable({ providedIn: "root" })
 export class ProjectMemberEffects {
@@ -26,7 +26,7 @@ export class ProjectMemberEffects {
         action.type !== projectMemberActions.deleteProjectMemberSucceeded.type
         || (action as any).projectMember.email !== currentUser.email),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([action, projectKey]) => this.projectMemberApi.getProjectMembers(projectKey)),
+      mergeMap(([_, projectKey]) => this.projectMemberApi.getProjectMembers(projectKey)),
       map((projectMemberListResponse) => ({ projectMembers: projectMemberListResponse.items })),
       map((projectMembers) => projectMemberActions.loadProjectMembersSucceeded(projectMembers)),
       catchError((error) => of(projectMemberActions.loadProjectMembersFailed({payload: error })))

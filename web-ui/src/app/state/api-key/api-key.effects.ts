@@ -5,7 +5,7 @@ import { of } from "rxjs";
 import { hideSpinner, showErrorMessage, showSpinner } from "@mlaide/state/shared/shared.actions";
 import { MatDialog } from "@angular/material/dialog";
 import * as actions from "./api-key.actions";
-import { UserApi } from "../user/user.api";
+import { UserApi } from "@mlaide/state/user/user.api";
 import { AddApiKeyComponent } from "@mlaide/user-settings/add-api-key/add-api-key.component";
 
 @Injectable({ providedIn: "root" })

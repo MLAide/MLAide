@@ -9,7 +9,7 @@ import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableH
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouterTestingModule } from "@angular/router/testing";
 import { MockPipe } from "ng-mocks";
-import { getRandomArtifacts, getRandomProject } from "src/app/mocks/fake-generator";
+import { getRandomArtifacts, getRandomProject } from "@mlaide/mocks/fake-generator";
 
 import { ArtifactsListTableComponent } from "./artifacts-list-table.component";
 import { of } from "rxjs";
