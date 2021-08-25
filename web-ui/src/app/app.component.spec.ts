@@ -3,13 +3,8 @@ import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { RouterTestingModule } from "@angular/router/testing";
-import { of, Subject } from "rxjs";
+import { of } from "rxjs";
 import { AppComponent } from "./app.component";
-import { AuthService } from "./auth/auth.service";
-import { Project, ProjectListResponse } from "./core/models/project.model";
-import { User } from "./core/models/user.model";
-import { ProjectsApiService, UsersApiService } from "./core/services";
-import { ListDataSourceMock } from "./mocks/data-source.mock";
 import { getRandomProjects, getRandomUser } from "./mocks/fake-generator";
 import { MatToolbarHarness } from "@angular/material/toolbar/testing";
 import { MatMenuHarness, MatMenuItemHarness } from "@angular/material/menu/testing";
@@ -17,57 +12,45 @@ import { MatMenuModule } from "@angular/material/menu";
 import { MatIconModule } from "@angular/material/icon";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatButtonHarness } from "@angular/material/button/testing";
+import { MockStore, provideMockStore } from "@ngrx/store/testing";
+import { Action } from "@ngrx/store";
+import { selectProjects } from "@mlaide/state/project/project.selectors";
+import { selectCurrentUser } from "@mlaide/state/user/user.selectors";
+import { selectIsUserAuthenticated } from "@mlaide/state/auth/auth.selectors";
+import { initializeLogin, login, logout } from "@mlaide/state/auth/auth.actions";
+import { Project } from "@mlaide/state/project/project.models";
+import { User } from "@mlaide/state/user/user.models";
 
 describe("AppComponent", () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
 
-  let authServiceIsAuthenticated$;
-
   // fakes
   let fakeProjects: Project[];
   let fakeUser: User;
 
-  // service stubs
-  let authServiceStub: jasmine.SpyObj<AuthService>;
-  let projectsApiServiceStub: jasmine.SpyObj<ProjectsApiService>;
-  let usersApiServiceStub: jasmine.SpyObj<UsersApiService>;
-
-  // data source mocks
-  let projectListDataSourceMock: ListDataSourceMock<Project, ProjectListResponse> = new ListDataSourceMock();
-
+  let store: MockStore;
+  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
   beforeEach(async () => {
-    authServiceIsAuthenticated$ = new Subject<boolean>();
-
-    // stub services
-    authServiceStub = jasmine.createSpyObj("authService", ["loginWithUserInteraction", "logout", "runInitialLoginSequence"]);
-    authServiceStub.isAuthenticated$ = authServiceIsAuthenticated$;
-    projectsApiServiceStub = jasmine.createSpyObj("projectApiService", ["getProjects"]);
-    usersApiServiceStub = jasmine.createSpyObj("usersApiService", ["getCurrentUser"]);
-
     // setup fakes
     fakeProjects = await getRandomProjects(3);
     fakeUser = await getRandomUser();
 
-    // setup project api
-    projectsApiServiceStub.getProjects.and.returnValue(projectListDataSourceMock);
-    projectListDataSourceMock.emulate(fakeProjects);
-
-    // setup users api
-    usersApiServiceStub.getCurrentUser.and.returnValue(of(fakeUser));
-
     TestBed.configureTestingModule({
       providers: [
-        { provide: AuthService, useValue: authServiceStub },
-        { provide: ProjectsApiService, useValue: projectsApiServiceStub },
-        { provide: UsersApiService, useValue: usersApiServiceStub },
+        provideMockStore(),
       ],
       imports: [BrowserAnimationsModule, MatIconModule, MatMenuModule, MatToolbarModule, RouterTestingModule],
       declarations: [AppComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AppComponent);
-    component = fixture.componentInstance;
+    store = TestBed.inject(MockStore);
+
+    store.overrideSelector(selectCurrentUser, fakeUser);
+    store.overrideSelector(selectIsUserAuthenticated, true);
+    store.overrideSelector(selectProjects, fakeProjects);
+
+    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -77,115 +60,71 @@ describe("AppComponent", () => {
     fixture.detectChanges();
   });
 
-  afterEach(() => {
-    projectListDataSourceMock.emulate([]);
-  });
-
   it("should create the app", () => {
     const app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();
   });
 
   describe("constructor", () => {
-    it("should load current user when isAuthenticated emits true", async () => {
-      // arrange + act in beforeEach
-      authServiceIsAuthenticated$.next(true);
-
-      // assert
-      expect(usersApiServiceStub.getCurrentUser).toHaveBeenCalled();
-      expect(component.user).toEqual(fakeUser);
-    });
-
-    it("should not load current user when isAuthenticated emits false", async () => {
-      // arrange + act in beforeEach
-      authServiceIsAuthenticated$.next(false);
-
-      // assert
-      expect(usersApiServiceStub.getCurrentUser).not.toHaveBeenCalled();
-      expect(component.user).toBeUndefined();
-    });
-
-    it("should call runInitialLoginSequence", async () => {
+    it("should select user from store correctly", async (done) => {
       // arrange + act in beforeEach
 
       // assert
-      expect(authServiceStub.runInitialLoginSequence).toHaveBeenCalled();
+      component.user$.subscribe((user) => {
+        expect(user).toBe(fakeUser);
+        done();
+      });
     });
-  });
 
-  describe("ngOnInit", () => {
-    it("should load projects when isAuthenticated emits true", async () => {
+    it("should select isUserAuthenticated from store correctly", async (done) => {
       // arrange + act in beforeEach
-      authServiceIsAuthenticated$.next(true);
 
       // assert
-      expect(projectsApiServiceStub.getProjects).toHaveBeenCalled();
-      expect(component.projects).toEqual(fakeProjects);
+      component.isUserAuthenticated$.subscribe((isUserAuthenticated) => {
+        expect(isUserAuthenticated).toBe(true);
+        done();
+      });
     });
 
-    it("should not load projects when isAuthenticated emits false", async () => {
+    it("should select projects from store correctly", async (done) => {
       // arrange + act in beforeEach
-      authServiceIsAuthenticated$.next(false);
 
       // assert
-      expect(projectsApiServiceStub.getProjects).not.toHaveBeenCalled();
-      expect(component.projects).toBeUndefined();
-    });
-  });
-
-  describe("ngOnDestroy", () => {
-    it("should unsubscribe projectListSubscription", async () => {
-      // arrange also in beforeEach
-      authServiceIsAuthenticated$.next(true);
-      spyOn(component["projectListSubscription"], "unsubscribe");
-
-      // act
-      component.ngOnDestroy();
-
-      // assert
-      expect(component["projectListSubscription"].unsubscribe).toHaveBeenCalled();
+      component.projects$.subscribe((projects) => {
+        expect(projects).toBe(fakeProjects);
+        done();
+      });
     });
 
-    it("should unsubscribe isAuthenticatedSubscription", async () => {
-      // arrange also in beforeEach
-      spyOn(component["isAuthenticatedSubscription"], "unsubscribe");
-
-      // act
-      component.ngOnDestroy();
+    it("should dispatch initializeLogin action", () => {
+      // arrange + act in beforeEach
 
       // assert
-      expect(component["isAuthenticatedSubscription"].unsubscribe).toHaveBeenCalled();
-    });
-
-    it("should unsubscribe isAuthenticatedSubscriptionForProjects", async () => {
-      // arrange also in beforeEach
-      spyOn(component["isAuthenticatedSubscriptionForProjects"], "unsubscribe");
-
-      // act
-      component.ngOnDestroy();
-
-      // assert
-      expect(component["isAuthenticatedSubscriptionForProjects"].unsubscribe).toHaveBeenCalled();
+      expect(dispatchSpy).toHaveBeenCalledWith(initializeLogin());
     });
   });
 
   describe("login", () => {
-    it("should call loginWithUserInteraction", async () => {
-      // arrange + act in beforeEach
+    it("should dispatch login action with targetUrl: /projects", () => {
+      // arrange in beforeEach
+
+      // act
       component.login();
 
       // assert
-      expect(authServiceStub.loginWithUserInteraction).toHaveBeenCalledWith("/projects");
+      expect(dispatchSpy).toHaveBeenCalledWith(login({ targetUrl: "/projects" }));
     });
   });
 
   describe("logout", () => {
-    it("should call logout", async () => {
-      // arrange + act in beforeEach
+    it("should dispatch logout", () => {
+      // arrange in beforeEach
+
+      // act
       component.logout();
 
       // assert
-      expect(authServiceStub.logout).toHaveBeenCalled();
+      expect(dispatchSpy).toHaveBeenCalledWith(logout());
     });
   });
 
@@ -207,17 +146,16 @@ describe("AppComponent", () => {
 
       it("should contain correct labels when not authenticated", async () => {
         // arrange
+        component.isUserAuthenticated$ = of(false);
         const toolbar: MatToolbarHarness = await loader.getHarness(MatToolbarHarness);
-        authServiceIsAuthenticated$.next(false);
 
         // assert
         expect((await toolbar.getRowsAsText())[0]).toEqual("ML AideloginLogin");
       });
 
       it("should contain correct labels when authenticated", async () => {
-        // arrange
+        // arrange also in beforeEach
         const toolbar: MatToolbarHarness = await loader.getHarness(MatToolbarHarness);
-        authServiceIsAuthenticated$.next(true);
 
         // assert
         expect((await toolbar.getRowsAsText())[0]).toEqual("ML AideProjects " + fakeUser.nickName);
@@ -242,7 +180,7 @@ describe("AppComponent", () => {
 
       it("should contain login button when not authenticated", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(false);
+        component.isUserAuthenticated$ = of(false);
         const loginButton: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#login-button" }));
 
         // assert
@@ -251,7 +189,7 @@ describe("AppComponent", () => {
 
       it("should call login on clicking login button", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(false);
+        component.isUserAuthenticated$ = of(false);
         const loginButton: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#login-button" }));
         spyOn(component, "login");
 
@@ -264,7 +202,6 @@ describe("AppComponent", () => {
 
       it("should contain two menus when authenticated", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(true);
         const menus: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // assert
@@ -273,7 +210,6 @@ describe("AppComponent", () => {
 
       it("should contain projects and user menu when authenticated", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(true);
         const [projectsMenu, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // assert
@@ -283,7 +219,7 @@ describe("AppComponent", () => {
 
       it("should not contain menus when not authenticated", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(false);
+        component.isUserAuthenticated$ = of(false);
         const menus: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // assert
@@ -292,7 +228,6 @@ describe("AppComponent", () => {
 
       it("should open and close projects menu", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(true);
         const [projectsMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act + assert
@@ -305,7 +240,6 @@ describe("AppComponent", () => {
 
       it("should open and close user menu", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(true);
         const [, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act + assert
@@ -318,7 +252,6 @@ describe("AppComponent", () => {
 
       it("should contain all project menu items", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(true);
         const [projectsMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act
@@ -335,7 +268,6 @@ describe("AppComponent", () => {
 
       it("should contain all user menu items", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(true);
         const [, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act
@@ -350,7 +282,6 @@ describe("AppComponent", () => {
 
       it("should have correct links for project menu entries", async (done) => {
         // arrange + act also in beforeEach
-        authServiceIsAuthenticated$.next(true);
         const [projectsMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act
@@ -358,7 +289,7 @@ describe("AppComponent", () => {
         const menuItems: MatMenuItemHarness[] = await projectsMenu.getItems();
 
         // assert
-        menuItems.forEach(async (menuItem, index) => {
+        await Promise.all(menuItems.map(async (menuItem, index) => {
           const aElement: TestElement = await menuItem.host();
 
           if (index < menuItems.length - 1) {
@@ -367,12 +298,11 @@ describe("AppComponent", () => {
             expect(await aElement.getAttribute("href")).toEqual("/projects");
             done();
           }
-        });
+        }));
       });
 
       it("should have correct links for user menu entries", async () => {
         // arrange + act also in beforeEach
-        authServiceIsAuthenticated$.next(true);
         const [, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
 
         // act
@@ -381,12 +311,11 @@ describe("AppComponent", () => {
 
         // assert
         const aElement: TestElement = await menuItems[0].host();
-        expect(await aElement.getAttribute("href")).toEqual("/user-settings");
+        expect(await aElement.getAttribute("href")).toEqual("/user-settings/user-profile");
       });
 
       it("should call logout on clicking logout button in user menu", async () => {
         // arrange
-        authServiceIsAuthenticated$.next(true);
         const [, userMenu]: MatMenuHarness[] = await loader.getAllHarnesses(MatMenuHarness);
         spyOn(component, "logout");
 

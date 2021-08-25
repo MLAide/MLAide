@@ -1,0 +1,80 @@
+<div fxLayout="column">
+  <div>
+    <h1 class="mat-display-2" mat-dialog-title i18n>{{ data.title }}</h1>
+  </div>
+  <mat-dialog-content id="experiment-form" [formGroup]="form" role="Form for creating or editing an experiment">
+    <div>
+      <mat-form-field fxFlex="100" (keydown)="keyDown($event)">
+        <mat-label i18n>Experiment name</mat-label>
+        <input matInput formControlName="name" placeholder="Experiment name" cdkFocusInitial required />
+        <mat-error *ngIf="form.get('name').hasError('required')" i18n> You must provide an experiment name. </mat-error>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field fxFlex="100">
+        <mat-label i18n>Experiment key</mat-label>
+        <input matInput [readonly]="isEditMode" formControlName="key" placeholder="Experiment key" required />
+        <mat-error *ngIf="form.get('key').hasError('required')" i18n> You must provide an experiment key. </mat-error>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field fxFlex="100">
+        <mat-label i18n>Experiment tags</mat-label>
+        <mat-chip-list #chipList aria-label="Tags">
+          <mat-chip *ngFor="let tag of tags" [selectable]="selectable" [removable]="removable" (removed)="remove(tag)">
+            {{ tag }}
+            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+          </mat-chip>
+          <input
+            id="chiplist-input"
+            placeholder="Experiment tags"
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            [matChipInputAddOnBlur]="addOnBlur"
+            (matChipInputTokenEnd)="add($event)"
+            formControlName="tags"
+          />
+        </mat-chip-list>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field fxFlex="100">
+        <mat-label i18n>Experiment status</mat-label>
+        <mat-select formControlName="status" placeholder="Experiment status" [(value)]="currentStatus" required>
+          <mat-option *ngFor="let item of experimentStatus | keyvalue" [value]="item.key">
+            <span i18n>
+              <app-experiment-status-i18n [key]="item.value"></app-experiment-status-i18n>
+            </span>
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('status').hasError('required')" i18n> You must provide an experiment status. </mat-error>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button
+      id="add-or-edit-experiment-cancel-button"
+      mat-button
+      (click)="cancel()"
+      type="button"
+      aria-label="Button to cancel creation or update of experiment"
+      i18n
+    >
+      Cancel
+    </button>
+    <span class="margin-right-sm"></span>
+    <button
+      id="add-or-edit-experiment-save-button"
+      mat-button
+      (click)="save()"
+      type="submit"
+      [disabled]="!form.valid"
+      color="primary"
+      cdkFocusInitial
+      aria-label="Button to add or update an experiment"
+      i18n
+    >
+      {{ isEditMode ? "Update" : "Add" }}
+    </button>
+  </mat-dialog-actions>
+</div>

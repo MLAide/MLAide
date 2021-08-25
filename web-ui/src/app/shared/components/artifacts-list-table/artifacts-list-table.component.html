@@ -1,0 +1,43 @@
+<div fxLayout="column" fxFlex="100" class="example-container mat-elevation-z2">
+  <table mat-table [dataSource]="artifacts$" aria-label="Artifacts overview">
+    <ng-container matColumnDef="createdAt">
+      <th id="created-at" mat-header-cell *matHeaderCellDef i18n>Created at</th>
+      <td headers="created-at" mat-cell *matCellDef="let element">
+        {{ element.createdAt | date: "medium" }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="artifactName">
+      <th id="artifact-name" mat-header-cell *matHeaderCellDef i18n>Artifact name</th>
+      <td headers="artifact-name" mat-cell *matCellDef="let element">{{ element.name }}</td>
+    </ng-container>
+    <ng-container matColumnDef="version">
+      <th id="version" mat-header-cell *matHeaderCellDef i18n>Version</th>
+      <td headers="version" mat-cell *matCellDef="let element">{{ element.version }}</td>
+    </ng-container>
+    <ng-container matColumnDef="runName">
+      <th id="run-name" mat-header-cell *matHeaderCellDef i18n>Run name</th>
+      <td headers="run-name" mat-cell *matCellDef="let element">
+        <a mat-button color="primary" [routerLink]="['/projects/' + projectKey + '/runs/' + element.runKey]">{{
+          element.runName
+        }}</a>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="runKey">
+      <th id="run-key" mat-header-cell *matHeaderCellDef i18n>Run key</th>
+      <td headers="run-key" mat-cell *matCellDef="let element">{{ element.runKey }}</td>
+    </ng-container>
+    <ng-container matColumnDef="type">
+      <th id="type" mat-header-cell *matHeaderCellDef i18n>Type</th>
+      <td headers="type" mat-cell *matCellDef="let element">{{ element.type }}</td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <mat-card *ngIf="(isLoading$ | async)" fxLayoutAlign="center center">
+    <mat-progress-spinner
+      color="primary"
+      mode="indeterminate">
+    </mat-progress-spinner>
+  </mat-card>
+</div>

@@ -21,11 +21,17 @@ import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatTableModule } from "@angular/material/table";
 import { MatToolbarModule } from "@angular/material/toolbar";
 
+import { CoreModule } from "@mlaide/core/core.module";
+import { GlobalErrorHandler } from "@mlaide/core/global-error-handler";
+import { UserSettingsModule } from "@mlaide/user-settings/user-settings.module";
+import { ErrorsModule } from "@mlaide/errors/errors.module";
+
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { AuthModule } from "./auth/auth.module";
-import { CoreModule } from "./core/core.module";
-import { GlobalErrorHandler } from "./core/global-error-handler";
+
+import { StateModule } from "./state/state.module";
+import { ProjectsModule } from "@mlaide/projects/projects.module";
 
 @NgModule({
   declarations: [AppComponent],
@@ -39,6 +45,7 @@ import { GlobalErrorHandler } from "./core/global-error-handler";
     ReactiveFormsModule,
     HttpClientModule,
 
+    // material design: TODO: remove?
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
@@ -54,8 +61,14 @@ import { GlobalErrorHandler } from "./core/global-error-handler";
     MatToolbarModule,
 
     OAuthModule.forRoot(),
+
+    // mlaide modules
+    CoreModule, // core module must be the first mlaide module
+    ErrorsModule, // errors module must be the second mlaide module
+    ProjectsModule,
+    StateModule,
     AuthModule.forRoot(),
-    CoreModule,
+    UserSettingsModule,
   ],
   providers: [
     {

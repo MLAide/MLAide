@@ -1,0 +1,56 @@
+<div fxLayout="column" fxFlexFill>
+  <mat-drawer-container autosize fxFlexFill>
+    <mat-drawer style="width: 15vw" #drawer mode="side" autoFocus="true" opened="true">
+      <mat-nav-list *ngIf="(project$ | async) as project">
+        <div fxLayout="row" fxLayoutAlign="center center">
+          <span i18n>
+            <h2 class="mat-h2" class="primary-font-color">{{ project?.name }}</h2>
+          </span>
+        </div>
+        <mat-divider></mat-divider>
+        <a mat-list-item [routerLink]="['/projects/' + project?.key + '/experiments']">
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <mat-icon matListIcon class="padding">science</mat-icon>
+            <span matLine i18n>Experiments</span>
+          </div>
+        </a>
+        <a mat-list-item [routerLink]="['/projects/' + project?.key + '/runs']">
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <mat-icon matListIcon class="padding">play_for_work</mat-icon>
+            <span matLine i18n>Runs</span>
+          </div>
+        </a>
+        <a mat-list-item [routerLink]="['/projects/' + project?.key + '/models']">
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <mat-icon matListIcon class="padding">model_training</mat-icon>
+            <span matLine i18n>Models</span>
+          </div>
+        </a>
+        <a mat-list-item [routerLink]="['/projects/' + project?.key + '/artifacts']">
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <mat-icon matListIcon class="padding">text_snippet</mat-icon>
+            <span matLine i18n>Artifacts</span>
+          </div>
+        </a>
+        <a mat-list-item [routerLink]="['/projects/' + project?.key + '/settings']">
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <mat-icon matListIcon class="padding">settings</mat-icon>
+            <span matLine i18n>Settings</span>
+          </div>
+        </a>
+      </mat-nav-list>
+    </mat-drawer>
+    <mat-drawer-content class="bg-white">
+      <div fxLayout="row">
+        <div fxFlex="1">
+          <button id="nav-toggle-button" mat-icon-button (click)="drawer.toggle()">
+            <mat-icon>{{ drawer.opened ? "chevron_left" : "chevron_right" }}</mat-icon>
+          </button>
+        </div>
+        <div class="container" fxFlex="99">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</div>

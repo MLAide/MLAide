@@ -1,0 +1,25 @@
+<div fxLayout="column" fxLayoutAlign="space-between start">
+  <h1 class="mat-display-2">{{ (experiment$ | async)?.name }}</h1>
+</div>
+
+<div>
+  <div fxLayout="column">
+    <h2 id="graph-title" class="mat-h2" i18n>Graph</h2>
+  </div>
+  <app-experiment-lineage-visualization [experiment$]="experiment$" [runs$]="runs$"></app-experiment-lineage-visualization>
+</div>
+
+<div>
+  <div fxLayout="column">
+    <h2 id="runs-title" class="mat-h2" i18n>Runs</h2>
+  </div>
+  <app-runs-list-table [runs$]="runs$" [projectKey]="(projectKey$ | async)" [isLoading$]="isLoadingRuns$"></app-runs-list-table>
+</div>
+
+<div>
+  <div fxLayout="column">
+    <h2 id="artifacts-title" class="mat-h2" i18n>Artifacts</h2>
+  </div>
+  <app-artifacts-list-table [artifacts$]="artifacts$" [projectKey]="(projectKey$ | async)" [isLoading$]="isLoadingArtifacts$">
+  </app-artifacts-list-table>
+</div>

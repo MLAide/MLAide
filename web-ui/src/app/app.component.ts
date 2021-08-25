@@ -4,59 +4,46 @@ import {
   Component,
   ElementRef,
   HostListener,
-  OnDestroy,
-  OnInit,
   ViewChild,
 } from "@angular/core";
-import { Observable, Subscription } from "rxjs";
-import { filter, mergeMap } from "rxjs/operators";
-import { AuthService } from "./auth/auth.service";
-import { Project } from "./core/models/project.model";
-import { User } from "./core/models/user.model";
-import { ProjectsApiService } from "./core/services/projects-api.service";
-import { UsersApiService } from "./core/services/users-api.service";
+import { Store } from "@ngrx/store";
+import { Observable } from "rxjs";
+import { initializeLogin, login, logout } from "@mlaide/state/auth/auth.actions";
+import { selectIsUserAuthenticated } from "@mlaide/state/auth/auth.selectors";
+import { selectProjects } from "./state/project/project.selectors";
+import { selectCurrentUser } from "./state/user/user.selectors";
+import { Project } from "@mlaide/state/project/project.models";
+import { User } from "@mlaide/state/user/user.models";
 
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
 })
-export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AppComponent implements AfterViewInit {
   @ViewChild("tabBar") public elementView: ElementRef;
-  public isAuthenticated$: Observable<boolean>;
-  public projects: Project[];
-  public user: User;
+  public isUserAuthenticated$: Observable<boolean>;
+  public projects$: Observable<Project[]>;
+  public user$: Observable<User>;
   public tabBarHeight: number;
 
-  private isAuthenticatedSubscription: Subscription;
-  private isAuthenticatedSubscriptionForProjects: Subscription;
-  private projectListSubscription: Subscription;
-
   constructor(
-    private authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
-    private projectsApiService: ProjectsApiService,
-    private userService: UsersApiService
+    private store: Store,
   ) {
-    this.isAuthenticated$ = this.authService.isAuthenticated$;
-    this.isAuthenticatedSubscription = this.isAuthenticated$
-      .pipe(
-        filter((isAuthenticated) => isAuthenticated),
-        mergeMap(() => this.userService.getCurrentUser())
-      )
-      .subscribe((user) => {
-        this.user = user;
-      });
+    this.user$ = this.store.select(selectCurrentUser);
+    this.isUserAuthenticated$ = this.store.select(selectIsUserAuthenticated);
+    this.projects$ = this.store.select(selectProjects);
 
-    this.authService.runInitialLoginSequence();
+    this.store.dispatch(initializeLogin());
   }
 
   login() {
-    this.authService.loginWithUserInteraction("/projects");
+    this.store.dispatch(login({ targetUrl: "/projects"}))
   }
 
   logout() {
-    this.authService.logout();
+    this.store.dispatch(logout());
   }
 
   ngAfterViewInit(): void {
@@ -64,29 +51,8 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     this.changeDetectorRef.detectChanges();
   }
 
-  ngOnDestroy() {
-    if (this.projectListSubscription) {
-      this.projectListSubscription.unsubscribe();
-    }
-    if (this.isAuthenticatedSubscription) {
-      this.isAuthenticatedSubscription.unsubscribe();
-    }
-    if (this.isAuthenticatedSubscriptionForProjects) {
-      this.isAuthenticatedSubscriptionForProjects.unsubscribe();
-    }
-  }
-
-  ngOnInit() {
-    this.isAuthenticatedSubscriptionForProjects = this.isAuthenticated$.subscribe((isAuthenticated) => {
-      if (isAuthenticated) {
-        const projectListDataSource = this.projectsApiService.getProjects();
-        this.projectListSubscription = projectListDataSource.items$.subscribe((projects) => (this.projects = projects.items));
-      }
-    });
-  }
-
   @HostListener("window:scroll", ["$event"])
-  onWindowScroll(e) {
+  onWindowScroll() {
     const element = document.querySelector(".app-toolbar");
     if (window.pageYOffset > 0) {
       element.classList.add("app-toolbar-active");

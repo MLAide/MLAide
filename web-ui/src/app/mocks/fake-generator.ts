@@ -1,15 +1,15 @@
 import mocker from "mocker-data-generator";
-import { ApiKey } from "../core/models/apiKey.model";
-import { Artifact, CreateOrUpdateModel, ModelRevision, ModelStage } from "../core/models/artifact.model";
-import { Experiment, ExperimentStatus } from "../core/models/experiment.model";
-import { Project } from "../core/models/project.model";
-import { ProjectMember, ProjectMemberRole } from "../core/models/projectMember.model";
-import { Run, RunStatus } from "../core/models/run.model";
-import { User } from "../core/models/user.model";
+import { Artifact, CreateOrUpdateModel, ModelRevision, ModelStage } from "@mlaide/state/artifact/artifact.models";
+import { User } from "@mlaide/state/user/user.models";
+import { ProjectMember, ProjectMemberRole } from "@mlaide/state/project-member/project-member.models";
+import { Project } from "@mlaide/state/project/project.models";
+import { Run, RunStatus } from "@mlaide/state/run/run.models";
+import { Experiment, ExperimentStatus } from "@mlaide/state/experiment/experiment.models";
+import { ApiKey } from "@mlaide/state/api-key/api-key.models";
 
 const artifactFileSchemaFunction = (faker) => {
   return {
-    fileId: faker.random.uuid(),
+    fileId: faker.datatype.uuid(),
     fileName: faker.system.fileName(),
   };
 };
@@ -17,7 +17,7 @@ const artifactFileSchemaFunction = (faker) => {
 const artifactsRefSchemaFunction = (faker) => {
   return {
     name: faker.lorem.slug(),
-    version: faker.random.number(),
+    version: faker.datatype.number(),
   };
 };
 
@@ -35,11 +35,11 @@ const metaDataSchemaFunction = (faker) => {
 
 const metricsAndParametersSchemaFunction = (faker) => {
   return {
-    mae: faker.random.float(),
-    r2: faker.random.float(),
-    rmse: faker.random.float(),
-    number: faker.random.number(),
-    bool: faker.random.boolean(),
+    mae: faker.datatype.float(),
+    r2: faker.datatype.float(),
+    rmse: faker.datatype.float(),
+    number: faker.datatype.number(),
+    bool: faker.datatype.boolean(),
   };
 };
 
@@ -47,7 +47,16 @@ const modelSchemaFunction = (faker) => {
   return {
     createdAt: faker.date.past(),
     createdBy: userSchemaFunction(faker),
-    revisions: modelRevisionFunction(faker),
+    modelRevisions: [
+      {
+        function() {
+          return artifactsRefSchemaFunction(this.faker);
+        },
+        length: 3,
+        fixedLength: false,
+      },
+    ],
+    // modelRevisions: modelRevisionFunction(faker),
     stage: faker.random.arrayElement(Object.values(ModelStage)),
     updatedAt: faker.date.past(),
   };
@@ -60,13 +69,13 @@ const modelRevisionFunction = (faker) => {
     newStage: faker.random.arrayElement(Object.values(ModelStage)),
     note: faker.lorem.paragraph(),
     oldStage: faker.random.arrayElement(Object.values(ModelStage)),
-  };
+  }
 };
 
 const userSchemaFunction = (faker) => {
   return {
     nickName: faker.name.firstName(),
-    userId: faker.random.number(),
+    userId: faker.datatype.number(),
   };
 };
 

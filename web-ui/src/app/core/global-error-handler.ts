@@ -1,8 +1,8 @@
-import { ErrorHandler, Injectable, Injector } from "@angular/core";
+import { ErrorHandler, Injectable } from "@angular/core";
 import { LocationStrategy, PathLocationStrategy } from "@angular/common";
-import { ErrorService } from "./services/error.service";
-import { LoggingService } from "./services/logging.service";
-import { SnackbarUiService } from "./services";
+import { ErrorService } from "@mlaide/shared/services/error.service";
+import { LoggingService } from "@mlaide/shared/services/logging.service";
+import { SnackbarUiService } from "@mlaide/shared/services";
 import { HttpErrorResponse } from "@angular/common/http";
 
 @Injectable({
@@ -11,33 +11,33 @@ import { HttpErrorResponse } from "@angular/common/http";
 export class GlobalErrorHandler implements ErrorHandler {
   // https://medium.com/angular-in-depth/expecting-the-unexpected-best-practices-for-error-handling-in-angular-21c3662ef9e4
 
-  constructor(private injector: Injector) {}
+  constructor(
+    private readonly errorService: ErrorService,
+    private readonly loggingService: LoggingService,
+    private readonly snackbarUiService: SnackbarUiService,
+    private readonly locationStrategy: LocationStrategy
+  ) {}
 
   handleError(error) {
-    const errorService = this.injector.get(ErrorService);
-    const loggerService = this.injector.get(LoggingService);
-    const location = this.injector.get(LocationStrategy);
-    const snackbarUiService = this.injector.get(SnackbarUiService);
-
     let message;
     let stackTrace;
-    const url = location instanceof PathLocationStrategy ? location.path() : "";
+    const url = this.locationStrategy instanceof PathLocationStrategy ? this.locationStrategy.path() : "";
 
     if (error instanceof HttpErrorResponse) {
       // Server error
-      message = errorService.getServerErrorMessage(error);
+      message = this.errorService.getServerErrorMessage(error);
       if (message == "It looks like you are not online. Please check your connectivity.") {
-        snackbarUiService.showErrorSnackbar(message);
+        this.snackbarUiService.showErrorSnackbar(message);
       } else {
-        errorService.navigateToErrorPage(error);
+        this.errorService.navigateToErrorPage(error);
       }
     } else {
       // Client Error
-      message = errorService.getClientErrorMessage(error);
-      stackTrace = errorService.getClientErrorStack(error);
+      message = this.errorService.getClientErrorMessage(error);
+      stackTrace = this.errorService.getClientErrorStack(error);
     }
     // Always log errors
-    loggerService.logError(message, url, stackTrace);
+    this.loggingService.logError(message, url, stackTrace);
     console.error(error);
   }
 }

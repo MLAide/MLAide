@@ -1,0 +1,38 @@
+<div fxLayout="column" fxFlexFill>
+  <mat-drawer-container autosize fxFlexFill>
+    <mat-drawer style="width: 15vw" #drawer mode="side" autoFocus="true" opened="true">
+      <mat-nav-list>
+        <div fxLayout="row" fxLayoutAlign="center center">
+          <span i18n>
+            <h2 class="mat-h2" class="primary-font-color">User settings</h2>
+          </span>
+        </div>
+        <mat-divider></mat-divider>
+        <a mat-list-item [routerLink]="['user-profile']">
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <mat-icon matListIcon class="padding">face</mat-icon>
+            <span matLine i18n>Profile</span>
+          </div>
+        </a>
+        <a mat-list-item [routerLink]="['api-keys']">
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <mat-icon matListIcon class="padding">vpn_key</mat-icon>
+            <span matLine i18n>API Keys</span>
+          </div>
+        </a>
+      </mat-nav-list>
+    </mat-drawer>
+    <mat-drawer-content class="bg-white">
+      <div fxLayout="row">
+        <div>
+          <button id="nav-toggle-button" mat-icon-button (click)="drawer.toggle()">
+            <mat-icon>{{ drawer.opened ? "chevron_left" : "chevron_right" }}</mat-icon>
+          </button>
+        </div>
+        <div class="container" fxFlex="100">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</div>

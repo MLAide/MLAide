@@ -1,0 +1,4 @@
+<div fxLayout="column">
+  <h1 class="mat-display-2" i18n>Runs</h1>
+</div>
+<app-runs-list-table [runs$]="runs$" [projectKey]="(projectKey$ | async)" [isLoading$]="isLoadingRuns$"></app-runs-list-table>
