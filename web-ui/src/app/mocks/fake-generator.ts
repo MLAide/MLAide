@@ -81,7 +81,7 @@ const userSchemaFunction = (faker) => {
 
 const apiKeySchema = {
   apiKey: {
-    faker: "random.uuid",
+    faker: "datatype.uuid",
   },
   createdAt: {
     faker: "date.past",
@@ -93,7 +93,7 @@ const apiKeySchema = {
     faker: "date.future",
   },
   id: {
-    faker: "random.uuid",
+    faker: "datatype.uuid",
   },
 };
 
@@ -141,7 +141,7 @@ const artifactSchema = {
     faker: "lorem.word",
   },
   version: {
-    faker: "random.number",
+    faker: "datatype.number",
   },
 };
 
@@ -219,7 +219,7 @@ const runSchema = {
     },
   ],
   key: {
-    faker: "random.number",
+    faker: "datatype.number",
   },
   metrics: {
     function() {
@@ -279,7 +279,7 @@ const projectMemberSchema = {
     },
   },
   userId: {
-    faker: "random.uuid",
+    faker: "datatype.uuid",
   },
 };
 
@@ -291,7 +291,7 @@ const userSchema = {
     faker: "name.firstName",
   },
   id: {
-    faker: "random.uuid",
+    faker: "datatype.uuid",
   },
   lastName: {
     faker: "name.lastName",
