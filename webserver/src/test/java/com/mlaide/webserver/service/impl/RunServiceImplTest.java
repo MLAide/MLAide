@@ -97,14 +97,19 @@ class RunServiceImplTest {
         }
 
         @Test
-        void default_runs_do_not_exist_should_throw_NotFoundException() {
+        void default_runs_do_not_exist_should_return_empty_list() {
             // Arrange
+            List<RunEntity> runEntities = new ArrayList<>();
+            when(runRepository.findAllByProjectKey(project.getKey())).thenReturn(runEntities);
 
-            when(runRepository.findAllByProjectKey(projectKey)).thenReturn(new ArrayList<>());
+            List<Run> runs = new ArrayList<>();
+            when(runMapper.fromEntity(runEntities)).thenReturn(runs);
 
-            // Act + Assert
-            assertThatThrownBy(() -> runService.getRuns(projectKey))
-                    .isInstanceOf(NotFoundException.class);
+            // Act
+            ItemList<Run> result = runService.getRuns(project.getKey());
+
+            // Assert
+            assertThat(result.getItems()).isSameAs(runs);
         }
     }
 
@@ -129,14 +134,20 @@ class RunServiceImplTest {
         }
 
         @Test
-        void default_runs_do_not_exist_should_throw_NotFoundException() {
+        void default_runs_do_not_exist_should_return_empty_list() {
             // Arrange
             List<Integer> runKeys = new ArrayList<>();
-            when(runRepository.findAllByProjectKeyAndKeyIn(projectKey, runKeys)).thenReturn(new ArrayList<>());
+            List<RunEntity> runEntities = new ArrayList<>();
+            when(runRepository.findAllByProjectKeyAndKeyIn(project.getKey(), runKeys)).thenReturn(runEntities);
 
-            // Act + Assert
-            assertThatThrownBy(() -> runService.getRunsByKeys(projectKey, runKeys))
-                    .isInstanceOf(NotFoundException.class);
+            List<Run> runs = new ArrayList<>();
+            when(runMapper.fromEntity(runEntities)).thenReturn(runs);
+
+            // Act
+            ItemList<Run> result = runService.getRunsByKeys(project.getKey(), runKeys);
+
+            // Assert
+            assertThat(result.getItems()).isSameAs(runs);
         }
     }
 
@@ -161,14 +172,20 @@ class RunServiceImplTest {
         }
 
         @Test
-        void default_runs_do_not_exist_should_throw_NotFoundException() {
+        void default_runs_do_not_exist_should_should_return_empty_list() {
             // Arrange
             String experimentKey = UUID.randomUUID().toString();
-            when(runRepository.findAllByProjectKeyAndExperimentRefsExperimentKeyIn(projectKey, experimentKey)).thenReturn(new ArrayList<>());
+            List<RunEntity> runEntities = new ArrayList<>();
+            when(runRepository.findAllByProjectKeyAndExperimentRefsExperimentKeyIn(project.getKey(), experimentKey)).thenReturn(runEntities);
 
-            // Act + Assert
-            assertThatThrownBy(() -> runService.getRunsOfExperiment(projectKey, experimentKey))
-                    .isInstanceOf(NotFoundException.class);
+            List<Run> runs = new ArrayList<>();
+            when(runMapper.fromEntity(runEntities)).thenReturn(runs);
+
+            // Act
+            ItemList<Run> result = runService.getRunsOfExperiment(project.getKey(), experimentKey);
+
+            // Assert
+            assertThat(result.getItems()).isSameAs(runs);
         }
     }
 

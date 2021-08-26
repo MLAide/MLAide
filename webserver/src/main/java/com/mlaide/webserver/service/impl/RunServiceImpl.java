@@ -59,10 +59,6 @@ public class RunServiceImpl implements RunService {
     public ItemList<Run> getRuns(String projectKey) {
         List<RunEntity> runs = runRepository.findAllByProjectKey(projectKey);
 
-        if (runs.isEmpty()) {
-            throw new NotFoundException();
-        }
-
         ItemList<Run> result = new ItemList<>();
         result.setItems(runMapper.fromEntity(runs));
 
@@ -73,10 +69,6 @@ public class RunServiceImpl implements RunService {
     public ItemList<Run> getRunsByKeys(String projectKey, List<Integer> runKeys) {
         List<RunEntity> runs = runRepository.findAllByProjectKeyAndKeyIn(projectKey, runKeys);
 
-        if (runs.isEmpty()) {
-            throw new NotFoundException();
-        }
-
         ItemList<Run> result = new ItemList<>();
         result.setItems(runMapper.fromEntity(runs));
 
@@ -86,10 +78,6 @@ public class RunServiceImpl implements RunService {
     @Override
     public ItemList<Run> getRunsOfExperiment(String projectKey, String experimentKey) {
         List<RunEntity> runs = runRepository.findAllByProjectKeyAndExperimentRefsExperimentKeyIn(projectKey, experimentKey);
-
-        if (runs.isEmpty()) {
-            throw new NotFoundException();
-        }
 
         ItemList<Run> result = new ItemList<>();
         result.setItems(runMapper.fromEntity(runs));
