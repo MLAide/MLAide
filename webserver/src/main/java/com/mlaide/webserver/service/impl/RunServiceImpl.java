@@ -7,12 +7,22 @@ import com.mlaide.webserver.repository.entity.ArtifactRefEntity;
 import com.mlaide.webserver.repository.entity.RunEntity;
 import com.mlaide.webserver.service.*;
 import com.mlaide.webserver.service.mapper.RunMapper;
+
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -207,6 +217,57 @@ public class RunServiceImpl implements RunService {
         }
 
         runRepository.save(runEntity);
+    }
+
+    @Override
+    public List<DiffEntry> getGitDiffForRuns(String projectKey, Integer firstRunKey, Integer secondRunKey) {
+        try (Repository repository = openJGitCookbookRepository()) {
+            // The {tree} will return the underlying tree-id instead of the commit-id itself!
+            // For a description of what the carets do see e.g. http://www.paulboxley.com/blog/2011/06/git-caret-and-tilde
+            // This means we are selecting the parent of the parent of the parent of the parent of current HEAD and
+            // take the tree-ish of it
+            ObjectId oldHead = repository.resolve("HEAD^^^^{tree}");
+            ObjectId head = repository.resolve("HEAD^{tree}");
+
+            System.out.println("Printing diff between tree: " + oldHead + " and " + head);
+
+            // prepare the two iterators to compute the diff between
+            try (ObjectReader reader = repository.newObjectReader()) {
+                CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
+                oldTreeIter.reset(reader, oldHead);
+                CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
+                newTreeIter.reset(reader, head);
+
+                // finally get the list of changed files
+                try (Git git = new Git(repository)) {
+                    List<DiffEntry> diffs = git.diff()
+                            .setNewTree(newTreeIter)
+                            .setOldTree(oldTreeIter)
+                            .call();
+                    for (DiffEntry entry : diffs) {
+                        System.out.println("old: " + entry.getOldPath() +
+                                ", new: " + entry.getNewPath() +
+                                ", entry: " + entry);
+                    }
+
+                    return diffs;
+                } catch (GitAPIException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public Repository openJGitCookbookRepository() throws IOException {
+        FileRepositoryBuilder builder = new FileRepositoryBuilder();
+        return builder
+                .readEnvironment() // scan environment GIT_* variables
+                .findGitDir() // scan up the file system tree
+                .build();
     }
 
     private RunEntity saveRun(RunEntity runEntity) {

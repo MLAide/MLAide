@@ -3,6 +3,7 @@ package com.mlaide.webserver.controller;
 import com.mlaide.webserver.model.*;
 import com.mlaide.webserver.service.*;
 import com.mlaide.webserver.validation.ValidationRegEx;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +90,16 @@ public class RunController {
 
         Run addedRun = runService.addRun(projectKey, run);
         return ResponseEntity.ok(addedRun);
+    }
+
+    @GetMapping(path = "/git/diff")
+    public ResponseEntity<List<DiffEntry>> getRunsDiff(
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
+            @RequestParam(name = "runKeys", required = false) List<@Positive Integer> runKeys) {
+
+        var runList = runService.getGitDiffForRuns(projectKey, runKeys.get(0), runKeys.get(1));
+
+        return ResponseEntity.ok(runList);
     }
 
     @GetMapping(path = "{runKey}")
