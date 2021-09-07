@@ -17,6 +17,7 @@ public class Run {
     private User createdBy;
     private OffsetDateTime endTime;
     private List<ExperimentRef> experimentRefs;
+    private Git git;
     private Integer key;
     private Map<String, Object> metrics;
     private String name;

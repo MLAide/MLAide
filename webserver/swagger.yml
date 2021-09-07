@@ -1222,6 +1222,23 @@ components:
           type: string
         stage:
           $ref: "#/components/schemas/ModelStage"
+    Git:
+      type: object
+      required:
+        - commitHash
+        - repositoryUri
+      properties:
+        commitTime:
+          type: string
+          format: date-time
+        commitHash:
+          type: string
+          example: ca82a6dff817ec66f44342007202690a93763949
+        isDirty:
+          type: boolean
+        repositoryUri:
+          type: string
+          format: uri
     Model:
       type: object
       readOnly: true
@@ -1364,6 +1381,8 @@ components:
             properties:
               experimentKey:
                 type: string
+        git:
+          $ref: "#/components/schemas/Git"
         key:
           type: number
           readOnly: true

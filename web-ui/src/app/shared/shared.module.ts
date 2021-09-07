@@ -22,12 +22,15 @@ import { ModelStageI18nComponent } from "./components/model-stage-i18n/model-sta
 import { MatCardModule } from "@angular/material/card";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ExperimentStatusI18nComponent } from "@mlaide/shared/components/experiment-status-i18n/experiment-status-i18n.component";
+import { FileDiffComponent } from "@mlaide/shared/components/file-diff/file-diff.component";
+import { NgxTextDiffModule } from "ngx-text-diff";
 
 @NgModule({
   declarations: [
     // components
     ArtifactsListTableComponent,
     ExperimentStatusI18nComponent,
+    FileDiffComponent,
     ModelStageI18nComponent,
     ProjectMemberRoleI18nComponent,
     RunParamsMetricsTableComponent,
@@ -43,7 +46,7 @@ import { ExperimentStatusI18nComponent } from "@mlaide/shared/components/experim
     RouterModule,
 
     FlexLayoutModule,
-
+    NgxTextDiffModule,
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
@@ -56,6 +59,7 @@ import { ExperimentStatusI18nComponent } from "@mlaide/shared/components/experim
   exports: [
     ArtifactsListTableComponent,
     ExperimentStatusI18nComponent,
+    FileDiffComponent,
     RunsListTableComponent,
     DurationPipe,
     RunParamsMetricsTableComponent,

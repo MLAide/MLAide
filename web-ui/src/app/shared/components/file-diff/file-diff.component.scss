@@ -1,0 +1,29 @@
+.outer-container {
+  border-color: chocolate;
+  border-width: 10px;
+  background-color: aqua;
+  color: deeppink;
+  border-radius: 8px;
+}
+
+.compare-rows{
+  border-color: chocolate;
+  border-width: 10px;
+  background-color: lightgrey;
+  color: deeppink;
+  border-radius: 8px;
+}
+
+.tool-bar{
+  border-color: chocolate;
+  border-width: 10px;
+  background-color: aqua;
+  color: deeppink;
+  border-radius: 8px;
+}
+
+
+table, th, td {
+  border: 1px solid black;
+  border-radius: 8px;
+}
