@@ -11,7 +11,7 @@ public class GitFaker {
         var git = new Git();
         git.setCommitHash(faker.internet().uuid());
         git.setCommitTime(FakerUtils.pastDate());
-        git.setDirty(faker.random().nextBoolean());
+        git.setIsDirty(faker.random().nextBoolean());
         git.setRepositoryUri(faker.internet().url());
 
         return git;

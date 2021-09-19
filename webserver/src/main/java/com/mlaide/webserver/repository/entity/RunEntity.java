@@ -1,6 +1,5 @@
 package com.mlaide.webserver.repository.entity;
 
-import com.mlaide.webserver.model.Git;
 import com.mlaide.webserver.validation.ValidationRegEx;
 import lombok.*;
 import org.bson.types.ObjectId;
@@ -34,7 +33,7 @@ public class RunEntity {
     @PastOrPresent
     private OffsetDateTime endTime;
     private Collection<ExperimentRefEntity> experimentRefs;
-    private Git git;
+    private GitEntity git;
     @Id private ObjectId id;
     @NotNull
     private Integer key;
