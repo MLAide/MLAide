@@ -1,5 +1,5 @@
 import { RunState } from "@mlaide/state/run/run.state";
-import { getRandomRun, getRandomRuns } from "@mlaide/mocks/fake-generator";
+import { getRandomGitDiff, getRandomRun, getRandomRuns } from "@mlaide/mocks/fake-generator";
 import { runsReducer } from "@mlaide/state/run/run.reducers";
 import {
   loadExperimentWithAllDetails, loadExperimentWithAllDetailsFailed,
@@ -7,15 +7,122 @@ import {
 } from "@mlaide/state/experiment/experiment.actions";
 import {
   loadCurrentRun,
-  loadCurrentRunFailed, loadCurrentRunSucceeded,
+  loadCurrentRunFailed,
+  loadCurrentRunSucceeded,
+  loadGitDiffByRunKeys,
+  loadGitDiffByRunKeysFailed,
+  loadGitDiffByRunKeysSucceeded,
   loadRuns,
   loadRunsByRunKeys,
-  loadRunsByRunKeysFailed, loadRunsByRunKeysSucceeded,
+  loadRunsByRunKeysFailed,
+  loadRunsByRunKeysSucceeded,
   loadRunsFailed,
   loadRunsSucceeded
 } from "@mlaide/state/run/run.actions";
 
 describe("RunReducers", () => {
+  describe("loadCurrentRun action", () => {
+    it("should set isLoading to true in runState", async () => {
+      // arrange
+      const initialState: Partial<RunState> = {
+        isLoading: false
+      };
+      const action = loadCurrentRun();
+
+      // act
+      const newState = runsReducer(initialState as RunState, action);
+
+      // assert
+      await expect(newState.isLoading).toBeTrue();
+    });
+  });
+
+  describe("loadCurrentRunSucceeded action", () => {
+    it("should update currentRun and set isLoading to false in runState", async () => {
+      // arrange
+      const initialState: Partial<RunState> = {
+        isLoading: true,
+        currentRun: await getRandomRun()
+      };
+      const newRun = await getRandomRun();
+      const action = loadCurrentRunSucceeded({ run: newRun } as any);
+
+      // act
+      const newState = runsReducer(initialState as RunState, action);
+
+      // assert
+      await expect(newState.currentRun).toEqual(newRun);
+      await expect(newState.isLoading).toBeFalse();
+    });
+  });
+
+  describe("loadCurrentRunFailed action", () => {
+    it("should set isLoading to false in runState", async () => {
+      // arrange
+      const initialState: Partial<RunState> = {
+        isLoading: true
+      };
+      const action = loadCurrentRunFailed(undefined);
+
+      // act
+      const newState = runsReducer(initialState as RunState, action);
+
+      // assert
+      await expect(newState.isLoading).toBeFalse();
+    });
+  });
+
+  describe("loadGitDiffByRunKeys action", () => {
+    it("should set isLoading to true in runState", async () => {
+      // arrange
+      const initialState: Partial<RunState> = {
+        isLoading: false
+      };
+      const action = loadGitDiffByRunKeys();
+
+      // act
+      const newState = runsReducer(initialState as RunState, action);
+
+      // assert
+      await expect(newState.isLoading).toBeTrue();
+    });
+  });
+
+  describe("loadGitDiffByRunKeysSucceeded action", () => {
+    it("should update gitDiff and set isLoading to false in runState", async () => {
+      // arrange
+      const initialState: Partial<RunState> = {
+        isLoading: true,
+        gitDiff: await getRandomGitDiff()
+      };
+      const newGitDiff = await getRandomGitDiff();
+      const action = loadGitDiffByRunKeysSucceeded({ gitDiff: newGitDiff } as any);
+
+      // act
+      const newState = runsReducer(initialState as RunState, action);
+
+      // assert
+      await expect(newState.gitDiff).toEqual(newGitDiff);
+      await expect(newState.isLoading).toBeFalse();
+    });
+  });
+
+  describe("loadGitDiffByRunKeysFailed action", () => {
+    it("should set isLoading to false in runState", async () => {
+      // arrange
+      const initialState: Partial<RunState> = {
+        isLoading: true
+      };
+      const action = loadGitDiffByRunKeysFailed(undefined);
+
+      // act
+      const newState = runsReducer(initialState as RunState, action);
+
+      // assert
+      await expect(newState.isLoading).toBeFalse();
+    });
+  });
+
   describe("loadExperimentWithAllDetails action", () => {
     it("should set isLoading to true in runState", async () => {
       // arrange
@@ -193,57 +300,6 @@ describe("RunReducers", () => {
         isLoading: true
       };
       const action = loadRunsByRunKeysFailed(undefined);
-
-      // act
-      const newState = runsReducer(initialState as RunState, action);
-
-      // assert
-      await expect(newState.isLoading).toBeFalse();
-    });
-  });
-
-  describe("loadCurrentRun action", () => {
-    it("should set isLoading to true in runState", async () => {
-      // arrange
-      const initialState: Partial<RunState> = {
-        isLoading: false
-      };
-      const action = loadCurrentRun();
-
-      // act
-      const newState = runsReducer(initialState as RunState, action);
-
-      // assert
-      await expect(newState.isLoading).toBeTrue();
-    });
-  });
-
-  describe("loadCurrentRunSucceeded action", () => {
-    it("should update currentRun and set isLoading to false in runState", async () => {
-      // arrange
-      const initialState: Partial<RunState> = {
-        isLoading: true,
-        currentRun: await getRandomRun()
-      };
-      const newRun = await getRandomRun();
-      const action = loadCurrentRunSucceeded({ run: newRun } as any);
-
-      // act
-      const newState = runsReducer(initialState as RunState, action);
-
-      // assert
-      await expect(newState.currentRun).toEqual(newRun);
-      await expect(newState.isLoading).toBeFalse();
-    });
-  });
-
-  describe("loadCurrentRunFailed action", () => {
-    it("should set isLoading to false in runState", async () => {
-      // arrange
-      const initialState: Partial<RunState> = {
-        isLoading: true
-      };
-      const action = loadCurrentRunFailed(undefined);
 
       // act
       const newState = runsReducer(initialState as RunState, action);

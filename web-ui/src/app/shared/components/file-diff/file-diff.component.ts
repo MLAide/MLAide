@@ -1,16 +1,28 @@
-import { Component } from "@angular/core";
-import { DiffResults } from "ngx-text-diff/lib/ngx-text-diff.model";
+import { AfterViewInit, Component, ElementRef, Input, ViewChild } from "@angular/core";
+import * as Diff2Html from 'diff2html';
+import { GitDiff } from "@mlaide/state/run/run.models";
+import { Observable } from "rxjs";
+import { Diff2HtmlUI } from "diff2html/lib/ui/js/diff2html-ui";
 
 @Component({
   selector: "app-file-diff",
   templateUrl: "./file-diff.component.html",
   styleUrls: ["./file-diff.component.scss"],
 })
-export class FileDiffComponent {
-  left = `some text to\nbe compared!`
-  right = `A changed\n version \n of the text to\nbe compared!`
+export class FileDiffComponent implements AfterViewInit {
+  @ViewChild("gitDiff") public gitDiffElement: ElementRef;
+  @Input() public gitDiff$: Observable<GitDiff>;
 
-  onCompareResults(diffResults: DiffResults) {
-    console.log('diffResults', diffResults);
+  private diffConfig: Diff2Html.Diff2HtmlConfig = {
+    drawFileList:true,
+    matching: "lines",
+    outputFormat: "side-by-side"
+  };
+
+  ngAfterViewInit(): void {
+    this.gitDiff$.subscribe(gitDiff => {
+      const diff2htmlUi = new Diff2HtmlUI(this.gitDiffElement.nativeElement, gitDiff.diff, this.diffConfig);
+      diff2htmlUi.draw();
+    });
   }
 }

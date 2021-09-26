@@ -21,4 +21,12 @@
     [displayedColumnsStartTime$]="displayedColumnsStartTime$"
   >
   </app-run-params-metrics-table>
+
+  <div id="git-diff-div" *ngIf="(runs$ | async)?.length == 2">
+    <h2 id="git-diff-title" class="mat-h2" i18n>Git Diff</h2>
+
+    <app-file-diff id="git-file-diff" [gitDiff$]="gitDiff$">
+
+    </app-file-diff>
+  </div>
 </div>

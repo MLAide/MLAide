@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
-import { catchError, map, mergeMap, tap } from "rxjs/operators";
+import { catchError, filter, map, mergeMap, tap } from "rxjs/operators";
 import { RunApi } from "./run.api";
 import { Store } from "@ngrx/store";
 import * as runActions from "@mlaide/state/run/run.actions";
@@ -12,54 +12,6 @@ import { FileSaverService } from "ngx-filesaver";
 
 @Injectable({ providedIn: "root" })
 export class RunEffects {
-
-  loadRuns$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(runActions.loadRuns),
-      concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([_, projectKey]) => this.runApi.getRuns(projectKey)),
-      map((runListResponse) => ({ runs: runListResponse.items })),
-      map((runs) => runActions.loadRunsSucceeded(runs)),
-      catchError((error) => of(runActions.loadRunsFailed({ payload: error })))
-    )
-  );
-
-  loadRunsFailed$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(runActions.loadRunsFailed),
-      map((action) => action.payload),
-      map((error) => ({
-        message: "Could not load runs. A unknown error occurred.",
-        error: error
-      })),
-      map(showErrorMessage)
-    )
-  );
-
-  loadRunsByRunKeys$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(runActions.loadRunsByRunKeys),
-      concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      concatLatestFrom(() => this.store.select(selectSelectedRunKeys)),
-      mergeMap(([[_, projectKey], runKeys]) => this.runApi.getRunsByRunKeys(projectKey, runKeys)),
-      map((runListResponse) => ({ runs: runListResponse.items })),
-      map((runs) => runActions.loadRunsByRunKeysSucceeded(runs)),
-      catchError((error) => of(runActions.loadRunsByRunKeysFailed({ payload: error })))
-    )
-  );
-
-  loadRunsByRunKeysFailed$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(runActions.loadRunsByRunKeysFailed),
-      map((action) => action.payload),
-      map((error) => ({
-        message: "Could not load runs. A unknown error occurred.",
-        error: error
-      })),
-      map(showErrorMessage)
-    )
-  );
-
   loadCurrentRun$ = createEffect(() =>
     this.actions$.pipe(
       ofType(runActions.loadCurrentRun),
@@ -137,6 +89,78 @@ export class RunEffects {
       map((action) => action.payload),
       map((error) => ({
         message: "Could not export runs. A unknown error occurred.",
+        error: error
+      })),
+      map(showErrorMessage)
+    )
+  );
+
+  loadGitDiffByRunKeys$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(runActions.loadGitDiffByRunKeys),
+      concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
+      concatLatestFrom(() => this.store.select(selectSelectedRunKeys)),
+      filter(([[_, projectKey], runKeys]) => runKeys.length === 2),
+      mergeMap(([[_, projectKey], runKeys]) => this.runApi.getGitDiffsByRunKeys(projectKey, runKeys[0], runKeys[1])),
+      map((gitDiff) => ({ gitDiff: gitDiff })),
+      map((gitDiff) => runActions.loadGitDiffByRunKeysSucceeded(gitDiff)),
+      catchError((error) => of(runActions.loadGitDiffByRunKeysFailed({ payload: error })))
+    )
+  );
+
+  loadGitDiffByRunKeysFailed$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(runActions.loadGitDiffByRunKeysFailed),
+      map((action) => action.payload),
+      map((error) => ({
+        message: "Could not load git diffs. A unknown error occurred.",
+        error: error
+      })),
+      map(showErrorMessage)
+    )
+  );
+
+  loadRuns$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(runActions.loadRuns),
+      concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
+      mergeMap(([_, projectKey]) => this.runApi.getRuns(projectKey)),
+      map((runListResponse) => ({ runs: runListResponse.items })),
+      map((runs) => runActions.loadRunsSucceeded(runs)),
+      catchError((error) => of(runActions.loadRunsFailed({ payload: error })))
+    )
+  );
+
+  loadRunsFailed$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(runActions.loadRunsFailed),
+      map((action) => action.payload),
+      map((error) => ({
+        message: "Could not load runs. A unknown error occurred.",
+        error: error
+      })),
+      map(showErrorMessage)
+    )
+  );
+
+  loadRunsByRunKeys$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(runActions.loadRunsByRunKeys),
+      concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
+      concatLatestFrom(() => this.store.select(selectSelectedRunKeys)),
+      mergeMap(([[_, projectKey], runKeys]) => this.runApi.getRunsByRunKeys(projectKey, runKeys)),
+      map((runListResponse) => ({ runs: runListResponse.items })),
+      map((runs) => runActions.loadRunsByRunKeysSucceeded(runs)),
+      catchError((error) => of(runActions.loadRunsByRunKeysFailed({ payload: error })))
+    )
+  );
+
+  loadRunsByRunKeysFailed$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(runActions.loadRunsByRunKeysFailed),
+      map((action) => action.payload),
+      map((error) => ({
+        message: "Could not load runs. A unknown error occurred.",
         error: error
       })),
       map(showErrorMessage)

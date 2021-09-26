@@ -33,6 +33,10 @@ export interface Git {
   repositoryUri: string;
 }
 
+export interface GitDiff {
+  diff: string;
+}
+
 export enum RunStatus {
   COMPLETED = "COMPLETED",
   FAILED = "FAILED",
