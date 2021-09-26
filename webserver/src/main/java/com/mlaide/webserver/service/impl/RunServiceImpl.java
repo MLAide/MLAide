@@ -11,6 +11,7 @@ import com.mlaide.webserver.service.mapper.RunMapper;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
@@ -22,7 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -240,15 +244,18 @@ public class RunServiceImpl implements RunService {
 
                 // finally get the list of changed files
                 try (Git git = new Git(repository)) {
+                     gitTestMethod(repository, oldTreeIter, newTreeIter);
                     List<DiffEntry> diffs = git.diff()
                             .setNewTree(newTreeIter)
                             .setOldTree(oldTreeIter)
                             .call();
-                    for (DiffEntry entry : diffs) {
+                    /*for (DiffEntry entry : diffs) {
                         System.out.println("old: " + entry.getOldPath() +
                                 ", new: " + entry.getNewPath() +
                                 ", entry: " + entry);
-                    }
+                    }*/
+
+
 
                     return diffs;
                 } catch (GitAPIException e) {
@@ -262,6 +269,31 @@ public class RunServiceImpl implements RunService {
         return null;
     }
 
+    private void gitTestMethod(Repository repository, CanonicalTreeParser oldTreeIter, CanonicalTreeParser newTreeIter) {
+        /*System.out.println("old: " + first.getOldPath() +
+                ", new: " + first.getNewPath() +
+                ", entry: " + first);*/
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try( DiffFormatter formatter = new DiffFormatter( outputStream ) ) {
+            formatter.setRepository(repository);
+            formatter.setContext(500000);
+            // formatter.format( oldTreeIter, newTreeIter);
+            List <DiffEntry> newDiffs = formatter.scan(oldTreeIter, newTreeIter);
+
+            List <String> returnDiff = new ArrayList<>();
+            for( DiffEntry entry : newDiffs ) {
+                outputStream.flush();
+                String diff = outputStream.toString();
+                returnDiff.add(diff);
+                outputStream.reset();
+                formatter.format(entry);
+            }
+            System.setOut(new PrintStream(outputStream));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public Repository openJGitCookbookRepository() throws IOException {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         return builder
