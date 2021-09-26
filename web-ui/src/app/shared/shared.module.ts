@@ -23,7 +23,6 @@ import { MatCardModule } from "@angular/material/card";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ExperimentStatusI18nComponent } from "@mlaide/shared/components/experiment-status-i18n/experiment-status-i18n.component";
 import { FileDiffComponent } from "@mlaide/shared/components/file-diff/file-diff.component";
-import { NgxTextDiffModule } from "ngx-text-diff";
 
 @NgModule({
   declarations: [
@@ -46,7 +45,6 @@ import { NgxTextDiffModule } from "ngx-text-diff";
     RouterModule,
 
     FlexLayoutModule,
-    NgxTextDiffModule,
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,

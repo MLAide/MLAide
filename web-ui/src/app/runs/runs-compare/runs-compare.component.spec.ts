@@ -1,16 +1,17 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MockComponent, ngMocks } from "ng-mocks";
-import { getRandomProject, getRandomRuns } from "@mlaide/mocks/fake-generator";
+import { getRandomGitDiff, getRandomProject, getRandomRuns } from "@mlaide/mocks/fake-generator";
 import { RunParamsMetricsTableComponent } from "@mlaide/shared/components/run-params-metrics-table/run-params-metrics-table.component";
 
 import { RunsCompareComponent } from "./runs-compare.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
-import { selectIsLoadingRuns, selectRuns } from "@mlaide/state/run/run.selectors";
+import { selectGitDiffForRunKeys, selectIsLoadingRuns, selectRuns } from "@mlaide/state/run/run.selectors";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
-import { loadRunsByRunKeys } from "@mlaide/state/run/run.actions";
+import { loadGitDiffByRunKeys, loadRunsByRunKeys } from "@mlaide/state/run/run.actions";
 import { Project } from "@mlaide/state/project/project.models";
-import { Run } from "@mlaide/state/run/run.models";
+import { GitDiff, Run } from "@mlaide/state/run/run.models";
+import { FileDiffComponent } from "@mlaide/shared/components/file-diff/file-diff.component";
 
 describe("RunsCompareComponent", () => {
   let component: RunsCompareComponent;
@@ -19,6 +20,7 @@ describe("RunsCompareComponent", () => {
   // fakes
   let fakeProject: Project;
   let fakeRuns: Run[];
+  let fakeGitDiff: GitDiff;
 
   let store: MockStore;
   let dispatchSpy: jasmine.Spy<(action: Action) => void>;
@@ -26,12 +28,14 @@ describe("RunsCompareComponent", () => {
   beforeEach(async () => {
     // setup fakes
     fakeProject = await getRandomProject();
-    fakeRuns = await getRandomRuns(3);
+    fakeRuns = await getRandomRuns(2);
+    fakeGitDiff = await getRandomGitDiff();
 
     await TestBed.configureTestingModule({
       declarations: [
         RunsCompareComponent,
-        MockComponent(RunParamsMetricsTableComponent)
+        MockComponent(RunParamsMetricsTableComponent),
+        MockComponent(FileDiffComponent)
       ],
       providers: [
         provideMockStore(),
@@ -41,6 +45,7 @@ describe("RunsCompareComponent", () => {
     store = TestBed.inject(MockStore);
 
     store.overrideSelector(selectRuns, fakeRuns);
+    store.overrideSelector(selectGitDiffForRunKeys, fakeGitDiff);
     store.overrideSelector(selectCurrentProjectKey, fakeProject.key);
     store.overrideSelector(selectIsLoadingRuns, true);
 
@@ -67,6 +72,16 @@ describe("RunsCompareComponent", () => {
       // assert
       component.runs$.subscribe((runs) => {
         expect(runs).toBe(fakeRuns);
+        done();
+      });
+    });
+
+    it("should select gitDiff from store correctly", async (done) => {
+      // arrange + act in beforeEach
+
+      // assert
+      component.gitDiff$.subscribe((gitDiff) => {
+        expect(gitDiff).toBe(fakeGitDiff);
         done();
       });
     });
@@ -233,6 +248,13 @@ describe("RunsCompareComponent", () => {
       // assert
       expect(dispatchSpy).toHaveBeenCalledWith(loadRunsByRunKeys());
     });
+
+    it("should dispatch loadGitDiffByRunKeys action", () => {
+      // ngOnInit will be called in beforeEach while creating the component
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(loadGitDiffByRunKeys());
+    });
   });
 
   describe("component rendering", () => {
@@ -284,6 +306,45 @@ describe("RunsCompareComponent", () => {
       expect(runParamsMetricsTableComponent.data$).toBe(component.parameters$);
       expect(runParamsMetricsTableComponent.displayedColumnsName$).toBe(component.displayedParametersColumns$);
       expect(runParamsMetricsTableComponent.displayedColumnsStartTime$).toBe(component.displayedColumnsStartTime$);
+    });
+
+    it("should have title for file-diff - Git Diff", async () => {
+      // arrange
+      fakeRuns = await getRandomRuns(2);
+      fixture = TestBed.createComponent(RunsCompareComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      //await setupStubsAndMocks();
+      let title: HTMLElement = fixture.nativeElement.querySelector("#git-diff-title");
+
+      // assert
+      expect(title.textContent).toEqual("Git Diff");
+    });
+
+    it("should contain child component with correct attributes for app-file-diff", async () => {
+      // arrange
+      const fileDiffComponent = ngMocks
+        .find<FileDiffComponent>("#git-file-diff" )
+        .componentInstance;
+
+      // assert
+      expect(fileDiffComponent.gitDiff$).toBe(component.gitDiff$);
+    });
+
+    it("should not show git-diff, if more than 2 runs - Git Diff", async () => {
+      // arrange
+      fakeRuns = await getRandomRuns(4);
+      store.overrideSelector(selectRuns, fakeRuns);
+      fixture = TestBed.createComponent(RunsCompareComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      //await setupStubsAndMocks();
+      let gitDiff: HTMLElement = fixture.nativeElement.querySelector("#git-diff-div");
+
+      // assert
+      expect(gitDiff).toBeNull();
     });
   });
 });

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@angular/core";
-import { Run } from "@mlaide/state/run/run.models";
+import { GitDiff, Run } from "@mlaide/state/run/run.models";
 import { APP_CONFIG, AppConfig } from "@mlaide/config/app-config.model";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
@@ -39,6 +39,19 @@ export class RunApi {
           return file;
         })
       );
+  }
+
+  public getGitDiffsByRunKeys(projectKey: string, runKey1: number, runKey2: number): Observable<GitDiff> {
+    let params = {
+      runKey1: runKey1,
+      runKey2: runKey2,
+    }
+
+    return this.http.get<GitDiff>(
+      `${this.baseUrl}/projects/${projectKey}/runs/git-diff`, {
+        params,
+      }
+    )
   }
 
   public getRun(projectKey: string, runKey: number): Observable<Run> {
