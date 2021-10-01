@@ -8,6 +8,7 @@ import { ProjectMemberState } from "./project-member/project-member.state";
 import { AuthState } from "./auth/auth.state";
 import { UserState } from "./user/user.state";
 import { ApiKeyState } from "./api-key/api-key.state";
+import { SshKeyState } from "@mlaide/state/ssh-key/ssh-key.state";
 
 export interface AppState {
   apiKeys: ApiKeyState;
@@ -19,5 +20,6 @@ export interface AppState {
   shared: SharedState;
   router: RouterReducerState;
   runs: RunState;
-  user: UserState
+  sshKeys: SshKeyState;
+  user: UserState;
 }

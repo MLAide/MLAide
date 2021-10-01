@@ -52,7 +52,8 @@ describe("ApiKeysComponent", () => {
         MatDialogModule,
         MatIconModule,
         MatProgressSpinnerModule,
-        MatTableModule],
+        MatTableModule
+      ],
     }).compileComponents();
 
     store = TestBed.inject(MockStore);

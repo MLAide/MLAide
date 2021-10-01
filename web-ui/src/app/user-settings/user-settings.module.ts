@@ -9,6 +9,7 @@ import { UserSettingsComponent } from "./user-settings/user-settings.component";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatIconModule } from "@angular/material/icon";
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatListModule } from "@angular/material/list";
@@ -29,9 +30,11 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatTreeModule } from "@angular/material/tree";
 import { FlexLayoutModule } from "@angular/flex-layout";
+import { SshKeysComponent } from './ssh-keys/ssh-keys.component';
+import { AddSshKeyComponent } from './add-ssh-key/add-ssh-key.component';
 
 @NgModule({
-  declarations: [ApiKeysComponent, AddApiKeyComponent, UserProfileComponent, UserSettingsComponent],
+  declarations: [ApiKeysComponent, AddApiKeyComponent, UserProfileComponent, UserSettingsComponent, SshKeysComponent, AddSshKeyComponent],
   imports: [
     CommonModule,
 
@@ -41,6 +44,7 @@ import { FlexLayoutModule } from "@angular/flex-layout";
     ReactiveFormsModule,
     MatDialogModule,
     MatDividerModule,
+    MatExpansionModule,
     MatFormFieldModule,
     MatIconModule,
     MatListModule,

@@ -190,7 +190,7 @@ describe("ApiKeyEffects", () => {
   });
 
   describe("openAddApiKeyDialog$", () => {
-    it("should open MatDialog with CreateApiKeyComponent", async (done) => {
+    it("should open MatDialog with AddApiKeyComponent", async (done) => {
       // arrange
       actions$ = of(openAddApiKeyDialog());
 
