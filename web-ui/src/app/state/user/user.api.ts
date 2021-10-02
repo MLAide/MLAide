@@ -30,8 +30,15 @@ export class UserApi {
   }
 
   createSshKey(sshKey: SshKey): Observable<SshKey> {
-    sshKey.sshKey = "fake-ssh-key";
-    return of(sshKey);
+    const fakeSshKey: SshKey =
+      {
+        sshKey: "fake-ssh-key",
+        id: "fake-id",
+        description: "fake-description",
+        createdAt: new Date(),
+        expiresAt: undefined,
+      }
+    return of(fakeSshKey);
     return this.http.post<SshKey>(`${this.baseUrl}/users/current/ssh-keys`, sshKey);
   }
 
