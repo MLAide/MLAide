@@ -48,7 +48,7 @@
   </mat-dialog-content>
   <mat-dialog-actions align="end">
     <div *ngIf="!(apiKey$ | async)">
-      <button id="add-api-key-cancel-button" mat-button (click)="close()" type="button" i18n>Cancel</button>
+      <button id="add-api-key-cancel-button" mat-button (click)="close()" type="button" aria-label="Button to cancel add api key dialog" i18n>Cancel</button>
       <span class="margin-right-sm"></span>
       <button
         id="add-api-key-create-button"
@@ -58,13 +58,14 @@
         [disabled]="!form.valid"
         color="primary"
         cdkFocusInitial
+        aria-label="Button to add api key"
         i18n
       >
         Create
       </button>
     </div>
     <div *ngIf="(apiKey$ | async)">
-      <button id="add-api-key-close-button" mat-button (click)="close()" color="primary" cdkFocusInitial i18n>Close</button>
+      <button id="add-api-key-close-button" mat-button (click)="close()" color="primary" cdkFocusInitial aria-label="Button to close add api key dialog" i18n>Close</button>
     </div>
   </mat-dialog-actions>
 </div>

@@ -9,4 +9,61 @@
       </button>
     </div>
   </div>
+
+  <div fxLayout="column" class="example-container mat-elevation-z2">
+    <table mat-table [dataSource]="sshKeys$" aria-label="SSH keys overview">
+      <ng-container matColumnDef="description">
+        <th id="description" mat-header-cell *matHeaderCellDef aria-label="SSH Key Description" i18n>
+          Description
+        </th>
+        <td headers="description" mat-cell *matCellDef="let element">
+          {{ element?.description }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="sshKey">
+        <th id="sshKey" mat-header-cell *matHeaderCellDef aria-label="SSH Key" i18n>
+          Key
+        </th>
+        <td headers="sshKey" mat-cell *matCellDef="let element">
+          {{ element?.sshKey }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="createdAt">
+        <th id="created-at" mat-header-cell *matHeaderCellDef aria-label="SSH Key Creation Date" i18n>
+          Created at
+        </th>
+        <td headers="created-at" mat-cell *matCellDef="let element">
+          {{ element?.createdAt | date: "medium" }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="expiresAt">
+        <th id="expires-at" mat-header-cell *matHeaderCellDef aria-label="SSH Key Expiration Date" i18n>
+          Expires at
+        </th>
+        <td headers="expires-at" mat-cell *matCellDef="let element">
+          {{ element?.expiresAt ? (element?.expiresAt | date: "medium") : "never" }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions" [stickyEnd]="true">
+        <th id="actions" mat-header-cell *matHeaderCellDef aria-label="SSH Key actions" i18n>Actions</th>
+        <td headers="actions" mat-cell *matCellDef="let element">
+          <button id="ssh-key-copy-button" mat-button [cdkCopyToClipboard]="element.sshKey" (click)="copy()" aria-label="Icon button to copy ssh key">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+          <button mat-button (click)="deleteSshKey(element)" aria-label="Icon button to delete ssh key">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <mat-card *ngIf="(isLoading$ | async)" fxLayoutAlign="center center">
+      <mat-progress-spinner
+        color="primary"
+        mode="indeterminate">
+      </mat-progress-spinner>
+    </mat-card>
+  </div>
 </div>

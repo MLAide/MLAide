@@ -38,7 +38,7 @@
             [value]="(sshKey$ | async)?.sshKey"
             readonly="true"
           ></textarea>
-          <button id="add-ssh-key-copy-button" mat-icon-button matSuffix [cdkCopyToClipboard]="(sshKey$ | async).sshKey" (click)="copy()" i18n>
+          <button id="add-ssh-key-copy-button" mat-icon-button matSuffix [cdkCopyToClipboard]="(sshKey$ | async).sshKey" (click)="copy()" aria-label="Icon button to copy ssh key">
             <mat-icon>content_copy</mat-icon>
           </button>
         </mat-form-field>
@@ -47,7 +47,7 @@
   </mat-dialog-content>
   <mat-dialog-actions align="end">
     <div *ngIf="!(sshKey$ | async)">
-      <button id="add-ssh-key-cancel-button" mat-button (click)="close()" type="button" i18n>Cancel</button>
+      <button id="add-ssh-key-cancel-button" mat-button (click)="close()" type="button" aria-label="Button to cancel ssh key dialog" i18n>Cancel</button>
       <span class="margin-right-sm"></span>
       <button
         id="add-ssh-key-create-button"
@@ -57,13 +57,14 @@
         [disabled]="!form.valid"
         color="primary"
         cdkFocusInitial
+        aria-label="Button to add ssh key"
         i18n
       >
         Create
       </button>
     </div>
     <div *ngIf="(sshKey$ | async)">
-      <button id="add-ssh-key-close-button" mat-button (click)="close()" color="primary" cdkFocusInitial i18n>Close</button>
+      <button id="add-ssh-key-close-button" mat-button (click)="close()" color="primary" cdkFocusInitial aria-label="Button to close ssh key dialog" i18n>Close</button>
     </div>
   </mat-dialog-actions>
 </div>

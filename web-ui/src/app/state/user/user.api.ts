@@ -63,12 +63,21 @@ export class UserApi {
         description: "fake-description",
         createdAt: new Date(),
         expiresAt: undefined,
-      }
-      const sshKeyLR: SshKeyListResponse = {
-      items: [sshKey]
-      }
+      };
 
-      return of(sshKeyLR);
+    const sshKey2: SshKey =
+      {
+        sshKey: "fake-ssh-key-2",
+        id: "fake-id-2",
+        description: "fake-description-2",
+        createdAt: new Date(),
+        expiresAt: undefined,
+      };
+    const sshKeyLR: SshKeyListResponse = {
+    items: [sshKey, sshKey2]
+    };
+
+    return of(sshKeyLR);
     return this.http.get<SshKeyListResponse>(`${this.baseUrl}/users/current/ssh-keys`);
   }
 

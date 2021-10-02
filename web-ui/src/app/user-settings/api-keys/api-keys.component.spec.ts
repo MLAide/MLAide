@@ -36,12 +36,14 @@ describe("ApiKeysComponent", () => {
   let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
-    // arrange fakes & stubs
-    // setup users fakes
+    // arrange fakes
     fakeApiKeys = await getRandomApiKeys();
 
     await TestBed.configureTestingModule({
-      declarations: [ApiKeysComponent, MockPipe(DatePipe, (v) => v)],
+      declarations: [
+        ApiKeysComponent,
+        MockPipe(DatePipe, (v) => v)
+      ],
       providers: [
         provideMockStore(),
       ],
@@ -104,18 +106,6 @@ describe("ApiKeysComponent", () => {
     });
   });
 
-  describe("deleteApiKey", () => {
-    it("should dispatch deleteApiKey action with provided api key", async () => {
-      // arrange + act in beforeEach
-
-      // act
-      component.deleteApiKey(fakeApiKeys[0]);
-
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(deleteApiKey({apiKey: fakeApiKeys[0]}));
-    });
-  });
-
   describe("addApiKey", () => {
     it("should dispatch addApiKey action", async () => {
       // arrange + act in beforeEach
@@ -125,6 +115,18 @@ describe("ApiKeysComponent", () => {
 
       // assert
       expect(dispatchSpy).toHaveBeenCalledWith(openAddApiKeyDialog());
+    });
+  });
+
+  describe("deleteApiKey", () => {
+    it("should dispatch deleteApiKey action with provided api key", async () => {
+      // arrange + act in beforeEach
+
+      // act
+      component.deleteApiKey(fakeApiKeys[0]);
+
+      // assert
+      expect(dispatchSpy).toHaveBeenCalledWith(deleteApiKey({apiKey: fakeApiKeys[0]}));
     });
   });
 
@@ -203,7 +205,7 @@ describe("ApiKeysComponent", () => {
         }));
       });
 
-      it('should show "-" in expires at cell if it is undefined', async () => {
+      it('should show "never" in expires at cell if it is undefined', async () => {
         // arrange + act also in beforeEach
         fakeApiKeys[0].expiresAt = undefined;
         const table: MatTableHarness = await loader.getHarness(MatTableHarness);
