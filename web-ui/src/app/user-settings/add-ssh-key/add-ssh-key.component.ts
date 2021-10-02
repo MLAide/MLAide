@@ -59,7 +59,6 @@ export class AddSshKeyComponent implements OnInit {
     this.isSshKeyCreated = true;
   }
 
-  // TODO Raman: Should we refactor this duplication?
   public keyDown(event) {
     if (event.keyCode === ENTER) {
       if (this.form.valid && !this.isSshKeyCreated) {
