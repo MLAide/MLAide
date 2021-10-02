@@ -47,12 +47,15 @@ export class UserApi {
   }
 
   deleteSshKey(sshKey: SshKey): Observable<void> {
-    return of(void 0);
     return this.http.delete<void>(`${this.baseUrl}/users/current/ssh-keys/${sshKey.id}`);
   }
 
   getApiKeys(): Observable<ApiKeyListResponse> {
     return this.http.get<ApiKeyListResponse>(`${this.baseUrl}/users/current/api-keys`);
+  }
+
+  getCurrentUser(): Observable<User> {
+    return this.http.get<User>(`${this.baseUrl}/users/current`);
   }
 
   getSshKeys(): Observable<SshKeyListResponse> {
@@ -79,10 +82,6 @@ export class UserApi {
 
     return of(sshKeyLR);
     return this.http.get<SshKeyListResponse>(`${this.baseUrl}/users/current/ssh-keys`);
-  }
-
-  getCurrentUser(): Observable<User> {
-    return this.http.get<User>(`${this.baseUrl}/users/current`);
   }
 
   updateCurrentUser(user: User): Observable<User> {
