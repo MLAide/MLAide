@@ -26,4 +26,8 @@ public class Git {
     public void setIsDirty(boolean isDirty) {
         this.isDirty = isDirty;
     }
+
+    public boolean getIsDirty() {
+        return this.isDirty;
+    }
 }

@@ -6,27 +6,15 @@ import com.mlaide.webserver.repository.RunRepository;
 import com.mlaide.webserver.repository.entity.ArtifactRefEntity;
 import com.mlaide.webserver.repository.entity.RunEntity;
 import com.mlaide.webserver.service.*;
+import com.mlaide.webserver.service.git.GitDiffService;
+import com.mlaide.webserver.service.git.InvalidGitRepositoryException;
 import com.mlaide.webserver.service.mapper.RunMapper;
-
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffFormatter;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectReader;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -47,6 +35,7 @@ public class RunServiceImpl implements RunService {
     private final UserService userService;
     private final ValidationService validationService;
     private final Clock clock;
+    private GitDiffService gitDiffService;
 
     @Autowired
     public RunServiceImpl(RunRepository runRepository,
@@ -57,7 +46,8 @@ public class RunServiceImpl implements RunService {
                           RandomGeneratorService randomGeneratorService,
                           UserService userService,
                           ValidationService validationService,
-                          Clock clock) {
+                          Clock clock,
+                          GitDiffService gitDiffService) {
         this.runRepository = runRepository;
         this.runMapper = runMapper;
         this.permissionService = permissionService;
@@ -67,6 +57,7 @@ public class RunServiceImpl implements RunService {
         this.userService = userService;
         this.validationService = validationService;
         this.clock = clock;
+        this.gitDiffService = gitDiffService;
     }
 
     @Override
@@ -224,82 +215,26 @@ public class RunServiceImpl implements RunService {
     }
 
     @Override
-    public List<DiffEntry> getGitDiffForRuns(String projectKey, Integer firstRunKey, Integer secondRunKey) {
-        try (Repository repository = openJGitCookbookRepository()) {
-            // The {tree} will return the underlying tree-id instead of the commit-id itself!
-            // For a description of what the carets do see e.g. http://www.paulboxley.com/blog/2011/06/git-caret-and-tilde
-            // This means we are selecting the parent of the parent of the parent of the parent of current HEAD and
-            // take the tree-ish of it
-            ObjectId oldHead = repository.resolve("HEAD^^^^{tree}");
-            ObjectId head = repository.resolve("HEAD^{tree}");
+    public GitDiff getGitDiffForRuns(String projectKey, Integer firstRunKey, Integer secondRunKey) {
+        RunEntity run1 = runRepository.findOneByProjectKeyAndKey(projectKey, firstRunKey);
+        RunEntity run2 = runRepository.findOneByProjectKeyAndKey(projectKey, secondRunKey);
 
-            System.out.println("Printing diff between tree: " + oldHead + " and " + head);
-
-            // prepare the two iterators to compute the diff between
-            try (ObjectReader reader = repository.newObjectReader()) {
-                CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
-                oldTreeIter.reset(reader, oldHead);
-                CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
-                newTreeIter.reset(reader, head);
-
-                // finally get the list of changed files
-                try (Git git = new Git(repository)) {
-                     gitTestMethod(repository, oldTreeIter, newTreeIter);
-                    List<DiffEntry> diffs = git.diff()
-                            .setNewTree(newTreeIter)
-                            .setOldTree(oldTreeIter)
-                            .call();
-                    /*for (DiffEntry entry : diffs) {
-                        System.out.println("old: " + entry.getOldPath() +
-                                ", new: " + entry.getNewPath() +
-                                ", entry: " + entry);
-                    }*/
-
-
-
-                    return diffs;
-                } catch (GitAPIException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (run1 == null || run2 == null) {
+            throw new NotFoundException();
         }
 
-        return null;
-    }
-
-    private void gitTestMethod(Repository repository, CanonicalTreeParser oldTreeIter, CanonicalTreeParser newTreeIter) {
-        /*System.out.println("old: " + first.getOldPath() +
-                ", new: " + first.getNewPath() +
-                ", entry: " + first);*/
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try( DiffFormatter formatter = new DiffFormatter( outputStream ) ) {
-            formatter.setRepository(repository);
-            formatter.setContext(500000);
-            // formatter.format( oldTreeIter, newTreeIter);
-            List <DiffEntry> newDiffs = formatter.scan(oldTreeIter, newTreeIter);
-
-            List <String> returnDiff = new ArrayList<>();
-            for( DiffEntry entry : newDiffs ) {
-                outputStream.flush();
-                String diff = outputStream.toString();
-                returnDiff.add(diff);
-                outputStream.reset();
-                formatter.format(entry);
-            }
-            System.setOut(new PrintStream(outputStream));
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (run1.getGit() == null || run2.getGit() == null) {
+            throw new NotFoundException();
         }
-    }
-    public Repository openJGitCookbookRepository() throws IOException {
-        FileRepositoryBuilder builder = new FileRepositoryBuilder();
-        return builder
-                .readEnvironment() // scan environment GIT_* variables
-                .findGitDir() // scan up the file system tree
-                .build();
+
+        if (!run1.getGit().getRepositoryUri().equalsIgnoreCase(run2.getGit().getRepositoryUri())) {
+            throw new InvalidGitRepositoryException("Can not create git diff because the two specified runs reference different git repositories.");
+        }
+
+        return gitDiffService.getDiff(
+                run1.getGit().getRepositoryUri(),
+                run1.getGit().getCommitHash(),
+                run2.getGit().getCommitHash());
     }
 
     private RunEntity saveRun(RunEntity runEntity) {

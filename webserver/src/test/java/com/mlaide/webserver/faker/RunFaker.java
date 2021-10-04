@@ -3,6 +3,7 @@ package com.mlaide.webserver.faker;
 import com.github.javafaker.Faker;
 import com.mlaide.webserver.model.Run;
 import com.mlaide.webserver.model.RunStatus;
+import com.mlaide.webserver.repository.entity.GitEntity;
 import com.mlaide.webserver.repository.entity.RunEntity;
 
 public class RunFaker {
@@ -28,7 +29,19 @@ public class RunFaker {
         runEntity.setProjectKey(ProjectFaker.validProjectKey());
         runEntity.setStartTime(FakerUtils.pastDate());
         runEntity.setStatus(faker.options().nextElement(RunStatus.values()).toString());
+        runEntity.setGit(newGitEntity());
 
         return runEntity;
+    }
+
+    private static GitEntity newGitEntity() {
+        var gitEntity = new GitEntity();
+
+        gitEntity.setCommitHash(faker.ancient().hero());
+        gitEntity.setCommitTime(FakerUtils.pastDate());
+        gitEntity.setRepositoryUri("git@github.com:" + faker.funnyName().name());
+        gitEntity.setDirty(faker.bool().bool());
+
+        return gitEntity;
     }
 }
