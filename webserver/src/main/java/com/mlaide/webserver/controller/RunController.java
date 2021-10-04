@@ -91,6 +91,17 @@ public class RunController {
         return ResponseEntity.ok(addedRun);
     }
 
+    @GetMapping(path = "/git-diff")
+    public ResponseEntity<GitDiff> getRunsDiff(
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
+            @RequestParam(name = "runKey1") @Positive Integer runKey1,
+            @RequestParam(name = "runKey2") @Positive Integer runKey2) {
+
+        var gitDiff = runService.getGitDiffForRuns(projectKey, runKey1, runKey2);
+
+        return ResponseEntity.ok(gitDiff);
+    }
+
     @GetMapping(path = "{runKey}")
     public ResponseEntity<Run> getRun(
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,

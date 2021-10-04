@@ -33,6 +33,7 @@ public class RunEntity {
     @PastOrPresent
     private OffsetDateTime endTime;
     private Collection<ExperimentRefEntity> experimentRefs;
+    private GitEntity git;
     @Id private ObjectId id;
     @NotNull
     private Integer key;

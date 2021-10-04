@@ -1,8 +1,3 @@
-export interface UserRef {
-  id: string;
-  nickName: string;
-}
-
 export interface Run {
   artifacts: {
     name: string;
@@ -31,6 +26,17 @@ export interface Run {
   }[];
 }
 
+export interface Git {
+  commitTime: Date;
+  commitHash: string;
+  isDirty: boolean;
+  repositoryUri: string;
+}
+
+export interface GitDiff {
+  diff: string;
+}
+
 export enum RunStatus {
   COMPLETED = "COMPLETED",
   FAILED = "FAILED",
@@ -45,4 +51,9 @@ export interface RunParameter {
 export interface RunMetric {
   key: string;
   value: any;
+}
+
+export interface UserRef {
+  id: string;
+  nickName: string;
 }

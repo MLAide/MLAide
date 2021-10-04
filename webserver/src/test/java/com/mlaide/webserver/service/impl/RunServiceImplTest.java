@@ -6,12 +6,14 @@ import com.mlaide.webserver.faker.ProjectFaker;
 import com.mlaide.webserver.faker.RunFaker;
 import com.mlaide.webserver.faker.UserFaker;
 import com.mlaide.webserver.model.*;
-import com.mlaide.webserver.service.*;
 import com.mlaide.webserver.repository.CounterRepository;
 import com.mlaide.webserver.repository.RunRepository;
 import com.mlaide.webserver.repository.entity.ArtifactRefEntity;
 import com.mlaide.webserver.repository.entity.RunEntity;
 import com.mlaide.webserver.repository.entity.UserRef;
+import com.mlaide.webserver.service.*;
+import com.mlaide.webserver.service.git.GitDiffService;
+import com.mlaide.webserver.service.git.InvalidGitRepositoryException;
 import com.mlaide.webserver.service.mapper.RunMapper;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +31,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
@@ -54,6 +55,7 @@ class RunServiceImplTest {
     private @Mock
     ValidationService validationService;
     private @Mock UserService userService;
+    private @Mock GitDiffService gitDiffService;
 
     private Project project;
     private String projectKey;
@@ -74,7 +76,8 @@ class RunServiceImplTest {
                 randomGeneratorService,
                 userService,
                 validationService,
-                clock);
+                clock,
+                gitDiffService);
     }
 
     @Nested
@@ -574,6 +577,122 @@ class RunServiceImplTest {
             assertThat(artifactRefs.get(0)).isSameAs(existingArtifactRef);
             assertThat(artifactRefs.get(1).getName()).isEqualTo(artifact.getName());
             assertThat(artifactRefs.get(1).getVersion()).isEqualTo(artifact.getVersion());
+        }
+    }
+
+    @Nested
+    class getGitDiffForRuns {
+        @Test
+        void run1_does_not_exist_should_throw_NotFoundException() {
+            // Arrange
+            RunEntity run1 = RunFaker.newRunEntity();
+            Integer runKey1 = run1.getKey();
+
+            RunEntity run2 = RunFaker.newRunEntity();
+            Integer runKey2 = run2.getKey();
+
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey1)).thenReturn(null);
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey2)).thenReturn(run2);
+
+            // Act + Assert
+            assertThatThrownBy(() -> runService.getGitDiffForRuns(projectKey, runKey1, runKey2))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void run2_does_not_exist_should_throw_NotFoundException() {
+            // Arrange
+            RunEntity run1 = RunFaker.newRunEntity();
+            Integer runKey1 = run1.getKey();
+
+            RunEntity run2 = RunFaker.newRunEntity();
+            Integer runKey2 = run2.getKey();
+
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey1)).thenReturn(run1);
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey2)).thenReturn(null);
+
+            // Act + Assert
+            assertThatThrownBy(() -> runService.getGitDiffForRuns(projectKey, runKey1, runKey2))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void run1_does_not_have_git_information_should_throw_NotFoundException() {
+            // Arrange
+            RunEntity run1 = RunFaker.newRunEntity();
+            run1.setGit(null);
+            Integer runKey1 = run1.getKey();
+
+            RunEntity run2 = RunFaker.newRunEntity();
+            Integer runKey2 = run2.getKey();
+
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey1)).thenReturn(run1);
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey2)).thenReturn(run2);
+
+            // Act + Assert
+            assertThatThrownBy(() -> runService.getGitDiffForRuns(projectKey, runKey1, runKey2))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void run2_does_not_have_git_information_should_throw_NotFoundException() {
+            // Arrange
+            RunEntity run1 = RunFaker.newRunEntity();
+            Integer runKey1 = run1.getKey();
+
+            RunEntity run2 = RunFaker.newRunEntity();
+            run2.setGit(null);
+            Integer runKey2 = run2.getKey();
+
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey1)).thenReturn(run1);
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey2)).thenReturn(run2);
+
+            // Act + Assert
+            assertThatThrownBy(() -> runService.getGitDiffForRuns(projectKey, runKey1, runKey2))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void git_repository_of_runs_do_not_match_should_throw_InvalidGitRepositoryException() {
+            // Arrange
+            RunEntity run1 = RunFaker.newRunEntity();
+            Integer runKey1 = run1.getKey();
+
+            RunEntity run2 = RunFaker.newRunEntity();
+            Integer runKey2 = run2.getKey();
+
+            run1.getGit().setRepositoryUri(run2.getGit().getRepositoryUri() + "some text");
+
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey1)).thenReturn(run1);
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey2)).thenReturn(run2);
+
+            // Act + Assert
+            assertThatThrownBy(() -> runService.getGitDiffForRuns(projectKey, runKey1, runKey2))
+                    .isInstanceOf(InvalidGitRepositoryException.class);
+        }
+
+        @Test
+        void valid_runs_should_invoke_gitDiffService_to_create_diff() {
+            // Arrange
+            RunEntity run1 = RunFaker.newRunEntity();
+            Integer runKey1 = run1.getKey();
+
+            RunEntity run2 = RunFaker.newRunEntity();
+            Integer runKey2 = run2.getKey();
+
+            run1.getGit().setRepositoryUri(run2.getGit().getRepositoryUri());
+            GitDiff expectedGitDiff = new GitDiff("the diff");
+
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey1)).thenReturn(run1);
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey2)).thenReturn(run2);
+            when(gitDiffService.getDiff(run1.getGit().getRepositoryUri(), run1.getGit().getCommitHash(), run2.getGit().getCommitHash()))
+                    .thenReturn(expectedGitDiff);
+
+            // Act
+            GitDiff gitDiff = runService.getGitDiffForRuns(projectKey, runKey1, runKey2);
+
+            // Assert
+            assertThat(gitDiff).isSameAs(expectedGitDiff);
         }
     }
 }
