@@ -274,6 +274,44 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/UnexpectedError'
+  /projects/{projectKey}/runs/git-diff:
+    get:
+      summary: Get a the diff of the code of two runs
+      operationId: getGitDiff
+      tags:
+        - runs
+      parameters:
+        - name: projectKey
+          in: path
+          required: true
+          description: The key of the project that the experiments belong to
+          schema:
+            type: string
+        - name: runKey1
+          in: query
+          required: true
+          description: The run key that should be used to build the code diff
+          schema:
+            type: number
+        - name: runKey2
+          in: query
+          required: true
+          description: The run key that should be used to build the code diff
+          schema:
+            type: number
+      responses:
+        '200':
+          description: An object containing an array of git diffs for each file
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GitDiffs"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/UnexpectedError'
   /projects/{projectKey}/runs/{runKey}:
     get:
       summary: Get single run by runKey
@@ -1161,6 +1199,14 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Artifact"
+    CreateOrUpdateModel:
+      required:
+        - stage
+      properties:
+        note:
+          type: string
+        stage:
+          $ref: "#/components/schemas/ModelStage"
     Error:
       type: object
       required:
@@ -1214,14 +1260,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Experiment"
-    CreateOrUpdateModel:
-      required:
-        - stage
-      properties:
-        note:
-          type: string
-        stage:
-          $ref: "#/components/schemas/ModelStage"
     Git:
       type: object
       required:
@@ -1239,6 +1277,27 @@ components:
         repositoryUri:
           type: string
           format: uri
+    GitDiff:
+      type: object
+      required:
+        - fileName
+        - diff
+      properties:
+        fileName:
+          type: string
+          readOnly: true
+        diff:
+          type: string
+          readOnly: true
+    GitDiffs:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/GitDiff"
     Model:
       type: object
       readOnly: true

@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:4.4
+    container_name: mongo
+    hostname: mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongodb/data:/data/db/
+      - ./data/mongodb/log:/var/log/mongodb/
+    command: ["--bind_ip", "0.0.0.0"]
