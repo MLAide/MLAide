@@ -1,8 +1,9 @@
-import { Run } from "./run.models";
+import { GitDiff, Run } from "./run.models";
 
 export interface RunState {
-  isLoading: boolean;
-  runsOfCurrentExperiment: Run[];
-  items: Run[];
   currentRun: Run;
+  gitDiff: GitDiff;
+  isLoading: boolean;
+  items: Run[];
+  runsOfCurrentExperiment: Run[];
 }

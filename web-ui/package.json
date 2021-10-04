@@ -43,6 +43,7 @@
     "@ngrx/store-devtools": "^12.0.0",
     "angular-oauth2-oidc": "^10.0.3",
     "dagre-d3": "^0.6.4",
+    "diff2html": "^3.4.11",
     "file-saver": "^2.0.5",
     "moment": "^2.29.1",
     "ngx-filesaver": "^11.0.0",

@@ -3,7 +3,7 @@ import { Artifact, CreateOrUpdateModel, ModelRevision, ModelStage } from "@mlaid
 import { User } from "@mlaide/state/user/user.models";
 import { ProjectMember, ProjectMemberRole } from "@mlaide/state/project-member/project-member.models";
 import { Project } from "@mlaide/state/project/project.models";
-import { Run, RunStatus } from "@mlaide/state/run/run.models";
+import { GitDiff, Run, RunStatus } from "@mlaide/state/run/run.models";
 import { Experiment, ExperimentStatus } from "@mlaide/state/experiment/experiment.models";
 import { ApiKey } from "@mlaide/state/api-key/api-key.models";
 import { SshKey } from "@mlaide/state/ssh-key/ssh-key.models";
@@ -181,6 +181,12 @@ const experimentSchema = {
       fixedLength: false,
     },
   ],
+};
+
+const gitDiffSchema = {
+  diff: {
+    faker: "lorem.paragraph",
+  },
 };
 
 const modelRevisionSchema = {
@@ -362,6 +368,12 @@ export const getRandomExperiments = async (count: number = 1): Promise<Experimen
 export const getRandomExperiment = async (): Promise<Experiment> => {
   const experiments = await getRandomExperiments();
   return experiments[0];
+};
+
+export const getRandomGitDiff = async (): Promise<GitDiff> => {
+  const mockerResult = await mocker().schema("fakeGitDiff", gitDiffSchema, 1).build();
+
+  return mockerResult.fakeGitDiff[0];
 };
 
 export const getRandomModelRevisions = async (count: number = 1): Promise<ModelRevision[]> => {

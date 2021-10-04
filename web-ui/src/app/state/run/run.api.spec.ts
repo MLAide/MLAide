@@ -3,10 +3,16 @@ import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@an
 import { appConfigMock } from "@mlaide/mocks/app-config.mock";
 import { TestBed } from "@angular/core/testing";
 import { APP_CONFIG } from "@mlaide/config/app-config.model";
-import { getRandomExperiment, getRandomProject, getRandomRun, getRandomRuns } from "@mlaide/mocks/fake-generator";
+import {
+  getRandomExperiment,
+  getRandomGitDiff,
+  getRandomProject,
+  getRandomRun,
+  getRandomRuns
+} from "@mlaide/mocks/fake-generator";
 import { Observable } from "rxjs";
 import { Project } from "@mlaide/state/project/project.models";
-import { Run } from "@mlaide/state/run/run.models";
+import { GitDiff, Run } from "@mlaide/state/run/run.models";
 import { Experiment } from "@mlaide/state/experiment/experiment.models";
 
 describe("RunApi", () => {
@@ -55,6 +61,31 @@ describe("RunApi", () => {
       expect(req.request.method).toBe("GET");
       expect(req.request.params.get("runKeys")).toBe(`${fakeRun.key}`);
       req.flush(returnBuffer);
+    });
+  });
+
+  describe("getGitDiffsByRunKeys", () => {
+    it("should return a gitDiff as observable from api response", async (done) => {
+      // arrange also in beforeEach
+      const fakeGitDiff: GitDiff = await getRandomGitDiff();
+
+      // act
+      const gitDiff$ = runApi.getGitDiffsByRunKeys(fakeProject.key, 1,2);
+
+      // assert
+      gitDiff$.subscribe((response) => {
+        expect(response).toEqual(fakeGitDiff);
+
+        done();
+      });
+
+      const req: TestRequest = httpMock.expectOne(
+        `${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects/${fakeProject.key}/runs/git-diff?runKey1=1&runKey2=2`
+      );
+      expect(req.request.method).toBe("GET");
+      expect(await req.request.params.get("runKey1")).toEqual(1 as any);
+      expect(await req.request.params.get("runKey2")).toEqual(2 as any);
+      req.flush(fakeGitDiff);
     });
   });
 

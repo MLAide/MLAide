@@ -6,6 +6,8 @@ import com.mlaide.webserver.repository.RunRepository;
 import com.mlaide.webserver.repository.entity.ArtifactRefEntity;
 import com.mlaide.webserver.repository.entity.RunEntity;
 import com.mlaide.webserver.service.*;
+import com.mlaide.webserver.service.git.GitDiffService;
+import com.mlaide.webserver.service.git.InvalidGitRepositoryException;
 import com.mlaide.webserver.service.mapper.RunMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,7 @@ public class RunServiceImpl implements RunService {
     private final UserService userService;
     private final ValidationService validationService;
     private final Clock clock;
+    private GitDiffService gitDiffService;
 
     @Autowired
     public RunServiceImpl(RunRepository runRepository,
@@ -43,7 +46,8 @@ public class RunServiceImpl implements RunService {
                           RandomGeneratorService randomGeneratorService,
                           UserService userService,
                           ValidationService validationService,
-                          Clock clock) {
+                          Clock clock,
+                          GitDiffService gitDiffService) {
         this.runRepository = runRepository;
         this.runMapper = runMapper;
         this.permissionService = permissionService;
@@ -53,6 +57,7 @@ public class RunServiceImpl implements RunService {
         this.userService = userService;
         this.validationService = validationService;
         this.clock = clock;
+        this.gitDiffService = gitDiffService;
     }
 
     @Override
@@ -207,6 +212,29 @@ public class RunServiceImpl implements RunService {
         }
 
         runRepository.save(runEntity);
+    }
+
+    @Override
+    public GitDiff getGitDiffForRuns(String projectKey, Integer firstRunKey, Integer secondRunKey) {
+        RunEntity run1 = runRepository.findOneByProjectKeyAndKey(projectKey, firstRunKey);
+        RunEntity run2 = runRepository.findOneByProjectKeyAndKey(projectKey, secondRunKey);
+
+        if (run1 == null || run2 == null) {
+            throw new NotFoundException();
+        }
+
+        if (run1.getGit() == null || run2.getGit() == null) {
+            throw new NotFoundException();
+        }
+
+        if (!run1.getGit().getRepositoryUri().equalsIgnoreCase(run2.getGit().getRepositoryUri())) {
+            throw new InvalidGitRepositoryException("Can not create git diff because the two specified runs reference different git repositories.");
+        }
+
+        return gitDiffService.getDiff(
+                run1.getGit().getRepositoryUri(),
+                run1.getGit().getCommitHash(),
+                run2.getGit().getCommitHash());
     }
 
     private RunEntity saveRun(RunEntity runEntity) {

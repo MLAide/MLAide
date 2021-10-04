@@ -5,7 +5,12 @@ import {
   loadExperimentWithAllDetailsSucceeded
 } from "@mlaide/state/experiment/experiment.actions";
 import {
-  loadCurrentRun, loadCurrentRunFailed, loadCurrentRunSucceeded,
+  loadCurrentRun,
+  loadCurrentRunFailed,
+  loadCurrentRunSucceeded,
+  loadGitDiffByRunKeys,
+  loadGitDiffByRunKeysFailed,
+  loadGitDiffByRunKeysSucceeded,
   loadRuns,
   loadRunsByRunKeys,
   loadRunsByRunKeysFailed,
@@ -16,6 +21,7 @@ import {
 
 export const initialState: RunState = {
   currentRun: undefined,
+  gitDiff: undefined,
   isLoading: false,
   items: [],
   runsOfCurrentExperiment: [],
@@ -23,6 +29,10 @@ export const initialState: RunState = {
 
 export const runsReducer = createReducer(
   initialState,
+  on(loadCurrentRun, (state) => ({ ...state, isLoading: true })),
+  on(loadCurrentRunSucceeded, (state, { run }) => ({ ...state, currentRun: run, isLoading: false })),
+  on(loadCurrentRunFailed, (state) => ({ ...state, isLoading: false })),
+
   on(loadExperimentWithAllDetails, (state) => ({ ...state, isLoading: true })),
   on(loadExperimentWithAllDetailsSucceeded, (state, { runs }) => ({ ...state, runsOfCurrentExperiment: [...runs] })),
   on(loadExperimentWithAllDetailsFailed, (state) => ({ ...state, isLoading: false })),
@@ -38,6 +48,10 @@ export const runsReducer = createReducer(
     return {...state};
   }),
 
+  on(loadGitDiffByRunKeys, (state) => ({ ...state, isLoading: true })),
+  on(loadGitDiffByRunKeysSucceeded, (state, { gitDiff }) => ({ ...state, gitDiff: gitDiff, isLoading: false })),
+  on(loadGitDiffByRunKeysFailed, (state) => ({ ...state, isLoading: false })),
+
   on(loadRuns, (state) => ({ ...state, isLoading: true })),
   on(loadRunsSucceeded, (state, { runs }) => ({ ...state, items: runs, isLoading: false })),
   on(loadRunsFailed, (state) => ({ ...state, isLoading: false })),
@@ -45,8 +59,4 @@ export const runsReducer = createReducer(
   on(loadRunsByRunKeys, (state) => ({ ...state, isLoading: true })),
   on(loadRunsByRunKeysSucceeded, (state, { runs }) => ({ ...state, items: runs, isLoading: false })),
   on(loadRunsByRunKeysFailed, (state) => ({ ...state, isLoading: false })),
-
-  on(loadCurrentRun, (state) => ({ ...state, isLoading: true })),
-  on(loadCurrentRunSucceeded, (state, { run }) => ({ ...state, currentRun: run, isLoading: false })),
-  on(loadCurrentRunFailed, (state) => ({ ...state, isLoading: false })),
 );
