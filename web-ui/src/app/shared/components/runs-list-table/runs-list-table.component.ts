@@ -7,6 +7,7 @@ import { Store } from "@ngrx/store";
 import { AppState } from "@mlaide/state/app.state";
 import { exportRuns } from "@mlaide/state/run/run.actions";
 import { MatTableDataSource } from "@angular/material/table";
+import { MatCheckboxChange } from "@angular/material/checkbox";
 
 @Component({
   selector: "app-runs-list-table",
@@ -20,7 +21,6 @@ export class RunsListTableComponent implements OnChanges, OnDestroy {
 
   public dataSource: MatTableDataSource<Run> = new MatTableDataSource<Run>();
   public displayedColumns: string[] = ["select", "name", "status", "startTime", "runTime", "metrics", "createdBy", "experiments"];
-  public hideParameters = true;
   public selection = new SelectionModel<Run>(true, []);
 
   private runsSubscription: Subscription;
@@ -99,22 +99,24 @@ export class RunsListTableComponent implements OnChanges, OnDestroy {
     return this.selection.selected.length <= 1;
   }
 
-  public toggleParameters(): void {
-    this.hideParameters = !this.hideParameters;
-    if (this.hideParameters) {
-      this.displayedColumns = ["select", "name", "status", "startTime", "runTime", "metrics", "createdBy", "experiments"];
+  public columnsMenuChanged(event: MatCheckboxChange) {
+    if (event.source.id === "parameters-column") {
+      this.addOrRemoveColumn(event.checked, "parameters", "metrics");
+    }
+    if (event.source.id === "git-commit-column") {
+      this.addOrRemoveColumn(event.checked, "gitCommitHash", "createdBy");
+    }
+  }
+
+  private addOrRemoveColumn(checked: boolean, columnToToggle: string, positionColumn: string) {
+    if (checked) {
+      const index = this.displayedColumns.indexOf(positionColumn, 0);
+      this.displayedColumns.splice(index, 0, columnToToggle);
     } else {
-      this.displayedColumns = [
-        "select",
-        "name",
-        "status",
-        "startTime",
-        "runTime",
-        "parameters",
-        "metrics",
-        "createdBy",
-        "experiments",
-      ];
+      const index = this.displayedColumns.indexOf(columnToToggle, 0);
+      if (index > -1) {
+        this.displayedColumns.splice(index, 1);
+      }
     }
   }
 }
