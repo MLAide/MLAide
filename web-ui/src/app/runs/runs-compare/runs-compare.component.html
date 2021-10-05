@@ -22,11 +22,18 @@
   >
   </app-run-params-metrics-table>
 
-  <div id="git-diff-div" *ngIf="(runs$ | async)?.length == 2">
+  <div id="git-diff-div" *ngIf="(runs$ | async)?.length === 2">
     <h2 id="git-diff-title" class="mat-h2" i18n>Git Diff</h2>
-
+    <div id="git-diff-compare-message" fxLayout="row">
+      Comparing&nbsp;
+        <div *ngFor="let run of runs$ | async; let i = index">
+          {{run.name}} ( {{run.git?.commitHash? run.git?.commitHash : "n/a"}} )
+          <span *ngIf="i === 0">
+             &nbsp;and&nbsp;
+          </span>
+        </div>.
+    </div>
     <app-file-diff id="git-file-diff" [gitDiff$]="gitDiff$">
-
     </app-file-diff>
   </div>
 </div>

@@ -268,7 +268,6 @@ describe("RunsCompareComponent", () => {
 
     it("should have title for run-params-metrics-table - Metrics", async () => {
       // arrange
-      //await setupStubsAndMocks();
       let title: HTMLElement = fixture.nativeElement.querySelector("#metrics-title");
 
       // assert
@@ -289,7 +288,6 @@ describe("RunsCompareComponent", () => {
 
     it("should have title for run-params-metrics-table - Parameters", async () => {
       // arrange
-      //await setupStubsAndMocks();
       let title: HTMLElement = fixture.nativeElement.querySelector("#parameters-title");
 
       // assert
@@ -314,12 +312,19 @@ describe("RunsCompareComponent", () => {
       fixture = TestBed.createComponent(RunsCompareComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
-
-      //await setupStubsAndMocks();
       let title: HTMLElement = fixture.nativeElement.querySelector("#git-diff-title");
 
       // assert
       expect(title.textContent).toEqual("Git Diff");
+    });
+
+    it("should have compare message for file-diff - Git Diff", async () => {
+      // arrange
+      let compareMessage: HTMLElement = fixture.nativeElement.querySelector("#git-diff-compare-message");
+
+      // assert
+      const expectedString = `Comparing ${fakeRuns[0].name} ( ${fakeRuns[0].git.commitHash} ) and ${fakeRuns[1].name} ( ${fakeRuns[1].git.commitHash} ).`;
+      expect(compareMessage.textContent.replace(/\s/g, "")).toEqual(expectedString.replace(/\s/g, ""));
     });
 
     it("should contain child component with correct attributes for app-file-diff", async () => {
@@ -340,7 +345,6 @@ describe("RunsCompareComponent", () => {
       component = fixture.componentInstance;
       fixture.detectChanges();
 
-      //await setupStubsAndMocks();
       let gitDiff: HTMLElement = fixture.nativeElement.querySelector("#git-diff-div");
 
       // assert
