@@ -10,10 +10,20 @@
         <mat-icon class="padding-sm-r">cloud_download</mat-icon>Export
       </button>
       <span class="margin-right-sm"></span>
-      <button id="show-or-hide-parameters-button" mat-stroked-button (click)="toggleParameters()" i18n>
-        <mat-icon class="padding-sm-r">{{ hideParameters ? "visibility" : "visibility_off" }}</mat-icon>
-        {{ hideParameters ? "Show Parameters" : "Hide Parameters" }}
+      <button id="columns-button" mat-stroked-button [matMenuTriggerFor]="columnsMenu" i18n>
+        <mat-icon class="padding-sm-r">view_column</mat-icon> Columns
       </button>
+      <mat-menu id="columns-menu" #columnsMenu="matMenu">
+
+          <menu mat-menu-item class="menu-item-check-box">
+            <mat-checkbox id="parameters-column" (change)="columnsMenuChanged($event)" (click)="$event.stopPropagation()" i18n>Parameters</mat-checkbox>
+          </menu>
+
+          <menu mat-menu-item class="menu-item-check-box">
+            <mat-checkbox id="git-commit-column" (change)="columnsMenuChanged($event)" (click)="$event.stopPropagation()" i18n>Git Commit</mat-checkbox>
+          </menu>
+
+      </mat-menu>
     </h3>
   </div>
 
@@ -88,6 +98,12 @@
               {{ item.value }}
             </mat-list-item>
           </mat-list>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="gitCommitHash">
+        <th id="git-commit-hash" mat-header-cell *matHeaderCellDef i18n>Git Commit</th>
+        <td headers="git-commit-hash" mat-cell *matCellDef="let element">
+          {{ element.git?.commitHash ? element.git?.commitHash : "-" }}
         </td>
       </ng-container>
       <ng-container matColumnDef="createdBy">

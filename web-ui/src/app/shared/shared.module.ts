@@ -23,6 +23,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { ExperimentStatusI18nComponent } from "@mlaide/shared/components/experiment-status-i18n/experiment-status-i18n.component";
 import { FileDiffComponent } from "@mlaide/shared/components/file-diff/file-diff.component";
+import { MatMenuModule } from "@angular/material/menu";
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { FileDiffComponent } from "@mlaide/shared/components/file-diff/file-diff
     MatChipsModule,
     MatIconModule,
     MatListModule,
+    MatMenuModule,
     MatProgressSpinnerModule,
     MatTableModule,
   ],

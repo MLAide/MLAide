@@ -28,6 +28,15 @@ const experimentRefSchemaFunction = (faker) => {
   };
 };
 
+const gitSchemaFunction = (faker) => {
+  return {
+    commitTime: faker.date.past(),
+    commitHash: faker.datatype.uuid(),
+    isDirty: faker.datatype.boolean(),
+    repositoryUri: faker.internet.url(),
+  };
+};
+
 const metaDataSchemaFunction = (faker) => {
   return {
     type: faker.random.word(),
@@ -225,6 +234,11 @@ const runSchema = {
       fixedLength: false,
     },
   ],
+  git: {
+    function() {
+      return gitSchemaFunction(this.faker);
+    },
+  },
   key: {
     faker: "datatype.number",
   },
