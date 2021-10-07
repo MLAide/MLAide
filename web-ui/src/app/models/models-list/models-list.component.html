@@ -25,10 +25,10 @@
     <ng-container matColumnDef="actions" [stickyEnd]="true">
       <th id="actions" mat-header-cell *matHeaderCellDef i18n>Actions</th>
       <td headers="actions" mat-cell *matCellDef="let element">
-        <button mat-button (click)="openEditModelDialog(element)" aria-label="Icon button to edit model">
+        <button mat-button (click)="openEditModelDialog(element)" matTooltip="Edit {{element.name}} model" aria-label="Icon button to edit model">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-button (click)="openModelStageLog(element)" aria-label="Icon button to show model stage log">
+        <button mat-button (click)="openModelStageLog(element)" matTooltip="Show model stage log for {{element.name}}" aria-label="Icon button to show model stage log">
           <mat-icon>history</mat-icon>
         </button>
       </td>

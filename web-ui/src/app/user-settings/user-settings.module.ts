@@ -32,6 +32,7 @@ import { MatTreeModule } from "@angular/material/tree";
 import { FlexLayoutModule } from "@angular/flex-layout";
 import { SshKeysComponent } from './ssh-keys/ssh-keys.component';
 import { AddSshKeyComponent } from './add-ssh-key/add-ssh-key.component';
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [ApiKeysComponent, AddApiKeyComponent, UserProfileComponent, UserSettingsComponent, SshKeysComponent, AddSshKeyComponent],
@@ -49,6 +50,7 @@ import { AddSshKeyComponent } from './add-ssh-key/add-ssh-key.component';
     MatIconModule,
     MatListModule,
     MatSidenavModule,
+    MatTooltipModule,
 
     ClipboardModule,
 

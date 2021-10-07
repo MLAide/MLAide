@@ -15,6 +15,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { FlexLayoutModule } from "@angular/flex-layout";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [ProjectMembersListComponent, AddOrEditProjectMemberComponent],
@@ -34,6 +35,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
     MatSelectModule,
     MatSnackBarModule,
     MatTableModule,
+    MatTooltipModule,
   ],
 })
 export class ProjectSettingsModule {}

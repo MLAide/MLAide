@@ -10,7 +10,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { ActivatedRoute, Router } from "@angular/router";
 import { RouterTestingModule } from "@angular/router/testing";
 import { ActivatedRouteStub } from "@mlaide/mocks/activated-route.stub";
-import { getRandomProject, getRandomRuns, getRandomUser } from "@mlaide/mocks/fake-generator";
+import { getRandomProject, getRandomRuns } from "@mlaide/mocks/fake-generator";
 import { RunsListTableComponent } from "./runs-list-table.component";
 import { of } from "rxjs";
 import { MockPipe } from "ng-mocks";

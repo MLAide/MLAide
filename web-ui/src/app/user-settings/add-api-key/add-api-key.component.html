@@ -38,7 +38,7 @@
             [value]="(apiKey$ | async)?.apiKey"
             readonly="true"
           ></textarea>
-          <button id="add-api-key-copy-button" mat-icon-button matSuffix [cdkCopyToClipboard]="(apiKey$ | async).apiKey" (click)="copy()" i18n>
+          <button id="add-api-key-copy-button" mat-icon-button matSuffix [cdkCopyToClipboard]="(apiKey$ | async).apiKey" (click)="copy()" matTooltip="Copy API key" aria-label="Icon button to copy api key" i18n>
             <mat-icon>content_copy</mat-icon>
           </button>
           <mat-hint i18n>Save this key - you won't be able to access it again.</mat-hint>
