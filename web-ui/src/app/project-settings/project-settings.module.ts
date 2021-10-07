@@ -16,6 +16,7 @@ import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { FlexLayoutModule } from "@angular/flex-layout";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatCardModule } from "@angular/material/card";
 
 @NgModule({
   declarations: [ProjectMembersListComponent, AddOrEditProjectMemberComponent],
@@ -28,6 +29,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     FlexLayoutModule,
     ReactiveFormsModule,
     MatButtonModule,
+    MatCardModule,
     MatDialogModule,
     MatIconModule,
     MatInputModule,
