@@ -24,6 +24,7 @@ import { MatTreeModule } from "@angular/material/tree";
 import { MatDialogModule } from "@angular/material/dialog";
 import { ReactiveFormsModule } from "@angular/forms";
 import { FlexLayoutModule } from "@angular/flex-layout";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [EditModelComponent, ModelStageLogComponent, ModelsListComponent],
@@ -52,6 +53,7 @@ import { FlexLayoutModule } from "@angular/flex-layout";
     MatTableModule,
     MatTabsModule,
     MatToolbarModule,
+    MatTooltipModule,
     MatTreeModule,
   ],
 })

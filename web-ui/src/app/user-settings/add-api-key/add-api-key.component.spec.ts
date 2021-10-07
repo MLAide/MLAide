@@ -25,6 +25,8 @@ import { selectNewCreatedApiKey } from "@mlaide/state/api-key/api-key.selectors"
 import { addApiKey, closeAddApiKeyDialog } from "@mlaide/state/api-key/api-key.actions";
 import { showSuccessMessage } from "@mlaide/state/shared/shared.actions";
 import { ApiKey } from "@mlaide/state/api-key/api-key.models";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatTooltipHarness } from "@angular/material/tooltip/testing";
 
 describe("CreateApiKeyComponent", () => {
   let component: AddApiKeyComponent;
@@ -56,6 +58,7 @@ describe("CreateApiKeyComponent", () => {
         MatFormFieldModule,
         MatIconModule,
         MatInputModule,
+        MatTooltipModule,
         ReactiveFormsModule,
       ],
     }).compileComponents();
@@ -480,6 +483,17 @@ describe("CreateApiKeyComponent", () => {
           expect(button).toBeTruthy();
           expect(icon).toBeTruthy();
           expect(await button.getText()).toEqual("content_copy");
+        });
+
+        it("should show tool tip for copy button", async () => {
+          // arrange + act also in beforeEach
+          const toolTips: MatTooltipHarness[] = await loader.getAllHarnesses(MatTooltipHarness);
+
+          // act
+          await toolTips[0].show();
+
+          // assert
+          expect(await toolTips[0].getTooltipText()).toEqual(`Copy API key`);
         });
 
         it("should call copy when clicking copy button", async () => {

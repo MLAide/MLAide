@@ -47,10 +47,10 @@
       <ng-container matColumnDef="actions" [stickyEnd]="true">
         <th id="actions" mat-header-cell *matHeaderCellDef aria-label="SSH Key actions" i18n>Actions</th>
         <td headers="actions" mat-cell *matCellDef="let element">
-          <button id="ssh-key-copy-button" mat-button [cdkCopyToClipboard]="element.sshKey" (click)="copy()" aria-label="Icon button to copy ssh key">
+          <button id="ssh-key-copy-button" mat-button [cdkCopyToClipboard]="element.sshKey" (click)="copy()" matTooltip="Copy SSH key" aria-label="Icon button to copy ssh key">
             <mat-icon>content_copy</mat-icon>
           </button>
-          <button mat-button (click)="deleteSshKey(element)" aria-label="Icon button to delete ssh key">
+          <button mat-button (click)="deleteSshKey(element)" matTooltip="Delete SSH key" aria-label="Icon button to delete ssh key">
             <mat-icon>delete</mat-icon>
           </button>
         </td>

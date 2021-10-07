@@ -15,6 +15,8 @@ import { MatInputModule } from "@angular/material/input";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { FlexLayoutModule } from "@angular/flex-layout";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatCardModule } from "@angular/material/card";
 
 @NgModule({
   declarations: [ProjectMembersListComponent, AddOrEditProjectMemberComponent],
@@ -27,6 +29,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
     FlexLayoutModule,
     ReactiveFormsModule,
     MatButtonModule,
+    MatCardModule,
     MatDialogModule,
     MatIconModule,
     MatInputModule,
@@ -34,6 +37,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
     MatSelectModule,
     MatSnackBarModule,
     MatTableModule,
+    MatTooltipModule,
   ],
 })
 export class ProjectSettingsModule {}

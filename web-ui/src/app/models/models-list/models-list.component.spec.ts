@@ -22,6 +22,8 @@ import { loadModels, openEditModelDialog, openModelStageLogDialog } from "@mlaid
 import { MatCardHarness } from "@angular/material/card/testing";
 import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
 import { Artifact } from "@mlaide/state/artifact/artifact.models";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatTooltipHarness } from "@angular/material/tooltip/testing";
 
 describe("ModelsListComponent", () => {
   let component: ModelsListComponent;
@@ -50,6 +52,7 @@ describe("ModelsListComponent", () => {
         MatDialogModule,
         MatIconModule,
         MatTableModule,
+        MatTooltipModule,
         MatSortModule,
         MatProgressSpinnerModule
       ],
@@ -206,7 +209,18 @@ describe("ModelsListComponent", () => {
         });
       });
 
-      it("should call openModelStageLog with model on clicking edit button in row", async () => {
+      it("should show tool tip for edit button in row", async () => {
+        // arrange + act also in beforeEach
+        const toolTips: MatTooltipHarness[] = await loader.getAllHarnesses(MatTooltipHarness);
+
+        // act
+        await toolTips[0].show();
+
+        // assert
+        expect(await toolTips[0].getTooltipText()).toEqual(`Edit ${fakeArtifacts[0].name} model`);
+      });
+
+      it("should call openModelStageLog with model on clicking model stage log button in row", async () => {
         // arrange + act also in beforeEach
         spyOn(component, "openModelStageLog");
         const historyButtons: MatButtonHarness[] = await loader.getAllHarnesses(MatButtonHarness.with({ text: "history" }));
@@ -218,6 +232,17 @@ describe("ModelsListComponent", () => {
         fixture.whenStable().then(() => {
           expect(component.openModelStageLog).toHaveBeenCalledWith(fakeArtifacts[fakeArtifacts.length - 1]);
         });
+      });
+
+      it("should show tool tip for model stage log button in row", async () => {
+        // arrange + act also in beforeEach
+        const toolTips: MatTooltipHarness[] = await loader.getAllHarnesses(MatTooltipHarness);
+
+        // act
+        await toolTips[1].show();
+
+        // assert
+        expect(await toolTips[1].getTooltipText()).toEqual(`Show model stage log for ${fakeArtifacts[0].name}`);
       });
     });
 

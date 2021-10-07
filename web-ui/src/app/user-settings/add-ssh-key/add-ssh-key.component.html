@@ -38,7 +38,7 @@
             [value]="(sshKey$ | async)?.sshKey"
             readonly="true"
           ></textarea>
-          <button id="add-ssh-key-copy-button" mat-icon-button matSuffix [cdkCopyToClipboard]="(sshKey$ | async).sshKey" (click)="copy()" aria-label="Icon button to copy ssh key">
+          <button id="add-ssh-key-copy-button" mat-icon-button matSuffix [cdkCopyToClipboard]="(sshKey$ | async).sshKey" (click)="copy()" matTooltip="Copy SSH key" aria-label="Icon button to copy ssh key">
             <mat-icon>content_copy</mat-icon>
           </button>
         </mat-form-field>

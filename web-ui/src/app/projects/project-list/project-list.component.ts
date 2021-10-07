@@ -19,10 +19,10 @@ export class ProjectListComponent implements OnInit {
   constructor(private router: Router, private readonly store: Store) {}
 
   public ngOnInit() {
-   this.projects$ = this.store.select(selectProjects);
-   this.isLoading$ = this.store.select(selectIsLoadingProjects);
+     this.projects$ = this.store.select(selectProjects);
+     this.isLoading$ = this.store.select(selectIsLoadingProjects);
 
-    this.store.dispatch(loadProjects());
+     this.store.dispatch(loadProjects());
   }
 
   async goToProject(project: Project) {

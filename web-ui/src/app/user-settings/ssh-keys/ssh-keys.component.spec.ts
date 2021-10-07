@@ -33,6 +33,8 @@ import { DatePipe } from "@angular/common";
 import { MatIconHarness } from "@angular/material/icon/testing";
 import { showSuccessMessage } from "@mlaide/state/shared/shared.actions";
 import { ClipboardModule } from "@angular/cdk/clipboard";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatTooltipHarness } from "@angular/material/tooltip/testing";
 
 describe('SshKeysComponent', () => {
   let component: SshKeysComponent;
@@ -65,7 +67,8 @@ describe('SshKeysComponent', () => {
         MatDialogModule,
         MatIconModule,
         MatProgressSpinnerModule,
-        MatTableModule
+        MatTableModule,
+        MatTooltipModule,
       ],
     })
     .compileComponents();
@@ -268,6 +271,17 @@ describe('SshKeysComponent', () => {
         expect(await button.getText()).toEqual("content_copy");
       });
 
+      it("should show tool tip for copy button in row", async () => {
+        // arrange + act also in beforeEach
+        const toolTips: MatTooltipHarness[] = await loader.getAllHarnesses(MatTooltipHarness);
+
+        // act
+        await toolTips[0].show();
+
+        // assert
+        expect(await toolTips[0].getTooltipText()).toEqual(`Copy SSH key`);
+      });
+
       it("should call copy when clicking copy button", async () => {
         // arrange also in beforeEach
         spyOn(component, "copy");
@@ -294,6 +308,17 @@ describe('SshKeysComponent', () => {
         fixture.whenStable().then(() => {
           expect(component.deleteSshKey).toHaveBeenCalledWith(fakeSshKeys[fakeSshKeys.length - 1]);
         });
+      });
+
+      it("should show tool tip for delete button in row", async () => {
+        // arrange + act also in beforeEach
+        const toolTips: MatTooltipHarness[] = await loader.getAllHarnesses(MatTooltipHarness);
+
+        // act
+        await toolTips[1].show();
+
+        // assert
+        expect(await toolTips[1].getTooltipText()).toEqual(`Delete SSH key`);
       });
     });
 

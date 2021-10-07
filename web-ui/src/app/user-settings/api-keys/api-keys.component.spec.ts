@@ -23,6 +23,8 @@ import { addApiKey, deleteApiKey, loadApiKeys, openAddApiKeyDialog } from "@mlai
 import { MatCardHarness } from "@angular/material/card/testing";
 import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
 import { ApiKey } from "@mlaide/state/api-key/api-key.models";
+import { MatTooltipHarness } from "@angular/material/tooltip/testing";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 describe("ApiKeysComponent", () => {
   let component: ApiKeysComponent;
@@ -54,7 +56,8 @@ describe("ApiKeysComponent", () => {
         MatDialogModule,
         MatIconModule,
         MatProgressSpinnerModule,
-        MatTableModule
+        MatTableModule,
+        MatTooltipModule,
       ],
     }).compileComponents();
 
@@ -239,6 +242,17 @@ describe("ApiKeysComponent", () => {
         fixture.whenStable().then(() => {
           expect(component.deleteApiKey).toHaveBeenCalledWith(fakeApiKeys[fakeApiKeys.length - 1]);
         });
+      });
+
+      it("should show tool tip for delete button in row", async () => {
+        // arrange + act also in beforeEach
+        const toolTips: MatTooltipHarness[] = await loader.getAllHarnesses(MatTooltipHarness);
+
+        // act
+        await toolTips[0].show();
+
+        // assert
+        expect(await toolTips[0].getTooltipText()).toEqual(`Delete API key`);
       });
     });
 

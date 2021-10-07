@@ -29,6 +29,7 @@ import { ExperimentsListComponent } from "./experiments-list/experiments-list.co
 import { ExperimentsRoutingModule } from "./experiments-routing.module";
 import { SharedModule } from "@mlaide/shared/shared.module";
 import { ExperimentLineageVisualizationComponent } from './experiment-lineage-visualization/experiment-lineage-visualization.component';
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [
@@ -66,6 +67,7 @@ import { ExperimentLineageVisualizationComponent } from './experiment-lineage-vi
     MatTableModule,
     MatTabsModule,
     MatToolbarModule,
+    MatTooltipModule,
   ],
 })
 export class ExperimentsModule {}
