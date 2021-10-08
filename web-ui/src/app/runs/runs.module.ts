@@ -25,6 +25,7 @@ import { SharedModule } from "@mlaide/shared/shared.module";
 import { RunNoteComponent } from './run-note/run-note.component';
 import { MetricsTableComponent } from './metrics-table/metrics-table.component';
 import { ParametersTableComponent } from './parameters-table/parameters-table.component';
+import { MatTabsModule } from "@angular/material/tabs";
 
 @NgModule({
   declarations: [
@@ -56,18 +57,8 @@ import { ParametersTableComponent } from './parameters-table/parameters-table.co
     MatSortModule,
     MatSnackBarModule,
     MatTableModule,
+    MatTabsModule,
     MatTreeModule,
-
-    // TODO: remove
-    // MatDialogModule,
-    // MatFormFieldModule,
-    // MatListModule,
-    // MatMenuModule,
-    // MatProgressSpinnerModule,
-    // MatSelectModule,
-    // MatSidenavModule,
-    // MatTabsModule,
-    // MatToolbarModule,
   ],
 })
 export class RunsModule {}
