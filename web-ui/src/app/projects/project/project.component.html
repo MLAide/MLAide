@@ -4,17 +4,17 @@
       <mat-nav-list *ngIf="(project$ | async) as project">
         <div fxLayout="row" fxLayoutAlign="center center">
           <span i18n>
-            <h2 class="mat-h2" class="primary-font-color">{{ project?.name }}</h2>
+            <h2 class="mat-h2" class="primary-font-color">{{ (project$ | async)?.name }}</h2>
           </span>
         </div>
         <mat-divider></mat-divider>
-        <a mat-list-item [routerLink]="['/projects/' + project?.key + '/experiments']">
+        <a mat-list-item [routerLink]="['/projects/' + (project$ | async)?.key + '/experiments']">
           <div fxLayout="row" fxLayoutAlign="center center">
             <mat-icon matListIcon class="padding">science</mat-icon>
             <span matLine i18n>Experiments</span>
           </div>
         </a>
-        <a mat-list-item [routerLink]="['/projects/' + project?.key + '/runs']">
+        <a mat-list-item [routerLink]="['/projects/' + (project$ | async)?.key + '/runs']">
           <div fxLayout="row" fxLayoutAlign="center center">
             <mat-icon matListIcon class="padding">play_for_work</mat-icon>
             <span matLine i18n>Runs</span>
