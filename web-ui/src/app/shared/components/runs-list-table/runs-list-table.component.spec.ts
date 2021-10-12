@@ -1,4 +1,4 @@
-import { SimpleChange } from "@angular/core";
+import { DebugElement, SimpleChange } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatListHarness } from "@angular/material/list/testing";
 import { MatButtonModule } from "@angular/material/button";
@@ -32,9 +32,8 @@ import { Subscription } from "rxjs/internal/Subscription";
 import { Project } from "@mlaide/state/project/project.models";
 import { Run } from "@mlaide/state/run/run.models";
 import { MatMenuModule } from "@angular/material/menu";
-import { getDefaultComponentOptions } from "@angular/cdk/schematics";
-import { editUserProfile } from "@mlaide/state/user/user.actions";
 import { MatMenuHarness } from "@angular/material/menu/testing";
+import { By } from "@angular/platform-browser";
 
 describe("RunsListTableComponent", () => {
   let component: RunsListTableComponent;
@@ -679,27 +678,22 @@ describe("RunsListTableComponent", () => {
         });
       });
 
-      // TODO Raman: Fix this test
-      // Additional infos: https://github.com/angular/components/issues/1812
-      // Additional infos: https://github.com/angular/components/blob/master/src/material/checkbox/checkbox.spec.ts#L186
-      /*it("should call columnsMenuChanged() if clicked on menu-item", async () => {
+      it("should call columnsMenuChanged() if clicked on menu-item", async () => {
         // arrange + act also in beforeEach
-        spyOn(component, "columnsMenuChanged");
+        const spy = spyOn(component, "columnsMenuChanged");
         const rootLoader = TestbedHarnessEnvironment.documentRootLoader(fixture);
         const menu: MatMenuHarness = await rootLoader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
-        const checkBoxes: MatCheckboxHarness[] = await rootLoader.getAllHarnesses(MatCheckboxHarness);
 
         // act
         await menu.open();
-        console.log(await checkBoxes[0].isChecked());
-        await checkBoxes[0].check();
-        console.log(await checkBoxes[0].isChecked());
-        fixture.detectChanges();
-        flush();
+        let checkBoxDE: DebugElement = fixture.debugElement.query(By.css("#parameters-column label"));
+        let checkBoxNE = checkBoxDE.nativeElement;
+        checkBoxNE.click();
 
         // assert
-        expect(component.columnsMenuChanged).toHaveBeenCalled();
-      });*/
+        expect(spy).toHaveBeenCalled();
+        expect(spy.calls.count()).toEqual(1);
+      });
     });
 
     describe("runs table", () => {
@@ -782,17 +776,15 @@ describe("RunsListTableComponent", () => {
         });
       });
 
-      // TODO Raman: Fix these tests after fixing the test above
-      /*
       describe("with parameters", () => {
         beforeEach(async () => {
           const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
 
-          const checkBoxes: MatCheckboxHarness[] = await loader.getAllHarnesses(MatCheckboxHarness);
-
           // act
           await menu.open();
-          await checkBoxes[0].toggle();
+          let checkBoxDE: DebugElement = fixture.debugElement.query(By.css("#parameters-column label"));
+          let checkBoxNE = checkBoxDE.nativeElement;
+          checkBoxNE.click();
           fixture.detectChanges();
         });
 
@@ -885,9 +877,90 @@ describe("RunsListTableComponent", () => {
             expect(row.createdBy).toEqual(fakeRun.createdBy.nickName);
             await chipsEqualExperimentKeys(chips, fakeRun);
           }));
-
         });
-      });*/
+      });
+
+      describe("with git commit", () => {
+        beforeEach(async () => {
+          const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
+
+          // act
+          await menu.open();
+          let checkBoxDE: DebugElement = fixture.debugElement.query(By.css("#git-commit-column label"));
+          let checkBoxNE = checkBoxDE.nativeElement;
+          checkBoxNE.click();
+          fixture.detectChanges();
+        });
+
+        it("should have defined headers", async () => {
+          // arrange + act also in beforeEach
+          const table: MatTableHarness = await loader.getHarness(MatTableHarness);
+          const headers: MatHeaderRowHarness[] = await table.getHeaderRows();
+          const headerRow: MatRowHarnessColumnsText = await headers[0].getCellTextByColumnName();
+          const checkbox = await loader.getHarness(MatCheckboxHarness.with({ selector: "#master-checkbox" }));
+
+          // assert
+          expect(Object.keys(headerRow).length).toBe(9);
+          expect(checkbox).toBeTruthy();
+          expect(headerRow.select).toBe("");
+          expect(headerRow.name).toBe("Name");
+          expect(headerRow.status).toBe("Status");
+          expect(headerRow.startTime).toBe("Start time");
+          expect(headerRow.runTime).toBe("Run time");
+          expect(headerRow.metrics).toBe("Metrics");
+          expect(headerRow.gitCommitHash).toBe("Git Commit");
+          expect(headerRow.createdBy).toBe("Created by");
+          expect(headerRow.experiments).toBe("Experiments");
+        });
+
+        it("should show row for each run", async () => {
+          // arrange + act also in beforeEach
+          const table: MatTableHarness = await loader.getHarness(MatTableHarness);
+          const rows: MatRowHarness[] = await table.getRows();
+          const chipLists: MatChipListHarness[] = await loader.getAllHarnesses(MatChipListHarness);
+          const checkboxes: MatCheckboxHarness[] = await loader.getAllHarnesses(MatCheckboxHarness)
+          const metricsLists: MatListHarness[] = await loader.getAllHarnesses(MatListHarness.with({ selector: "#metrics-list" }));
+
+          // assert
+          expect(rows.length).toBe(fakeRuns.length);
+          // +1 because we have master toggle checkbox in the header row
+          expect(checkboxes.length).toBe(fakeRuns.length + 1);
+          expect(metricsLists.length).toBe(fakeRuns.length);
+
+          await Promise.all(fakeRuns.map(async (fakeRun, fakeRunIndex) => {
+            const row: MatRowHarnessColumnsText = await rows[fakeRunIndex].getCellTextByColumnName();
+            const chips: MatChipHarness[] = await chipLists[fakeRunIndex].getChips();
+
+            // material sorts the metrics list
+            const orderedMetricsObject = Object.keys(fakeRun.metrics)
+              .sort()
+              .reduce((obj, key) => {
+                obj[key] = fakeRun.metrics[key];
+                return obj;
+              }, {});
+
+            let metricsString = "";
+            await Promise.all(Object.keys(orderedMetricsObject).map(async (key, keyIndex) => {
+              const keyValueString = ` remove ${key} : ${fakeRun.metrics[key]}`;
+              metricsString += keyValueString;
+
+              // assert metrics' list elements
+              const items = await metricsLists[fakeRunIndex].getItems();
+              expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
+            }));
+
+            expect(row.name).toEqual(fakeRun.name);
+            expect(row.status.toUpperCase().replace(" ", "_")).toEqual(fakeRun.status);
+            expect(row.startTime).toEqual(String(fakeRun.startTime));
+            // We need to do this because the duration pipe's first argument is startTime
+            expect(row.runTime).toEqual(String(fakeRun.startTime));
+            expect(row.metrics).toEqual(metricsString.trim());
+            expect(row.gitCommitHash).toEqual(fakeRun.git.commitHash);
+            expect(row.createdBy).toEqual(fakeRun.createdBy.nickName);
+            await chipsEqualExperimentKeys(chips, fakeRun);
+          }));
+        });
+      });
 
       it("should have correct router link to details for each run", async () => {
         // arrange + act also in beforeEach
