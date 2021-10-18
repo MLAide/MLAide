@@ -5,7 +5,7 @@
 
 ## Purpose
 
-Hi, we are ML Aide, and our purpose is making model management a joy for you!
+Hi, we are ML Aide, and our purpose is to make model management a joy for you!
 
 ## Key Benefits
 
