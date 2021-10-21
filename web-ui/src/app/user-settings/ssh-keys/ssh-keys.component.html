@@ -36,14 +36,6 @@
           {{ element?.createdAt | date: "medium" }}
         </td>
       </ng-container>
-      <ng-container matColumnDef="expiresAt">
-        <th id="expires-at" mat-header-cell *matHeaderCellDef aria-label="SSH Key Expiration Date" i18n>
-          Expires at
-        </th>
-        <td headers="expires-at" mat-cell *matCellDef="let element">
-          {{ element?.expiresAt ? (element?.expiresAt | date: "medium") : "never" }}
-        </td>
-      </ng-container>
       <ng-container matColumnDef="actions" [stickyEnd]="true">
         <th id="actions" mat-header-cell *matHeaderCellDef aria-label="SSH Key actions" i18n>Actions</th>
         <td headers="actions" mat-cell *matCellDef="let element">

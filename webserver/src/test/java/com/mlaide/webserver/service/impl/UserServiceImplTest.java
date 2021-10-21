@@ -2,13 +2,19 @@ package com.mlaide.webserver.service.impl;
 
 import com.github.javafaker.Faker;
 import com.mlaide.webserver.faker.SecurityContextFaker;
+import com.mlaide.webserver.faker.SshKeyFaker;
 import com.mlaide.webserver.faker.UserFaker;
+import com.mlaide.webserver.model.ItemList;
+import com.mlaide.webserver.model.SshKey;
 import com.mlaide.webserver.model.User;
+import com.mlaide.webserver.repository.SshKeysRepository;
 import com.mlaide.webserver.repository.UserRepository;
+import com.mlaide.webserver.repository.entity.SshKeyEntity;
 import com.mlaide.webserver.repository.entity.UserEntity;
 import com.mlaide.webserver.repository.entity.UserRef;
 import com.mlaide.webserver.service.NotFoundException;
 import com.mlaide.webserver.service.UserResolver;
+import com.mlaide.webserver.service.mapper.SshKeyMapper;
 import com.mlaide.webserver.service.mapper.UserMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -18,8 +24,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.time.Clock;
+import java.util.List;
 import java.util.UUID;
 
+import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,12 +43,15 @@ class UserServiceImplTest {
     private @Mock UserRepository userRepository;
     private @Mock UserMapper userMapper;
     private @Mock UserResolver userResolver;
+    private @Mock SshKeysRepository sshKeyRepository;
+    private @Mock SshKeyMapper sshKeyMapper;
+    private @Mock Clock clock;
 
     private final Faker faker = new Faker();
 
     @BeforeEach
     void initialize() {
-        userService = new UserServiceImpl(userRepository, userMapper, userResolver);
+        userService = new UserServiceImpl(userRepository, userMapper, userResolver, sshKeyRepository, sshKeyMapper, clock);
     }
 
     @Nested
@@ -283,5 +295,44 @@ class UserServiceImplTest {
             // Act + Assert
             assertThatThrownBy(() -> userService.getUserByEmail(email)).isInstanceOf(NotFoundException.class);
         }
+    }
+
+    @Nested
+    class getSshKeysForCurrentUser {
+        String currentUserId = UUID.randomUUID().toString();
+
+        @BeforeEach
+        void populateSecurityContext() {
+            SecurityContextFaker.setupUserInSecurityContext(currentUserId);
+        }
+
+        @Test
+        void current_user_has_ssh_keys_should_return_list_of_ssh_keys() {
+            // Arrange
+            SshKeyEntity sshKeyEntity = SshKeyFaker.newSshKeyEntity();
+            List<SshKeyEntity> sshKeyEntities = List.of(sshKeyEntity);
+            when(sshKeyRepository.findByUserId(currentUserId)).thenReturn(sshKeyEntities);
+
+            // Act
+            ItemList<SshKey> sshKeys = userService.getSshKeysForCurrentUser();
+
+            // Assert
+            assertThat(sshKeys).isNotNull();
+            assertThat(sshKeys.getItems()).hasSize(1);
+            assertThat(sshKeys.getItems().get(0).getDescription()).isEqualTo(sshKeyEntity.getDescription());
+            assertThat(sshKeys.getItems().get(0).getCreatedAt()).isEqualTo(sshKeyEntity.getUserId());
+            assertThat(sshKeys.getItems().get(0).getPublicKey()).isEqualTo(publicKey);
+            assertThat(sshKeys.getItems().get(0).getId()).isEqualTo(sshKeyEntity.getUserId());
+        }
+    }
+
+    @Nested
+    class createSshKeyForCurrentPrincipal {
+
+    }
+
+    @Nested
+    class deleteSshKey {
+
     }
 }

@@ -8,23 +8,10 @@
       <mat-form-field fxFlex="100">
         <mat-label i18n>Description</mat-label>
         <input id="description-input" matInput formControlName="description" placeholder="Description" cdkFocusInitial required />
-        <mat-error *ngIf="form.get('description').hasError('required')" i18n> You must provide a description. </mat-error>
+        <mat-error *ngIf="form.get('description').hasError('required')" i18n>You must provide a description.</mat-error>
       </mat-form-field>
     </div>
-    <div>
-      <mat-form-field fxFlex="100">
-        <mat-label i18n>Expires at</mat-label>
-        <input
-          id="expires-at-input"
-          matInput
-          type="date"
-          [min]="today | date: 'yyyy-MM-dd'"
-          formControlName="expiresAt"
-          placeholder="Expires at"
-        />
-      </mat-form-field>
-    </div>
-    <div *ngIf="(sshKey$ | async)">
+    <div *ngIf="(sshKey$ | async); let sshKey">
       <mat-divider></mat-divider>
       <h3 class="mat-h3">Created SSH key</h3>
       <div>
@@ -35,10 +22,10 @@
             cdkTextareaAutosize
             #notes
             #autosize="cdkTextareaAutosize"
-            [value]="(sshKey$ | async)?.sshKey"
+            [value]="sshKey.publicKey"
             readonly="true"
           ></textarea>
-          <button id="add-ssh-key-copy-button" mat-icon-button matSuffix [cdkCopyToClipboard]="(sshKey$ | async).sshKey" (click)="copy()" matTooltip="Copy SSH key" aria-label="Icon button to copy ssh key">
+          <button id="add-ssh-key-copy-button" mat-icon-button matSuffix [cdkCopyToClipboard]="sshKey.publicKey" (click)="copy()" matTooltip="Copy SSH key" aria-label="Icon button to copy ssh key">
             <mat-icon>content_copy</mat-icon>
           </button>
         </mat-form-field>

@@ -21,7 +21,7 @@
     "e2e": "ng e2e",
     "coverage": "ng test --no-watch --code-coverage",
     "test-headless": "ng test --watch=false --no-progress --browsers=ChromeHeadlessNoSandbox --code-coverage",
-    "postinstall": "rm ./node_modules/faker/locale/ReadMe.md"
+    "postinstall": "rm -f ./node_modules/faker/locale/ReadMe.md"
   },
   "private": true,
   "dependencies": {

@@ -30,7 +30,6 @@ export class AddSshKeyComponent implements OnInit {
           updateOn: "change",
         },
       ],
-      expiresAt: ["", []],
     });
   }
 
@@ -48,10 +47,9 @@ export class AddSshKeyComponent implements OnInit {
 
   public create() {
     const sshKey: SshKey = {
-      sshKey: undefined,
+      publicKey: undefined,
       createdAt: undefined,
       description: this.form.value.description,
-      expiresAt: this.form.value.expiresAt ? new Date(this.form.value.expiresAt) : undefined,
       id: undefined,
     };
 

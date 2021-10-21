@@ -1058,6 +1058,71 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/UnexpectedError'
+  /users/current/ssh-keys:
+    get:
+      summary: Get SSH keys of current user
+      operationId: getSshKeys
+      tags:
+        - users
+      responses:
+        '200':
+          description: List of SSH keys
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SshKeys"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/UnexpectedError'
+    post:
+      summary: Create a new SSH key
+      operationId: createSshKey
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SshKey"
+      responses:
+        '200':
+          description: SSH key created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SshKey"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/UnexpectedError'
+  /users/current/ssh-keys/{sshKeyId}:
+    delete:
+      summary: Delete SSH key
+      operationId: deleteSshKey
+      tags:
+        - users
+      parameters:
+        - name: sshKeyId
+          in: path
+          required: true
+          description: The id of the SSH key
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Delete was successful
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/UnexpectedError'
 
 components:
   responses:
@@ -1492,6 +1557,38 @@ components:
       example:
         batch_size: 512
         mse: 0.1
+    SshKey:
+      type: object
+      required:
+        - createdAt
+        - description
+        - id
+      properties:
+        publicKey:
+          type: string
+          description: The public key of the SSH key pair
+          readOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        description:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        id:
+          type: string
+          readOnly: true
+    SshKeys:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ApiKey"
     User:
       type: object
       readOnly: true

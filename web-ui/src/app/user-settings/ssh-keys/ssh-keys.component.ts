@@ -13,7 +13,7 @@ import { showSuccessMessage } from "@mlaide/state/shared/shared.actions";
   styleUrls: ['./ssh-keys.component.scss']
 })
 export class SshKeysComponent implements OnInit {
-  public displayedColumns: string[] = ["description", "sshKey", "createdAt", "expiresAt", "actions"];
+  public displayedColumns: string[] = ["description", "sshKey", "createdAt", "actions"];
 
   public sshKeys$: Observable<SshKey[]>;
   public isLoading$: Observable<boolean>;

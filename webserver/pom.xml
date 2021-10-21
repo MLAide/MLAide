@@ -19,7 +19,7 @@
 		<spring-cloud.version>Hoxton.SR8</spring-cloud.version>
 		<aws.sdk.version>1.11.875</aws.sdk.version>
 		<mapstruct.version>1.4.2.Final</mapstruct.version>
-		<lombok.version>1.18.16</lombok.version>
+		<lombok.version>1.18.22</lombok.version>
 		<testcontainers.version>1.15.1</testcontainers.version>
 		<sonar.projectKey>webserver</sonar.projectKey>
 		<sonar.organization>mlaide</sonar.organization>
@@ -111,6 +111,12 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.8.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.1.55</version>
 		</dependency>
 
 		<!--
@@ -236,6 +242,11 @@
 							<version>${mapstruct.version}</version>
 						</path>
 					</annotationProcessorPaths>
+					<compilerArgs>
+						<compilerArg>
+							-Amapstruct.defaultComponentModel=spring
+						</compilerArg>
+					</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>

@@ -30,15 +30,6 @@ export class UserApi {
   }
 
   createSshKey(sshKey: SshKey): Observable<SshKey> {
-    const fakeSshKey: SshKey =
-      {
-        sshKey: "fake-ssh-key",
-        id: "fake-id",
-        description: "fake-description",
-        createdAt: new Date(),
-        expiresAt: undefined,
-      }
-    return of(fakeSshKey);
     return this.http.post<SshKey>(`${this.baseUrl}/users/current/ssh-keys`, sshKey);
   }
 
@@ -59,28 +50,6 @@ export class UserApi {
   }
 
   getSshKeys(): Observable<SshKeyListResponse> {
-    const sshKey: SshKey =
-      {
-        sshKey: "fake-ssh-key",
-        id: "fake-id",
-        description: "fake-description",
-        createdAt: new Date(),
-        expiresAt: undefined,
-      };
-
-    const sshKey2: SshKey =
-      {
-        sshKey: "fake-ssh-key-2",
-        id: "fake-id-2",
-        description: "fake-description-2",
-        createdAt: new Date(),
-        expiresAt: undefined,
-      };
-    const sshKeyLR: SshKeyListResponse = {
-    items: [sshKey, sshKey2]
-    };
-
-    return of(sshKeyLR);
     return this.http.get<SshKeyListResponse>(`${this.baseUrl}/users/current/ssh-keys`);
   }
 

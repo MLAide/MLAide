@@ -101,7 +101,6 @@ describe('AddSshKeyComponent', () => {
       expect(component.form).not.toBeNull();
       expect(component.form.value).toEqual({
         description: "",
-        expiresAt: "",
       });
     });
 
@@ -149,46 +148,16 @@ describe('AddSshKeyComponent', () => {
   });
 
   describe("create", () => {
-    it("should dispatch addSshKey action with ssh key that has expiration date", async () => {
-      // arrange in beforeEach
-      const description = fakeSshKey.description;
-      const expiresAt = new Date(Date.now());
-      component.form.setValue({
-        description: description,
-        expiresAt: expiresAt,
-      });
-      const sshKey: SshKey = {
-        sshKey: undefined,
-        createdAt: undefined,
-        description: description,
-        expiresAt: expiresAt,
-        id: undefined,
-      };
-
-      fakeSshKey.description = description;
-      fakeSshKey.expiresAt = expiresAt;
-
-      // act
-      component.create();
-
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(addSshKey({
-        sshKey: sshKey
-      }));
-    });
-
-    it("should dispatch addSshKey action with ssh key that has no expiration date", async () => {
+    it("should dispatch addSshKey action with ssh key", async () => {
       // arrange in beforeEach
       const description = fakeSshKey.description;
       component.form.setValue({
         description: description,
-        expiresAt: "",
       });
       const sshKey: SshKey = {
-        sshKey: undefined,
+        publicKey: undefined,
         createdAt: undefined,
         description: description,
-        expiresAt: undefined,
         id: undefined,
       };
 
@@ -202,7 +171,6 @@ describe('AddSshKeyComponent', () => {
         sshKey: sshKey
       }));
     });
-  });
 
   describe("keyDown", () => {
     it("should call create if pushed enter on a valid form and sshKey is not set", async () => {
@@ -307,21 +275,6 @@ describe('AddSshKeyComponent', () => {
           expect(formField).not.toBeNull();
           expect(await input.isRequired()).toBeTruthy();
           expect(await input.getPlaceholder()).toEqual("Description");
-          expect(input).not.toBeNull();
-        });
-
-        it("should have empty form field -- expiresAt", async () => {
-          // arrange + act also in beforeEach
-          // Have to add " *" to label because it is required
-          const formField: MatFormFieldHarness = await loader.getHarness(
-            MatFormFieldHarness.with({ floatingLabelText: "Expires at" })
-          );
-          const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ selector: "#expires-at-input" }));
-
-          // assert
-          expect(formField).not.toBeNull();
-          expect(await input.isRequired()).toBeFalsy();
-          expect(await input.getPlaceholder()).toEqual("Expires at");
           expect(input).not.toBeNull();
         });
 
@@ -463,7 +416,7 @@ describe('AddSshKeyComponent', () => {
           const formField: MatFormFieldHarness = await loader.getHarness(
             MatFormFieldHarness.with({ floatingLabelText: "SSH Key" })
           );
-          const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeSshKey.sshKey }));
+          const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeSshKey.publicKey }));
 
           // assert
           expect(formField).not.toBeNull();

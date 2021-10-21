@@ -213,7 +213,6 @@ describe('SshKeysComponent', () => {
         expect(headerRow.description).toBe("Description");
         expect(headerRow.sshKey).toBe("Key");
         expect(headerRow.createdAt).toBe("Created at");
-        expect(headerRow.expiresAt).toBe("Expires at");
         expect(headerRow.actions).toBe("Actions");
       });
 
@@ -229,33 +228,10 @@ describe('SshKeysComponent', () => {
         await Promise.all(fakeSshKeys.map(async (fakeSshKey, index) => {
           const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
           expect(row.description).toEqual(fakeSshKey.description);
-          expect(row.sshKey).toEqual(fakeSshKey.sshKey);
+          expect(row.sshKey).toEqual(fakeSshKey.publicKey);
           expect(row.createdAt).toEqual(String(fakeSshKey.createdAt));
-          expect(row.expiresAt).toEqual(String(fakeSshKey.expiresAt));
           expect(row.actions).toBe("content_copydelete");
         }));
-      });
-
-      it('should show "never" in expires at cell if it is undefined', async () => {
-        // arrange + act also in beforeEach
-        fakeSshKeys[0].expiresAt = undefined;
-        const table: MatTableHarness = await loader.getHarness(MatTableHarness);
-        const rows: MatRowHarness[] = await table.getRows();
-        const firstRow: MatRowHarnessColumnsText = await rows[0].getCellTextByColumnName();
-
-        // assert
-        expect(firstRow.expiresAt).toEqual("never");
-      });
-
-      it('should show "-" in expires at cell if it is null', async () => {
-        // arrange + act also in beforeEach
-        fakeSshKeys[0].expiresAt = null;
-        const table: MatTableHarness = await loader.getHarness(MatTableHarness);
-        const rows: MatRowHarness[] = await table.getRows();
-        const firstRow: MatRowHarnessColumnsText = await rows[0].getCellTextByColumnName();
-
-        // assert
-        expect(firstRow.expiresAt).toEqual("never");
       });
 
       it("should have a copy button", async () => {
