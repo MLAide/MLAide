@@ -209,9 +209,9 @@ describe('SshKeysComponent', () => {
         const headerRow: MatRowHarnessColumnsText = await headers[0].getCellTextByColumnName();
 
         // assert
-        expect(Object.keys(headerRow).length).toBe(5);
+        expect(Object.keys(headerRow).length).toBe(4);
         expect(headerRow.description).toBe("Description");
-        expect(headerRow.sshKey).toBe("Key");
+        expect(headerRow.publicKey).toBe("Key");
         expect(headerRow.createdAt).toBe("Created at");
         expect(headerRow.actions).toBe("Actions");
       });
@@ -228,7 +228,7 @@ describe('SshKeysComponent', () => {
         await Promise.all(fakeSshKeys.map(async (fakeSshKey, index) => {
           const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
           expect(row.description).toEqual(fakeSshKey.description);
-          expect(row.sshKey).toEqual(fakeSshKey.publicKey);
+          expect(row.publicKey).toEqual(fakeSshKey.publicKey);
           expect(row.createdAt).toEqual(String(fakeSshKey.createdAt));
           expect(row.actions).toBe("content_copydelete");
         }));

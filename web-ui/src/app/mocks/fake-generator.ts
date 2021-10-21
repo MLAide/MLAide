@@ -305,9 +305,6 @@ const projectMemberSchema = {
 };
 
 const sshKeySchema = {
-  sshKey: {
-    faker: "datatype.uuid",
-  },
   createdAt: {
     faker: "date.past",
   },
@@ -318,6 +315,9 @@ const sshKeySchema = {
     faker: "date.future",
   },
   id: {
+    faker: "datatype.uuid",
+  },
+  publicKey: {
     faker: "datatype.uuid",
   },
 };

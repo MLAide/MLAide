@@ -1,6 +1,7 @@
 package com.mlaide.webserver.service.impl;
 
 import com.github.javafaker.Faker;
+import com.mlaide.webserver.faker.ApiKeyFaker;
 import com.mlaide.webserver.faker.SecurityContextFaker;
 import com.mlaide.webserver.faker.SshKeyFaker;
 import com.mlaide.webserver.faker.UserFaker;
@@ -9,6 +10,7 @@ import com.mlaide.webserver.model.SshKey;
 import com.mlaide.webserver.model.User;
 import com.mlaide.webserver.repository.SshKeysRepository;
 import com.mlaide.webserver.repository.UserRepository;
+import com.mlaide.webserver.repository.entity.ApiKeyEntity;
 import com.mlaide.webserver.repository.entity.SshKeyEntity;
 import com.mlaide.webserver.repository.entity.UserEntity;
 import com.mlaide.webserver.repository.entity.UserRef;
@@ -16,6 +18,7 @@ import com.mlaide.webserver.service.NotFoundException;
 import com.mlaide.webserver.service.UserResolver;
 import com.mlaide.webserver.service.mapper.SshKeyMapper;
 import com.mlaide.webserver.service.mapper.UserMapper;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,6 +29,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
@@ -321,18 +325,65 @@ class UserServiceImplTest {
             assertThat(sshKeys.getItems()).hasSize(1);
             assertThat(sshKeys.getItems().get(0).getDescription()).isEqualTo(sshKeyEntity.getDescription());
             assertThat(sshKeys.getItems().get(0).getCreatedAt()).isEqualTo(sshKeyEntity.getUserId());
-            assertThat(sshKeys.getItems().get(0).getPublicKey()).isEqualTo(publicKey);
+            assertThat(sshKeys.getItems().get(0).getPublicKey()).isEqualTo(sshKeyEntity.getPublicKey());
             assertThat(sshKeys.getItems().get(0).getId()).isEqualTo(sshKeyEntity.getUserId());
         }
     }
 
     @Nested
     class createSshKeyForCurrentPrincipal {
-
+        // TODO Raman: Should we refactor the class as stated here to make testing easier:
+        // https://stackoverflow.com/questions/65316537/jsch-mock-java-mockito-powermockito
     }
 
     @Nested
     class deleteSshKey {
+        String currentUserId = UUID.randomUUID().toString();
 
+        @BeforeEach
+        void populateSecurityContext() {
+            SecurityContextFaker.setupUserInSecurityContext(currentUserId);
+        }
+
+        @Test
+        void specified_ssh_key_does_not_exist_should_throw_NotFoundException() {
+            // Arrange
+            ObjectId sshKeyId = ObjectId.get();
+            String sshKeyIdAsHexString = sshKeyId.toHexString();
+            when(sshKeyRepository.findById(sshKeyId)).thenReturn(Optional.empty());
+
+            // Act + Assert
+            assertThatThrownBy(() -> userService.deleteSshKey(sshKeyIdAsHexString))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void specified_does_not_belong_to_current_user_should_throw_NotFoundException() {
+            // Arrange
+            ObjectId sshKeyId = ObjectId.get();
+            String sshKeyIdAsHexString = sshKeyId.toHexString();
+            SshKeyEntity sshKeyEntity = SshKeyFaker.newSshKeyEntity();
+            when(sshKeyRepository.findById(sshKeyId)).thenReturn(Optional.of(sshKeyEntity));
+
+            // Act + Assert
+            assertThatThrownBy(() -> userService.deleteSshKey(sshKeyIdAsHexString))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+
+        @Test
+        void specified_belongs_to_current_user_should_delete_ssh_key() {
+            // Arrange
+            ObjectId sshKeyId = ObjectId.get();
+            SshKeyEntity sshKeyEntity = SshKeyFaker.newSshKeyEntity();
+            sshKeyEntity.setUserId(currentUserId);
+            when(sshKeyRepository.findById(sshKeyId)).thenReturn(Optional.of(sshKeyEntity));
+
+            // Act
+            userService.deleteSshKey(sshKeyId.toHexString());
+
+            // Assert
+            verify(sshKeyRepository).deleteById(sshKeyId);
+        }
     }
 }

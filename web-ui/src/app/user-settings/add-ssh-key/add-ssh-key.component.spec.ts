@@ -171,6 +171,7 @@ describe('AddSshKeyComponent', () => {
         sshKey: sshKey
       }));
     });
+  });
 
   describe("keyDown", () => {
     it("should call create if pushed enter on a valid form and sshKey is not set", async () => {
@@ -251,13 +252,14 @@ describe('AddSshKeyComponent', () => {
         beforeEach(() => {
           component.sshKey$ = undefined;
         });
-        it("should have 2 form fields with labels", async () => {
+
+        it("should have 1 form fields with labels", async () => {
           // arrange + act also in beforeEach
           fixture.detectChanges();
           const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(MatFormFieldHarness);
 
           // assert
-          expect(formFields.length).toBe(2);
+          expect(formFields.length).toBe(1);
           await Promise.all(formFields.map(async (formField) => {
             expect(await formField.hasLabel()).toBeTruthy();
           }));
@@ -390,13 +392,13 @@ describe('AddSshKeyComponent', () => {
           fixture.detectChanges();
         });
 
-        it("should have 3 form fields with labels", async () => {
+        it("should have 2 form fields with labels", async () => {
           // arrange + act also in beforeEach
           // component.sshKey = fakeSshKey.sshKey;
           const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(MatFormFieldHarness);
 
           // assert
-          expect(formFields.length).toBe(3);
+          expect(formFields.length).toBe(2);
           await Promise.all(formFields.map(async (formField) => {
             expect(await formField.hasLabel()).toBeTruthy();
           }));

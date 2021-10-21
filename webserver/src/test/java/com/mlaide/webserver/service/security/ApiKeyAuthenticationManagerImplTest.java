@@ -33,6 +33,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -247,15 +248,20 @@ public class ApiKeyAuthenticationManagerImplTest {
 
     @Nested
     class deleteApiKey {
+        String currentUserId = UUID.randomUUID().toString();
+
+        @BeforeEach
+        void populateSecurityContext() {
+            SecurityContextFaker.setupUserInSecurityContext(currentUserId);
+        }
+
+
         @Test
         void specified_api_key_does_not_exist_should_throw_NotFoundException() {
             // Arrange
             ObjectId apiKeyId = ObjectId.get();
             String apiKeyIdAsHexString = apiKeyId.toHexString();
             when(apiKeysRepository.findById(apiKeyId)).thenReturn(Optional.empty());
-
-            User currentUser = UserFaker.newUser();
-            SecurityContextFaker.setupUserInSecurityContext(currentUser.getUserId());
 
             // Act + Assert
             assertThatThrownBy(() -> apiKeyAuthenticationManager.deleteApiKey(apiKeyIdAsHexString))
@@ -271,9 +277,6 @@ public class ApiKeyAuthenticationManagerImplTest {
             apiKeyEntity.setUserId("another-user-id");
             when(apiKeysRepository.findById(apiKeyId)).thenReturn(Optional.of(apiKeyEntity));
 
-            User currentUser = UserFaker.newUser();
-            SecurityContextFaker.setupUserInSecurityContext(currentUser.getUserId());
-
             // Act + Assert
             assertThatThrownBy(() -> apiKeyAuthenticationManager.deleteApiKey(apiKeyIdAsHexString))
                     .isInstanceOf(NotFoundException.class);
@@ -282,12 +285,9 @@ public class ApiKeyAuthenticationManagerImplTest {
         @Test
         void specified_belongs_to_current_user_should_delete_api_key() {
             // Arrange
-            User currentUser = UserFaker.newUser();
-            SecurityContextFaker.setupUserInSecurityContext(currentUser.getUserId());
-
             ObjectId apiKeyId = ObjectId.get();
             ApiKeyEntity apiKeyEntity = ApiKeyFaker.newApiKeyEntity();
-            apiKeyEntity.setUserId(currentUser.getUserId());
+            apiKeyEntity.setUserId(currentUserId);
             when(apiKeysRepository.findById(apiKeyId)).thenReturn(Optional.of(apiKeyEntity));
 
             // Act

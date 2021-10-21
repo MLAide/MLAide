@@ -22,17 +22,17 @@ public class SshKeyEntity {
     @NotNull
     private OffsetDateTime createdAt;
 
-    @NotEmpty
-    private byte[] publicKey;
-
-    @NotEmpty
-    private byte[] privateKey;
-
     @NotBlank
     private String description;
 
     @Id
     private ObjectId id;
+
+    @NotEmpty
+    private byte[] privateKey;
+
+    @NotEmpty
+    private byte[] publicKey;
 
     @NotBlank
     private String userId;

@@ -20,12 +20,12 @@
           {{ element?.description }}
         </td>
       </ng-container>
-      <ng-container matColumnDef="sshKey">
-        <th id="sshKey" mat-header-cell *matHeaderCellDef aria-label="SSH Key" i18n>
+      <ng-container matColumnDef="publicKey">
+        <th id="publicKey" mat-header-cell *matHeaderCellDef aria-label="SSH Public Key" i18n>
           Key
         </th>
-        <td headers="sshKey" mat-cell *matCellDef="let element">
-          {{ element?.sshKey }}
+        <td headers="publicKey" mat-cell *matCellDef="let element">
+          {{ element?.publicKey }}
         </td>
       </ng-container>
       <ng-container matColumnDef="createdAt">
@@ -39,7 +39,7 @@
       <ng-container matColumnDef="actions" [stickyEnd]="true">
         <th id="actions" mat-header-cell *matHeaderCellDef aria-label="SSH Key actions" i18n>Actions</th>
         <td headers="actions" mat-cell *matCellDef="let element">
-          <button id="ssh-key-copy-button" mat-button [cdkCopyToClipboard]="element.sshKey" (click)="copy()" matTooltip="Copy SSH key" aria-label="Icon button to copy ssh key">
+          <button id="ssh-key-copy-button" mat-button [cdkCopyToClipboard]="element.publicKey" (click)="copy()" matTooltip="Copy SSH key" aria-label="Icon button to copy ssh key">
             <mat-icon>content_copy</mat-icon>
           </button>
           <button mat-button (click)="deleteSshKey(element)" matTooltip="Delete SSH key" aria-label="Icon button to delete ssh key">
