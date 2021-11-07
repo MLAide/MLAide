@@ -21,8 +21,10 @@ export class FileDiffComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.gitDiff$.subscribe(gitDiff => {
-      const diff2htmlUi = new Diff2HtmlUI(this.gitDiffElement.nativeElement, gitDiff.diff, this.diffConfig);
-      diff2htmlUi.draw();
+      if (gitDiff) {
+        const diff2htmlUi = new Diff2HtmlUI(this.gitDiffElement.nativeElement, gitDiff.diff, this.diffConfig);
+        diff2htmlUi.draw();
+      }
     });
   }
 }

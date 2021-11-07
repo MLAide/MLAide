@@ -5,6 +5,9 @@ import com.mlaide.webserver.model.SshKey;
 import com.mlaide.webserver.repository.entity.UserRef;
 import com.mlaide.webserver.model.User;
 
+import java.security.KeyPair;
+import java.util.List;
+
 public interface UserService {
     User getUser(String userId);
 
@@ -17,6 +20,8 @@ public interface UserService {
     User getUserByEmail(String email);
 
     ItemList<SshKey> getSshKeysForCurrentUser();
+
+    List<KeyPair> getSshKeyPairsForCurrentUser();
 
     SshKey createSshKeyForCurrentPrincipal(SshKey sshKey);
 

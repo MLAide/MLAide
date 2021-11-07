@@ -21,6 +21,8 @@
 		<mapstruct.version>1.4.2.Final</mapstruct.version>
 		<lombok.version>1.18.22</lombok.version>
 		<testcontainers.version>1.15.1</testcontainers.version>
+		<mockito.version>3.12.4</mockito.version>
+
 		<sonar.projectKey>webserver</sonar.projectKey>
 		<sonar.organization>mlaide</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -135,6 +137,24 @@
 			<version>1.6.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.javatuples</groupId>
+			<artifactId>javatuples</artifactId>
+			<version>1.2</version>
+		</dependency>
+
+		<!-- Git support -->
+		<dependency>
+			<groupId>org.eclipse.jgit</groupId>
+			<artifactId>org.eclipse.jgit</artifactId>
+			<version>5.13.0.202109080827-r</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jgit</groupId>
+			<artifactId>org.eclipse.jgit.ssh.apache</artifactId>
+			<version>5.13.0.202109080827-r</version>
+		</dependency>
+
 		<!-- Testing libraries -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -183,6 +203,13 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.jacoco</groupId>
 			<artifactId>jacoco-maven-plugin</artifactId>
 			<version>0.8.6</version>
@@ -194,11 +221,6 @@
 			<version>2.0.2</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.eclipse.jgit</groupId>
-			<artifactId>org.eclipse.jgit</artifactId>
-			<version>5.12.0.202106070339-r</version>
-		</dependency>
 
 	</dependencies>
 

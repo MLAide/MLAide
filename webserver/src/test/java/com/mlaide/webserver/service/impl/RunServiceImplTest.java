@@ -25,6 +25,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.security.KeyPair;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
@@ -683,16 +685,47 @@ class RunServiceImplTest {
             run1.getGit().setRepositoryUri(run2.getGit().getRepositoryUri());
             GitDiff expectedGitDiff = new GitDiff("the diff");
 
+            List<KeyPair> keyPairs = new ArrayList<>();
+
             when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey1)).thenReturn(run1);
             when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey2)).thenReturn(run2);
-            when(gitDiffService.getDiff(run1.getGit().getRepositoryUri(), run1.getGit().getCommitHash(), run2.getGit().getCommitHash()))
+            when(gitDiffService.getDiff(run1.getGit().getRepositoryUri(), run1.getGit().getCommitHash(), run2.getGit().getCommitHash(), keyPairs))
                     .thenReturn(expectedGitDiff);
+            when(userService.getSshKeyPairsForCurrentUser()).thenReturn(emptyList());
 
             // Act
             GitDiff gitDiff = runService.getGitDiffForRuns(projectKey, runKey1, runKey2);
 
             // Assert
             assertThat(gitDiff).isSameAs(expectedGitDiff);
+        }
+
+        @Test
+        void valid_runs_should_use_ssh_key_pairs_of_current_user_to_create_diff() {
+            // Arrange
+            RunEntity run1 = RunFaker.newRunEntity();
+            Integer runKey1 = run1.getKey();
+
+            RunEntity run2 = RunFaker.newRunEntity();
+            Integer runKey2 = run2.getKey();
+
+            run1.getGit().setRepositoryUri(run2.getGit().getRepositoryUri());
+            GitDiff expectedGitDiff = new GitDiff("the diff");
+
+            List<KeyPair> keyPairs = new ArrayList<>();
+
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey1)).thenReturn(run1);
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey2)).thenReturn(run2);
+            when(gitDiffService.getDiff(run1.getGit().getRepositoryUri(), run1.getGit().getCommitHash(), run2.getGit().getCommitHash(), keyPairs))
+                    .thenReturn(expectedGitDiff);
+            when(userService.getSshKeyPairsForCurrentUser()).thenReturn(keyPairs);
+
+            // Act
+            runService.getGitDiffForRuns(projectKey, runKey1, runKey2);
+
+            // Assert
+            verify(userService).getSshKeyPairsForCurrentUser();
+            verify(gitDiffService).getDiff(run1.getGit().getRepositoryUri(), run1.getGit().getCommitHash(), run2.getGit().getCommitHash(), keyPairs);
         }
     }
 }

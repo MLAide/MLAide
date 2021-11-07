@@ -1,8 +1,5 @@
 package com.mlaide.webserver.service.impl;
 
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.KeyPair;
 import com.mlaide.webserver.model.ItemList;
 import com.mlaide.webserver.model.SshKey;
 import com.mlaide.webserver.model.User;
@@ -25,11 +22,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -39,6 +40,8 @@ public class UserServiceImpl implements UserService {
     private final UserResolver userResolver;
     private final SshKeysRepository sshKeyRepository;
     private final SshKeyMapper sshKeyMapper;
+    private final KeyPairGenerator keyPairGenerator;
+    private final KeyFactory keyFactory;
     private final Clock clock;
 
     @Autowired
@@ -47,12 +50,16 @@ public class UserServiceImpl implements UserService {
                            UserResolver userResolver,
                            SshKeysRepository sshKeyRepository,
                            SshKeyMapper sshKeyMapper,
+                           KeyPairGenerator keyPairGenerator,
+                           KeyFactory keyFactory,
                            Clock clock) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.userResolver = userResolver;
         this.sshKeyRepository = sshKeyRepository;
         this.sshKeyMapper = sshKeyMapper;
+        this.keyPairGenerator = keyPairGenerator;
+        this.keyFactory = keyFactory;
         this.clock = clock;
     }
 
@@ -113,11 +120,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ItemList<SshKey> getSshKeysForCurrentUser() {
-        List<SshKeyEntity> sshKeyEntities = sshKeyRepository.findByUserId(getCurrentUserId());
-
-        List<SshKey> sshKeys = sshKeyMapper.fromEntity(sshKeyEntities);
+        List<SshKey> sshKeys = sshKeyRepository.findByUserId(getCurrentUserId()).stream()
+                .map(sshKeyMapper::fromEntity)
+                .collect(Collectors.toList());
 
         return new ItemList<>(sshKeys);
+    }
+
+    @Override
+    public List<KeyPair> getSshKeyPairsForCurrentUser() {
+        List<SshKeyEntity> sshKeyEntities = sshKeyRepository.findByUserId(getCurrentUserId());
+
+        return sshKeyEntities.stream()
+                .map(sshKeyEntity -> {
+                    try {
+                        PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(sshKeyEntity.getPrivateKey()));
+                        PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(sshKeyEntity.getPublicKey()));
+
+                        return new KeyPair(publicKey, privateKey);
+                    } catch (InvalidKeySpecException e) {
+                        // this should never happen
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -126,25 +152,11 @@ public class UserServiceImpl implements UserService {
 
         logger.info("Creating new SSH key for user {}", userId);
 
-        ByteArrayOutputStream privateKey = new ByteArrayOutputStream();
-        ByteArrayOutputStream publicKey = new ByteArrayOutputStream();
-
-        try {
-            JSch jsch = new JSch();
-
-            KeyPair keyPair = KeyPair.genKeyPair(jsch, KeyPair.RSA);
-            keyPair.writePrivateKey(privateKey);
-            keyPair.writePublicKey(publicKey, sshKey.getDescription());
-
-            keyPair.dispose();
-        } catch (JSchException e) {
-            logger.error("Could not create SSH key", e);
-            // TODO: Log that key generation failed and rethrow
-        }
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
         SshKeyEntity sshKeyEntity = new SshKeyEntity();
-        sshKeyEntity.setPrivateKey(privateKey.toByteArray());
-        sshKeyEntity.setPublicKey(publicKey.toByteArray());
+        sshKeyEntity.setPrivateKey(keyPair.getPrivate().getEncoded());
+        sshKeyEntity.setPublicKey(keyPair.getPublic().getEncoded());
         sshKeyEntity.setCreatedAt(OffsetDateTime.now(clock));
         sshKeyEntity.setUserId(userId);
         sshKeyEntity.setDescription(sshKey.getDescription());

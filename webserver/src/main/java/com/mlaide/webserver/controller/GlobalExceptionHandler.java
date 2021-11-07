@@ -1,6 +1,7 @@
 package com.mlaide.webserver.controller;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.mlaide.webserver.service.git.GitRepositoryAccessDenied;
 import com.mlaide.webserver.validation.Violation;
 import com.mlaide.webserver.model.Error;
 import com.mlaide.webserver.service.ConflictException;
@@ -29,6 +30,11 @@ import java.util.List;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+    @ExceptionHandler(value = { GitRepositoryAccessDenied.class })
+    protected ResponseEntity<Object> handleForbidden(Exception e, WebRequest request) {
+        Error error = new Error(HttpStatus.FORBIDDEN.value(), e.getMessage());
+        return handleExceptionInternal(e, error, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+    }
     @ExceptionHandler(value = { IllegalArgumentException.class, InvalidInputException.class})
     protected ResponseEntity<Object> handleBadRequest(Exception e, WebRequest request) {
         Error error = new Error(HttpStatus.BAD_REQUEST.value(), e.getMessage());

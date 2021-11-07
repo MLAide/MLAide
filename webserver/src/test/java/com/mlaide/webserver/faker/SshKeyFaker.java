@@ -27,8 +27,9 @@ public class SshKeyFaker {
         byte[] b = new byte[20];
         new Random().nextBytes(b);
 
-        sshKeyEntity.setDescription(faker.lorem().sentence());
         sshKeyEntity.setCreatedAt(FakerUtils.pastDate());
+        sshKeyEntity.setDescription(faker.lorem().sentence());
+        sshKeyEntity.setId(new ObjectId());
         sshKeyEntity.setPrivateKey(b);
         sshKeyEntity.setPublicKey(b);
         sshKeyEntity.setUserId(new ObjectId().toString());
