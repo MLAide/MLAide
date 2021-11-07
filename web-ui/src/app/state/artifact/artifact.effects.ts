@@ -146,7 +146,7 @@ export class ArtifactEffects {
       ofType(artifactActions.downloadArtifact),
       mergeMap((action) => this.artifactApi.download(action.projectKey, action.artifactName, action.artifactVersion, action.artifactFileId)),
       map((response) => {
-        const blob = new Blob([response as any], {
+        const blob = new Blob([response.body], {
           type: response.headers.get("Content-Type"),
         });
         const contentDisposition: string = response.headers.get("Content-Disposition");
