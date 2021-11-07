@@ -6,6 +6,7 @@ import { Project } from "@mlaide/state/project/project.models";
 import { GitDiff, Run, RunStatus } from "@mlaide/state/run/run.models";
 import { Experiment, ExperimentStatus } from "@mlaide/state/experiment/experiment.models";
 import { ApiKey } from "@mlaide/state/api-key/api-key.models";
+import { SshKey } from "@mlaide/state/ssh-key/ssh-key.models";
 
 const artifactFileSchemaFunction = (faker) => {
   return {
@@ -24,6 +25,15 @@ const artifactsRefSchemaFunction = (faker) => {
 const experimentRefSchemaFunction = (faker) => {
   return {
     experimentKey: faker.lorem.slug(),
+  };
+};
+
+const gitSchemaFunction = (faker) => {
+  return {
+    commitTime: faker.date.past(),
+    commitHash: faker.datatype.uuid(),
+    isDirty: faker.datatype.boolean(),
+    repositoryUri: faker.internet.url(),
   };
 };
 
@@ -224,6 +234,11 @@ const runSchema = {
       fixedLength: false,
     },
   ],
+  git: {
+    function() {
+      return gitSchemaFunction(this.faker);
+    },
+  },
   key: {
     faker: "datatype.number",
   },
@@ -285,6 +300,24 @@ const projectMemberSchema = {
     },
   },
   userId: {
+    faker: "datatype.uuid",
+  },
+};
+
+const sshKeySchema = {
+  createdAt: {
+    faker: "date.past",
+  },
+  description: {
+    faker: "lorem.paragraph",
+  },
+  expiresAt: {
+    faker: "date.future",
+  },
+  id: {
+    faker: "datatype.uuid",
+  },
+  publicKey: {
     faker: "datatype.uuid",
   },
 };
@@ -399,6 +432,17 @@ export const getRandomProjectMembers = async (count: number = 1): Promise<Projec
 export const getRandomProjectMember = async (): Promise<ProjectMember> => {
   const projectMembers = await getRandomProjectMembers();
   return projectMembers[0];
+};
+
+export const getRandomSshKeys = async (count: number = 1): Promise<SshKey[]> => {
+  const mockerResult = await mocker().schema("fakeSshKeys", sshKeySchema, count).build();
+
+  return mockerResult.fakeSshKeys;
+};
+
+export const getRandomSshKey = async (): Promise<SshKey> => {
+  const sshKeys = await getRandomSshKeys();
+  return sshKeys[0];
 };
 
 export const getRandomUsers = async (count: number = 1): Promise<User[]> => {

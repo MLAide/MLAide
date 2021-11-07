@@ -38,7 +38,7 @@
       <ng-container matColumnDef="actions" [stickyEnd]="true">
         <th id="actions" mat-header-cell *matHeaderCellDef aria-label="API Key actions" i18n>Actions</th>
         <td headers="actions" mat-cell *matCellDef="let element">
-          <button mat-button (click)="deleteApiKey(element)" aria-label="Icon button to delete api key">
+          <button mat-button (click)="deleteApiKey(element)" matTooltip="Delete API key" aria-label="Icon button to delete api key">
             <mat-icon>delete</mat-icon>
           </button>
         </td>

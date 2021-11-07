@@ -14,6 +14,8 @@ import { HarnessLoader } from "@angular/cdk/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouterTestingModule } from "@angular/router/testing";
 import { MatButtonHarness } from "@angular/material/button/testing";
+import { MatExpansionModule } from "@angular/material/expansion";
+import { MatExpansionPanelHarness } from "@angular/material/expansion/testing";
 
 describe("UserSettingsComponent", () => {
   let component: UserSettingsComponent;
@@ -28,6 +30,7 @@ describe("UserSettingsComponent", () => {
         BrowserAnimationsModule,
         MatButtonModule,
         MatDividerModule,
+        MatExpansionModule,
         MatIconModule,
         MatListModule,
         MatIconTestingModule,
@@ -66,48 +69,7 @@ describe("UserSettingsComponent", () => {
       expect(h2.textContent).toContain("User settings");
     });
 
-    it("should contain two links", async () => {
-      // arrange
-      const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
-      const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
-
-      // assert
-      expect(sideNavLinks.length).toBe(2);
-    });
-
-    it("first link should contain icon face and text profile and href /user-profile", async () => {
-      // arrange
-      const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
-      const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
-      const profileLink: MatNavListItemHarness = sideNavLinks[0];
-      const icons: MatIconHarness[] = await loader.getAllHarnesses(MatIconHarness);
-      const firstIcon: MatIconHarness = icons[0];
-
-      // assert
-      expect(await profileLink.getHref()).toEqual("/user-profile");
-      expect(await profileLink.hasIcon()).toBeTruthy();
-      expect(await firstIcon.getName()).toEqual("face");
-      expect((await profileLink.getLinesText()).length).toEqual(1);
-      expect((await profileLink.getLinesText())[0]).toContain("Profile");
-    });
-
-    it("second link should contain icon vpn_key and text API Keys and href /api-keys", async () => {
-      // arrange
-      const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
-      const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
-      const apiKeysLink: MatNavListItemHarness = sideNavLinks[1];
-      const icons: MatIconHarness[] = await loader.getAllHarnesses(MatIconHarness);
-      const secondIcon: MatIconHarness = icons[1];
-
-      // assert
-      expect(await apiKeysLink.getHref()).toEqual("/api-keys");
-      expect(await apiKeysLink.hasIcon()).toBeTruthy();
-      expect(await secondIcon.getName()).toEqual("vpn_key");
-      expect((await apiKeysLink.getLinesText()).length).toEqual(1);
-      expect((await apiKeysLink.getLinesText())[0]).toEqual("API Keys");
-    });
-
-    it("sidenav should be toggleable", async () => {
+    it("should be toggleable", async () => {
       // arrange
       const drawer: MatDrawerHarness = await loader.getHarness(MatDrawerHarness);
       const toggleButton: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#nav-toggle-button" }));
@@ -124,6 +86,115 @@ describe("UserSettingsComponent", () => {
       await toggleButton.click();
       // assert
       expect(await drawer.isOpen()).toBe(true);
+    });
+
+    describe("links", () => {
+      it("should contain 3 links", async () => {
+        // arrange
+        const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
+        const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
+
+        // assert
+        expect(sideNavLinks.length).toBe(3);
+      });
+
+      it("first link should contain icon face and text profile and href /user-profile", async () => {
+        // arrange
+        const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
+        const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
+        const profileLink: MatNavListItemHarness = sideNavLinks[0];
+        const icons: MatIconHarness[] = await loader.getAllHarnesses(MatIconHarness);
+        const firstIcon: MatIconHarness = icons[0];
+
+        // assert
+        expect(await profileLink.getHref()).toEqual("/user-profile");
+        expect(await profileLink.hasIcon()).toBeTruthy();
+        expect(await firstIcon.getName()).toEqual("face");
+        expect((await profileLink.getLinesText()).length).toEqual(1);
+        expect((await profileLink.getLinesText())[0]).toContain("Profile");
+      });
+
+      it("should contain link with text API Keys and href /api-keys", async () => {
+        // arrange
+        const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
+        const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
+        const apiKeysLink: MatNavListItemHarness = sideNavLinks[1];
+
+        // assert
+        expect(await apiKeysLink.getHref()).toEqual("/api-keys");
+        expect((await apiKeysLink.getText())).toEqual("API Keys");
+      });
+
+      it("should contain link with text SSH Keys and href /ssh-keys", async () => {
+        // arrange
+        const sideNavLinksList: MatNavListHarness = await loader.getHarness(MatNavListHarness);
+        const sideNavLinks: MatNavListItemHarness[] = await sideNavLinksList.getItems();
+        const sshKeysLink: MatNavListItemHarness = sideNavLinks[2];
+
+        // assert
+        expect(await sshKeysLink.getHref()).toEqual("/ssh-keys");
+        expect((await sshKeysLink.getText())).toEqual("SSH Keys");
+      });
+    });
+
+    describe("keys expansion panel", () => {
+      it("should contain keys expansion panel", async () => {
+        // arrange
+        const expansionPanel: MatExpansionPanelHarness = await loader.getHarness(MatExpansionPanelHarness);
+
+        // assert
+        expect(expansionPanel).toBeTruthy();
+      });
+
+      it("should be expanded", async () => {
+        // arrange
+        const expansionPanel: MatExpansionPanelHarness = await loader.getHarness(MatExpansionPanelHarness);
+
+        // assert
+        expect(await expansionPanel.isExpanded()).toBeTrue();
+      });
+
+      it("should have toggle", async () => {
+        // arrange
+        const expansionPanel: MatExpansionPanelHarness = await loader.getHarness(MatExpansionPanelHarness);
+
+        // assert
+        expect(await expansionPanel.hasToggleIndicator()).toBeTrue();
+      });
+
+      it("should be toggable", async () => {
+        // arrange
+        const expansionPanel: MatExpansionPanelHarness = await loader.getHarness(MatExpansionPanelHarness);
+
+        // act
+        await expansionPanel.toggle();
+
+        // assert
+        expect(await expansionPanel.isExpanded()).toBeFalse();
+
+        // act
+        await expansionPanel.toggle();
+
+        // assert
+        expect(await expansionPanel.isExpanded()).toBeTrue();
+      });
+
+      it("should have title vpn_keyKeys", async () => {
+        // arrange
+        const expansionPanel: MatExpansionPanelHarness = await loader.getHarness(MatExpansionPanelHarness);
+
+
+        // assert
+        expect(await expansionPanel.getTitle()).toEqual("vpn_keyKeys");
+      });
+
+      it("should have text content 'API KeysSSH Keys'", async () => {
+        // arrange
+        const expansionPanel: MatExpansionPanelHarness = await loader.getHarness(MatExpansionPanelHarness);
+
+        // assert
+        expect(await expansionPanel.getTextContent()).toEqual("API KeysSSH Keys");
+      });
     });
   });
 });

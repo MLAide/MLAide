@@ -2,11 +2,18 @@ import { HttpClientTestingModule, HttpTestingController, TestRequest } from "@an
 import { appConfigMock } from "@mlaide/mocks/app-config.mock";
 import { TestBed } from "@angular/core/testing";
 import { APP_CONFIG } from "@mlaide/config/app-config.model";
-import { ApiKeyListResponse, UserApi } from "@mlaide/state/user/user.api";
-import { getRandomApiKey, getRandomApiKeys, getRandomUser } from "@mlaide/mocks/fake-generator";
+import { ApiKeyListResponse, SshKeyListResponse, UserApi } from "@mlaide/state/user/user.api";
+import {
+  getRandomApiKey,
+  getRandomApiKeys,
+  getRandomSshKey,
+  getRandomSshKeys,
+  getRandomUser
+} from "@mlaide/mocks/fake-generator";
 import { Observable } from "rxjs";
 import { User } from "@mlaide/state/user/user.models";
 import { ApiKey } from "@mlaide/state/api-key/api-key.models";
+import { SshKey } from "@mlaide/state/ssh-key/ssh-key.models";
 
 describe("UserApi", () => {
   let userApi: UserApi;
@@ -31,43 +38,83 @@ describe("UserApi", () => {
     expect(userApi).toBeTruthy();
   });
 
-  describe("getCurrentUser", () => {
-    it("should return user from api response", async (done) => {
+  describe("createApiKey", () => {
+    it("should return an api key as observable from api response", async (done) => {
       // arrange
-      const fakeUser: User = await getRandomUser();
+      const fakeApiKey: ApiKey = await getRandomApiKey();
 
       // act
-      const user$: Observable<User> = userApi.getCurrentUser();
+      const apiKey$: Observable<ApiKey> = userApi.createApiKey(fakeApiKey);
 
       // assert
-      user$.subscribe((response) => {
-        expect(response).toEqual(fakeUser);
+      apiKey$.subscribe((response) => {
+        expect(response).toEqual(fakeApiKey);
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/users/current`);
-      expect(req.request.method).toBe("GET");
-      req.flush(fakeUser);
+      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/users/current/api-keys`);
+      expect(req.request.method).toBe("POST");
+      expect(req.request.body).toEqual(fakeApiKey);
+      req.flush(fakeApiKey);
     });
   });
 
-  describe("updateCurrentUser", () => {
-    it("should return updated user from api response", async (done) => {
+  describe("createSshKey", () => {
+    it("should return an ssh key as observable from api response", async (done) => {
       // arrange
-      const fakeUser: User = await getRandomUser();
+      const fakeSshKey: SshKey = await getRandomSshKey();
 
       // act
-      const user$: Observable<User> = userApi.updateCurrentUser(fakeUser);
+      const sshKey$: Observable<SshKey> = userApi.createSshKey(fakeSshKey);
 
       // assert
-      user$.subscribe((user) => {
-        expect(user).toBe(fakeUser);
+      sshKey$.subscribe((response) => {
+        expect(response).toEqual(fakeSshKey);
         done();
       });
-      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/users/current`);
-      expect(req.request.method).toBe("PUT");
-      expect(req.request.body).toBe(fakeUser);
-      req.flush(fakeUser);
+
+      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/users/current/ssh-keys`);
+      expect(req.request.method).toBe("POST");
+      expect(req.request.body).toEqual(fakeSshKey);
+      req.flush(fakeSshKey);
+    });
+  });
+
+  describe("deleteApiKey", () => {
+    it("should send a delete request with the api key id", async (done) => {
+      // arrange
+      const fakeApiKey: ApiKey = await getRandomApiKey();
+
+      // act
+      const apiCall$ = userApi.deleteApiKey(fakeApiKey);
+
+
+      // assert
+      apiCall$.subscribe(() => {
+        done();
+      });
+      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/users/current/api-keys/${fakeApiKey.id}`);
+      expect(req.request.method).toBe("DELETE");
+      req.flush(null);
+    });
+  });
+
+  describe("deleteSshKey", () => {
+    it("should send a delete request with the ssh key id", async (done) => {
+      // arrange
+      const fakeSshKey: SshKey = await getRandomSshKey();
+
+      // act
+      const apiCall$ = userApi.deleteSshKey(fakeSshKey);
+
+
+      // assert
+      apiCall$.subscribe(() => {
+        done();
+      });
+      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/users/current/ssh-keys/${fakeSshKey.id}`);
+      expect(req.request.method).toBe("DELETE");
+      req.flush(null);
     });
   });
 
@@ -93,43 +140,65 @@ describe("UserApi", () => {
     });
   });
 
-  describe("createApiKey", () => {
-    it("should return an api key as observable from api response", async (done) => {
+  describe("getCurrentUser", () => {
+    it("should return user from api response", async (done) => {
       // arrange
-      const fakeApiKey: ApiKey = await getRandomApiKey();
+      const fakeUser: User = await getRandomUser();
 
       // act
-      const apiKey$: Observable<ApiKey> = userApi.createApiKey(fakeApiKey);
+      const user$: Observable<User> = userApi.getCurrentUser();
 
       // assert
-      apiKey$.subscribe((response) => {
-        expect(response).toEqual(fakeApiKey);
+      user$.subscribe((response) => {
+        expect(response).toEqual(fakeUser);
         done();
       });
 
-      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/users/current/api-keys`);
-      expect(req.request.method).toBe("POST");
-      expect(req.request.body).toEqual(fakeApiKey);
-      req.flush(fakeApiKey);
+      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/users/current`);
+      expect(req.request.method).toBe("GET");
+      req.flush(fakeUser);
     });
   });
 
-  describe("deleteApiKey", () => {
-    it("should send a delete request with the api key id", async (done) => {
+  describe("getSshKeys", () => {
+    it("should return ssh key data source that emits results from api response", async (done) => {
       // arrange
-      const fakeApiKey: ApiKey = await getRandomApiKey();
+      const fakeSshKeys: SshKey[] = await getRandomSshKeys(2);
+      const dummyResponse: SshKeyListResponse = { items: fakeSshKeys };
 
       // act
-      const apiCall$ = userApi.deleteApiKey(fakeApiKey);
-
+      const sshKeys$: Observable<SshKeyListResponse> = userApi.getSshKeys();
 
       // assert
-      apiCall$.subscribe(() => {
+      sshKeys$.subscribe((response) => {
+        expect(response.items.length).toBe(fakeSshKeys.length);
+        expect(response).toEqual(dummyResponse);
         done();
       });
-      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/users/current/api-keys/${fakeApiKey.id}`);
-      expect(req.request.method).toBe("DELETE");
-      req.flush(null);
+
+      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/users/current/ssh-keys`);
+      expect(req.request.method).toBe("GET");
+      req.flush(dummyResponse);
+    });
+  });
+
+  describe("updateCurrentUser", () => {
+    it("should return updated user from api response", async (done) => {
+      // arrange
+      const fakeUser: User = await getRandomUser();
+
+      // act
+      const user$: Observable<User> = userApi.updateCurrentUser(fakeUser);
+
+      // assert
+      user$.subscribe((user) => {
+        expect(user).toBe(fakeUser);
+        done();
+      });
+      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/users/current`);
+      expect(req.request.method).toBe("PUT");
+      expect(req.request.body).toBe(fakeUser);
+      req.flush(fakeUser);
     });
   });
 });

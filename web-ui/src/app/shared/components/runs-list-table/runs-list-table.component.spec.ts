@@ -1,9 +1,9 @@
-import { SimpleChange } from "@angular/core";
+import { DebugElement, SimpleChange } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatListHarness } from "@angular/material/list/testing";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCheckboxHarness } from "@angular/material/checkbox/testing";
-import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatCheckbox, MatCheckboxChange, MatCheckboxModule } from "@angular/material/checkbox";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTableModule } from "@angular/material/table";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
@@ -31,6 +31,9 @@ import { exportRuns } from "@mlaide/state/run/run.actions";
 import { Subscription } from "rxjs/internal/Subscription";
 import { Project } from "@mlaide/state/project/project.models";
 import { Run } from "@mlaide/state/run/run.models";
+import { MatMenuModule } from "@angular/material/menu";
+import { MatMenuHarness } from "@angular/material/menu/testing";
+import { By } from "@angular/platform-browser";
 
 describe("RunsListTableComponent", () => {
   let component: RunsListTableComponent;
@@ -71,6 +74,7 @@ describe("RunsListTableComponent", () => {
         MatChipsModule,
         MatIconModule,
         MatListModule,
+        MatMenuModule,
         MatTableModule,
         RouterTestingModule,
       ],
@@ -416,46 +420,99 @@ describe("RunsListTableComponent", () => {
       expect(returnValue).toBeFalsy();
     });
   });
-  describe("toggleParameters", () => {
-    it("should remove parameters column if parameters were shown before", async () => {
-      // arrange + act also in beforeEach
-      component.hideParameters = false;
+  describe("columnsMenuChanged", () => {
+    describe("checked columns", () => {
+      let columns = [
+        {
+          name: "parameters",
+          id: "parameters-column",
+          expectedDisplayedColumns: [
+            "select",
+            "name",
+            "status",
+            "startTime",
+            "runTime",
+            "parameters",
+            "metrics",
+            "createdBy",
+            "experiments",
+          ],
+        },
+        {
+          name: "git commit",
+          id: "git-commit-column",
+          expectedDisplayedColumns: [
+            "select",
+            "name",
+            "status",
+            "startTime",
+            "runTime",
+            "metrics",
+            "gitCommitHash",
+            "createdBy",
+            "experiments",
+          ],
+        },
+      ];
 
-      // act
-      component.toggleParameters();
+      columns.forEach(column => {
+        it(`should add ${column.name} column if ${column.id} is checked in columns menu`, async () => {
+          // arrange + act also in beforeEach
+          const partialCheckBox: Partial<MatCheckbox> = {
+            id: column.id,
+          };
 
-      // assert
-      expect(component.displayedColumns).toEqual([
-        "select",
-        "name",
-        "status",
-        "startTime",
-        "runTime",
-        "metrics",
-        "createdBy",
-        "experiments",
-      ]);
+          const checkBoxChange: MatCheckboxChange = {
+            checked: true,
+            source: partialCheckBox as MatCheckbox,
+          }
+
+          // act
+          component.columnsMenuChanged(checkBoxChange);
+
+          // assert
+          expect(component.displayedColumns).toEqual(column.expectedDisplayedColumns);
+        });
+      });
     });
 
-    it("should add parameters column if parameters were hidden before", async () => {
-      // arrange + act also in beforeEach
-      component.hideParameters = true;
+    describe("unchecked columns", () => {
+      let columns = [
+        {
+          name: "parameters",
+          id: "parameters-column",
+        },
+        {
+          name: "git commit",
+          id: "git-commit-column",
+        },
+      ];
 
-      // act
-      component.toggleParameters();
+      columns.forEach(column => {
+        it(`should remove ${column.name} column if ${column.id} is checked and then unchecked in columns menu`, async () => {
+          // arrange + act also in beforeEach
+          const partialCheckBox: Partial<MatCheckbox> = {
+            id: column.id,
+          };
 
-      // assert
-      expect(component.displayedColumns).toEqual([
-        "select",
-        "name",
-        "status",
-        "startTime",
-        "runTime",
-        "parameters",
-        "metrics",
-        "createdBy",
-        "experiments",
-      ]);
+          let checkBoxChange: MatCheckboxChange = {
+            checked: true,
+            source: partialCheckBox as MatCheckbox,
+          }
+
+          // act
+          component.columnsMenuChanged(checkBoxChange);
+
+          // arrange
+          checkBoxChange.checked = false;
+
+          // act
+          component.columnsMenuChanged(checkBoxChange);
+
+          // assert
+          expect(component.displayedColumns).toEqual(["select", "name", "status", "startTime", "runTime", "metrics", "createdBy", "experiments"]);
+        });
+      });
     });
   });
   describe("component rendering", () => {
@@ -561,47 +618,81 @@ describe("RunsListTableComponent", () => {
       });
     });
 
-    describe("show or hide parameters button", () => {
-      it("should have show parameters button with visibility icon if hideParameters is true", async () => {
+    describe("columns menu", () => {
+      it("should have columns menu button with view_column icon", async () => {
         // arrange + act also in beforeEach
-        component.hideParameters = true;
         const button: MatButtonHarness = await loader.getHarness(
-          MatButtonHarness.with({ selector: "#show-or-hide-parameters-button" })
+          MatButtonHarness.with({ selector: "#columns-button" })
         );
-        const icon: MatIconHarness = await loader.getHarness(MatIconHarness.with({ name: "visibility" }));
+        const icon: MatIconHarness = await loader.getHarness(MatIconHarness.with({ name: "view_column" }));
 
         // assert
         expect(button).toBeTruthy();
         expect(icon).toBeTruthy();
-        expect(await button.getText()).toEqual("visibility Show Parameters");
+        expect(await button.getText()).toEqual("view_column Columns");
       });
 
-      it("should have hide parameters button with visibility_off icon if hideParameters is false", async () => {
+      it("should have columns menu", async () => {
         // arrange + act also in beforeEach
-        component.hideParameters = false;
-        const button: MatButtonHarness = await loader.getHarness(
-          MatButtonHarness.with({ selector: "#show-or-hide-parameters-button" })
-        );
-        const icon: MatIconHarness = await loader.getHarness(MatIconHarness.with({ name: "visibility_off" }));
+        const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
 
         // assert
-        expect(button).toBeTruthy();
-        expect(icon).toBeTruthy();
-        expect(await button.getText()).toEqual("visibility_off Hide Parameters");
+        expect(menu).toBeTruthy();
       });
 
-      it("should call toggleParameters() if clicked on show-or-hide-parameters-button", async () => {
+      it("should contain two items", async () => {
         // arrange + act also in beforeEach
-        spyOn(component, "toggleParameters");
-        const button: MatButtonHarness = await loader.getHarness(
-          MatButtonHarness.with({ selector: "#show-or-hide-parameters-button" })
-        );
+        const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
 
         // act
-        await button.click();
+        await menu.open();
 
         // assert
-        expect(component.toggleParameters).toHaveBeenCalled();
+        expect((await menu.getItems()).length).toEqual(2);
+      });
+
+      const menuItems = [
+        {
+          name: "parameters",
+          position: 0,
+          expectedText: "Parameters"
+        },
+        {
+          name: "git commit",
+          position: 1,
+          expectedText: "Git Commit"
+        },
+      ];
+
+      menuItems.forEach(menuItem => {
+        it(`should contain ${menuItem.name} checkbox`, async () => {
+          // arrange + act also in beforeEach
+          const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
+
+          // act
+          await menu.open();
+          const items = await menu.getItems();
+
+          // assert
+          expect(await items[menuItem.position].getText()).toEqual(menuItem.expectedText);
+        });
+      });
+
+      it("should call columnsMenuChanged() if clicked on menu-item", async () => {
+        // arrange + act also in beforeEach
+        const spy = spyOn(component, "columnsMenuChanged");
+        const rootLoader = TestbedHarnessEnvironment.documentRootLoader(fixture);
+        const menu: MatMenuHarness = await rootLoader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
+
+        // act
+        await menu.open();
+        let checkBoxDE: DebugElement = fixture.debugElement.query(By.css("#parameters-column label"));
+        let checkBoxNE = checkBoxDE.nativeElement;
+        checkBoxNE.click();
+
+        // assert
+        expect(spy).toHaveBeenCalled();
+        expect(spy.calls.count()).toEqual(1);
       });
     });
 
@@ -686,8 +777,15 @@ describe("RunsListTableComponent", () => {
       });
 
       describe("with parameters", () => {
-        beforeEach(() => {
-          component.toggleParameters();
+        beforeEach(async () => {
+          const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
+
+          // act
+          await menu.open();
+          let checkBoxDE: DebugElement = fixture.debugElement.query(By.css("#parameters-column label"));
+          let checkBoxNE = checkBoxDE.nativeElement;
+          checkBoxNE.click();
+          fixture.detectChanges();
         });
 
         it("should have defined headers", async () => {
@@ -779,7 +877,88 @@ describe("RunsListTableComponent", () => {
             expect(row.createdBy).toEqual(fakeRun.createdBy.nickName);
             await chipsEqualExperimentKeys(chips, fakeRun);
           }));
+        });
+      });
 
+      describe("with git commit", () => {
+        beforeEach(async () => {
+          const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
+
+          // act
+          await menu.open();
+          let checkBoxDE: DebugElement = fixture.debugElement.query(By.css("#git-commit-column label"));
+          let checkBoxNE = checkBoxDE.nativeElement;
+          checkBoxNE.click();
+          fixture.detectChanges();
+        });
+
+        it("should have defined headers", async () => {
+          // arrange + act also in beforeEach
+          const table: MatTableHarness = await loader.getHarness(MatTableHarness);
+          const headers: MatHeaderRowHarness[] = await table.getHeaderRows();
+          const headerRow: MatRowHarnessColumnsText = await headers[0].getCellTextByColumnName();
+          const checkbox = await loader.getHarness(MatCheckboxHarness.with({ selector: "#master-checkbox" }));
+
+          // assert
+          expect(Object.keys(headerRow).length).toBe(9);
+          expect(checkbox).toBeTruthy();
+          expect(headerRow.select).toBe("");
+          expect(headerRow.name).toBe("Name");
+          expect(headerRow.status).toBe("Status");
+          expect(headerRow.startTime).toBe("Start time");
+          expect(headerRow.runTime).toBe("Run time");
+          expect(headerRow.metrics).toBe("Metrics");
+          expect(headerRow.gitCommitHash).toBe("Git Commit");
+          expect(headerRow.createdBy).toBe("Created by");
+          expect(headerRow.experiments).toBe("Experiments");
+        });
+
+        it("should show row for each run", async () => {
+          // arrange + act also in beforeEach
+          const table: MatTableHarness = await loader.getHarness(MatTableHarness);
+          const rows: MatRowHarness[] = await table.getRows();
+          const chipLists: MatChipListHarness[] = await loader.getAllHarnesses(MatChipListHarness);
+          const checkboxes: MatCheckboxHarness[] = await loader.getAllHarnesses(MatCheckboxHarness)
+          const metricsLists: MatListHarness[] = await loader.getAllHarnesses(MatListHarness.with({ selector: "#metrics-list" }));
+
+          // assert
+          expect(rows.length).toBe(fakeRuns.length);
+          // +1 because we have master toggle checkbox in the header row
+          expect(checkboxes.length).toBe(fakeRuns.length + 1);
+          expect(metricsLists.length).toBe(fakeRuns.length);
+
+          await Promise.all(fakeRuns.map(async (fakeRun, fakeRunIndex) => {
+            const row: MatRowHarnessColumnsText = await rows[fakeRunIndex].getCellTextByColumnName();
+            const chips: MatChipHarness[] = await chipLists[fakeRunIndex].getChips();
+
+            // material sorts the metrics list
+            const orderedMetricsObject = Object.keys(fakeRun.metrics)
+              .sort()
+              .reduce((obj, key) => {
+                obj[key] = fakeRun.metrics[key];
+                return obj;
+              }, {});
+
+            let metricsString = "";
+            await Promise.all(Object.keys(orderedMetricsObject).map(async (key, keyIndex) => {
+              const keyValueString = ` remove ${key} : ${fakeRun.metrics[key]}`;
+              metricsString += keyValueString;
+
+              // assert metrics' list elements
+              const items = await metricsLists[fakeRunIndex].getItems();
+              expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
+            }));
+
+            expect(row.name).toEqual(fakeRun.name);
+            expect(row.status.toUpperCase().replace(" ", "_")).toEqual(fakeRun.status);
+            expect(row.startTime).toEqual(String(fakeRun.startTime));
+            // We need to do this because the duration pipe's first argument is startTime
+            expect(row.runTime).toEqual(String(fakeRun.startTime));
+            expect(row.metrics).toEqual(metricsString.trim());
+            expect(row.gitCommitHash).toEqual(fakeRun.git.commitHash);
+            expect(row.createdBy).toEqual(fakeRun.createdBy.nickName);
+            await chipsEqualExperimentKeys(chips, fakeRun);
+          }));
         });
       });
 

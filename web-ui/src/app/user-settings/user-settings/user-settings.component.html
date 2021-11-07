@@ -14,12 +14,23 @@
             <span matLine i18n>Profile</span>
           </div>
         </a>
-        <a mat-list-item [routerLink]="['api-keys']">
-          <div fxLayout="row" fxLayoutAlign="center center">
-            <mat-icon matListIcon class="padding">vpn_key</mat-icon>
-            <span matLine i18n>API Keys</span>
-          </div>
-        </a>
+        <mat-expansion-panel id="keys-expansion-panel" mat-list-item class="mat-elevation-z0" expanded>
+          <mat-expansion-panel-header class="padding-side-nav">
+            <mat-panel-title class="mat-body">
+              <div fxLayout="row" fxLayoutAlign="center center">
+              <mat-icon class="padding-side-nav" >vpn_key</mat-icon>
+              <span matLine i18n>Keys</span>
+              </div>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <a mat-list-item [routerLink]="['api-keys']">
+              <span class="mat-body" i18n>API Keys</span>
+          </a>
+          <a mat-list-item [routerLink]="['ssh-keys']">
+            <span class="mat-body" i18n>SSH Keys</span>
+          </a>
+        </mat-expansion-panel>
+
       </mat-nav-list>
     </mat-drawer>
     <mat-drawer-content class="bg-white">

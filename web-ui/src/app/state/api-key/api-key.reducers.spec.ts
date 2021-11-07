@@ -21,7 +21,7 @@ describe("ApiKeyReducers", () => {
       const newState = apiKeysReducer(initialState as ApiKeyState, action);
 
       // assert
-      await expect(newState.isLoading).toBeTrue();
+      expect(newState.isLoading).toBeTrue();
     });
   });
 
@@ -39,8 +39,8 @@ describe("ApiKeyReducers", () => {
       const newState = apiKeysReducer(initialState as ApiKeyState, action);
 
       // assert
-      await expect(newState.items).toEqual(newApiKeys);
-      await expect(newState.isLoading).toEqual(false);
+      expect(newState.items).toEqual(newApiKeys);
+      expect(newState.isLoading).toEqual(false);
     });
   });
 
@@ -56,7 +56,7 @@ describe("ApiKeyReducers", () => {
       const newState = apiKeysReducer(initialState as ApiKeyState, action);
 
       // assert
-      await expect(newState.isLoading).toBeFalse();
+      expect(newState.isLoading).toBeFalse();
     });
   });
 
@@ -73,7 +73,7 @@ describe("ApiKeyReducers", () => {
       const newState = apiKeysReducer(initialState as ApiKeyState, action);
 
       // assert
-      await expect(newState.newCreatedApiKey).toEqual(newCreatedApiKey);
+      expect(newState.newCreatedApiKey).toEqual(newCreatedApiKey);
     });
   });
 
@@ -89,7 +89,7 @@ describe("ApiKeyReducers", () => {
       const newState = apiKeysReducer(initialState as ApiKeyState, action);
 
       // assert
-      await expect(newState.newCreatedApiKey).toBeNull();
+      expect(newState.newCreatedApiKey).toBeNull();
     });
   });
 });

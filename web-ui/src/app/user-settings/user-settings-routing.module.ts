@@ -4,6 +4,7 @@ import { AuthGuard } from "@mlaide/auth/auth-guard.service";
 import { ApiKeysComponent } from "./api-keys/api-keys.component";
 import { UserSettingsComponent } from "./user-settings/user-settings.component";
 import { UserProfileComponent } from "./user-profile/user-profile.component";
+import { SshKeysComponent } from "@mlaide/user-settings/ssh-keys/ssh-keys.component";
 
 const routes: Routes = [
   {
@@ -13,6 +14,7 @@ const routes: Routes = [
     children: [
       { path: "user-profile", component: UserProfileComponent, canActivate: [AuthGuard] },
       { path: "api-keys", component: ApiKeysComponent, canActivate: [AuthGuard] },
+      { path: "ssh-keys", component: SshKeysComponent, canActivate: [AuthGuard] },
       { path: "", redirectTo: "user-settings/user-profile", pathMatch: "full" },
     ],
   },

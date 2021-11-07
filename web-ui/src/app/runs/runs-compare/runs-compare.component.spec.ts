@@ -12,6 +12,13 @@ import { loadGitDiffByRunKeys, loadRunsByRunKeys } from "@mlaide/state/run/run.a
 import { Project } from "@mlaide/state/project/project.models";
 import { GitDiff, Run } from "@mlaide/state/run/run.models";
 import { FileDiffComponent } from "@mlaide/shared/components/file-diff/file-diff.component";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { MatTabsModule } from "@angular/material/tabs";
+import { HarnessLoader } from "@angular/cdk/testing";
+import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
+import { of } from "rxjs";
+import { SimpleChange } from "@angular/core";
+import { MatTabGroupHarness } from "@angular/material/tabs/testing";
 
 describe("RunsCompareComponent", () => {
   let component: RunsCompareComponent;
@@ -40,6 +47,10 @@ describe("RunsCompareComponent", () => {
       providers: [
         provideMockStore(),
       ],
+      imports: [
+        BrowserAnimationsModule,
+        MatTabsModule
+      ]
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
@@ -258,6 +269,12 @@ describe("RunsCompareComponent", () => {
   });
 
   describe("component rendering", () => {
+    let loader: HarnessLoader;
+
+    beforeEach(() => {
+      loader = TestbedHarnessEnvironment.loader(fixture);
+    });
+
     it("should contain components title", async () => {
       // arrange
       let h1: HTMLElement = fixture.nativeElement.querySelector("h1");
@@ -266,13 +283,53 @@ describe("RunsCompareComponent", () => {
       expect(h1.textContent).toEqual("Comparison of Runs");
     });
 
-    it("should have title for run-params-metrics-table - Metrics", async () => {
+    it("should have a tab group", async () => {
       // arrange
-      //await setupStubsAndMocks();
-      let title: HTMLElement = fixture.nativeElement.querySelector("#metrics-title");
+      const tabGroups = await loader.getAllHarnesses(MatTabGroupHarness);
 
       // assert
-      expect(title.textContent).toEqual("Metrics");
+      expect(tabGroups.length).toBe(1);
+    })
+
+    it('should be able to get tabs of tab-group', async () => {
+      // arrange
+      const tabGroup = await loader.getHarness(MatTabGroupHarness);
+      const tabs = await tabGroup.getTabs();
+
+      // assert
+      expect(tabs.length).toBe(3);
+    });
+
+    it('should load harness for tab-group with selected tab label', async () => {
+      // arrange
+      const tabGroups = await loader.getAllHarnesses(MatTabGroupHarness.with({
+        selectedTabLabel: 'Metrics',
+      }));
+
+      // assert
+      expect(tabGroups.length).toBe(1);
+    });
+
+    it('should be able to select Parameters tab from tab-group', async () => {
+      // arrange
+      const tabGroup = await loader.getHarness(MatTabGroupHarness);
+
+      // act
+      await tabGroup.selectTab({label: 'Parameters'});
+
+      // assert
+      expect(await (await tabGroup.getSelectedTab()).getLabel()).toBe('Parameters');
+    });
+
+    it('should be able to select Git Diff tab from tab-group', async () => {
+      // arrange
+      const tabGroup = await loader.getHarness(MatTabGroupHarness);
+
+      // act
+      await tabGroup.selectTab({label: 'Git Diff'});
+
+      // assert
+      expect(await (await tabGroup.getSelectedTab()).getLabel()).toBe('Git Diff');
     });
 
     it("should contain child component with correct attributes - app-run-params-metrics-table for metrics", async () => {
@@ -287,17 +344,10 @@ describe("RunsCompareComponent", () => {
       expect(runParamsMetricsTableComponent.displayedColumnsStartTime$).toBe(component.displayedColumnsStartTime$);
     });
 
-    it("should have title for run-params-metrics-table - Parameters", async () => {
-      // arrange
-      //await setupStubsAndMocks();
-      let title: HTMLElement = fixture.nativeElement.querySelector("#parameters-title");
-
-      // assert
-      expect(title.textContent).toEqual("Parameters");
-    });
-
     it("should contain child component with correct attributes - app-run-params-metrics-table for parameters", async () => {
       // arrange
+      const tabGroup = await loader.getHarness(MatTabGroupHarness);
+      await tabGroup.selectTab({label: 'Parameters'});
       const runParamsMetricsTableComponent = ngMocks
         .find<RunParamsMetricsTableComponent>("#run-parameters-table" )
         .componentInstance;
@@ -308,22 +358,21 @@ describe("RunsCompareComponent", () => {
       expect(runParamsMetricsTableComponent.displayedColumnsStartTime$).toBe(component.displayedColumnsStartTime$);
     });
 
-    it("should have title for file-diff - Git Diff", async () => {
+    it("should have compare message for file-diff - Git Diff", async () => {
       // arrange
-      fakeRuns = await getRandomRuns(2);
-      fixture = TestBed.createComponent(RunsCompareComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-
-      //await setupStubsAndMocks();
-      let title: HTMLElement = fixture.nativeElement.querySelector("#git-diff-title");
+      const tabGroup = await loader.getHarness(MatTabGroupHarness);
+      await tabGroup.selectTab({label: 'Git Diff'});
+      let compareMessage: HTMLElement = fixture.nativeElement.querySelector("#git-diff-compare-message");
 
       // assert
-      expect(title.textContent).toEqual("Git Diff");
+      const expectedString = `Comparing ${fakeRuns[0].name} ( ${fakeRuns[0].git.commitHash} ) and ${fakeRuns[1].name} ( ${fakeRuns[1].git.commitHash} ).`;
+      expect(compareMessage.textContent.replace(/\s/g, "")).toEqual(expectedString.replace(/\s/g, ""));
     });
 
     it("should contain child component with correct attributes for app-file-diff", async () => {
       // arrange
+      const tabGroup = await loader.getHarness(MatTabGroupHarness);
+      await tabGroup.selectTab({label: 'Git Diff'});
       const fileDiffComponent = ngMocks
         .find<FileDiffComponent>("#git-file-diff" )
         .componentInstance;
@@ -335,15 +384,16 @@ describe("RunsCompareComponent", () => {
     it("should not show git-diff, if more than 2 runs - Git Diff", async () => {
       // arrange
       fakeRuns = await getRandomRuns(4);
-      store.overrideSelector(selectRuns, fakeRuns);
+      component.runs$ = of(fakeRuns);
       fixture = TestBed.createComponent(RunsCompareComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
-
-      //await setupStubsAndMocks();
+      const tabGroup = await loader.getHarness(MatTabGroupHarness);
+      const tabs = await tabGroup.getTabs();
       let gitDiff: HTMLElement = fixture.nativeElement.querySelector("#git-diff-div");
 
       // assert
+      expect(tabs.length).toBe(2);
       expect(gitDiff).toBeNull();
     });
   });

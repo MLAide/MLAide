@@ -1,0 +1,57 @@
+<div fxLayout="column">
+  <div>
+    <h1 class="mat-display-2" mat-dialog-title i18n>Create new SSH key</h1>
+  </div>
+
+  <mat-dialog-content [formGroup]="form" (keydown)="keyDown($event)">
+    <div>
+      <mat-form-field fxFlex="100">
+        <mat-label i18n>Description</mat-label>
+        <input id="description-input" matInput formControlName="description" placeholder="Description" cdkFocusInitial required />
+        <mat-error *ngIf="form.get('description').hasError('required')" i18n>You must provide a description.</mat-error>
+      </mat-form-field>
+    </div>
+    <div *ngIf="(sshKey$ | async); let sshKey">
+      <mat-divider></mat-divider>
+      <h3 class="mat-h3">Created SSH key</h3>
+      <div>
+        <mat-form-field appearance="fill" fxFlex="100">
+          <mat-label i18n>SSH Key</mat-label>
+          <textarea
+            matInput
+            cdkTextareaAutosize
+            #notes
+            #autosize="cdkTextareaAutosize"
+            [value]="sshKey.publicKey"
+            readonly="true"
+          ></textarea>
+          <button id="add-ssh-key-copy-button" mat-icon-button matSuffix [cdkCopyToClipboard]="sshKey.publicKey" (click)="copy()" matTooltip="Copy SSH key" aria-label="Icon button to copy ssh key">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <div *ngIf="!(sshKey$ | async)">
+      <button id="add-ssh-key-cancel-button" mat-button (click)="close()" type="button" aria-label="Button to cancel ssh key dialog" i18n>Cancel</button>
+      <span class="margin-right-sm"></span>
+      <button
+        id="add-ssh-key-create-button"
+        mat-button
+        (click)="create()"
+        type="submit"
+        [disabled]="!form.valid"
+        color="primary"
+        cdkFocusInitial
+        aria-label="Button to add ssh key"
+        i18n
+      >
+        Create
+      </button>
+    </div>
+    <div *ngIf="(sshKey$ | async)">
+      <button id="add-ssh-key-close-button" mat-button (click)="close()" color="primary" cdkFocusInitial aria-label="Button to close ssh key dialog" i18n>Close</button>
+    </div>
+  </mat-dialog-actions>
+</div>

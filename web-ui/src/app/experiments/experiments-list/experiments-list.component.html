@@ -50,7 +50,7 @@
     <ng-container matColumnDef="actions" [stickyEnd]="true">
       <th id="actions" mat-header-cell *matHeaderCellDef i18n>Actions</th>
       <td headers="actions" mat-cell *matCellDef="let element">
-        <button mat-button (click)="openEditExperimentDialog(element)" aria-label="Icon button to edit experiment">
+        <button mat-button (click)="openEditExperimentDialog(element)" matTooltip="Edit {{element.name}} experiment" aria-label="Icon button to edit experiment">
           <mat-icon>edit</mat-icon>
         </button>
       </td>

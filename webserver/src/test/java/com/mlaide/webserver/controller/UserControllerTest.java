@@ -1,9 +1,11 @@
 package com.mlaide.webserver.controller;
 
 import com.mlaide.webserver.faker.ApiKeyFaker;
+import com.mlaide.webserver.faker.SshKeyFaker;
 import com.mlaide.webserver.faker.UserFaker;
 import com.mlaide.webserver.model.ApiKey;
 import com.mlaide.webserver.model.ItemList;
+import com.mlaide.webserver.model.SshKey;
 import com.mlaide.webserver.model.User;
 import com.mlaide.webserver.service.UserService;
 import com.mlaide.webserver.service.security.ApiKeyAuthenticationManager;
@@ -131,6 +133,59 @@ public class UserControllerTest {
             // Arrange
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
             verify(apiKeyAuthenticationManager).deleteApiKey(apiKey.getId());
+        }
+    }
+
+    @Nested
+    class getSshKeys {
+        @Test
+        void should_return_ssh_keys() {
+            // Arrange
+            ItemList<SshKey> sshKeyItemList = new ItemList<>();
+            when(userService.getSshKeysForCurrentUser()).thenReturn(sshKeyItemList);
+
+            // Act
+            ResponseEntity<ItemList<SshKey>> result = userController.getSshKeys();
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(result.getBody()).isSameAs(sshKeyItemList);
+        }
+    }
+
+    @Nested
+    class postSshKey {
+        @Test
+        void should_create_ssh_key_and_return_200_and_ssh_key() {
+            // Arrange
+            SshKey sshKey = SshKeyFaker.newSshKey();
+            when(userService.createSshKeyForCurrentPrincipal(sshKey)).thenReturn(sshKey);
+
+            // Act
+            ResponseEntity<SshKey> result = userController.postSshKey(sshKey);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(result.getBody()).isSameAs(sshKey);
+
+        }
+    }
+
+    @Nested
+    class deleteSshKey {
+        @Test
+        void should_delete_ssh_key_and_return_no_content() {
+            // Arrange
+            SshKey sshKey = SshKeyFaker.newSshKey();
+
+            // Act
+            ResponseEntity<Void> result = userController.deleteSshKey(sshKey.getId());
+
+            // Arrange
+            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+            verify(userService).deleteSshKey(sshKey.getId());
         }
     }
 }

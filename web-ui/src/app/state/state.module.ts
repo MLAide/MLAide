@@ -21,6 +21,8 @@ import { userReducer } from "./user/user.reducers";
 import { UserEffects } from "./user/user.effects";
 import { apiKeysReducer } from "./api-key/api-key.reducers";
 import { ApiKeyEffects } from "./api-key/api-key.effects";
+import { SshKeyEffects } from "@mlaide/state/ssh-key/ssh-key.effects";
+import { sshKeysReducer } from "@mlaide/state/ssh-key/ssh-key.reducers";
 
 @NgModule({
   declarations: [],
@@ -34,6 +36,7 @@ import { ApiKeyEffects } from "./api-key/api-key.effects";
       projects: projectsReducer,
       runs: runsReducer,
       shared: sharedReducer,
+      sshKeys: sshKeysReducer,
       router: routerReducer,
       user: userReducer
     }),
@@ -47,6 +50,7 @@ import { ApiKeyEffects } from "./api-key/api-key.effects";
       ProjectMemberEffects,
       RunEffects,
       SharedEffects,
+      SshKeyEffects,
       UserEffects
     ]),
 

@@ -2,6 +2,7 @@ package com.mlaide.webserver.controller;
 
 import com.mlaide.webserver.model.ApiKey;
 import com.mlaide.webserver.model.ItemList;
+import com.mlaide.webserver.model.SshKey;
 import com.mlaide.webserver.model.User;
 import com.mlaide.webserver.service.NotFoundException;
 import com.mlaide.webserver.service.UserService;
@@ -75,6 +76,33 @@ public class UserController {
         logger.info("delete api key");
 
         apiKeyAuthenticationManager.deleteApiKey(apiKeyId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(path = "/current/ssh-keys")
+    public ResponseEntity<ItemList<SshKey>> getSshKeys()  {
+        logger.info("get ssh keys");
+
+        ItemList<SshKey> sshKeys = userService.getSshKeysForCurrentUser();
+
+        return ResponseEntity.ok(sshKeys);
+    }
+
+    @PostMapping(path = "/current/ssh-keys")
+    public ResponseEntity<SshKey> postSshKey(@Valid @RequestBody SshKey sshKey)  {
+        logger.info("post ssh key");
+
+        SshKey createdSshKey = userService.createSshKeyForCurrentPrincipal(sshKey);
+
+        return ResponseEntity.ok(createdSshKey);
+    }
+
+    @DeleteMapping(path = "/current/ssh-keys/{sshKeyId}")
+    public ResponseEntity<Void> deleteSshKey(@PathVariable("sshKeyId") @NotBlank String sshKeyId)  {
+        logger.info("delete ssh key");
+
+        userService.deleteSshKey(sshKeyId);
 
         return ResponseEntity.noContent().build();
     }

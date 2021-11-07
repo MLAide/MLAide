@@ -25,11 +25,11 @@ export class ApiKeysComponent implements OnInit {
     this.store.dispatch(loadApiKeys());
   }
 
-  public deleteApiKey(apiKey: ApiKey) {
-    this.store.dispatch(deleteApiKey({ apiKey }));
-  }
-
   public addApiKey(): void {
     this.store.dispatch(openAddApiKeyDialog());
+  }
+
+  public deleteApiKey(apiKey: ApiKey) {
+    this.store.dispatch(deleteApiKey({ apiKey }));
   }
 }

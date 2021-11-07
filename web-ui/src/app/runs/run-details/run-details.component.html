@@ -27,6 +27,10 @@
         <span id="run-time-label" class="mat-small" i18n>Run Time</span>
         <span id="run-time-value" class="mat-body">{{ run.endTime ? (run.startTime | duration: run.endTime) : "-" }}</span>
       </div>
+      <div *ngIf="run.git?.commitHash" fxLayout="column">
+        <span id="run-git-commit-hash-label" class="mat-small" i18n>Git Commit</span>
+        <span id="run-git-commit-hash-value" class="mat-body">{{ run.git?.commitHash}}</span>
+      </div>
       <div fxLayout="column">
         <span id="experiments-label" class="mat-small" i18n>Experiments</span>
         <span id="experiments-value">

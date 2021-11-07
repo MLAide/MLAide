@@ -111,9 +111,12 @@ $warn: mat.get-color-from-palette($mlaide-warn);
   padding-right: 8px;
 }
 
-.mat-icon.padding {
-  padding-left: 1vw;
-  padding-right: 1vw;
+.mat-expansion-panel-header.padding-side-nav {
+  padding: 0 16px;
+}
+
+.mat-icon.padding-side-nav {
+  padding: 0 4px;
 }
 
 .mat-icon.padding-sm-r {

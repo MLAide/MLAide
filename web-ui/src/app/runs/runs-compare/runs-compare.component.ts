@@ -30,7 +30,7 @@ export class RunsCompareComponent implements OnInit {
   ngOnInit() {
     this.runs$ = this.store.select(selectRuns);
     this.gitDiff$ = this.store.select(selectGitDiffForRunKeys);
-
+    
     this.metrics$ = this.runs$.pipe(
       map((runs) => {
         const uniqueMetrics = this.createMetricsList(runs);

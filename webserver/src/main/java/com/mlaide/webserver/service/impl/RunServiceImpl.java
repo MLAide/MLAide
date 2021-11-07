@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.KeyPair;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class RunServiceImpl implements RunService {
     private final UserService userService;
     private final ValidationService validationService;
     private final Clock clock;
-    private GitDiffService gitDiffService;
+    private final GitDiffService gitDiffService;
 
     @Autowired
     public RunServiceImpl(RunRepository runRepository,
@@ -231,10 +232,13 @@ public class RunServiceImpl implements RunService {
             throw new InvalidGitRepositoryException("Can not create git diff because the two specified runs reference different git repositories.");
         }
 
+        List<KeyPair> keyPairs = userService.getSshKeyPairsForCurrentUser();
+
         return gitDiffService.getDiff(
                 run1.getGit().getRepositoryUri(),
                 run1.getGit().getCommitHash(),
-                run2.getGit().getCommitHash());
+                run2.getGit().getCommitHash(),
+                keyPairs);
     }
 
     private RunEntity saveRun(RunEntity runEntity) {

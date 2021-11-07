@@ -32,6 +32,8 @@ import { MatCardHarness } from "@angular/material/card/testing";
 import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
 import { Experiment, ExperimentStatus } from "@mlaide/state/experiment/experiment.models";
 import { Project } from "@mlaide/state/project/project.models";
+import { MatTooltipHarness } from "@angular/material/tooltip/testing";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 describe("ExperimentsListComponent", () => {
   let component: ExperimentsListComponent;
@@ -66,6 +68,7 @@ describe("ExperimentsListComponent", () => {
         MatProgressSpinnerModule,
         MatSortModule,
         MatTableModule,
+        MatTooltipModule,
         BrowserAnimationsModule,
         // To prevent Error: 'Can't bind to 'routerLink' since it isn't a known property of 'a'.'
         // https://ng-mocks.github.io/how-to-test-a-component.html
@@ -281,6 +284,17 @@ describe("ExperimentsListComponent", () => {
         fixture.whenStable().then(() => {
           expect(component.openEditExperimentDialog).toHaveBeenCalledWith(fakeExperiments[fakeExperiments.length - 1]);
         });
+      });
+
+      it("should show tool tip for edit button in row", async () => {
+        // arrange + act also in beforeEach
+        const toolTips: MatTooltipHarness[] = await loader.getAllHarnesses(MatTooltipHarness);
+
+        // act
+        await toolTips[0].show();
+
+        // assert
+        expect(await toolTips[0].getTooltipText()).toEqual(`Edit ${fakeExperiments[0].name} experiment`);
       });
     });
 

@@ -31,6 +31,8 @@ import { MatCardHarness } from "@angular/material/card/testing";
 import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
 import { Project } from "@mlaide/state/project/project.models";
 import { ProjectMember, ProjectMemberRole } from "@mlaide/state/project-member/project-member.models";
+import { MatTooltipHarness } from "@angular/material/tooltip/testing";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 describe("ProjectMembersListComponent", () => {
   let component: ProjectMembersListComponent;
@@ -63,7 +65,8 @@ describe("ProjectMembersListComponent", () => {
         MatDialogModule,
         MatIconModule,
         MatProgressSpinnerModule,
-        MatTableModule
+        MatTableModule,
+        MatTooltipModule
       ],
     }).compileComponents();
 
@@ -334,6 +337,31 @@ describe("ProjectMembersListComponent", () => {
           }));
         });
 
+        it("should call editProjectMember on clicking edit button in row", async () => {
+          // arrange + act also in beforeEach
+          spyOn(component, "editProjectMember");
+          const editButtons: MatButtonHarness[] = await loader.getAllHarnesses(MatButtonHarness.with({ text: "edit" }));
+
+          // act
+          await editButtons[editButtons.length - 1].click();
+
+          // assert
+          fixture.whenStable().then(() => {
+            expect(component.editProjectMember).toHaveBeenCalledWith(fakeProjectMembers[fakeProjectMembers.length - 1]);
+          });
+        });
+
+        it("should show tool tip for edit button in row", async () => {
+          // arrange + act also in beforeEach
+          const toolTips: MatTooltipHarness[] = await loader.getAllHarnesses(MatTooltipHarness);
+
+          // act
+          await toolTips[0].show();
+
+          // assert
+          expect(await toolTips[0].getTooltipText()).toEqual(`Edit settings for ${fakeProjectMembers[0].nickName}`);
+        });
+
         it("should call deleteProjectMember on clicking delete button in row", async () => {
           // arrange + act also in beforeEach
           spyOn(component, "deleteProjectMember");
@@ -350,18 +378,15 @@ describe("ProjectMembersListComponent", () => {
           });
         });
 
-        it("should call editProjectMember on clicking edit button in row", async () => {
+        it("should show tool tip for delete button in row", async () => {
           // arrange + act also in beforeEach
-          spyOn(component, "editProjectMember");
-          const editButtons: MatButtonHarness[] = await loader.getAllHarnesses(MatButtonHarness.with({ text: "edit" }));
+          const toolTips: MatTooltipHarness[] = await loader.getAllHarnesses(MatTooltipHarness);
 
           // act
-          await editButtons[editButtons.length - 1].click();
+          await toolTips[1].show();
 
           // assert
-          fixture.whenStable().then(() => {
-            expect(component.editProjectMember).toHaveBeenCalledWith(fakeProjectMembers[fakeProjectMembers.length - 1]);
-          });
+          expect(await toolTips[1].getTooltipText()).toEqual(`Remove ${fakeProjectMembers[0].nickName} from project`);
         });
       });
     });

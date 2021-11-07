@@ -5,6 +5,7 @@ export interface Run {
   }[];
   createdAt: Date;
   createdBy: UserRef;
+  git: Git;
   endTime: Date;
   experimentRefs: {
     experimentKey: string;

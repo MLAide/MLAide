@@ -13,5 +13,5 @@ export const deleteApiKey = createAction("@mlaide/actions/api-keys/delete", prop
 export const deleteApiKeySucceeded = createAction("@mlaide/actions/api-keys/delete/succeeded");
 export const deleteApiKeyFailed = createAction("@mlaide/actions/api-keys/delete/failed", props<{ payload: any }>());
 
-export const openAddApiKeyDialog = createAction("@mlaide/actions/api-key/add-dialog/open");
-export const closeAddApiKeyDialog = createAction("@mlaide/actions/api-key/add-dialog/close");
+export const openAddApiKeyDialog = createAction("@mlaide/actions/api-keys/add-dialog/open");
+export const closeAddApiKeyDialog = createAction("@mlaide/actions/api-keys/add-dialog/close");

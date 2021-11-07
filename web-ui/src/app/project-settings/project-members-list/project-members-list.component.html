@@ -33,11 +33,12 @@
           <button
             mat-button
             (click)="editProjectMember(element)"
+            matTooltip="Edit settings for {{element.nickName}}"
             aria-label="Icon button to edit user's role in project"
           >
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-button (click)="deleteProjectMember(element)" aria-label="Icon button to delete user from project">
+          <button mat-button (click)="deleteProjectMember(element)" matTooltip="Remove {{element.nickName}} from project" aria-label="Icon button to delete user from project">
             <mat-icon>delete</mat-icon>
           </button>
         </td>

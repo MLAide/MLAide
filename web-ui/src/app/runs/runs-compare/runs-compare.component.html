@@ -1,32 +1,41 @@
 <div fxLayout="column">
   <h1 class="mat-display-2" i18n>Comparison of Runs</h1>
 </div>
-<div fxLayout="column">
-  <h2 id="metrics-title" class="mat-h2" i18n>Metrics</h2>
-
-  <app-run-params-metrics-table
-    id="run-metrics-table"
-    [data$]="metrics$"
-    [displayedColumnsName$]="displayedMetricsColumns$"
-    [displayedColumnsStartTime$]="displayedColumnsStartTime$"
-  >
-  </app-run-params-metrics-table>
-
-  <h2 id="parameters-title" class="mat-h2" i18n>Parameters</h2>
-
-  <app-run-params-metrics-table
-    id="run-parameters-table"
-    [data$]="parameters$"
-    [displayedColumnsName$]="displayedParametersColumns$"
-    [displayedColumnsStartTime$]="displayedColumnsStartTime$"
-  >
-  </app-run-params-metrics-table>
-
-  <div id="git-diff-div" *ngIf="(runs$ | async)?.length == 2">
-    <h2 id="git-diff-title" class="mat-h2" i18n>Git Diff</h2>
-
-    <app-file-diff id="git-file-diff" [gitDiff$]="gitDiff$">
-
-    </app-file-diff>
+<mat-tab-group>
+  <mat-tab label="Metrics" aria-label="Metrics tab">
+    <h2></h2>
+    <app-run-params-metrics-table
+      id="run-metrics-table"
+      [data$]="metrics$"
+      [displayedColumnsName$]="displayedMetricsColumns$"
+      [displayedColumnsStartTime$]="displayedColumnsStartTime$"
+    >
+    </app-run-params-metrics-table>
+  </mat-tab>
+  <mat-tab label="Parameters" aria-label="Parameters tab">
+    <h2></h2>
+    <app-run-params-metrics-table
+      id="run-parameters-table"
+      [data$]="parameters$"
+      [displayedColumnsName$]="displayedParametersColumns$"
+      [displayedColumnsStartTime$]="displayedColumnsStartTime$"
+    >
+    </app-run-params-metrics-table>
+  </mat-tab>
+  <div id="git-diff-div" *ngIf="(runs$ | async)?.length === 2">
+    <mat-tab label="Git Diff" aria-label="Git Diff tab">
+      <h2></h2>
+      <div id="git-diff-compare-message" fxLayout="row">
+        Comparing&nbsp;
+        <div *ngFor="let run of runs$ | async; let i = index">
+          {{run.name}} ( {{run.git?.commitHash? run.git?.commitHash : "n/a"}} )
+          <span *ngIf="i === 0">
+               &nbsp;and&nbsp;
+            </span>
+        </div>.
+      </div>
+      <app-file-diff id="git-file-diff" [gitDiff$]="gitDiff$">
+      </app-file-diff>
+    </mat-tab>
   </div>
-</div>
+</mat-tab-group>

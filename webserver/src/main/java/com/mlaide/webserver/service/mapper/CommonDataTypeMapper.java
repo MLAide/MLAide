@@ -5,7 +5,7 @@ import org.mapstruct.Mapper;
 
 import java.util.UUID;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface CommonDataTypeMapper {
     default String mapUuidToString(UUID value) {
         if (value == null) {

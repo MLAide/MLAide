@@ -28,6 +28,7 @@ import { MetricsTableComponent } from "@mlaide/runs/metrics-table/metrics-table.
 import { Artifact } from "@mlaide/state/artifact/artifact.models";
 import { Project } from "@mlaide/state/project/project.models";
 import { Run } from "@mlaide/state/run/run.models";
+import { RunNoteComponent } from "@mlaide/runs/run-note/run-note.component";
 
 
 describe("RunDetailsComponent", () => {
@@ -48,6 +49,9 @@ describe("RunDetailsComponent", () => {
     await TestBed.configureTestingModule({
       declarations: [
         MockComponent(ArtifactsTreeComponent),
+        MockComponent(RunNoteComponent),
+        MockComponent(MetricsTableComponent),
+        MockComponent(ParametersTableComponent),
         RunDetailsComponent,
         RunStatusI18nComponent,
         MockPipe(DurationPipe, (v) => String(v)),
@@ -241,6 +245,44 @@ describe("RunDetailsComponent", () => {
         expect(value.textContent).toEqual("-");
       });
 
+      it("should contain git commit label and value if commit hash exists", async () => {
+        // arrange + act also in beforeEach
+        let label: HTMLElement = fixture.nativeElement.querySelector("#run-git-commit-hash-label");
+        let value: HTMLElement = fixture.nativeElement.querySelector("#run-git-commit-hash-value");
+
+        // assert
+        expect(label.textContent).toEqual("Git Commit");
+        expect(value.textContent).toEqual(String(fakeRun.git.commitHash));
+      });
+
+      it("should not contain git commit label and value if commit hash does not exist", async () => {
+        // arrange + act also in beforeEach
+        fakeRun.git.commitHash = undefined;
+        fixture = TestBed.createComponent(RunDetailsComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        let label: HTMLElement = fixture.nativeElement.querySelector("#run-git-commit-hash-label");
+        let value: HTMLElement = fixture.nativeElement.querySelector("#run-git-commit-hash-value");
+
+        // assert
+        expect(label).toBeFalsy();
+        expect(value).toBeFalsy();
+      });
+
+      it("should not contain git commit label and value if git does not exist", async () => {
+        // arrange + act also in beforeEach
+        fakeRun.git = undefined;
+        fixture = TestBed.createComponent(RunDetailsComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        let label: HTMLElement = fixture.nativeElement.querySelector("#run-git-commit-hash-label");
+        let value: HTMLElement = fixture.nativeElement.querySelector("#run-git-commit-hash-value");
+
+        // assert
+        expect(label).toBeFalsy();
+        expect(value).toBeFalsy();
+      });
+
       it("should contain run time label and '-' as value if run endtime is null", async () => {
         // arrange
         fakeRun.endTime = null;
@@ -305,7 +347,7 @@ describe("RunDetailsComponent", () => {
     it("should contain artifacts tree", async () => {
       // arrange
       const artifactsTreeComponent = ngMocks
-        .find<ArtifactsTreeComponent>('app-metrics-table')
+        .find<ArtifactsTreeComponent>('app-artifacts-tree')
         .componentInstance;
 
       // assert
