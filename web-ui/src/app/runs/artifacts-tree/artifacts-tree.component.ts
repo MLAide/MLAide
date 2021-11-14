@@ -64,7 +64,8 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
       this.unsubscribeArtifacts();
 
       this.artifactsSubscription = this.artifacts$.subscribe((artifacts) => {
-        this.buildFileNodes(artifacts);
+        this.artifactNodes = [];
+        this.buildFileNodesAndAddToArtifactNodes(artifacts);
         if (this.artifactNodes) {
           this.sortTree(this.artifactNodes);
           this.dataSource.data = this.artifactNodes;
@@ -120,7 +121,7 @@ export class ArtifactsTreeComponent implements OnChanges, OnDestroy {
     return node.children;
   }
 
-  private buildFileNodes(artifacts: Artifact[]) {
+  private buildFileNodesAndAddToArtifactNodes(artifacts: Artifact[]) {
     let root: FileNode;
     artifacts?.forEach((artifact) => {
       root = {
