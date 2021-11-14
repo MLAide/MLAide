@@ -7,7 +7,13 @@ const routes: Routes = [
   {
     path: "",
     canActivate: [AuthGuard],
-    children: [{ path: "", component: ModelsListComponent, canActivate: [AuthGuard] }],
+    children: [
+      { path: "",
+        component: ModelsListComponent,
+        canActivate: [AuthGuard],
+        data: { "id": "modelsList" }
+      }
+    ],
   },
 ];
 

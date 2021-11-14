@@ -25,6 +25,8 @@ import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { Project } from "@mlaide/state/project/project.models";
 import { currentUserChanged } from "@mlaide/state/user/user.actions";
+import { routerNavigatedAction } from "@ngrx/router-store";
+import { isEmpty } from "rxjs/operators";
 
 describe("project effects", () => {
   let actions$ = new Observable<Action>();
@@ -51,6 +53,46 @@ describe("project effects", () => {
     store = TestBed.inject(MockStore);
     effects = TestBed.inject<ProjectEffects>(ProjectEffects);
     matDialog = TestBed.inject<MatDialog>(MatDialog);
+  });
+
+  describe("navigatedProject$", () => {
+    it("should trigger loadProject action if router url starts with /projects/", async (done) => {
+      // arrange
+      actions$ = of(routerNavigatedAction({
+        payload: {
+          routerState: {
+            url: "/projects/something"
+          } as any
+        } as any
+      }));
+
+      // act
+      effects.navigatedProject$.subscribe(action => {
+        // assert
+        expect(action).toEqual(loadProject());
+
+        done();
+      });
+    });
+
+    it("should not trigger any action if router url does not start with /projects/", async (done) => {
+      // arrange
+      actions$ = of(routerNavigatedAction({
+        payload: {
+          routerState: {
+            url: "/something"
+          } as any
+        } as any
+      }));
+
+      // act
+      effects.navigatedProject$.pipe(isEmpty()).subscribe(res => {
+        // assert
+        expect(res).toBeTrue();
+
+        done();
+      });
+    });
   });
 
   describe("loadProject$", () => {

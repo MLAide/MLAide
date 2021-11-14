@@ -9,7 +9,6 @@ import { currentUserChanged, editUserProfile, editUserProfileFailed, editUserPro
 
 @Injectable({ providedIn: "root" })
 export class UserEffects {
-
   loadUserInfoAfterAuthentication$ = createEffect(() =>
     this.actions$.pipe(
       ofType(isUserAuthenticated),

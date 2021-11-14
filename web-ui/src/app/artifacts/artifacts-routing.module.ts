@@ -8,7 +8,13 @@ const routes: Routes = [
     path: "",
     component: ArtifactsListComponent,
     canActivate: [AuthGuard],
-    children: [{ path: "", component: ArtifactsListComponent, canActivate: [AuthGuard] }],
+    children: [
+      {
+        path: "",
+        component: ArtifactsListComponent,
+        canActivate: [AuthGuard],
+        data: { "id": "artifactsList" }
+      }],
   },
 ];
 

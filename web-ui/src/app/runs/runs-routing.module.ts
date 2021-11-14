@@ -11,9 +11,27 @@ export const routes: Routes = [
     path: "",
     canActivate: [AuthGuard],
     children: [
-      { path: "", component: RunsListComponent, canActivate: [AuthGuard], pathMatch: "full" },
-      { path: "compare", component: RunsCompareComponent, canActivate: [AuthGuard], pathMatch: "full" },
-      { path: ":runKey", component: RunDetailsComponent, canActivate: [AuthGuard], pathMatch: "full" },
+      {
+        path: "",
+        component: RunsListComponent,
+        canActivate: [AuthGuard],
+        pathMatch: "full",
+        data: { "id": "runsList" }
+      },
+      {
+        path: "compare",
+        component: RunsCompareComponent,
+        canActivate: [AuthGuard],
+        pathMatch: "full",
+        data: { "id": "runsCompare" }
+      },
+      {
+        path: ":runKey",
+        component: RunDetailsComponent,
+        canActivate: [AuthGuard],
+        pathMatch: "full",
+        data: { "id": "runDetails" }
+      },
     ],
   },
 ];

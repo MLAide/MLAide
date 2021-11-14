@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
-import { deleteProjectMember, loadProjectMembers, openAddProjectMemberDialog, openEditProjectMemberDialog } from "@mlaide/state/project-member/project-member.actions";
+import { deleteProjectMember, openAddProjectMemberDialog, openEditProjectMemberDialog } from "@mlaide/state/project-member/project-member.actions";
 import { selectCurrentProjectMember, selectIsLoadingProjectMembers, selectProjectMembers } from "@mlaide/state/project-member/project-member.selectors";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { ProjectMember, ProjectMemberRole } from "@mlaide/state/project-member/project-member.models";
@@ -30,8 +30,6 @@ export class ProjectMembersListComponent implements OnInit {
       map(projectMember => projectMember?.role === ProjectMemberRole.OWNER),
       map(showActions => showActions ? ["nickName", "email", "role", "actions"] : ["nickName", "email", "role"])
     );
-
-    this.store.dispatch(loadProjectMembers());
   }
 
   public addProjectMember(): void {

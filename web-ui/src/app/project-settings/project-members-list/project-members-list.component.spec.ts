@@ -25,7 +25,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import {
   addProjectMember,
   deleteProjectMember,
-  loadProjectMembers, openAddProjectMemberDialog, openEditProjectMemberDialog
+  openAddProjectMemberDialog, openEditProjectMemberDialog
 } from "@mlaide/state/project-member/project-member.actions";
 import { MatCardHarness } from "@angular/material/card/testing";
 import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
@@ -133,13 +133,6 @@ describe("ProjectMembersListComponent", () => {
           expect(currentProjectMember).toBe(fakeProjectMemberForCurrentUser);
           done();
         });
-      });
-
-      it("should dispatch loadProjectMembers action", () => {
-        // ngOnInit will be called in beforeEach while creating the component
-
-        // assert
-        expect(dispatchSpy).toHaveBeenCalledWith(loadProjectMembers());
       });
     });
 

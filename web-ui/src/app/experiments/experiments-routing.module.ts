@@ -10,18 +10,19 @@ export const routes: Routes = [
     path: "",
     canActivate: [AuthGuard],
     children: [
-      { 
-        path: "", 
-        component: ExperimentsListComponent, 
-        canActivate: [AuthGuard], 
-        pathMatch: "full", 
-        data: { "id": "experimentsList" } 
+      {
+        path: "",
+        component: ExperimentsListComponent,
+        canActivate: [AuthGuard],
+        pathMatch: "full",
+        data: { "id": "experimentsList" }
       },
-      { 
-        path: ":experimentKey", 
-        component: ExperimentDetailsComponent, 
-        canActivate: [AuthGuard], 
-        pathMatch: "full" 
+      {
+        path: ":experimentKey",
+        component: ExperimentDetailsComponent,
+        canActivate: [AuthGuard],
+        pathMatch: "full",
+        data: { "id": "experimentDetails" }
       },
     ],
   },

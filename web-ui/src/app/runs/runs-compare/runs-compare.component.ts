@@ -1,7 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
-import { loadGitDiffByRunKeys, loadRunsByRunKeys } from "@mlaide/state/run/run.actions";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectGitDiffForRunKeys, selectIsLoadingRuns, selectRuns } from "@mlaide/state/run/run.selectors";
 import { map } from "rxjs/operators";
@@ -30,7 +29,7 @@ export class RunsCompareComponent implements OnInit {
   ngOnInit() {
     this.runs$ = this.store.select(selectRuns);
     this.gitDiff$ = this.store.select(selectGitDiffForRunKeys);
-    
+
     this.metrics$ = this.runs$.pipe(
       map((runs) => {
         const uniqueMetrics = this.createMetricsList(runs);
@@ -60,8 +59,6 @@ export class RunsCompareComponent implements OnInit {
     this.projectKey$ = this.store.select(selectCurrentProjectKey);
     this.isLoadingRuns$ = this.store.select(selectIsLoadingRuns);
 
-    this.store.dispatch(loadRunsByRunKeys());
-    this.store.dispatch(loadGitDiffByRunKeys());
   }
 
   private createDatasourceForMetrics(runs: Run[], uniqueMetricsList: string[]) {

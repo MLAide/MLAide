@@ -4,8 +4,7 @@ import { AppState } from "@mlaide/state/app.state";
 import { Store } from "@ngrx/store";
 import { selectCurrentRun } from "@mlaide/state/run/run.selectors";
 import { selectArtifactsOfCurrentRun } from "@mlaide/state/artifact/artifact.selectors";
-import { editRunNote, loadCurrentRun } from "@mlaide/state/run/run.actions";
-import { loadArtifactsOfCurrentRun } from "@mlaide/state/artifact/artifact.actions";
+import { editRunNote } from "@mlaide/state/run/run.actions";
 import { Artifact } from "@mlaide/state/artifact/artifact.models";
 import { filter, map } from "rxjs/operators";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
@@ -55,9 +54,6 @@ export class RunDetailsComponent implements OnInit {
         )
       )
     );
-
-    this.store.dispatch(loadCurrentRun());
-    this.store.dispatch(loadArtifactsOfCurrentRun());
   }
 
   public updateNote(note: string) {

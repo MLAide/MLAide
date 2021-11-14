@@ -1,6 +1,5 @@
 import { Component, OnInit } from "@angular/core";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
-import { loadRuns } from "@mlaide/state/run/run.actions";
 import { Run } from "@mlaide/state/run/run.models";
 import { selectIsLoadingRuns, selectRuns } from "@mlaide/state/run/run.selectors";
 import { Store } from "@ngrx/store";
@@ -22,7 +21,5 @@ export class RunsListComponent implements OnInit {
     this.runs$ = this.store.select(selectRuns);
     this.projectKey$ = this.store.select(selectCurrentProjectKey);
     this.isLoadingRuns$ = this.store.select(selectIsLoadingRuns);
-
-    this.store.dispatch(loadRuns());
   }
 }
