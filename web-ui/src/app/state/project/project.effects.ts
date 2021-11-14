@@ -9,10 +9,13 @@ import {
   addProject,
   addProjectFailed,
   addProjectSucceeded,
-  closeAddProjectDialog, loadProject, loadProjectFailed,
+  closeAddProjectDialog, 
+  loadProject, 
+  loadProjectFailed,
   loadProjects,
   loadProjectsFailed,
-  loadProjectsSucceeded, loadProjectSucceeded,
+  loadProjectsSucceeded, 
+  loadProjectSucceeded,
   openAddProjectDialog
 } from "./project.actions";
 import { ProjectApi } from "./project.api";
@@ -24,7 +27,6 @@ import { Store } from "@ngrx/store";
 
 @Injectable({ providedIn: "root" })
 export class ProjectEffects {
-
   loadProject$ = createEffect(() =>
     this.actions$.pipe(
       ofType(loadProject),
@@ -159,5 +161,5 @@ export class ProjectEffects {
   public constructor(private readonly actions$: Actions,
                      private readonly dialog: MatDialog,
                      private readonly projectApi: ProjectApi,
-  private readonly store: Store) {}
+                     private readonly store: Store) {}
 }

@@ -90,7 +90,7 @@ describe("experiment effects", () => {
   });
 
   describe("loadExperiments$", () => {
-    it(`should trigger loadExperimentsSucceeded action containing experiments if api call is successful`, async (done) => {
+    it("should trigger loadExperimentsSucceeded action containing experiments if api call is successful", async (done) => {
       // arrange
       actions$ = of(loadExperiments());
       const experiments = await getRandomExperiments(3);

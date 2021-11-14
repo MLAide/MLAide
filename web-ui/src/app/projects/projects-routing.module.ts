@@ -34,6 +34,7 @@ export const routes: Routes = [
       },
       { path: "", redirectTo: "experiments", pathMatch: "full" },
     ],
+    data: { "id": "project" }
   },
 ];
 
