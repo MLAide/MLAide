@@ -10,7 +10,6 @@ import { ExperimentDetailsComponent } from "./experiment-details.component";
 import { ArtifactsListTableComponent } from "@mlaide/shared/components/artifacts-list-table/artifacts-list-table.component";
 import { RunsListTableComponent } from "@mlaide/shared/components/runs-list-table/runs-list-table.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import { Action } from "@ngrx/store";
 import {
   selectArtifactsByRunKeys,
   selectIsLoadingArtifacts
@@ -18,7 +17,6 @@ import {
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectCurrentExperiment } from "@mlaide/state/experiment/experiment.selectors";
 import { selectIsLoadingRuns, selectRunsOfCurrentExperiment } from "@mlaide/state/run/run.selectors";
-import { loadExperimentWithAllDetails } from "@mlaide/state/experiment/experiment.actions";
 import { ExperimentLineageVisualizationComponent } from "@mlaide/experiments/experiment-lineage-visualization/experiment-lineage-visualization.component";
 import { Artifact } from "@mlaide/state/artifact/artifact.models";
 import { Experiment } from "@mlaide/state/experiment/experiment.models";
@@ -36,7 +34,6 @@ describe("ExperimentDetailsComponent", () => {
   let fakeRuns: Run[];
 
   let store: MockStore;
-  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
     // arrange fakes & stubs
@@ -68,8 +65,6 @@ describe("ExperimentDetailsComponent", () => {
     store.overrideSelector(selectArtifactsByRunKeys, fakeArtifacts);
     store.overrideSelector(selectIsLoadingRuns, true);
     store.overrideSelector(selectIsLoadingArtifacts, true);
-
-    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -144,13 +139,6 @@ describe("ExperimentDetailsComponent", () => {
         expect(isLoading).toBe(true);
         done();
       });
-    });
-
-    it("should dispatch loadExperimentWithAllDetails action", () => {
-      // ngOnInit will be called in beforeEach while creating the component
-
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(loadExperimentWithAllDetails());
     });
   });
 

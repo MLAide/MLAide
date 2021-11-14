@@ -5,10 +5,8 @@ import { getRandomArtifacts, getRandomProject } from "@mlaide/mocks/fake-generat
 import { ArtifactsListComponent } from "./artifacts-list.component";
 import { ArtifactsListTableComponent } from "@mlaide/shared/components/artifacts-list-table/artifacts-list-table.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import { Action } from "@ngrx/store";
 import { selectArtifacts, selectIsLoadingArtifacts } from "@mlaide/state/artifact/artifact.selectors";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
-import { loadArtifacts } from "@mlaide/state/artifact/artifact.actions";
 import { Project } from "@mlaide/state/project/project.models";
 import { Artifact } from "@mlaide/state/artifact/artifact.models";
 
@@ -21,7 +19,6 @@ describe("ArtifactsListComponent", () => {
   let fakeArtifacts: Artifact[];
 
   let store: MockStore;
-  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
     // arrange fakes & stubs
@@ -41,8 +38,6 @@ describe("ArtifactsListComponent", () => {
     store.overrideSelector(selectArtifacts, fakeArtifacts);
     store.overrideSelector(selectCurrentProjectKey, fakeProject.key);
     store.overrideSelector(selectIsLoadingArtifacts, true);
-
-    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -84,13 +79,6 @@ describe("ArtifactsListComponent", () => {
         expect(isLoading).toBe(true);
         done();
       });
-    });
-
-    it("should dispatch loadArtifacts action", () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(loadArtifacts());
     });
   });
 

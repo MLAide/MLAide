@@ -7,7 +7,14 @@ const routes: Routes = [
   {
     path: "",
     canActivate: [AuthGuard],
-    children: [{ path: "", component: ProjectMembersListComponent, canActivate: [AuthGuard] }],
+    children: [
+      {
+        path: "",
+        component: ProjectMembersListComponent,
+        canActivate: [AuthGuard],
+        data: { "id": "projectMembersList" }
+      }
+    ],
   },
 ];
 

@@ -5,10 +5,8 @@ import { RunParamsMetricsTableComponent } from "@mlaide/shared/components/run-pa
 
 import { RunsCompareComponent } from "./runs-compare.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import { Action } from "@ngrx/store";
 import { selectGitDiffForRunKeys, selectIsLoadingRuns, selectRuns } from "@mlaide/state/run/run.selectors";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
-import { loadGitDiffByRunKeys, loadRunsByRunKeys } from "@mlaide/state/run/run.actions";
 import { Project } from "@mlaide/state/project/project.models";
 import { GitDiff, Run } from "@mlaide/state/run/run.models";
 import { FileDiffComponent } from "@mlaide/shared/components/file-diff/file-diff.component";
@@ -17,7 +15,6 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { of } from "rxjs";
-import { SimpleChange } from "@angular/core";
 import { MatTabGroupHarness } from "@angular/material/tabs/testing";
 
 describe("RunsCompareComponent", () => {
@@ -30,7 +27,6 @@ describe("RunsCompareComponent", () => {
   let fakeGitDiff: GitDiff;
 
   let store: MockStore;
-  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
 
   beforeEach(async () => {
     // setup fakes
@@ -59,8 +55,6 @@ describe("RunsCompareComponent", () => {
     store.overrideSelector(selectGitDiffForRunKeys, fakeGitDiff);
     store.overrideSelector(selectCurrentProjectKey, fakeProject.key);
     store.overrideSelector(selectIsLoadingRuns, true);
-
-    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -251,20 +245,6 @@ describe("RunsCompareComponent", () => {
         expect(isLoading).toBe(true);
         done();
       });
-    });
-
-    it("should dispatch loadRunsByRunKeys action", () => {
-      // ngOnInit will be called in beforeEach while creating the component
-
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(loadRunsByRunKeys());
-    });
-
-    it("should dispatch loadGitDiffByRunKeys action", () => {
-      // ngOnInit will be called in beforeEach while creating the component
-
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(loadGitDiffByRunKeys());
     });
   });
 

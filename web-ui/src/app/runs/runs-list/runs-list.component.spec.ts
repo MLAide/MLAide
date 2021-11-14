@@ -4,10 +4,8 @@ import { getRandomProject, getRandomRuns } from "@mlaide/mocks/fake-generator";
 import { RunsListComponent } from "./runs-list.component";
 import { RunsListTableComponent } from "@mlaide/shared/components/runs-list-table/runs-list-table.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import { Action } from "@ngrx/store";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectIsLoadingRuns, selectRuns } from "@mlaide/state/run/run.selectors";
-import { loadRuns } from "@mlaide/state/run/run.actions";
 import { Run } from "@mlaide/state/run/run.models";
 import { Project } from "@mlaide/state/project/project.models";
 
@@ -20,8 +18,6 @@ describe("RunsListComponent", () => {
   let fakeProject: Project;
 
   let store: MockStore;
-  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
-
   beforeEach(async () => {
     // arrange fakes & stubs
     // setup fakes
@@ -40,8 +36,6 @@ describe("RunsListComponent", () => {
     store.overrideSelector(selectRuns, fakeRuns);
     store.overrideSelector(selectCurrentProjectKey, fakeProject.key);
     store.overrideSelector(selectIsLoadingRuns, true);
-
-    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -83,13 +77,6 @@ describe("RunsListComponent", () => {
         expect(isLoading).toBe(true);
         done();
       });
-    });
-
-    it("should dispatch loadRuns action", () => {
-      // ngOnInit will be called in beforeEach while creating the component
-
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(loadRuns());
     });
   });
 

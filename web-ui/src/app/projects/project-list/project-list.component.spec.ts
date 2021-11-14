@@ -14,7 +14,7 @@ import { getRandomProjects } from "@mlaide/mocks/fake-generator";
 import { MockPipe } from "ng-mocks";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
-import { loadProjects, openAddProjectDialog } from "@mlaide/state/project/project.actions";
+import { openAddProjectDialog } from "@mlaide/state/project/project.actions";
 import { Action } from "@ngrx/store";
 import { MatCardHarness } from "@angular/material/card/testing";
 import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
@@ -87,12 +87,6 @@ describe("ProjectListComponent", () => {
         expect(isLoading).toBe(true);
         done();
       });
-    });
-    it("should dispatch loadProjects action", () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(loadProjects());
     });
   });
 

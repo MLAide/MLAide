@@ -3,7 +3,6 @@ import { Observable} from "rxjs";
 import { Store } from "@ngrx/store";
 import { selectIsLoadingArtifacts, selectModels } from "@mlaide/state/artifact/artifact.selectors";
 import {
-  loadModels,
   openEditModelDialog,
   openModelStageLogDialog
 } from "@mlaide/state/artifact/artifact.actions";
@@ -26,8 +25,6 @@ export class ModelsListComponent implements OnInit {
   ngOnInit() {
     this.models$ = this.store.select(selectModels);
     this.isLoadingArtifacts$ = this.store.select(selectIsLoadingArtifacts);
-
-    this.store.dispatch(loadModels());
   }
 
   public openEditModelDialog(artifact: Artifact) {

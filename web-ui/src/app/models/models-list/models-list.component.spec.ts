@@ -18,7 +18,7 @@ import { Action } from "@ngrx/store";
 import { selectIsLoadingArtifacts, selectModels } from "@mlaide/state/artifact/artifact.selectors";
 import { MatCardModule } from "@angular/material/card";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { loadModels, openEditModelDialog, openModelStageLogDialog } from "@mlaide/state/artifact/artifact.actions";
+import { openEditModelDialog, openModelStageLogDialog } from "@mlaide/state/artifact/artifact.actions";
 import { MatCardHarness } from "@angular/material/card/testing";
 import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
 import { Artifact } from "@mlaide/state/artifact/artifact.models";
@@ -96,13 +96,6 @@ describe("ModelsListComponent", () => {
         expect(isLoading).toBe(true);
         done();
       });
-    });
-
-    it("should dispatch loadModels action", () => {
-      // ngOnInit will be called in beforeEach while creating the component
-
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(loadModels());
     });
   });
 

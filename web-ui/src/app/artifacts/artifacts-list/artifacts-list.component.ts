@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { loadArtifacts } from "@mlaide/state/artifact/artifact.actions";
 import { Artifact } from "@mlaide/state/artifact/artifact.models";
 import { selectArtifacts, selectIsLoadingArtifacts } from "@mlaide/state/artifact/artifact.selectors";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
@@ -22,7 +21,5 @@ export class ArtifactsListComponent implements OnInit {
     this.artifacts$ = this.store.select(selectArtifacts);
     this.projectKey$ = this.store.select(selectCurrentProjectKey);
     this.isLoadingArtifacts$ = this.store.select(selectIsLoadingArtifacts);
-
-    this.store.dispatch(loadArtifacts());
   }
 }

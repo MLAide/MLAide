@@ -6,6 +6,10 @@ import { provideMockActions } from "@ngrx/effects/testing";
 import { SharedEffects } from "@mlaide/state/shared/shared.effects";
 import { SnackbarUiService, SpinnerUiService } from "@mlaide/shared/services";
 import { hideSpinner, showErrorMessage, showSpinner, showSuccessMessage } from "@mlaide/state/shared/shared.actions";
+import { routerNavigatedAction } from "@ngrx/router-store";
+import { selectRouteData } from "../router.selectors";
+import { loadExperiments } from "../experiment/experiment.actions";
+import { isEmpty } from "rxjs/operators";
 
 describe("shared effects", () => {
   let actions$ = new Observable<Action>();
@@ -34,6 +38,36 @@ describe("shared effects", () => {
 
     store = TestBed.inject(MockStore);
     effects = TestBed.inject<SharedEffects>(SharedEffects);
+  });
+
+  describe("routerNavigated$", () => {
+    it("should trigger an action if routeData.id is registered in routeActionMappings", async (done) => {
+      // arrange
+      actions$ = of(routerNavigatedAction(null));
+      store.overrideSelector(selectRouteData, { id: "experimentsList" });
+
+      // act
+      effects.routerNavigated$.subscribe(action => {
+        // assert
+        expect(action).toEqual(loadExperiments());
+
+        done();
+      });
+    });
+
+    it("should not trigger any action if routeData.id is not registered in routeActionMappings", async (done) => {
+      // arrange
+      actions$ = of(routerNavigatedAction(null));
+      store.overrideSelector(selectRouteData, { id: "something" });
+
+      // act
+      effects.routerNavigated$.pipe(isEmpty()).subscribe(res => {
+        // assert
+        expect(res).toBeTrue();
+
+        done();
+      });
+    });
   });
 
   describe("showError$", () => {

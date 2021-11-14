@@ -17,11 +17,9 @@ import { RunDetailsComponent } from "@mlaide/runs/run-details/run-details.compon
 import { RunStatusI18nComponent } from "@mlaide/shared/components/run-status-i18n/run-status-i18n.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
-import { Action, DefaultProjectorFn, MemoizedSelector } from "@ngrx/store";
+import { DefaultProjectorFn, MemoizedSelector } from "@ngrx/store";
 import { selectCurrentRun } from "@mlaide/state/run/run.selectors";
 import { selectArtifactsOfCurrentRun } from "@mlaide/state/artifact/artifact.selectors";
-import { loadCurrentRun } from "@mlaide/state/run/run.actions";
-import { loadArtifactsOfCurrentRun } from "@mlaide/state/artifact/artifact.actions";
 import { AppState } from "@mlaide/state/app.state";
 import { ParametersTableComponent } from "@mlaide/runs/parameters-table/parameters-table.component";
 import { MetricsTableComponent } from "@mlaide/runs/metrics-table/metrics-table.component";
@@ -41,7 +39,6 @@ describe("RunDetailsComponent", () => {
   let fakeRun: Run;
 
   let store: MockStore;
-  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
   let mockedRunSelector: MemoizedSelector<AppState, Run, DefaultProjectorFn<Run>>;
 
   beforeEach(async () => {
@@ -80,8 +77,6 @@ describe("RunDetailsComponent", () => {
     mockedRunSelector = store.overrideSelector(selectCurrentRun, fakeRun);
     store.overrideSelector(selectArtifactsOfCurrentRun, fakeArtifacts);
     store.overrideSelector(selectCurrentProjectKey, fakeProject.key);
-
-    dispatchSpy = spyOn(store, 'dispatch');
 
     fixture = TestBed.createComponent(RunDetailsComponent);
     component = fixture.componentInstance;
@@ -135,13 +130,6 @@ describe("RunDetailsComponent", () => {
 
         done();
       })
-    });
-
-    it("should dispatch actions", () => {
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledTimes(2);
-      expect(dispatchSpy.calls.argsFor(0)).toEqual([loadCurrentRun()]);
-      expect(dispatchSpy.calls.argsFor(1)).toEqual([loadArtifactsOfCurrentRun()]);
     });
 
     it("should build run metrics based on selected run", async (done) => {

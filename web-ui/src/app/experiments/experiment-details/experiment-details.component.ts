@@ -1,7 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { select, Store } from "@ngrx/store";
-import { loadExperimentWithAllDetails } from "@mlaide/state/experiment/experiment.actions";
 import { selectCurrentExperiment } from "@mlaide/state/experiment/experiment.selectors";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectIsLoadingRuns, selectRunsOfCurrentExperiment } from "@mlaide/state/run/run.selectors";
@@ -33,7 +32,5 @@ export class ExperimentDetailsComponent implements OnInit {
     this.artifacts$ = this.store.select(selectArtifactsByRunKeys);
     this.isLoadingRuns$ = this.store.pipe(select(selectIsLoadingRuns));
     this.isLoadingArtifacts$ = this.store.select(selectIsLoadingArtifacts);
-
-    this.store.dispatch(loadExperimentWithAllDetails());
   }
 }

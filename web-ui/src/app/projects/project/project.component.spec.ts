@@ -15,8 +15,6 @@ import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { RouterTestingModule } from "@angular/router/testing";
 import { MatButtonHarness } from "@angular/material/button/testing";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
-import { Action } from "@ngrx/store";
-import { loadProject } from "@mlaide/state/project/project.actions";
 import { AppState } from "@mlaide/state/app.state";
 import { ProjectState } from "@mlaide/state/project/project.state";
 import { Project } from "@mlaide/state/project/project.models";
@@ -30,8 +28,6 @@ describe("ProjectComponent", () => {
   let fakeProject: Project;
 
   let store: MockStore;
-  let dispatchSpy: jasmine.Spy<(action: Action) => void>;
-
   beforeEach(async () => {
     // setup project fakes
     fakeProject = await getRandomProject();
@@ -59,7 +55,6 @@ describe("ProjectComponent", () => {
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
-    dispatchSpy = spyOn(store, 'dispatch');
   });
 
   beforeEach(() => {
@@ -74,13 +69,6 @@ describe("ProjectComponent", () => {
   });
 
   describe("ngOnInit", () => {
-    it("should dispatch load project", async () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledOnceWith(loadProject());
-    });
-
     it("should subscribe to current project", (done) => {
       // arrange + act in beforeEach
 

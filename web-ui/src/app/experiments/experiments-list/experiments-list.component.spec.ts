@@ -23,7 +23,6 @@ import { Action } from "@ngrx/store";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectExperiments, selectIsLoadingExperiments } from "@mlaide/state/experiment/experiment.selectors";
 import {
-  loadExperiments,
   openAddOrEditExperimentDialog
 } from "@mlaide/state/experiment/experiment.actions";
 import { MatCardModule } from "@angular/material/card";
@@ -100,13 +99,6 @@ describe("ExperimentsListComponent", () => {
   });
 
   describe("ngOnInit", () => {
-    it("should dispatch loadExperiments action", () => {
-      // ngOnInit will be called in beforeEach while creating the component
-
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(loadExperiments());
-    });
-
     it("should select isLoadingExperiments from store correctly", async (done) => {
       // arrange + act in beforeEach
 

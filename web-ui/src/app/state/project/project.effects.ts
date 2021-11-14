@@ -2,17 +2,20 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
-import { catchError, map, mergeMap, switchMap, tap } from "rxjs/operators";
+import { catchError, filter, map, mergeMap, switchMap, tap } from "rxjs/operators";
 import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 import { hideSpinner, showSpinner } from "@mlaide/state/shared/shared.actions";
 import {
   addProject,
   addProjectFailed,
   addProjectSucceeded,
-  closeAddProjectDialog, loadProject, loadProjectFailed,
+  closeAddProjectDialog,
+  loadProject,
+  loadProjectFailed,
   loadProjects,
   loadProjectsFailed,
-  loadProjectsSucceeded, loadProjectSucceeded,
+  loadProjectsSucceeded,
+  loadProjectSucceeded,
   openAddProjectDialog
 } from "./project.actions";
 import { ProjectApi } from "./project.api";
@@ -21,9 +24,17 @@ import { AddProjectComponent } from "@mlaide/projects/add-project/add-project.co
 import { currentUserChanged } from "@mlaide/state/user/user.actions";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { Store } from "@ngrx/store";
+import { routerNavigatedAction } from "@ngrx/router-store";
 
 @Injectable({ providedIn: "root" })
 export class ProjectEffects {
+  navigatedProject$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(routerNavigatedAction),
+      filter((action) => action.payload.routerState.url.startsWith("/projects/")),
+      map(() => loadProject())
+    )
+  );
 
   loadProject$ = createEffect(() =>
     this.actions$.pipe(
@@ -159,5 +170,5 @@ export class ProjectEffects {
   public constructor(private readonly actions$: Actions,
                      private readonly dialog: MatDialog,
                      private readonly projectApi: ProjectApi,
-  private readonly store: Store) {}
+                     private readonly store: Store) {}
 }

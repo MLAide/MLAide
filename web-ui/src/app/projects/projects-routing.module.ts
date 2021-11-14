@@ -6,7 +6,12 @@ import { ProjectListComponent } from "./project-list/project-list.component";
 import { ProjectComponent } from "./project/project.component";
 
 export const routes: Routes = [
-  { path: "projects", component: ProjectListComponent, canActivate: [AuthGuard] },
+  {
+    path: "projects",
+    component: ProjectListComponent,
+    canActivate: [AuthGuard],
+    data: { "id": "projectsList" }
+  },
   {
     path: "projects/:projectKey",
     component: ProjectComponent,

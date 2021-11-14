@@ -3,7 +3,7 @@ import { Router } from "@angular/router";
 import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
 import { selectIsLoadingProjects, selectProjects } from "@mlaide/state/project/project.selectors";
-import { loadProjects, openAddProjectDialog } from "@mlaide/state/project/project.actions";
+import { openAddProjectDialog } from "@mlaide/state/project/project.actions";
 import { Project } from "@mlaide/state/model";
 
 @Component({
@@ -21,8 +21,6 @@ export class ProjectListComponent implements OnInit {
   public ngOnInit() {
      this.projects$ = this.store.select(selectProjects);
      this.isLoading$ = this.store.select(selectIsLoadingProjects);
-
-     this.store.dispatch(loadProjects());
   }
 
   async goToProject(project: Project) {

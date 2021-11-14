@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
-import { loadExperiments, openAddOrEditExperimentDialog } from "@mlaide/state/experiment/experiment.actions";
+import { openAddOrEditExperimentDialog } from "@mlaide/state/experiment/experiment.actions";
 import { selectExperiments, selectIsLoadingExperiments } from "@mlaide/state/experiment/experiment.selectors";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { Experiment, ExperimentStatus } from "@mlaide/state/experiment/experiment.models";
@@ -20,12 +20,8 @@ export class ExperimentsListComponent implements OnInit {
   constructor(private store: Store) {}
 
   ngOnInit() {
-    this.store.dispatch(loadExperiments());
-
     this.isLoading$ = this.store.select(selectIsLoadingExperiments);
-
     this.experiments$ = this.store.select(selectExperiments);
-
     this.projectKey$ = this.store.select(selectCurrentProjectKey);
   }
 

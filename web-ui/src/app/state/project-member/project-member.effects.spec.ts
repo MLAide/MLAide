@@ -431,7 +431,7 @@ describe("ProjectMemberEffects", () => {
       store.overrideSelector(selectCurrentUser, user);
       actions$ = of(deleteProjectMemberSucceeded({projectMember}));
       // act
-      // we have to check that the effect does not emit a event - isEmpty() is a helper function for that
+      // we have to check that the effect does not emit an event - isEmpty() is a helper function for that
       // https://stackoverflow.com/questions/66332252/how-to-test-if-returned-observable-is-empty
       effects.goToProjectOverviewIfDeletedUserIsCurrentUser$.pipe(isEmpty()).subscribe(res => {
         // assert
