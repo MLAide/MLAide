@@ -125,10 +125,12 @@ public class ArtifactController {
 
         StreamingResponseBody streamingResponseBody =
                 outputStream -> artifactService.downloadFile(projectKey, artifactName, artifactVersion, fileId, outputStream);
+        String[] fileNameSplit = file.getFileName().split("/");
+        String fileName = fileNameSplit[fileNameSplit.length-1];
 
         return ResponseEntity
                 .ok()
-                .header("Content-Disposition", "attachment; filename=\"" + file.getFileName() + "\"")
+                .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
                 .body(streamingResponseBody);
     }
 
