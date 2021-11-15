@@ -193,6 +193,7 @@ describe("ApiKeyEffects", () => {
     it("should open MatDialog with AddApiKeyComponent", async (done) => {
       // arrange
       actions$ = of(openAddApiKeyDialog());
+      openDialogSpy.and.returnValue({afterClosed: () => of(true)} as MatDialogRef<AddApiKeyComponent>);
 
       // act
       effects.openAddApiKeyDialog$.subscribe(() => {

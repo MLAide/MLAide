@@ -62,13 +62,17 @@ export class ApiKeyEffects {
   openAddApiKeyDialog$ = createEffect(() =>
     this.actions$.pipe(
       ofType(actions.openAddApiKeyDialog),
-      tap(() => {
-        this.dialog.open(AddApiKeyComponent, {
+      mergeMap(() => {
+        const dialogRef = this.dialog.open(AddApiKeyComponent, {
           minWidth: "20%"
         });
+
+        return dialogRef.afterClosed();
+      }),
+      map((closed) => {
+        return actions.closeAddApiKeyDialog();
       })
-    ),
-    { dispatch: false }
+    )
   );
 
   closeAddApiKeyDialog$ = createEffect(() =>
