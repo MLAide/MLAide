@@ -63,13 +63,17 @@ export class SshKeyEffects {
   openAddSshKeyDialog$ = createEffect(() =>
       this.actions$.pipe(
         ofType(actions.openAddSshKeyDialog),
-        tap(() => {
-          this.dialog.open(AddSshKeyComponent, {
+        mergeMap(() => {
+          const dialogRef = this.dialog.open(AddSshKeyComponent, {
             minWidth: "20%"
           });
+
+          return dialogRef.afterClosed();
+        }),
+        map(() => {
+          return actions.closeAddSshKeyDialog();
         })
-      ),
-    { dispatch: false }
+      )
   );
 
   closeAddSshKeyDialog$ = createEffect(() =>

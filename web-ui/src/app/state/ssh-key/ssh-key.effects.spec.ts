@@ -193,6 +193,7 @@ describe("SshKeyEffects", () => {
     it("should open MatDialog with AddSshKeyComponent", async (done) => {
       // arrange
       actions$ = of(openAddSshKeyDialog());
+      openDialogSpy.and.returnValue({afterClosed: () => of(true)} as MatDialogRef<AddSshKeyComponent>);
 
       // act
       effects.openAddSshKeyDialog$.subscribe(() => {

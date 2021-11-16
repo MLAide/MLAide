@@ -69,7 +69,7 @@ export class ApiKeyEffects {
 
         return dialogRef.afterClosed();
       }),
-      map((closed) => {
+      map(() => {
         return actions.closeAddApiKeyDialog();
       })
     )
