@@ -1,9 +1,8 @@
-import { AppState } from "@mlaide/state/app.state";
 import { selectRouteParam } from "@mlaide/state/router.selectors";
 import { createFeatureSelector, createSelector } from "@ngrx/store";
 import { ProjectState } from "@mlaide/state/project/project.state";
 
-const projectState = createFeatureSelector<AppState, ProjectState>("projects")
+const projectState = createFeatureSelector< ProjectState>("projects")
 
 export const selectCurrentProject = createSelector(
   projectState,
