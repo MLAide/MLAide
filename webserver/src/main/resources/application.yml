@@ -10,6 +10,10 @@ spring:
           jwk-set-uri: https://mvc-dev.eu.auth0.com/.well-known/jwks.json
   jackson:
     default-property-inclusion: non_null
+  servlet:
+    multipart:
+      max-file-size: 1GB
+      max-request-size: 3GB
 
 server:
   port: 9000
