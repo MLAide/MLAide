@@ -6,6 +6,8 @@ import com.mlaide.webserver.model.RunStatus;
 import com.mlaide.webserver.repository.entity.GitEntity;
 import com.mlaide.webserver.repository.entity.RunEntity;
 
+import java.util.ArrayList;
+
 public class RunFaker {
     private static final Faker faker = new Faker();
 
@@ -21,9 +23,15 @@ public class RunFaker {
 
     public static RunEntity newRunEntity() {
         var runEntity = new RunEntity();
+        var experimentRefEntityList = new ArrayList<RunEntity.ExperimentRefEntity>();
+        var experimentRefEntity = new RunEntity.ExperimentRefEntity();
+
+        experimentRefEntity.setExperimentKey(faker.funnyName().name());
+        experimentRefEntityList.add(experimentRefEntity);
 
         runEntity.setCreatedAt(FakerUtils.pastDate());
         runEntity.setCreatedBy(FakerUtils.newUserRef());
+        runEntity.setExperimentRefs(experimentRefEntityList);
         runEntity.setKey(faker.random().nextInt(50));
         runEntity.setName(faker.funnyName().name());
         runEntity.setProjectKey(ProjectFaker.validProjectKey());

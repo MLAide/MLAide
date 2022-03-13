@@ -139,12 +139,11 @@ class ExtendedRunQueriesImplTest {
         RunEntity.ExperimentRefEntity exp2 = new RunEntity.ExperimentRefEntity("experiment2");
         RunEntity r1 = createCustomRunEntityWithExperimentRefs(1, "r1", projectKey, asList(exp1, exp2));
         RunEntity r2 = createCustomRunEntityWithExperimentRefs(2, "r2", projectKey, singletonList(exp1));
-        RunEntity r3 = createCustomRunEntityWithExperimentRefs(3, "r3", projectKey);
         RunEntity rAnother = createCustomRunEntityWithExperimentRefs(1, "r1", "another-project", singletonList(exp1));
 
-        mongo.insertAll(asList(r1, r2, r3, rAnother));
+        mongo.insertAll(asList(r1, r2, rAnother));
 
-        var runIds = asList(r1.getKey(), r2.getKey(), r3.getKey());
+        var runIds = asList(r1.getKey(), r2.getKey());
         var refs = asList(exp1, exp2);
 
         var target = new ExtendedRunQueriesImpl(mongo);
@@ -155,12 +154,10 @@ class ExtendedRunQueriesImplTest {
         // assert
         r1 = mongo.findById(r1.getId(), RunEntity.class);
         r2 = mongo.findById(r2.getId(), RunEntity.class);
-        r3 = mongo.findById(r3.getId(), RunEntity.class);
         rAnother = mongo.findById(rAnother.getId(), RunEntity.class);
 
         assertThat(r1).isNotNull();
         assertThat(r2).isNotNull();
-        assertThat(r3).isNotNull();
         assertThat(rAnother).isNotNull();
 
         assertThat(r1.getExperimentRefs()).hasSize(2)
@@ -168,10 +165,6 @@ class ExtendedRunQueriesImplTest {
                 .anyMatch(r -> r.getExperimentKey().equals(exp2.getExperimentKey()));
 
         assertThat(r2.getExperimentRefs()).hasSize(2)
-                .anyMatch(r -> r.getExperimentKey().equals(exp1.getExperimentKey()))
-                .anyMatch(r -> r.getExperimentKey().equals(exp2.getExperimentKey()));
-
-        assertThat(r3.getExperimentRefs()).hasSize(2)
                 .anyMatch(r -> r.getExperimentKey().equals(exp1.getExperimentKey()))
                 .anyMatch(r -> r.getExperimentKey().equals(exp2.getExperimentKey()));
 

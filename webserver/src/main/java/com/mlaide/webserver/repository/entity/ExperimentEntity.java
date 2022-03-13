@@ -37,8 +37,6 @@ public class ExperimentEntity {
     @Pattern(regexp = ValidationRegEx.PROJECT_KEY)
     @NotBlank
     @Indexed private String projectKey;
-    @NotNull
-    private String status;
     private List<String> tags;
     @PastOrPresent
     private OffsetDateTime updatedAt;

@@ -25,6 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.validation.ConstraintViolationException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -101,6 +102,24 @@ public class RunEntityTest {
         void endTime_is_in_the_future_should_throw_ConstraintViolationException() {
             // Arrange
             runEntity.setEndTime(OffsetDateTime.now().plusDays(1));
+
+            // Act + Assert
+            assertThatThrownBy(() -> mongo.save(runEntity)).isInstanceOf(ConstraintViolationException.class);
+        }
+
+        @Test
+        void experimentList_is_empty_should_throw_ConstraintViolationException() {
+            // Arrange
+            runEntity.setExperimentRefs(new ArrayList<>());
+
+            // Act + Assert
+            assertThatThrownBy(() -> mongo.save(runEntity)).isInstanceOf(ConstraintViolationException.class);
+        }
+
+        @Test
+        void experimentList_is_null_should_throw_ConstraintViolationException() {
+            // Arrange
+            runEntity.setExperimentRefs(null);
 
             // Act + Assert
             assertThatThrownBy(() -> mongo.save(runEntity)).isInstanceOf(ConstraintViolationException.class);

@@ -7,10 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -32,6 +29,7 @@ public class RunEntity {
     private UserRef createdBy;
     @PastOrPresent
     private OffsetDateTime endTime;
+    @NotEmpty
     private Collection<ExperimentRefEntity> experimentRefs;
     private GitEntity git;
     @Id private ObjectId id;

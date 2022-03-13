@@ -36,14 +36,13 @@ class RunControllerTest {
 
     private @Mock ExperimentService experimentService;
     private @Mock RunService runService;
-    private @Mock RandomGeneratorService randomGeneratorService;
     private @Mock PatchSupport patchSupport;
 
     private String projectKey;
 
     @BeforeEach
     void initialize() {
-        runController = new RunController(experimentService, runService, randomGeneratorService, patchSupport);
+        runController = new RunController(experimentService, runService, patchSupport);
 
         projectKey = ProjectFaker.validProjectKey();
     }
@@ -127,25 +126,6 @@ class RunControllerTest {
             assertThat(response.getBody()).isSameAs(savedRun);
 
             verify(runService).addRun(projectKey, runToAdd);
-        }
-        @Test
-        void experimentRef_of_run_is_null_should_generate_new_experiment_and_add_it_to_run() {
-            // Arrange
-            runToAdd.setExperimentRefs(null);
-
-            Experiment generatedExperiment = new Experiment();
-            when(randomGeneratorService.randomExperiment()).thenReturn(generatedExperiment);
-
-            Experiment experiment = ExperimentFaker.newExperiment();
-            when(experimentService.addExperiment(projectKey, generatedExperiment)).thenReturn(experiment);
-
-            // Act
-            runController.postRun(projectKey, runToAdd);
-
-            // Assert
-            assertThat(runToAdd.getExperimentRefs()).isNotNull();
-            assertThat(runToAdd.getExperimentRefs()).hasSize(1);
-            assertThat(runToAdd.getExperimentRefs().get(0).getExperimentKey()).isEqualTo(experiment.getKey());
         }
     }
 
