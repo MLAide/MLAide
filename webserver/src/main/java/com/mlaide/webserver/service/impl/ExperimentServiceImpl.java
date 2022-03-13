@@ -1,5 +1,6 @@
 package com.mlaide.webserver.service.impl;
 
+import com.mlaide.webserver.repository.CounterRepository;
 import com.mlaide.webserver.repository.ExperimentRepository;
 import com.mlaide.webserver.repository.entity.ExperimentEntity;
 import com.mlaide.webserver.service.ExperimentService;
@@ -24,15 +25,18 @@ public class ExperimentServiceImpl implements ExperimentService {
     private final ExperimentMapper experimentMapper;
     private final PermissionService permissionService;
     private final Clock clock;
+    private final CounterRepository counterRepository;
 
     public ExperimentServiceImpl(ExperimentRepository experimentRepository,
                                  ExperimentMapper experimentMapper,
                                  PermissionService permissionService,
-                                 Clock clock) {
+                                 Clock clock,
+                                 CounterRepository counterRepository) {
         this.experimentRepository = experimentRepository;
         this.experimentMapper = experimentMapper;
         this.permissionService = permissionService;
         this.clock = clock;
+        this.counterRepository = counterRepository;
     }
 
     @Override
@@ -67,12 +71,13 @@ public class ExperimentServiceImpl implements ExperimentService {
         if (experiment.getName() == null || experiment.getName().isBlank()) {
             throw new InvalidInputException("experiment name must be not null or blank");
         }
-        if (experiment.getKey() == null || experiment.getKey().isBlank()) {
-            throw new InvalidInputException("experiment key must be not null or blank");
-        }
+
+        int experimentKeySequence = counterRepository.getNextSequenceValue(
+                projectKey + experiment.getName());
 
         ExperimentEntity experimentEntity = experimentMapper.toEntity(experiment);
         experimentEntity.setCreatedAt(OffsetDateTime.now(clock));
+        experimentEntity.setKey(experiment.getName() + "-" + experimentKeySequence);
         experimentEntity.setProjectKey(projectKey);
 
         experimentEntity = saveExperiment(projectKey, experimentEntity);
