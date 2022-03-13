@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.json.JsonMergePatch;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,19 +21,14 @@ import java.util.Map;
 @RequestMapping(path = "/api/v1/projects/{projectKey}/runs")
 public class RunController {
     private final Logger logger = LoggerFactory.getLogger(RunController.class);
-    private final ExperimentService experimentService;
     private final RunService runService;
-    private final RandomGeneratorService randomGeneratorService;
     private final PatchSupport patchSupport;
 
     @Autowired
     public RunController(ExperimentService experimentService,
                          RunService runService,
-                         RandomGeneratorService randomGeneratorService,
                          PatchSupport patchSupport) {
-        this.experimentService = experimentService;
         this.runService = runService;
-        this.randomGeneratorService = randomGeneratorService;
         this.patchSupport = patchSupport;
     }
 
@@ -72,20 +66,6 @@ public class RunController {
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @Valid @RequestBody Run run) {
         logger.info("post run");
-
-        List<ExperimentRef> experimentRefs = run.getExperimentRefs();
-        if (experimentRefs == null || experimentRefs.isEmpty()) {
-            logger.info("run has no experiment ref defined; creating random experiment");
-            Experiment experiment = randomGeneratorService.randomExperiment();
-            experiment = experimentService.addExperiment(projectKey, experiment);
-
-            ExperimentRef experimentRef = new ExperimentRef();
-            experimentRef.setExperimentKey(experiment.getKey());
-            experimentRefs = new ArrayList<>();
-            experimentRefs.add(experimentRef);
-
-            run.setExperimentRefs(experimentRefs);
-        }
 
         Run addedRun = runService.addRun(projectKey, run);
         return ResponseEntity.ok(addedRun);
