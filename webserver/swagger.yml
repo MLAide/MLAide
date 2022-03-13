@@ -1291,7 +1291,6 @@ components:
         - createdAt
         - key
         - name
-        - status
       properties:
         createdAt:
           type: string
@@ -1304,12 +1303,6 @@ components:
         name:
           type: string
           example: linear regression with sklearn
-        status:
-          type: string
-          enum:
-            - TODO
-            - IN_PROGRESS
-            - COMPLETED
         tags:
           type: array
           items:
@@ -1481,6 +1474,7 @@ components:
       required:
         - createdBy
         - createdAt
+        - experimentRefs
         - id
         - startTime
         - status
