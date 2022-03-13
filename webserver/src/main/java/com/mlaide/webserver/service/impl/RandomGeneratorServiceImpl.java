@@ -2,7 +2,6 @@ package com.mlaide.webserver.service.impl;
 
 import com.github.javafaker.Faker;
 import com.mlaide.webserver.model.Experiment;
-import com.mlaide.webserver.model.ExperimentStatus;
 import com.mlaide.webserver.service.RandomGeneratorService;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +33,6 @@ public class RandomGeneratorServiceImpl implements RandomGeneratorService {
         Experiment randomExperiment = new Experiment();
         randomExperiment.setName(experimentName);
         randomExperiment.setKey(experimentKey);
-        randomExperiment.setStatus(ExperimentStatus.IN_PROGRESS);
 
         return randomExperiment;
     }

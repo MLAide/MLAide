@@ -31,29 +31,6 @@ describe("ExperimentApi", () => {
     expect(experimentApi).toBeTruthy();
   });
 
-  describe("addExperiment", () => {
-    it("should return the created experiment as observable from api response", async (done) => {
-      // arrange
-      const fakeProject: Project = await getRandomProject();
-      const fakeExperiment: Experiment = await getRandomExperiment();
-
-      // act
-      const experiment$: Observable<Experiment> = experimentApi.addExperiment(fakeProject.key, fakeExperiment);
-
-      // assert
-      experiment$.subscribe((response) => {
-        expect(response).toEqual(fakeExperiment);
-
-        done();
-      });
-
-      const req: TestRequest = httpMock.expectOne(`${appConfigMock.apiServer.uri}/api/${appConfigMock.apiServer.version}/projects/${fakeProject.key}/experiments`);
-      expect(req.request.method).toBe("POST");
-      expect(req.request.body).toEqual(fakeExperiment);
-      req.flush(fakeExperiment);
-    });
-  });
-
   describe("getExperiment", () => {
     it("should return an experiment as observable from api response", async (done) => {
       // arrange

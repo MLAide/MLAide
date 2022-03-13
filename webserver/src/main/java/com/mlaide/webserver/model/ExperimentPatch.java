@@ -10,6 +10,5 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class ExperimentPatch {
-    private ExperimentStatus status;
     private List<String> tags;
 }
