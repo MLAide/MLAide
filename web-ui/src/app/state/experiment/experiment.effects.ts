@@ -8,7 +8,7 @@ import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 import { ExperimentApi } from "@mlaide/state/experiment/experiment.api";
 import * as experimentActions from "@mlaide/state/experiment/experiment.actions";
 import { HttpErrorResponse } from "@angular/common/http";
-import { AddOrEditExperimentComponent } from "@mlaide/experiments/add-or-edit-experiment/add-or-edit-experiment.component";
+import { EditExperimentComponent } from "@mlaide/experiments/edit-experiment/edit-experiment.component";
 import { MatDialog } from "@angular/material/dialog";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectCurrentExperimentKey } from "@mlaide/state/experiment/experiment.selectors";
@@ -97,9 +97,9 @@ export class ExperimentEffects {
 
   openAddOrEditDialog$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(experimentActions.openAddOrEditExperimentDialog),
+      ofType(experimentActions.openEditExperimentDialog),
       tap((data) => {
-        this.dialog.open(AddOrEditExperimentComponent, {
+        this.dialog.open(EditExperimentComponent, {
           minWidth: "20%",
           data: {
             title: data.title,
@@ -113,7 +113,7 @@ export class ExperimentEffects {
 
   closeCreateOrEditDialog$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(experimentActions.closeAddOrEditExperimentDialog, experimentActions.editExperimentSucceeded),
+      ofType(experimentActions.closeEditExperimentDialog, experimentActions.editExperimentSucceeded),
       tap(() => this.dialog.closeAll())
     ),
     { dispatch: false }

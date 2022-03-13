@@ -22,7 +22,7 @@ import { Action } from "@ngrx/store";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectExperiments, selectIsLoadingExperiments } from "@mlaide/state/experiment/experiment.selectors";
 import {
-  openAddOrEditExperimentDialog
+  openEditExperimentDialog
 } from "@mlaide/state/experiment/experiment.actions";
 import { MatCardModule } from "@angular/material/card";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
@@ -130,14 +130,14 @@ describe("ExperimentsListComponent", () => {
   });
 
   describe("openEditExperimentDialog", () => {
-    it("should dispatch openAddOrEditExperimentDialog action", async () => {
+    it("should dispatch openEditExperimentDialog action", async () => {
       // arrange in beforeEach
 
       // act
       component.openEditExperimentDialog(fakeExperiments[0]);
 
       // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(openAddOrEditExperimentDialog({
+      expect(dispatchSpy).toHaveBeenCalledWith(openEditExperimentDialog({
         title: "Edit Experiment",
         experiment: fakeExperiments[0]
       }));

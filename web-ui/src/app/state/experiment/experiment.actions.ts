@@ -7,12 +7,12 @@ export const loadExperiments = createAction("@mlaide/actions/experiments/load");
 export const loadExperimentsSucceeded = createAction("@mlaide/actions/experiments/load/succeeded", props<{ experiments: Experiment[] }>());
 export const loadExperimentsFailed = createAction("@mlaide/actions/experiments/load/failed", props<{ payload: any }>());
 
-export const openAddOrEditExperimentDialog =
+export const openEditExperimentDialog =
   createAction(
-    "@mlaide/actions/experiment/add-or-edit-dialog/open",
+    "@mlaide/actions/experiment/edit-dialog/open",
     props<{ title: string, experiment: Partial<Experiment> }>()
   );
-export const closeAddOrEditExperimentDialog = createAction("@mlaide/actions/experiment/add-or-edit-dialog/close");
+export const closeEditExperimentDialog = createAction("@mlaide/actions/experiment/add-or-edit-dialog/close");
 
 export const editExperiment = createAction("@mlaide/actions/experiment/edit", props<{ experiment: Experiment }>());
 export const editExperimentSucceeded = createAction("@mlaide/actions/experiment/edit/succeeded", props<{ experiment: Experiment }>());
