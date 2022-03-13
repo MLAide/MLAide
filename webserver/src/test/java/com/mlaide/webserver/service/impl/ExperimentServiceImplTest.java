@@ -4,7 +4,6 @@ import com.github.javafaker.Faker;
 import com.mlaide.webserver.faker.ExperimentFaker;
 import com.mlaide.webserver.faker.ProjectFaker;
 import com.mlaide.webserver.model.Experiment;
-import com.mlaide.webserver.model.ExperimentStatus;
 import com.mlaide.webserver.model.ItemList;
 import com.mlaide.webserver.model.Project;
 import com.mlaide.webserver.repository.CounterRepository;

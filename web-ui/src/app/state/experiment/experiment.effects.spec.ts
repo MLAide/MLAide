@@ -12,9 +12,6 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from "@ngrx/store";
 import { Observable, of, throwError } from "rxjs";
 import {
-  addExperiment,
-  addExperimentFailed,
-  addExperimentSucceeded,
   closeAddOrEditExperimentDialog,
   editExperiment,
   editExperimentFailed,
@@ -60,7 +57,7 @@ describe("experiment effects", () => {
     artifactApiStub = jasmine.createSpyObj<ArtifactApi>("ArtifactApi", ["getArtifactsByRunKeys"]);
     experimentsApiStub = jasmine.createSpyObj<ExperimentApi>(
       "ExperimentApi",
-      ["getExperiments", "getExperiment", "addExperiment", "patchExperiment"]);
+      ["getExperiments", "getExperiment", "patchExperiment"]);
     runApiStub = jasmine.createSpyObj<RunApi>("RunApi", ["getRunsByExperimentKey"]);
 
     TestBed.configureTestingModule({
@@ -309,43 +306,6 @@ describe("experiment effects", () => {
     });
   });
 
-  describe("addExperiment$", () => {
-    it(`should trigger addExperimentSucceeded action if api call is successful`, async (done) => {
-      // arrange
-      const inputExperiment = await getRandomExperiment();
-      const addedExperiment = await getRandomExperiment();
-      experimentsApiStub.addExperiment.withArgs(project.key, inputExperiment).and.returnValue(of(addedExperiment));
-
-      actions$ = of(addExperiment({ experiment: inputExperiment }));
-
-      // act
-      effects.addExperiment$.subscribe(action => {
-        // assert
-        expect(action).toEqual(addExperimentSucceeded({experiment: addedExperiment}));
-        expect(experimentsApiStub.addExperiment).toHaveBeenCalledWith(project.key, inputExperiment);
-
-        done();
-      });
-    });
-
-    it("should trigger addExperimentFailed action if api call is not successful", async (done) => {
-      // arrange
-      const inputExperiment = await getRandomExperiment();
-      experimentsApiStub.addExperiment.withArgs(project.key, inputExperiment).and.returnValue(throwError("failed"));
-
-      actions$ = of(addExperiment({ experiment: inputExperiment }));
-
-      // act
-      effects.addExperiment$.subscribe(action => {
-        // assert
-        expect(action).toEqual(addExperimentFailed({ payload: "failed" }));
-        expect(experimentsApiStub.addExperiment).toHaveBeenCalledWith(project.key, inputExperiment);
-
-        done();
-      });
-    });
-  });
-
   describe("editExperiment$", () => {
     it(`should trigger editExperimentSucceeded action if api call is successful`, async (done) => {
       // arrange
@@ -388,21 +348,6 @@ describe("experiment effects", () => {
       // arrange
       const experiment = await getRandomExperiment();
 
-      actions$ = of(addExperimentSucceeded({ experiment }));
-
-      // act
-      effects.refreshExperiments$.subscribe(action => {
-        // assert
-        expect(action).toEqual(loadExperiments());
-
-        done();
-      });
-    });
-
-    it(`should trigger loadExperiments action on addExperimentSucceeded action`, async (done) => {
-      // arrange
-      const experiment = await getRandomExperiment();
-
       actions$ = of(editExperimentSucceeded({ experiment }));
 
       // act
@@ -419,12 +364,10 @@ describe("experiment effects", () => {
     it("should open MatDialog with AddOrEditExperimentComponent", async (done) => {
       // arrange
       const experiment = await getRandomExperiment();
-      const isEditMode = true;
       const title = "any dialog title";
       actions$ = of(openAddOrEditExperimentDialog({
         experiment,
         title,
-        isEditMode
       }));
 
       // act
@@ -434,8 +377,7 @@ describe("experiment effects", () => {
           minWidth: "20%",
           data: {
             title: title,
-            experiment: experiment,
-            isEditMode: isEditMode,
+            experiment: experiment
           },
         };
         expect(openDialogSpy).toHaveBeenCalledWith(AddOrEditExperimentComponent, expectedDialogArgs);
@@ -448,10 +390,6 @@ describe("experiment effects", () => {
   describe("closeCreateOrEditDialog$", () => {
     interface ActionGenerator { name: string; action: () => Promise<Action> }
     const actionsGenerator: ActionGenerator[] = [
-      {
-        name: addExperimentSucceeded.type,
-        action: async () => addExperimentSucceeded({ experiment: await getRandomExperiment() })
-      },
       {
         name: closeAddOrEditExperimentDialog.type,
         action: async () => closeAddOrEditExperimentDialog()
@@ -489,43 +427,6 @@ describe("experiment effects", () => {
         const expectedError = {
           error: "error",
           message: "Could not load experiments."
-        }
-        expect(action).toEqual(showErrorMessage(expectedError));
-
-        done();
-      });
-    });
-  });
-
-  describe("addExperimentFailed$", () => {
-    it(`should trigger showError action`, async (done) => {
-      // arrange
-      actions$ = of(addExperimentFailed({ payload: "error" }));
-
-      // act
-      effects.addExperimentFailed$.subscribe(action => {
-        // assert
-        const expectedError = {
-          error: "error",
-          message: "Creating experiment failed."
-        }
-        expect(action).toEqual(showErrorMessage(expectedError));
-
-        done();
-      });
-    });
-
-    it(`failed because auf HTTP status 400 should trigger showError action with correct error message`, async (done) => {
-      // arrange
-      const httpError = new HttpErrorResponse({ status: 400 });
-      actions$ = of(addExperimentFailed({ payload: httpError }));
-
-      // act
-      effects.addExperimentFailed$.subscribe(action => {
-        // assert
-        const expectedError = {
-          error: httpError,
-          message: "The experiment could not be created, because of invalid input data. Please try again with valid input data."
         }
         expect(action).toEqual(showErrorMessage(expectedError));
 

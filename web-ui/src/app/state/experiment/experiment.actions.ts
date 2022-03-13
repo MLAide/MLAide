@@ -10,13 +10,9 @@ export const loadExperimentsFailed = createAction("@mlaide/actions/experiments/l
 export const openAddOrEditExperimentDialog =
   createAction(
     "@mlaide/actions/experiment/add-or-edit-dialog/open",
-    props<{ title: string, experiment: Partial<Experiment>, isEditMode: boolean }>()
+    props<{ title: string, experiment: Partial<Experiment> }>()
   );
 export const closeAddOrEditExperimentDialog = createAction("@mlaide/actions/experiment/add-or-edit-dialog/close");
-
-export const addExperiment = createAction("@mlaide/actions/experiment/add", props<{ experiment: Experiment }>());
-export const addExperimentSucceeded = createAction("@mlaide/actions/experiment/add/succeeded", props<{ experiment: Experiment }>());
-export const addExperimentFailed = createAction("@mlaide/actions/experiment/add/failed", props<{ payload }>());
 
 export const editExperiment = createAction("@mlaide/actions/experiment/edit", props<{ experiment: Experiment }>());
 export const editExperimentSucceeded = createAction("@mlaide/actions/experiment/edit/succeeded", props<{ experiment: Experiment }>());

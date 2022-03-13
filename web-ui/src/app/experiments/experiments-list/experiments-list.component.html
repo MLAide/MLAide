@@ -2,17 +2,6 @@
   <div>
     <h1 class="mat-display-2" i18n>Experiments</h1>
   </div>
-  <div>
-    <button
-      mat-raised-button
-      color="primary"
-      aria-label="Button to open dialog for adding an experiment"
-      (click)="openCreateExperimentDialog()"
-      i18n
-    >
-      Add Experiment
-    </button>
-  </div>
 </div>
 
 <div fxLayout="column" class="example-container mat-elevation-z2">
@@ -29,12 +18,6 @@
       <th id="name" mat-header-cell *matHeaderCellDef i18n>Name</th>
       <td headers="name" mat-cell *matCellDef="let element">
         {{ element.name }}
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="status">
-      <th id="status" mat-header-cell *matHeaderCellDef i18n>Status</th>
-      <td headers="status" mat-cell *matCellDef="let element">
-        <app-experiment-status-i18n [key]="element.status"></app-experiment-status-i18n>
       </td>
     </ng-container>
     <ng-container matColumnDef="tags">
