@@ -1,21 +1,21 @@
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
 import { Component, Inject } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup } from "@angular/forms";
 import { MatChipInputEvent } from "@angular/material/chips";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Store } from "@ngrx/store";
 import {
-  closeAddOrEditExperimentDialog,
+  closeEditExperimentDialog,
   editExperiment
 } from "@mlaide/state/experiment/experiment.actions";
 import { Experiment } from "@mlaide/state/experiment/experiment.models";
 
 @Component({
-  selector: "app-add-or-edit-experiment",
-  templateUrl: "./add-or-edit-experiment.component.html",
-  styleUrls: ["./add-or-edit-experiment.component.scss"],
+  selector: "app-edit-experiment",
+  templateUrl: "./edit-experiment.component.html",
+  styleUrls: ["./edit-experiment.component.scss"],
 })
-export class AddOrEditExperimentComponent {
+export class EditExperimentComponent {
   public addOnBlur = true;
 
   public form: FormGroup;
@@ -60,7 +60,7 @@ export class AddOrEditExperimentComponent {
   }
 
   public cancel() {
-    this.store.dispatch(closeAddOrEditExperimentDialog());
+    this.store.dispatch(closeEditExperimentDialog());
   }
 
   public remove(tag: string): void {

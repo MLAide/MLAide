@@ -2,7 +2,7 @@ import { ENTER, COMMA } from "@angular/cdk/keycodes";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonHarness } from "@angular/material/button/testing";
 import { MatChipInputEvent, MatChipsModule } from "@angular/material/chips";
 import { MatChipHarness, MatChipInputHarness, MatChipListHarness } from "@angular/material/chips/testing";
@@ -16,18 +16,18 @@ import { MatSelectModule } from "@angular/material/select";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { getRandomExperiment } from "@mlaide/mocks/fake-generator";
 
-import { AddOrEditExperimentComponent } from "./add-or-edit-experiment.component";
+import { EditExperimentComponent } from "./edit-experiment.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
 import {
-  closeAddOrEditExperimentDialog,
+  closeEditExperimentDialog,
   editExperiment
 } from "@mlaide/state/experiment/experiment.actions";
 import { Experiment } from "@mlaide/state/experiment/experiment.models";
 
-describe("AddOrEditExperimentComponent", () => {
-  let component: AddOrEditExperimentComponent;
-  let fixture: ComponentFixture<AddOrEditExperimentComponent>;
+describe("EditExperimentComponent", () => {
+  let component: EditExperimentComponent;
+  let fixture: ComponentFixture<EditExperimentComponent>;
 
   // fakes
   let fakeExperiment: Experiment;
@@ -47,7 +47,7 @@ describe("AddOrEditExperimentComponent", () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [AddOrEditExperimentComponent],
+      declarations: [EditExperimentComponent],
       providers: [
         FormBuilder,
         { provide: MAT_DIALOG_DATA, useValue: formData },
@@ -71,7 +71,7 @@ describe("AddOrEditExperimentComponent", () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AddOrEditExperimentComponent);
+    fixture = TestBed.createComponent(EditExperimentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -158,14 +158,14 @@ describe("AddOrEditExperimentComponent", () => {
   });
 
   describe("cancel", () => {
-    it("should dispatch closeAddOrEditExperimentDialog action", async () => {
+    it("should dispatch closeEditExperimentDialog action", async () => {
       // arrange in beforeEach
 
       // act
       component.cancel();
 
       // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(closeAddOrEditExperimentDialog());
+      expect(dispatchSpy).toHaveBeenCalledWith(closeEditExperimentDialog());
     });
   });
 
@@ -313,7 +313,7 @@ describe("AddOrEditExperimentComponent", () => {
           // arrange also in beforeEach
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#add-or-edit-experiment-cancel-button",
+              selector: "#edit-experiment-cancel-button",
             })
           );
 
@@ -325,7 +325,7 @@ describe("AddOrEditExperimentComponent", () => {
           spyOn(component, "cancel");
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#add-or-edit-experiment-cancel-button",
+              selector: "#edit-experiment-cancel-button",
             })
           );
 
@@ -337,12 +337,12 @@ describe("AddOrEditExperimentComponent", () => {
         });
       });
 
-      describe("add or update button", () => {
+      describe("update button", () => {
         it("should have enabled save button if the form is valid", async () => {
           // arrange + act also in beforeEach
           const addOrEditExperimentButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#add-or-edit-experiment-save-button",
+              selector: "#edit-experiment-save-button",
             })
           );
 
@@ -354,7 +354,7 @@ describe("AddOrEditExperimentComponent", () => {
           // arrange +act also in beforeEach
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#add-or-edit-experiment-save-button",
+              selector: "#edit-experiment-save-button",
             })
           );
 
@@ -367,7 +367,7 @@ describe("AddOrEditExperimentComponent", () => {
           spyOn(component, "save");
           const addOrEditExperimentButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#add-or-edit-experiment-save-button",
+              selector: "#edit-experiment-save-button",
             })
           );
 

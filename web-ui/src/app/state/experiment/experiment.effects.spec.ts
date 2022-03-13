@@ -12,7 +12,7 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from "@ngrx/store";
 import { Observable, of, throwError } from "rxjs";
 import {
-  closeAddOrEditExperimentDialog,
+  closeEditExperimentDialog,
   editExperiment,
   editExperimentFailed,
   editExperimentSucceeded,
@@ -23,7 +23,7 @@ import {
   loadExperimentWithAllDetailsFailed,
   loadExperimentWithAllDetailsStatusUpdate,
   loadExperimentWithAllDetailsSucceeded,
-  openAddOrEditExperimentDialog
+  openEditExperimentDialog
 } from "./experiment.actions";
 import { ExperimentApi, ExperimentListResponse } from "./experiment.api";
 import { ExperimentEffects } from "./experiment.effects";
@@ -37,7 +37,7 @@ import { ComponentType } from "@angular/cdk/portal";
 import { MatDialogConfig } from "@angular/material/dialog/dialog-config";
 import { MatDialogRef } from "@angular/material/dialog/dialog-ref";
 import Spy = jasmine.Spy;
-import { AddOrEditExperimentComponent } from "@mlaide/experiments/add-or-edit-experiment/add-or-edit-experiment.component";
+import { EditExperimentComponent } from "@mlaide/experiments/edit-experiment/edit-experiment.component";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectCurrentExperimentKey } from "@mlaide/state/experiment/experiment.selectors";
 
@@ -50,7 +50,7 @@ describe("experiment effects", () => {
   let store: MockStore;
   let project: Project;
   let matDialog: MatDialog;
-  let openDialogSpy: Spy<(component: ComponentType<AddOrEditExperimentComponent>, config?: MatDialogConfig) => MatDialogRef<AddOrEditExperimentComponent>>;
+  let openDialogSpy: Spy<(component: ComponentType<EditExperimentComponent>, config?: MatDialogConfig) => MatDialogRef<EditExperimentComponent>>;
   let closeAllDialogSpy: Spy<() => void>;
 
   beforeEach(() => {
@@ -360,12 +360,12 @@ describe("experiment effects", () => {
     });
   });
 
-  describe("openCreateOrEditDialog$", () => {
-    it("should open MatDialog with AddOrEditExperimentComponent", async (done) => {
+  describe("openEditDialog$", () => {
+    it("should open MatDialog with EditExperimentComponent", async (done) => {
       // arrange
       const experiment = await getRandomExperiment();
       const title = "any dialog title";
-      actions$ = of(openAddOrEditExperimentDialog({
+      actions$ = of(openEditExperimentDialog({
         experiment,
         title,
       }));
@@ -380,19 +380,19 @@ describe("experiment effects", () => {
             experiment: experiment
           },
         };
-        expect(openDialogSpy).toHaveBeenCalledWith(AddOrEditExperimentComponent, expectedDialogArgs);
+        expect(openDialogSpy).toHaveBeenCalledWith(EditExperimentComponent, expectedDialogArgs);
 
         done();
       });
     });
   });
 
-  describe("closeCreateOrEditDialog$", () => {
+  describe("closeEditDialog$", () => {
     interface ActionGenerator { name: string; action: () => Promise<Action> }
     const actionsGenerator: ActionGenerator[] = [
       {
-        name: closeAddOrEditExperimentDialog.type,
-        action: async () => closeAddOrEditExperimentDialog()
+        name: closeEditExperimentDialog.type,
+        action: async () => closeEditExperimentDialog()
       },
       {
         name: editExperimentSucceeded.type,

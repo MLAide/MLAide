@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
-import { openAddOrEditExperimentDialog } from "@mlaide/state/experiment/experiment.actions";
+import { openEditExperimentDialog } from "@mlaide/state/experiment/experiment.actions";
 import { selectExperiments, selectIsLoadingExperiments } from "@mlaide/state/experiment/experiment.selectors";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { Experiment } from "@mlaide/state/experiment/experiment.models";
@@ -26,7 +26,7 @@ export class ExperimentsListComponent implements OnInit {
   }
 
   openEditExperimentDialog(experiment: Experiment) {
-    this.store.dispatch(openAddOrEditExperimentDialog({
+    this.store.dispatch(openEditExperimentDialog({
       title: "Edit Experiment",
       experiment: experiment
     }));

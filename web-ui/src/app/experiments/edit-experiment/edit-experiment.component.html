@@ -38,25 +38,25 @@
   </mat-dialog-content>
   <mat-dialog-actions align="end">
     <button
-      id="add-or-edit-experiment-cancel-button"
+      id="edit-experiment-cancel-button"
       mat-button
       (click)="cancel()"
       type="button"
-      aria-label="Button to cancel creation or update of experiment"
+      aria-label="Button to cancel update of experiment"
       i18n
     >
       Cancel
     </button>
     <span class="margin-right-sm"></span>
     <button
-      id="add-or-edit-experiment-save-button"
+      id="edit-experiment-save-button"
       mat-button
       (click)="save()"
       type="submit"
       [disabled]="!form.valid"
       color="primary"
       cdkFocusInitial
-      aria-label="Button to add or update an experiment"
+      aria-label="Button to update an experiment"
       i18n
     >
       Update
