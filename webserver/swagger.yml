@@ -1300,6 +1300,7 @@ components:
         key:
           type: string
           example: linear-regression-with-sklearn
+          readOnly: true
         name:
           type: string
           example: linear regression with sklearn
