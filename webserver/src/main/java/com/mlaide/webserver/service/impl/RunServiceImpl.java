@@ -224,12 +224,22 @@ public class RunServiceImpl implements RunService {
             throw new InvalidGitRepositoryException("Can not create git diff because the two specified runs reference different git repositories.");
         }
 
+        RunEntity left;
+        RunEntity right;
+        if (run1.getCreatedAt().compareTo(run2.getCreatedAt()) < 0) {
+            left = run1;
+            right = run2;
+        } else {
+            left = run2;
+            right = run1;
+        }
+
         List<KeyPair> keyPairs = userService.getSshKeyPairsForCurrentUser();
 
         return gitDiffService.getDiff(
-                run1.getGit().getRepositoryUri(),
-                run1.getGit().getCommitHash(),
-                run2.getGit().getCommitHash(),
+                left.getGit().getRepositoryUri(),
+                left.getGit().getCommitHash(),
+                right.getGit().getCommitHash(),
                 keyPairs);
     }
 
