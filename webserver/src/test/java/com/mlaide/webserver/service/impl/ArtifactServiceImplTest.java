@@ -222,7 +222,7 @@ class ArtifactServiceImplTest {
 
             // Act
             artifactService.uploadArtifactFile(
-                    project.getKey(), artifact.getName(), artifact.getVersion(), artifactStream, artifactFileName);
+                    project.getKey(), artifact.getName(), artifact.getVersion(), artifactStream, artifactFileName, null);
 
             // Assert
             String expectedInternalFileName = buildExpectedInternalFileName();
@@ -240,7 +240,7 @@ class ArtifactServiceImplTest {
 
             // Act + Assert
             assertThatThrownBy(() -> artifactService.uploadArtifactFile(
-                    projectKey, artifactName, artifactVersion, artifactStream, artifactFileName))
+                    projectKey, artifactName, artifactVersion, artifactStream, artifactFileName, null))
                 .isInstanceOf(NotFoundException.class);
         }
 
@@ -262,7 +262,8 @@ class ArtifactServiceImplTest {
                     artifact.getName(),
                     artifact.getVersion(),
                     artifactStream,
-                    artifactFileName);
+                    artifactFileName,
+                    null);
 
             // Assert
             assertThat(artifact.getFiles()).hasSize(1);
@@ -299,7 +300,8 @@ class ArtifactServiceImplTest {
                     artifact.getName(),
                     artifact.getVersion(),
                     artifactStream,
-                    artifactFileName);
+                    artifactFileName,
+                    null);
 
             // Assert
             assertThat(artifact.getFiles()).hasSize(2);
@@ -348,7 +350,8 @@ class ArtifactServiceImplTest {
                     artifact.getName(),
                     artifact.getVersion(),
                     artifactStream,
-                    artifactFileName);
+                    artifactFileName,
+                    null);
 
             // Assert
             assertThat(artifact.getFiles()).hasSize(1);

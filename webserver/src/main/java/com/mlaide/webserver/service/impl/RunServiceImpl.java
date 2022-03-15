@@ -126,14 +126,6 @@ public class RunServiceImpl implements RunService {
 
         runEntity = saveRun(runEntity);
 
-        var usedArtifacts = runEntity.getUsedArtifacts();
-        if (usedArtifacts != null && !usedArtifacts.isEmpty()) {
-            // If the run uses artifacts as input we have to add the predecessor runs to the current experiment.
-            // Execute a graph search to find all predecessor runs and assign the experiment keys of this run to them
-            Collection<Integer> predecessorRunKeys = runRepository.findAllPredecessorRunKeys(projectKey, usedArtifacts);
-            runRepository.assignExperimentRefs(projectKey, predecessorRunKeys, runEntity.getExperimentRefs());
-        }
-
         return runMapper.fromEntity(runEntity);
     }
 
