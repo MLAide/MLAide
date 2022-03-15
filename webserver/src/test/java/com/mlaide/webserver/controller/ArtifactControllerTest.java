@@ -248,7 +248,7 @@ class ArtifactControllerTest {
             Integer artifactVersion = artifact.getVersion();
 
             // Act + Assert
-            assertThatThrownBy(() -> artifactController.postFile(projectKey, artifactName, artifactVersion, null))
+            assertThatThrownBy(() -> artifactController.postFile(projectKey, artifactName, artifactVersion, null, null))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("request body must contain artifact");
         }
@@ -261,11 +261,11 @@ class ArtifactControllerTest {
             ArgumentCaptor<InputStream> streamArgumentCaptor = ArgumentCaptor.forClass(InputStream.class);
 
             // Act
-            ResponseEntity<Void> result = artifactController.postFile(projectKey, artifact.getName(), artifact.getVersion(),file);
+            ResponseEntity<Void> result = artifactController.postFile(projectKey, artifact.getName(), artifact.getVersion(), null, file);
 
             // Assert
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-            verify(artifactService).uploadArtifactFile(eq(projectKey), eq(artifact.getName()), eq(artifact.getVersion()), streamArgumentCaptor.capture(), eq(file.getOriginalFilename()));
+            verify(artifactService).uploadArtifactFile(eq(projectKey), eq(artifact.getName()), eq(artifact.getVersion()), streamArgumentCaptor.capture(), eq(null), eq(file.getOriginalFilename()));
             assertThat(streamArgumentCaptor.getValue()).hasSameContentAs(file.getInputStream());
         }
     }

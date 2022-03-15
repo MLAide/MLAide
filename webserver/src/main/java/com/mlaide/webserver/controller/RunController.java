@@ -167,4 +167,15 @@ public class RunController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping(path = "{runKey}/artifacts/{artifactName}/{artifactVersion}")
+    public ResponseEntity<Void> attachArtifact(
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
+            @PathVariable("runKey") @NotNull Integer runKey,
+            @PathVariable("artifactName") @NotBlank String artifactName,
+            @PathVariable("artifactVersion") @NotNull Integer artifactVersion) {
+        runService.attachArtifactToRun(projectKey, runKey, artifactName, artifactVersion);
+
+        return ResponseEntity.ok().build();
+    }
 }

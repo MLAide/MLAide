@@ -47,4 +47,6 @@ public interface ArtifactRepository extends MongoRepository<ArtifactEntity, Obje
     ArtifactEntity findFirstByProjectKeyAndNameAndModelStageOrderByVersionDesc(String projectKey, String artifactName, Stage stage);
 
     List<ArtifactEntity> findAllByProjectKeyAndModelNotNull(String projectKey, Sort by);
+
+    List<ArtifactEntity> findAllByProjectKeyAndNameOrderByVersionDesc(String projectKey, String artifactName);
 }

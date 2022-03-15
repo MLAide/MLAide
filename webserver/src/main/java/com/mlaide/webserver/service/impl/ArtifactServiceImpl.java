@@ -66,7 +66,7 @@ public class ArtifactServiceImpl implements ArtifactService {
         artifactEntity = addArtifact(projectKey, artifactEntity);
 
         // Attention: Do not use runKey of saved artifactEntity
-        // The saved entity could reference to an previous run if the artifact was already present (with same hash)
+        // The saved entity could reference to a previous run if the artifact was already present (with same hash)
         runService.attachArtifactToRun(
                 projectKey,
                 artifact.getRunKey(),
@@ -81,14 +81,14 @@ public class ArtifactServiceImpl implements ArtifactService {
                                    String artifactName,
                                    Integer artifactVersion,
                                    InputStream inputStream,
-                                   String filename) throws IOException {
+                                   String filename,
+                                   String fileHash) throws IOException {
         ArtifactEntity artifact = artifactRepository.findOneByProjectKeyAndNameAndVersion(projectKey, artifactName, artifactVersion);
         if (artifact == null) {
             throw new NotFoundException();
         }
 
         String internalFileName = buildInternalFileName(filename, artifact);
-        FileUploadResult uploadResult = storageService.upload(projectKey, internalFileName, inputStream);
 
         List<FileRefEntity> files = artifact.getFiles();
         if (files == null) {
@@ -98,15 +98,18 @@ public class ArtifactServiceImpl implements ArtifactService {
 
         Optional<FileRefEntity> existingFile =
                 files.stream().filter(f -> f.getInternalFileName().equals(internalFileName)).findFirst();
-        if (existingFile.isPresent() && uploadResult.getHash().equalsIgnoreCase(existingFile.get().getHash())) {
-            // Update existing ref
-            existingFile.get().setS3ObjectVersionId(uploadResult.getObjectVersionId());
+
+        if (existingFile.isPresent() && fileHash.equalsIgnoreCase(existingFile.get().getHash())) {
+            // The same file with the same content (hash) already exists. We don't need to store it twice.
+            logger.info("artifact file is already present - ignoring re-uploaded file");
         } else {
+            FileUploadResult uploadResult = storageService.upload(projectKey, internalFileName, inputStream);
+
             // Add new ref
             FileRefEntity ref = FileRefEntity.builder()
                     .internalFileName(internalFileName)
                     .fileName(filename)
-                    .hash(uploadResult.getHash())
+                    .hash(fileHash)
                     .s3ObjectVersionId(uploadResult.getObjectVersionId())
                     .build();
             files.add(ref);
@@ -272,6 +275,44 @@ public class ArtifactServiceImpl implements ArtifactService {
                             + artifactVersion + " for project " + projectKey, e);
             throw e;
         }
+    }
+
+    @Override
+    public Optional<Artifact> getArtifactByFileHashes(String projectKey, String artifactName, List<FileHash> fileHashes) {
+        List<ArtifactEntity> artifacts = artifactRepository.findAllByProjectKeyAndNameOrderByVersionDesc(projectKey, artifactName);
+
+        for (ArtifactEntity artifact: artifacts) {
+            if ((artifact.getFiles() == null || artifact.getFiles().size() == 0)
+                    && (fileHashes == null || fileHashes.size() == 0)) {
+                return Optional.of(artifactMapper.fromEntity(artifact));
+            }
+
+            if (artifact.getFiles() == null || fileHashes == null) {
+                continue;
+            }
+            if (artifact.getFiles().size() != fileHashes.size()) {
+                continue;
+            }
+
+            boolean allFilesMatchHash = true;
+            for (int i = 0; i < artifact.getFiles().size() && allFilesMatchHash; i++) {
+                FileRefEntity file = artifact.getFiles().get(i);
+
+                Optional<FileHash> fileHash = fileHashes.stream()
+                        .filter(hash -> hash.getFileName() != null && hash.getFileName().equalsIgnoreCase(file.getFileName()))
+                        .findFirst();
+
+                if (fileHash.isEmpty() || !fileHash.get().getFileHash().equalsIgnoreCase(file.getHash())) {
+                    allFilesMatchHash = false;
+                }
+            }
+
+            if (allFilesMatchHash) {
+                return Optional.of(artifactMapper.fromEntity(artifact));
+            }
+        }
+
+        return Optional.empty();
     }
 
     private String buildInternalFileName(String filename, ArtifactEntity artifact) {

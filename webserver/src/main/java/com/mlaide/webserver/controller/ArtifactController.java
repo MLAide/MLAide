@@ -1,9 +1,6 @@
 package com.mlaide.webserver.controller;
 
-import com.mlaide.webserver.model.Artifact;
-import com.mlaide.webserver.model.ArtifactFile;
-import com.mlaide.webserver.model.ItemList;
-import com.mlaide.webserver.model.Stage;
+import com.mlaide.webserver.model.*;
 import com.mlaide.webserver.service.ArtifactService;
 import com.mlaide.webserver.validation.ValidationRegEx;
 import org.slf4j.Logger;
@@ -21,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -139,6 +137,7 @@ public class ArtifactController {
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("artifactName") @NotBlank String artifactName,
             @PathVariable("artifactVersion") @NotNull Integer artifactVersion,
+            @RequestParam("file-hash") @NotNull String fileHash,
             @RequestParam("file") MultipartFile file) throws IOException {
         logger.info("post artifact");
 
@@ -146,8 +145,28 @@ public class ArtifactController {
             throw new IllegalArgumentException("request body must contain artifact");
         }
 
-        artifactService.uploadArtifactFile(projectKey, artifactName, artifactVersion, file.getInputStream(), file.getOriginalFilename());
+        artifactService.uploadArtifactFile(
+                projectKey,
+                artifactName,
+                artifactVersion,
+                file.getInputStream(),
+                file.getOriginalFilename(),
+                fileHash);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(path = "{artifactName}/find-by-file-hashes")
+    public ResponseEntity<Artifact> findArtifactByFileHashes(
+            @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
+            @PathVariable("artifactName") @NotBlank String artifactName,
+            @RequestBody List<FileHash> fileHashes) {
+        Optional<Artifact> artifact = artifactService.getArtifactByFileHashes(projectKey, artifactName, fileHashes);
+
+        if (artifact.isPresent()) {
+            return ResponseEntity.ok(artifact.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
