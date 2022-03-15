@@ -14,11 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 public class Experiment {
     private OffsetDateTime createdAt;
-    @NotBlank
     private String key;
     @NotBlank
     private String name;
-    @NotNull
-    private ExperimentStatus status;
     private List<String> tags;
 }

@@ -1,28 +1,24 @@
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
 import { Component, Inject } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup } from "@angular/forms";
 import { MatChipInputEvent } from "@angular/material/chips";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { Store } from "@ngrx/store";
 import {
-  addExperiment,
-  closeAddOrEditExperimentDialog,
+  closeEditExperimentDialog,
   editExperiment
 } from "@mlaide/state/experiment/experiment.actions";
-import { Experiment, ExperimentStatus } from "@mlaide/state/experiment/experiment.models";
+import { Experiment } from "@mlaide/state/experiment/experiment.models";
 
 @Component({
-  selector: "app-add-or-edit-experiment",
-  templateUrl: "./add-or-edit-experiment.component.html",
-  styleUrls: ["./add-or-edit-experiment.component.scss"],
+  selector: "app-edit-experiment",
+  templateUrl: "./edit-experiment.component.html",
+  styleUrls: ["./edit-experiment.component.scss"],
 })
-export class AddOrEditExperimentComponent {
+export class EditExperimentComponent {
   public addOnBlur = true;
-  public currentStatus;
-  public experimentStatus = ExperimentStatus;
 
   public form: FormGroup;
-  public isEditMode: boolean;
   public removable = true;
   public selectable = true;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
@@ -32,25 +28,15 @@ export class AddOrEditExperimentComponent {
   constructor(
     private store: Store,
     private formBuilder: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: { experiment: Experiment; isEditMode: boolean; title: string }
+    @Inject(MAT_DIALOG_DATA) public data: { experiment: Experiment; title: string }
   ) {
     // We need to do this, otherwise the changes in the dialog are also visible in the table
     this.tags = Object.assign([], data.experiment.tags);
-    this.currentStatus = data.experiment.status;
-    this.isEditMode = data.isEditMode;
 
     this.form = this.formBuilder.group({
-      name: [data.experiment.name, { validators: [Validators.required], updateOn: "change" }],
-      key: [data.experiment.key, { validators: [Validators.required], updateOn: "change" }],
+      name: [data.experiment.name,],
+      key: [data.experiment.key],
       tags: [[], []],
-      status: [this.currentStatus, { validators: [Validators.required], updateOn: "change" }],
-    });
-
-    this.form.get("name").valueChanges.subscribe((newName: string) => {
-      if (newName && !this.isEditMode) {
-        const newKey = newName.split(" ").join("-").toLowerCase();
-        this.form.get("key").setValue(newKey);
-      }
     });
   }
 
@@ -74,7 +60,7 @@ export class AddOrEditExperimentComponent {
   }
 
   public cancel() {
-    this.store.dispatch(closeAddOrEditExperimentDialog());
+    this.store.dispatch(closeEditExperimentDialog());
   }
 
   public remove(tag: string): void {
@@ -89,22 +75,12 @@ export class AddOrEditExperimentComponent {
     if (event.keyCode === ENTER) {
       if (this.form.valid) {
         this.save();
-      } else {
-        Object.keys(this.form.controls).forEach((field) => {
-          const control = this.form.get(field);
-          control.markAsTouched({ onlySelf: true });
-        });
       }
     }
   }
 
   public save() {
     this.form.get("tags").setValue(this.tags);
-
-    if (this.isEditMode) {
       this.store.dispatch(editExperiment({experiment: this.form.value}));
-    } else {
-      this.store.dispatch(addExperiment({ experiment: this.form.value }));
-    }
   }
 }

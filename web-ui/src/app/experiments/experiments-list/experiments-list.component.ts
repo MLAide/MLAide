@@ -1,10 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { Store } from "@ngrx/store";
-import { openAddOrEditExperimentDialog } from "@mlaide/state/experiment/experiment.actions";
+import { openEditExperimentDialog } from "@mlaide/state/experiment/experiment.actions";
 import { selectExperiments, selectIsLoadingExperiments } from "@mlaide/state/experiment/experiment.selectors";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
-import { Experiment, ExperimentStatus } from "@mlaide/state/experiment/experiment.models";
+import { Experiment } from "@mlaide/state/experiment/experiment.models";
 
 @Component({
   selector: "app-experiments-list",
@@ -15,7 +15,7 @@ export class ExperimentsListComponent implements OnInit {
   public isLoading$: Observable<boolean>;
   public experiments$: Observable<Experiment[]>;
   public projectKey$: Observable<string>;
-  public displayedColumns: string[] = ["key", "name", "status", "tags", "actions"];
+  public displayedColumns: string[] = ["key", "name", "tags", "actions"];
 
   constructor(private store: Store) {}
 
@@ -25,24 +25,10 @@ export class ExperimentsListComponent implements OnInit {
     this.projectKey$ = this.store.select(selectCurrentProjectKey);
   }
 
-  openCreateExperimentDialog(): void {
-    this.store.dispatch(openAddOrEditExperimentDialog({
-      title: "Add Experiment",
-      experiment: {
-        name: "",
-        key: "",
-        tags: [],
-        status: ExperimentStatus.TODO,
-      },
-      isEditMode: false
-    }));
-  }
-
   openEditExperimentDialog(experiment: Experiment) {
-    this.store.dispatch(openAddOrEditExperimentDialog({
+    this.store.dispatch(openEditExperimentDialog({
       title: "Edit Experiment",
-      experiment: experiment,
-      isEditMode: true
+      experiment: experiment
     }));
   }
 }

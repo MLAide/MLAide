@@ -13,7 +13,6 @@ import { MockModule, ngMocks } from "ng-mocks";
 import { MatChipHarness, MatChipListHarness } from "@angular/material/chips/testing";
 import { of } from "rxjs";
 import { getRandomExperiments, getRandomProject } from "@mlaide/mocks/fake-generator";
-import { ExperimentStatusI18nComponent } from "@mlaide/shared/components/experiment-status-i18n/experiment-status-i18n.component";
 
 import { ExperimentsListComponent } from "./experiments-list.component";
 import { MatSortModule } from "@angular/material/sort";
@@ -23,13 +22,13 @@ import { Action } from "@ngrx/store";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectExperiments, selectIsLoadingExperiments } from "@mlaide/state/experiment/experiment.selectors";
 import {
-  openAddOrEditExperimentDialog
+  openEditExperimentDialog
 } from "@mlaide/state/experiment/experiment.actions";
 import { MatCardModule } from "@angular/material/card";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatCardHarness } from "@angular/material/card/testing";
 import { MatProgressSpinnerHarness } from "@angular/material/progress-spinner/testing";
-import { Experiment, ExperimentStatus } from "@mlaide/state/experiment/experiment.models";
+import { Experiment } from "@mlaide/state/experiment/experiment.models";
 import { Project } from "@mlaide/state/project/project.models";
 import { MatTooltipHarness } from "@angular/material/tooltip/testing";
 import { MatTooltipModule } from "@angular/material/tooltip";
@@ -53,7 +52,7 @@ describe("ExperimentsListComponent", () => {
     fakeExperiments = await getRandomExperiments(3);
 
     await TestBed.configureTestingModule({
-      declarations: [ExperimentsListComponent, ExperimentStatusI18nComponent],
+      declarations: [ExperimentsListComponent],
 
       providers: [
         provideMockStore(),
@@ -130,39 +129,17 @@ describe("ExperimentsListComponent", () => {
     });
   });
 
-  describe("openCreateExperimentDialog", () => {
-    it("should dispatch openAddOrEditExperimentDialog action", async () => {
-      // arrange in beforeEach
-
-      // act
-      component.openCreateExperimentDialog();
-
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(openAddOrEditExperimentDialog({
-        title: "Add Experiment",
-        experiment: {
-          name: "",
-          key: "",
-          tags: [],
-          status: ExperimentStatus.TODO,
-        },
-        isEditMode: false
-      }));
-    });
-  });
-
   describe("openEditExperimentDialog", () => {
-    it("should dispatch openAddOrEditExperimentDialog action", async () => {
+    it("should dispatch openEditExperimentDialog action", async () => {
       // arrange in beforeEach
 
       // act
       component.openEditExperimentDialog(fakeExperiments[0]);
 
       // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(openAddOrEditExperimentDialog({
+      expect(dispatchSpy).toHaveBeenCalledWith(openEditExperimentDialog({
         title: "Edit Experiment",
-        experiment: fakeExperiments[0],
-        isEditMode: true
+        experiment: fakeExperiments[0]
       }));
     });
   });
@@ -174,29 +151,6 @@ describe("ExperimentsListComponent", () => {
 
       // assert
       expect(h1.textContent).toEqual("Experiments");
-    });
-
-    describe("add experiment", () => {
-      const addExperimentButtonTitle = "Add Experiment";
-      it("should contain add experiment button", () => {
-        // arrange + act also in beforeEach
-        let addProjectsButton: HTMLElement = fixture.nativeElement.querySelector("button");
-
-        // assert
-        expect(addProjectsButton).toBeTruthy();
-        expect(addProjectsButton.textContent).toContain(addExperimentButtonTitle);
-      });
-
-      it("should call openCreateExperimentDialog on clicking the add project button", async () => {
-        // arrange + act also in beforeEach
-        spyOn(component, "openCreateExperimentDialog");
-        const addProjectButton = await loader.getHarness(MatButtonHarness.with({ text: addExperimentButtonTitle }));
-
-        // act
-        await addProjectButton.click();
-        // assert
-        expect(component.openCreateExperimentDialog).toHaveBeenCalled();
-      });
     });
 
     describe("experiment table", () => {
@@ -215,10 +169,9 @@ describe("ExperimentsListComponent", () => {
         const headerRow: MatRowHarnessColumnsText = await headers[0].getCellTextByColumnName();
 
         // assert
-        expect(Object.keys(headerRow).length).toBe(5);
+        expect(Object.keys(headerRow).length).toBe(4);
         expect(headerRow.key).toBe("Key");
         expect(headerRow.name).toBe("Name");
-        expect(headerRow.status).toBe("Status");
         expect(headerRow.tags).toBe("Tags");
         expect(headerRow.actions).toBe("Actions");
       });
@@ -239,7 +192,6 @@ describe("ExperimentsListComponent", () => {
 
           expect(row.key).toEqual(fakeExperiment.key);
           expect(row.name).toEqual(fakeExperiment.name);
-          expect(row.status.toUpperCase().replace(" ", "_")).toEqual(fakeExperiment.status);
           await Promise.all(chips.map(async (chip, chipIndex) => {
             expect(await chip.getText()).toEqual(fakeExperiment.tags[chipIndex]);
           }));

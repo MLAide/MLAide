@@ -8,7 +8,7 @@ import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 import { ExperimentApi } from "@mlaide/state/experiment/experiment.api";
 import * as experimentActions from "@mlaide/state/experiment/experiment.actions";
 import { HttpErrorResponse } from "@angular/common/http";
-import { AddOrEditExperimentComponent } from "@mlaide/experiments/add-or-edit-experiment/add-or-edit-experiment.component";
+import { EditExperimentComponent } from "@mlaide/experiments/edit-experiment/edit-experiment.component";
 import { MatDialog } from "@angular/material/dialog";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import { selectCurrentExperimentKey } from "@mlaide/state/experiment/experiment.selectors";
@@ -78,16 +78,6 @@ export class ExperimentEffects {
     )
   );
 
-  addExperiment$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(experimentActions.addExperiment),
-      concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([action, projectKey]) => this.experimentsApi.addExperiment(projectKey, action.experiment)),
-      map((experiment) => experimentActions.addExperimentSucceeded({ experiment })),
-      catchError((error) => of(experimentActions.addExperimentFailed({ payload: error })))
-    )
-  );
-
   editExperiment$ = createEffect(() =>
     this.actions$.pipe(
       ofType(experimentActions.editExperiment),
@@ -100,21 +90,20 @@ export class ExperimentEffects {
 
   refreshExperiments$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(experimentActions.addExperimentSucceeded, experimentActions.editExperimentSucceeded),
+      ofType(experimentActions.editExperimentSucceeded),
       map(() => experimentActions.loadExperiments())
     )
   );
 
   openAddOrEditDialog$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(experimentActions.openAddOrEditExperimentDialog),
+      ofType(experimentActions.openEditExperimentDialog),
       tap((data) => {
-        this.dialog.open(AddOrEditExperimentComponent, {
+        this.dialog.open(EditExperimentComponent, {
           minWidth: "20%",
           data: {
             title: data.title,
-            experiment: data.experiment,
-            isEditMode: data.isEditMode,
+            experiment: data.experiment
           },
         });
       })
@@ -124,7 +113,7 @@ export class ExperimentEffects {
 
   closeCreateOrEditDialog$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(experimentActions.addExperimentSucceeded, experimentActions.closeAddOrEditExperimentDialog, experimentActions.editExperimentSucceeded),
+      ofType(experimentActions.closeEditExperimentDialog, experimentActions.editExperimentSucceeded),
       tap(() => this.dialog.closeAll())
     ),
     { dispatch: false }
@@ -135,20 +124,6 @@ export class ExperimentEffects {
       ofType(experimentActions.loadExperimentsFailed),
       map((action) => action.payload),
       map((error) => ({ error, message: "Could not load experiments." })),
-      map(showErrorMessage)
-    )
-  );
-
-  addExperimentFailed$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(experimentActions.addExperimentFailed),
-      map((action) => action.payload),
-      map((error) => ({
-        error,
-        message: this.hasErrorStatusCode(error, 400) ?
-          "The experiment could not be created, because of invalid input data. Please try again with valid input data." :
-          "Creating experiment failed."
-      })),
       map(showErrorMessage)
     )
   );

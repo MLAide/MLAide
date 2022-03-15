@@ -114,7 +114,7 @@ public class PatchSupportImplTest {
             ExperimentPatch targetPatch = new ExperimentPatch();
             when(experimentMapper.mapExperimentToExperimentPatch(target)).thenReturn(targetPatch);
 
-            JsonObject targetJson = createObjectBuilder().add("name", "old-name").add("status", ExperimentStatus.COMPLETED.toString()).build();
+            JsonObject targetJson = createObjectBuilder().add("name", "old-name").build();
             when(objectMapper.convertValue(targetPatch, JsonValue.class)).thenReturn(targetJson);
 
             when(objectMapper.convertValue(any(), eq(ExperimentPatch.class))).thenReturn(targetPatch);
@@ -131,8 +131,7 @@ public class PatchSupportImplTest {
             ArgumentCaptor<JsonValue> jsonValueArgumentCaptor = ArgumentCaptor.forClass(JsonValue.class);
             verify(objectMapper).convertValue(jsonValueArgumentCaptor.capture(), eq(ExperimentPatch.class));
             assertThat(jsonValueArgumentCaptor.getValue().asJsonObject()).contains(
-                    entry("name", Json.createValue("new-name")),
-                    entry("status", Json.createValue(ExperimentStatus.COMPLETED.toString())));
+                    entry("name", Json.createValue("new-name")));
 
             verify(validator).validate(target);
         }
@@ -146,7 +145,7 @@ public class PatchSupportImplTest {
             ExperimentPatch targetPatch = new ExperimentPatch();
             when(experimentMapper.mapExperimentToExperimentPatch(target)).thenReturn(targetPatch);
 
-            JsonObject targetJson = createObjectBuilder().add("name", "old-name").add("status", ExperimentStatus.COMPLETED.toString()).build();
+            JsonObject targetJson = createObjectBuilder().add("name", "old-name").build();
             when(objectMapper.convertValue(targetPatch, JsonValue.class)).thenReturn(targetJson);
 
             when(objectMapper.convertValue(any(), eq(ExperimentPatch.class))).thenReturn(targetPatch);

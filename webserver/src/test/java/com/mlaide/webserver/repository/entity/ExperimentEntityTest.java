@@ -122,15 +122,6 @@ public class ExperimentEntityTest {
         }
 
         @Test
-        void status_is_null_should_throw_ConstraintViolationException() {
-            // Arrange
-            experimentEntity.setStatus(null);
-
-            // Act + Assert
-            assertThatThrownBy(() -> mongo.save(experimentEntity)).isInstanceOf(ConstraintViolationException.class);
-        }
-
-        @Test
         void updatedAt_is_in_the_future_should_throw_ConstraintViolationException() {
             // Arrange
             experimentEntity.setUpdatedAt(OffsetDateTime.now().plusDays(1));

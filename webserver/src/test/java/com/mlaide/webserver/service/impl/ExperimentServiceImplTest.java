@@ -4,9 +4,9 @@ import com.github.javafaker.Faker;
 import com.mlaide.webserver.faker.ExperimentFaker;
 import com.mlaide.webserver.faker.ProjectFaker;
 import com.mlaide.webserver.model.Experiment;
-import com.mlaide.webserver.model.ExperimentStatus;
 import com.mlaide.webserver.model.ItemList;
 import com.mlaide.webserver.model.Project;
+import com.mlaide.webserver.repository.CounterRepository;
 import com.mlaide.webserver.repository.ExperimentRepository;
 import com.mlaide.webserver.repository.entity.ExperimentEntity;
 import com.mlaide.webserver.service.InvalidInputException;
@@ -45,6 +45,8 @@ class ExperimentServiceImplTest {
     private @Mock ExperimentRepository experimentRepository;
     private @Mock ExperimentMapper experimentMapper;
     private @Mock PermissionService permissionService;
+    private @Mock
+    CounterRepository counterRepository;
 
     private final Faker faker = new Faker();
     private final Clock clock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
@@ -55,7 +57,8 @@ class ExperimentServiceImplTest {
                 experimentRepository,
                 experimentMapper,
                 permissionService,
-                clock);
+                clock,
+                counterRepository);
     }
 
     @Nested
@@ -145,13 +148,7 @@ class ExperimentServiceImplTest {
             Experiment experiment2 = ExperimentFaker.newExperiment();
             experiment2.setName("");
 
-            Experiment experiment3 = ExperimentFaker.newExperiment();
-            experiment3.setKey(null);
-
-            Experiment experiment4 = ExperimentFaker.newExperiment();
-            experiment4.setKey("");
-
-            return of(experiment1, experiment2, experiment3, experiment4);
+            return of(experiment1, experiment2);
         }
 
         @ParameterizedTest
@@ -172,6 +169,7 @@ class ExperimentServiceImplTest {
         private Experiment experiment;
         private ExperimentEntity experimentEntity;
         private ExperimentEntity savedExperimentEntity;
+        private int expectedExperimentKeySequence;
 
         @BeforeEach
         void initializeCommonMocks() {
@@ -180,6 +178,10 @@ class ExperimentServiceImplTest {
 
             experimentEntity = ExperimentFaker.newExperimentEntity();
             when(experimentMapper.toEntity(experiment)).thenReturn(experimentEntity);
+
+            expectedExperimentKeySequence = faker.random().nextInt(50);
+            when(counterRepository.getNextSequenceValue(projectKey + experiment.getName()))
+                    .thenReturn(expectedExperimentKeySequence);
 
             savedExperimentEntity = ExperimentFaker.newExperimentEntity();
             when(experimentRepository.save(experimentEntity)).thenReturn(savedExperimentEntity);
@@ -196,6 +198,7 @@ class ExperimentServiceImplTest {
 
             // Assert
             verify(experimentRepository).save(experimentEntity);
+            assertThat(experimentEntity.getKey()).isEqualTo(experiment.getName() + "-" + expectedExperimentKeySequence);
             assertThat(experimentEntity.getCreatedAt()).isEqualTo(OffsetDateTime.now(clock));
             assertThat(experimentEntity.getProjectKey()).isEqualTo(projectKey);
         }

@@ -23,7 +23,7 @@ import { MatTableModule } from "@angular/material/table";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatToolbarModule } from "@angular/material/toolbar";
 
-import { AddOrEditExperimentComponent } from "./add-or-edit-experiment/add-or-edit-experiment.component";
+import { EditExperimentComponent } from "./edit-experiment/edit-experiment.component";
 import { ExperimentDetailsComponent } from "./experiment-details/experiment-details.component";
 import { ExperimentsListComponent } from "./experiments-list/experiments-list.component";
 import { ExperimentsRoutingModule } from "./experiments-routing.module";
@@ -34,7 +34,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 @NgModule({
   declarations: [
     ExperimentsListComponent,
-    AddOrEditExperimentComponent,
+    EditExperimentComponent,
     ExperimentDetailsComponent,
     ExperimentLineageVisualizationComponent,
   ],

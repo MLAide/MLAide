@@ -16,10 +16,6 @@ export class ExperimentApi {
     this.baseUrl = `${appConfig.apiServer.uri}/api/${appConfig.apiServer.version}`;
   }
 
-  public addExperiment(projectKey: string, experiment: Experiment): Observable<Experiment> {
-    return this.http.post<Experiment>(`${this.baseUrl}/projects/${projectKey}/experiments`, experiment);
-  }
-
   public getExperiment(projectKey: string, experimentKey: string): Observable<Experiment> {
     return this.http.get<Experiment>(
       `${this.baseUrl}/projects/${projectKey}/experiments/${experimentKey}`

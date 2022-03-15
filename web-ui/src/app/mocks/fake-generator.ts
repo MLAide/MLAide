@@ -4,7 +4,7 @@ import { User } from "@mlaide/state/user/user.models";
 import { ProjectMember, ProjectMemberRole } from "@mlaide/state/project-member/project-member.models";
 import { Project } from "@mlaide/state/project/project.models";
 import { GitDiff, Run, RunStatus } from "@mlaide/state/run/run.models";
-import { Experiment, ExperimentStatus } from "@mlaide/state/experiment/experiment.models";
+import { Experiment } from "@mlaide/state/experiment/experiment.models";
 import { ApiKey } from "@mlaide/state/api-key/api-key.models";
 import { SshKey } from "@mlaide/state/ssh-key/ssh-key.models";
 
@@ -175,11 +175,6 @@ const experimentSchema = {
   },
   name: {
     faker: "lorem.slug",
-  },
-  status: {
-    function() {
-      return this.faker.random.arrayElement(Object.values(ExperimentStatus));
-    },
   },
   tags: [
     {

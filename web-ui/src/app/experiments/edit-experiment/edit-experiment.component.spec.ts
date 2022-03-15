@@ -2,11 +2,10 @@ import { ENTER, COMMA } from "@angular/cdk/keycodes";
 import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FormBuilder, FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatButtonHarness } from "@angular/material/button/testing";
 import { MatChipInputEvent, MatChipsModule } from "@angular/material/chips";
 import { MatChipHarness, MatChipInputHarness, MatChipListHarness } from "@angular/material/chips/testing";
-import { MatOptionHarness } from "@angular/material/core/testing";
 import { MatDialogModule, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatFormFieldHarness } from "@angular/material/form-field/testing";
@@ -14,29 +13,25 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatInputHarness } from "@angular/material/input/testing";
 import { MatSelectModule } from "@angular/material/select";
-import { MatSelectHarness } from "@angular/material/select/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { getRandomExperiment } from "@mlaide/mocks/fake-generator";
-import { ExperimentStatusI18nComponent } from "@mlaide/shared/components/experiment-status-i18n/experiment-status-i18n.component";
 
-import { AddOrEditExperimentComponent } from "./add-or-edit-experiment.component";
+import { EditExperimentComponent } from "./edit-experiment.component";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
 import {
-  addExperiment,
-  closeAddOrEditExperimentDialog,
+  closeEditExperimentDialog,
   editExperiment
 } from "@mlaide/state/experiment/experiment.actions";
 import { Experiment } from "@mlaide/state/experiment/experiment.models";
 
-describe("AddOrEditExperimentComponent", () => {
-  let component: AddOrEditExperimentComponent;
-  let fixture: ComponentFixture<AddOrEditExperimentComponent>;
+describe("EditExperimentComponent", () => {
+  let component: EditExperimentComponent;
+  let fixture: ComponentFixture<EditExperimentComponent>;
 
   // fakes
   let fakeExperiment: Experiment;
-  let randomIsEditMode: boolean;
-  let formData: { experiment: Experiment; isEditMode: boolean; title: string };
+  let formData: { experiment: Experiment; title: string };
 
   let store: MockStore;
   let dispatchSpy: jasmine.Spy<(action: Action) => void>;
@@ -44,17 +39,15 @@ describe("AddOrEditExperimentComponent", () => {
   beforeEach(async () => {
     // setup fakes
     fakeExperiment = await getRandomExperiment();
-    randomIsEditMode = Math.random() < 0.5;
 
     // setup formData
     formData = {
       experiment: fakeExperiment,
-      isEditMode: randomIsEditMode,
       title: "Experiment",
     };
 
     await TestBed.configureTestingModule({
-      declarations: [AddOrEditExperimentComponent, ExperimentStatusI18nComponent],
+      declarations: [EditExperimentComponent],
       providers: [
         FormBuilder,
         { provide: MAT_DIALOG_DATA, useValue: formData },
@@ -78,7 +71,7 @@ describe("AddOrEditExperimentComponent", () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AddOrEditExperimentComponent);
+    fixture = TestBed.createComponent(EditExperimentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -98,20 +91,6 @@ describe("AddOrEditExperimentComponent", () => {
       expect(component.tags).toEqual(fakeExperiment.tags);
     });
 
-    it("should set currentStatus to provided experiment status", () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(component.currentStatus).toEqual(fakeExperiment.status);
-    });
-
-    it("should set keyReadonly to provided experiment keyReadonly", () => {
-      // arrange + act in beforeEach
-
-      // assert
-      expect(component.isEditMode).toEqual(formData.isEditMode);
-    });
-
     it("should init form group with provided experiment", async () => {
       // arrange + act also in beforeEach
       delete fakeExperiment.createdAt;
@@ -120,80 +99,6 @@ describe("AddOrEditExperimentComponent", () => {
       // assert
       expect(component.form).not.toBeNull();
       expect(component.form.value).toEqual(fakeExperiment);
-    });
-
-    it("should init form group with required validator for control name", async () => {
-      // arrange in beforeEach
-
-      // act
-      const control: AbstractControl = component.form.get("name");
-
-      // assert
-      expect(control.valid).toBeTruthy();
-
-      // act
-      control.patchValue("");
-
-      // assert
-      expect(control.valid).toBeFalsy();
-    });
-
-    it("should init form group with required validator for control key", async () => {
-      // arrange in beforeEach
-
-      // act
-      const control: AbstractControl = component.form.get("key");
-
-      // assert
-      expect(control.valid).toBeTruthy();
-
-      // act
-      control.patchValue("");
-
-      // assert
-      expect(control.valid).toBeFalsy();
-    });
-
-    it("should init form group with required validator for control status", async () => {
-      // arrange in beforeEach
-
-      // act
-      const control: AbstractControl = component.form.get("status");
-
-      // assert
-      expect(control.valid).toBeTruthy();
-
-      // act
-      control.patchValue("");
-
-      // assert
-      expect(control.valid).toBeFalsy();
-    });
-
-    it("should update experiment key if experiment name is updated and keyReadonly is false", async () => {
-      // arrange in beforeEac
-      const nameControl: AbstractControl = component.form.get("name");
-      const keyControl: AbstractControl = component.form.get("key");
-      component.isEditMode = false;
-
-      // act
-      nameControl.patchValue("This is a new experiment name");
-
-      // assert
-      expect(keyControl.value).toEqual("this-is-a-new-experiment-name");
-    });
-
-    it("should not update experiment key if experiment name is updated and keyReadonly is true", async () => {
-      // arrange in beforeEac
-      const nameControl: AbstractControl = component.form.get("name");
-      const keyControl: AbstractControl = component.form.get("key");
-      component.isEditMode = true;
-
-      // act
-      nameControl.patchValue("This is a new experiment name");
-
-      // assert
-      expect(keyControl.value).toEqual(fakeExperiment.key);
     });
   });
 
@@ -253,14 +158,14 @@ describe("AddOrEditExperimentComponent", () => {
   });
 
   describe("cancel", () => {
-    it("should dispatch closeAddOrEditExperimentDialog action", async () => {
+    it("should dispatch closeEditExperimentDialog action", async () => {
       // arrange in beforeEach
 
       // act
       component.cancel();
 
       // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(closeAddOrEditExperimentDialog());
+      expect(dispatchSpy).toHaveBeenCalledWith(closeEditExperimentDialog());
     });
   });
 
@@ -300,23 +205,6 @@ describe("AddOrEditExperimentComponent", () => {
       expect(component.save).toHaveBeenCalled();
     });
 
-    it("should set all fields to markAsTouched if pushed enter on invalid form", async () => {
-      // arrange also in beforeEach
-      spyOn(component, "save");
-      const keyControl: AbstractControl = component.form.get("key");
-      keyControl.patchValue("");
-
-      // act
-      component.keyDown({ keyCode: ENTER });
-
-      // assert
-      expect(component.form.valid).toBeFalsy();
-      expect(keyControl.touched).toBeTruthy();
-      Object.keys(component.form.controls).forEach((key) => {
-        expect(component.form.controls[key].touched).toBeTruthy();
-      });
-    });
-
     it("should do nothing if pushed button is not enter", async () => {
       // arrange also in beforeEach
       spyOn(component, "save");
@@ -337,25 +225,12 @@ describe("AddOrEditExperimentComponent", () => {
     it("should dispatch editExperiment action", async () => {
       // arrange in beforeEach
       component.tags = ["firstTag", "secondTag", "thirdTag"];
-      component.isEditMode = true;
 
       // act
       component.save();
 
       // assert
       expect(dispatchSpy).toHaveBeenCalledWith(editExperiment({ experiment: component.form.value }));
-    });
-
-    it("should dispatch addExperiment action", async () => {
-      // arrange in beforeEach
-      component.tags = ["firstTag", "secondTag", "thirdTag"];
-      component.isEditMode = false;
-
-      // act
-      component.save();
-
-      // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(addExperiment({ experiment: component.form.value }));
     });
   });
 
@@ -368,49 +243,49 @@ describe("AddOrEditExperimentComponent", () => {
       expect(h1.textContent).toEqual(formData.title);
     });
 
-    describe("user settings form", () => {
+    describe("edit experiments settings form", () => {
       let loader: HarnessLoader;
 
       beforeEach(() => {
         loader = TestbedHarnessEnvironment.loader(fixture);
       });
-      it("should have 4 form fields with labels", async () => {
+      it("should have 3 form fields with labels", async () => {
         // arrange
         const formFields: MatFormFieldHarness[] = await loader.getAllHarnesses(MatFormFieldHarness);
 
         // assert
-        expect(formFields.length).toBe(4);
+        expect(formFields.length).toBe(3);
         await Promise.all(formFields.map(async (formField) => {
           expect(await formField.hasLabel()).toBeTruthy();
         }));
       });
 
-      it("should have prefilled and required form field -- experiment name", async () => {
+      it("should have prefilled and readOnly form field -- experiment name", async () => {
         // arrange
         // Have to add " *" to label because it is required
         const formField: MatFormFieldHarness = await loader.getHarness(
-          MatFormFieldHarness.with({ floatingLabelText: "Experiment name *" })
+          MatFormFieldHarness.with({ floatingLabelText: "Experiment name" })
         );
         const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.name }));
 
         // assert
         expect(formField).not.toBeNull();
-        expect(await input.isRequired()).toBeTruthy();
+        expect(await input.isReadonly()).toBeTruthy();
         expect(await input.getPlaceholder()).toEqual("Experiment name");
         expect(input).not.toBeNull();
       });
 
-      it("should have prefilled and required form field -- experiment key", async () => {
+      it("should have prefilled and readOnly form field -- experiment key", async () => {
         // arrange
         // Have to add " *" to label because it is required
         const formField: MatFormFieldHarness = await loader.getHarness(
-          MatFormFieldHarness.with({ floatingLabelText: "Experiment key *" })
+          MatFormFieldHarness.with({ floatingLabelText: "Experiment key" })
         );
         const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.key }));
 
         // assert
         expect(formField).not.toBeNull();
-        expect(await input.isRequired()).toBeTruthy();
+        expect(await input.isReadonly()).toBeTruthy();
         expect(await input.getPlaceholder()).toEqual("Experiment key");
         expect(input).not.toBeNull();
       });
@@ -433,101 +308,12 @@ describe("AddOrEditExperimentComponent", () => {
         }));
       });
 
-      it("should have prefilled and required form field -- experiment status", async () => {
-        // arrange
-        // Have to add " *" to label because it is required
-        const formField: MatFormFieldHarness = await loader.getHarness(
-          MatFormFieldHarness.with({ floatingLabelText: "Experiment status *" })
-        );
-        const select: MatSelectHarness = await loader.getHarness(MatSelectHarness);
-        await select.open();
-        const options: MatOptionHarness[] = await select.getOptions();
-
-        // assert
-        expect(formField).not.toBeNull();
-        expect(await select.isRequired()).toBeTruthy();
-        expect(select).not.toBeNull();
-        expect((await select.getValueText()).toUpperCase().replace(" ", "_")).toEqual(fakeExperiment.status);
-        expect(options.length).toBe(3);
-      });
-
-      it("should show error if required form field experiment name is empty", async () => {
-        // arrange
-        // Have to add "*" to label because it is required
-        const formField: MatFormFieldHarness = await loader.getHarness(
-          MatFormFieldHarness.with({ floatingLabelText: "Experiment name *" })
-        );
-        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.name }));
-
-        // act
-        await input.setValue("");
-        // this is required to make mat-error visible
-        component.form.get("name").markAsTouched();
-
-        // assert
-        expect((await formField.getTextErrors())[0]).toEqual("You must provide an experiment name.");
-        expect(await formField.isControlValid()).not.toBeNull();
-        expect(await formField.isControlValid()).toBeFalsy();
-      });
-
-      it("should show error if required form field experiment key is empty", async () => {
-        // arrange
-        // Have to add "*" to label because it is required
-        const formField: MatFormFieldHarness = await loader.getHarness(
-          MatFormFieldHarness.with({ floatingLabelText: "Experiment key *" })
-        );
-        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.key }));
-
-        // act
-        await input.setValue("");
-        // this is required to make mat-error visible
-        component.form.get("key").markAsTouched();
-
-        // assert
-        expect((await formField.getTextErrors())[0]).toEqual("You must provide an experiment key.");
-        expect(await formField.isControlValid()).not.toBeNull();
-        expect(await formField.isControlValid()).toBeFalsy();
-      });
-
-      it("should have provided readonly value for experiment key input", async () => {
-        // arrange
-        // Have to add "*" to label because it is required
-        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.key }));
-
-        // assert
-        expect(await input.isReadonly()).toEqual(formData.isEditMode);
-      });
-
-      it("should set experiment key input to readonly if keyReadonly is true", async () => {
-        // arrange
-        // Have to add "*" to label because it is required
-        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.key }));
-
-        // act
-        component.isEditMode = true;
-
-        // assert
-        expect(await input.isReadonly()).toBeTruthy();
-      });
-
-      it("should set experiment key input not to readonly if keyReadonly is false", async () => {
-        // arrange
-        // Have to add "*" to label because it is required
-        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeExperiment.key }));
-
-        // act
-        component.isEditMode = false;
-
-        // assert
-        expect(await input.isReadonly()).toBeFalsy();
-      });
-
       describe("cancel button", () => {
         it("should have cancel button", async () => {
           // arrange also in beforeEach
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#add-or-edit-experiment-cancel-button",
+              selector: "#edit-experiment-cancel-button",
             })
           );
 
@@ -539,7 +325,7 @@ describe("AddOrEditExperimentComponent", () => {
           spyOn(component, "cancel");
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#add-or-edit-experiment-cancel-button",
+              selector: "#edit-experiment-cancel-button",
             })
           );
 
@@ -551,28 +337,12 @@ describe("AddOrEditExperimentComponent", () => {
         });
       });
 
-      describe("add or update button", () => {
-        it("should have disabled save button if the form is invalid -- required fields are empty", async () => {
-          // arrange
-          const addOrEditExperimentButton: MatButtonHarness = await loader.getHarness(
-            MatButtonHarness.with({
-              selector: "#add-or-edit-experiment-save-button",
-            })
-          );
-
-          // act
-          component.form.get("name").setValue("");
-          fixture.detectChanges();
-
-          // assert
-          expect(await addOrEditExperimentButton.isDisabled()).toBeTruthy();
-        });
-
+      describe("update button", () => {
         it("should have enabled save button if the form is valid", async () => {
           // arrange + act also in beforeEach
           const addOrEditExperimentButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#add-or-edit-experiment-save-button",
+              selector: "#edit-experiment-save-button",
             })
           );
 
@@ -581,32 +351,15 @@ describe("AddOrEditExperimentComponent", () => {
         });
 
         it("should have update button if keyReadonly is true", async () => {
-          // arrange also in beforeEach
+          // arrange +act also in beforeEach
           const cancelButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#add-or-edit-experiment-save-button",
+              selector: "#edit-experiment-save-button",
             })
           );
-
-          // act
-          component.isEditMode = true;
 
           // assert
           expect(await cancelButton.getText()).toEqual("Update");
-        });
-
-        it("should have add button if keyReadonly is false", async () => {
-          // arrange also in beforeEach
-          const cancelButton: MatButtonHarness = await loader.getHarness(
-            MatButtonHarness.with({
-              selector: "#add-or-edit-experiment-save-button",
-            })
-          );
-
-          component.isEditMode = false;
-
-          // assert
-          expect(await cancelButton.getText()).toEqual("Add");
         });
 
         it("should call save when clicking save button", async () => {
@@ -614,7 +367,7 @@ describe("AddOrEditExperimentComponent", () => {
           spyOn(component, "save");
           const addOrEditExperimentButton: MatButtonHarness = await loader.getHarness(
             MatButtonHarness.with({
-              selector: "#add-or-edit-experiment-save-button",
+              selector: "#edit-experiment-save-button",
             })
           );
 
