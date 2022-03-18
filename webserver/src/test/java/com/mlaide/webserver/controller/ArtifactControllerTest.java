@@ -2,11 +2,9 @@ package com.mlaide.webserver.controller;
 
 import com.mlaide.webserver.faker.ArtifactFaker;
 import com.mlaide.webserver.faker.FileFaker;
+import com.mlaide.webserver.faker.FileHashFaker;
 import com.mlaide.webserver.faker.ProjectFaker;
-import com.mlaide.webserver.model.Artifact;
-import com.mlaide.webserver.model.ArtifactFile;
-import com.mlaide.webserver.model.ItemList;
-import com.mlaide.webserver.model.Stage;
+import com.mlaide.webserver.model.*;
 import com.mlaide.webserver.service.ArtifactService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -27,16 +25,19 @@ import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.mlaide.webserver.controller.ArtifactControllerTest.ArtifactServiceDownloadHandler.simulateArtifactDownload;
 import static com.mlaide.webserver.controller.ArtifactControllerTest.ArtifactServiceDownloadHandler.simulateFileDownload;
+import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.AdditionalAnswers.answerVoid;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+
 
 @ExtendWith(MockitoExtension.class)
 class ArtifactControllerTest {
@@ -259,14 +260,53 @@ class ArtifactControllerTest {
             Artifact artifact = ArtifactFaker.newArtifact();
             MockMultipartFile file = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
             ArgumentCaptor<InputStream> streamArgumentCaptor = ArgumentCaptor.forClass(InputStream.class);
+            String fileHash = "fileHash";
 
             // Act
-            ResponseEntity<Void> result = artifactController.postFile(projectKey, artifact.getName(), artifact.getVersion(), null, file);
+            ResponseEntity<Void> result = artifactController.postFile(projectKey, artifact.getName(), artifact.getVersion(), fileHash, file);
 
             // Assert
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-            verify(artifactService).uploadArtifactFile(eq(projectKey), eq(artifact.getName()), eq(artifact.getVersion()), streamArgumentCaptor.capture(), eq(null), eq(file.getOriginalFilename()));
+            verify(artifactService).uploadArtifactFile(eq(projectKey), eq(artifact.getName()), eq(artifact.getVersion()), streamArgumentCaptor.capture(), eq(file.getOriginalFilename()), eq(fileHash));
             assertThat(streamArgumentCaptor.getValue()).hasSameContentAs(file.getInputStream());
+        }
+    }
+
+    @Nested
+    class findArtifactByFileHashes{
+        @Test
+        void should_return_artifact_if_it_exists() {
+            // Arrange
+            Artifact artifact = ArtifactFaker.newArtifact();
+            FileHash fileHash = FileHashFaker.newFileHash();
+            List<FileHash> fileHashList = new ArrayList<FileHash>();
+            fileHashList.add(fileHash);
+            when(artifactService.getArtifactByFileHashes(projectKey, artifact.getName(), fileHashList)).thenReturn(Optional.of(artifact));
+
+            // Act
+            ResponseEntity<Artifact> result = artifactController.findArtifactByFileHashes(projectKey, artifact.getName(), fileHashList);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+            assertThat(result.getBody()).isSameAs(artifact);
+        }
+
+        @Test
+        void should_return_not_found_if_artifact_is_not_found() {
+            // Arrange
+            Artifact artifact = ArtifactFaker.newArtifact();
+            FileHash fileHash = FileHashFaker.newFileHash();
+            List<FileHash> fileHashList = new ArrayList<FileHash>();
+            fileHashList.add(fileHash);
+            when(artifactService.getArtifactByFileHashes(projectKey, artifact.getName(), fileHashList)).thenReturn(empty());
+
+            // Act
+            ResponseEntity<Artifact> result = artifactController.findArtifactByFileHashes(projectKey, artifact.getName(), fileHashList);
+
+            // Assert
+            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+            assertThat(result.getBody()).isNull();
         }
     }
 
