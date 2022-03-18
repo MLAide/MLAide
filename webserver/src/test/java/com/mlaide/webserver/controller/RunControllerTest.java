@@ -1,12 +1,10 @@
 package com.mlaide.webserver.controller;
 
+import com.mlaide.webserver.faker.ArtifactFaker;
 import com.mlaide.webserver.faker.ExperimentFaker;
 import com.mlaide.webserver.faker.ProjectFaker;
 import com.mlaide.webserver.faker.RunFaker;
-import com.mlaide.webserver.model.Experiment;
-import com.mlaide.webserver.model.ExperimentRef;
-import com.mlaide.webserver.model.ItemList;
-import com.mlaide.webserver.model.Run;
+import com.mlaide.webserver.model.*;
 import com.mlaide.webserver.service.ExperimentService;
 import com.mlaide.webserver.service.RandomGeneratorService;
 import com.mlaide.webserver.service.RunService;
@@ -299,6 +297,23 @@ class RunControllerTest {
                     entry("metric1", "new-value"),
                     entry("metric2", "value2"),
                     entry("new-metric", "value"));
+        }
+    }
+
+    @Nested
+    class attachArtifact {
+        @Test
+        void attach_artifact_to_run_and_return_ok() {
+            // Arrange
+            Run existingRun = RunFaker.newRun();
+            Artifact artifact = ArtifactFaker.newArtifact();
+
+            // Act
+            ResponseEntity<Void> result = runController.attachArtifact(projectKey, existingRun.getKey(), artifact.getName(), artifact.getVersion());
+
+            // Assert
+            verify(runService).attachArtifactToRun(projectKey, existingRun.getKey(), artifact.getName(), artifact.getVersion());
+            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         }
     }
 }
