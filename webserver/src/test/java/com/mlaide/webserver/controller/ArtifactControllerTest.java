@@ -281,7 +281,7 @@ class ArtifactControllerTest {
             FileHash fileHash = FileHashFaker.newFileHash();
             List<FileHash> fileHashList = new ArrayList<FileHash>();
             fileHashList.add(fileHash);
-            when(artifactService.getArtifactByFileHashes(projectKey, artifact.getName(), fileHashList)).thenReturn(Optional.of(artifact));
+            when(artifactService.getArtifactByFileHashes(projectKey, artifact.getName(), fileHashList)).thenReturn(artifact);
 
             // Act
             ResponseEntity<Artifact> result = artifactController.findArtifactByFileHashes(projectKey, artifact.getName(), fileHashList);
@@ -290,23 +290,6 @@ class ArtifactControllerTest {
             assertThat(result).isNotNull();
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(result.getBody()).isSameAs(artifact);
-        }
-
-        @Test
-        void should_return_not_found_if_artifact_is_not_found() {
-            // Arrange
-            Artifact artifact = ArtifactFaker.newArtifact();
-            FileHash fileHash = FileHashFaker.newFileHash();
-            List<FileHash> fileHashList = new ArrayList<FileHash>();
-            fileHashList.add(fileHash);
-            when(artifactService.getArtifactByFileHashes(projectKey, artifact.getName(), fileHashList)).thenReturn(empty());
-
-            // Act
-            ResponseEntity<Artifact> result = artifactController.findArtifactByFileHashes(projectKey, artifact.getName(), fileHashList);
-
-            // Assert
-            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-            assertThat(result.getBody()).isNull();
         }
     }
 

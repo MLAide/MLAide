@@ -18,7 +18,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -161,12 +160,8 @@ public class ArtifactController {
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("artifactName") @NotBlank String artifactName,
             @RequestBody List<FileHash> fileHashes) {
-        Optional<Artifact> artifact = artifactService.getArtifactByFileHashes(projectKey, artifactName, fileHashes);
+        Artifact artifact = artifactService.getArtifactByFileHashes(projectKey, artifactName, fileHashes);
 
-        if (artifact.isPresent()) {
-            return ResponseEntity.ok(artifact.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(artifact);
     }
 }

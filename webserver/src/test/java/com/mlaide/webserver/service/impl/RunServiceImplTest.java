@@ -1,10 +1,7 @@
 package com.mlaide.webserver.service.impl;
 
 import com.github.javafaker.Faker;
-import com.mlaide.webserver.faker.ArtifactFaker;
-import com.mlaide.webserver.faker.ProjectFaker;
-import com.mlaide.webserver.faker.RunFaker;
-import com.mlaide.webserver.faker.UserFaker;
+import com.mlaide.webserver.faker.*;
 import com.mlaide.webserver.model.*;
 import com.mlaide.webserver.repository.CounterRepository;
 import com.mlaide.webserver.repository.RunRepository;
@@ -327,26 +324,6 @@ class RunServiceImplTest {
 
                 // Assert
                 assertThat(runToAdd.getName()).isEqualTo("random name");
-            }
-
-            @Test
-            void usedArtifacts_is_specified_should_assign_experimentRefs_of_this_run_to_all_predecessor_runs() throws InvalidInputException {
-                // Arrange
-                List<ArtifactRefEntity> usedArtifacts = new ArrayList<>();
-                usedArtifacts.add(new ArtifactRefEntity());
-                runEntityThatWasReturnedFromRepository.setUsedArtifacts(usedArtifacts);
-
-                List<RunEntity.ExperimentRefEntity> experimentRefEntities = new ArrayList<>();
-                runEntityThatWasReturnedFromRepository.setExperimentRefs(experimentRefEntities);
-
-                List<Integer> expectedPredecessorRunKeys = new ArrayList<>();
-                when(runRepository.findAllPredecessorRunKeys(project.getKey(), usedArtifacts)).thenReturn(expectedPredecessorRunKeys);
-
-                // Act
-                runService.addRun(project.getKey(), runToAdd);
-
-                // Assert
-                verify(runRepository).assignExperimentRefs(project.getKey(), expectedPredecessorRunKeys, experimentRefEntities);
             }
         }
 
@@ -680,6 +657,7 @@ class RunServiceImplTest {
             Integer runKey1 = run1.getKey();
 
             RunEntity run2 = RunFaker.newRunEntity();
+            run2.setCreatedAt(FakerUtils.futureDate());
             Integer runKey2 = run2.getKey();
 
             run1.getGit().setRepositoryUri(run2.getGit().getRepositoryUri());
@@ -701,12 +679,13 @@ class RunServiceImplTest {
         }
 
         @Test
-        void valid_runs_should_use_ssh_key_pairs_of_current_user_to_create_diff() {
+        void first_run_was_created_before_second_run_should_be_shown_as_left_run() {
             // Arrange
             RunEntity run1 = RunFaker.newRunEntity();
             Integer runKey1 = run1.getKey();
 
             RunEntity run2 = RunFaker.newRunEntity();
+            run2.setCreatedAt(FakerUtils.futureDate());
             Integer runKey2 = run2.getKey();
 
             run1.getGit().setRepositoryUri(run2.getGit().getRepositoryUri());
@@ -724,8 +703,65 @@ class RunServiceImplTest {
             runService.getGitDiffForRuns(projectKey, runKey1, runKey2);
 
             // Assert
-            verify(userService).getSshKeyPairsForCurrentUser();
             verify(gitDiffService).getDiff(run1.getGit().getRepositoryUri(), run1.getGit().getCommitHash(), run2.getGit().getCommitHash(), keyPairs);
+        }
+
+        @Test
+        void first_run_was_created_after_second_run_should_be_shown_as_right_run() {
+            // Arrange
+            RunEntity run1 = RunFaker.newRunEntity();
+            run1.setCreatedAt(FakerUtils.futureDate());
+            Integer runKey1 = run1.getKey();
+
+            RunEntity run2 = RunFaker.newRunEntity();
+            Integer runKey2 = run2.getKey();
+
+            run1.getGit().setRepositoryUri(run2.getGit().getRepositoryUri());
+            GitDiff expectedGitDiff = new GitDiff("the diff");
+
+            List<KeyPair> keyPairs = new ArrayList<>();
+
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey1)).thenReturn(run1);
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey2)).thenReturn(run2);
+            when(gitDiffService.getDiff(run2.getGit().getRepositoryUri(), run2.getGit().getCommitHash(), run1.getGit().getCommitHash(), keyPairs))
+                    .thenReturn(expectedGitDiff);
+            when(userService.getSshKeyPairsForCurrentUser()).thenReturn(keyPairs);
+
+            // Act
+            runService.getGitDiffForRuns(projectKey, runKey1, runKey2);
+
+            // Assert
+            verify(userService).getSshKeyPairsForCurrentUser();
+            verify(gitDiffService).getDiff(run2.getGit().getRepositoryUri(), run2.getGit().getCommitHash(), run1.getGit().getCommitHash(), keyPairs);
+        }
+
+        @Test
+        void valid_runs_should_use_ssh_key_pairs_of_current_user_to_create_diff() {
+            // Arrange
+            RunEntity run1 = RunFaker.newRunEntity();
+            run1.setCreatedAt(FakerUtils.futureDate());
+            Integer runKey1 = run1.getKey();
+
+            RunEntity run2 = RunFaker.newRunEntity();
+            Integer runKey2 = run2.getKey();
+
+            run1.getGit().setRepositoryUri(run2.getGit().getRepositoryUri());
+            GitDiff expectedGitDiff = new GitDiff("the diff");
+
+            List<KeyPair> keyPairs = new ArrayList<>();
+
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey1)).thenReturn(run1);
+            when(runRepository.findOneByProjectKeyAndKey(projectKey, runKey2)).thenReturn(run2);
+            when(gitDiffService.getDiff(run2.getGit().getRepositoryUri(), run2.getGit().getCommitHash(), run1.getGit().getCommitHash(), keyPairs))
+                    .thenReturn(expectedGitDiff);
+            when(userService.getSshKeyPairsForCurrentUser()).thenReturn(keyPairs);
+
+            // Act
+            runService.getGitDiffForRuns(projectKey, runKey1, runKey2);
+
+            // Assert
+            verify(userService).getSshKeyPairsForCurrentUser();
+            verify(gitDiffService).getDiff(run2.getGit().getRepositoryUri(), run2.getGit().getCommitHash(), run1.getGit().getCommitHash(), keyPairs);
         }
     }
 }
