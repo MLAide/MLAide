@@ -32,6 +32,7 @@ public class ProjectFaker {
         return faker.funnyName().name()
                 .toLowerCase()
                 .replace(" ", "-")
-                .replace(".", "-");
+                .replace(".", "-")
+                .replace("'", "-");
     }
 }
