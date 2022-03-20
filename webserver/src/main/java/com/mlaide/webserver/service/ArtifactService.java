@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Optional;
 
 public interface ArtifactService {
     Artifact addArtifact(String projectKey, Artifact artifact);
@@ -46,5 +45,5 @@ public interface ArtifactService {
     void downloadFile(String projectKey, String artifactName, Integer artifactVersion, String fileId, OutputStream outputStream)
             throws IOException;
 
-    Optional<Artifact> getArtifactByFileHashes(String projectKey, String artifactName, List<FileHash> fileHashes);
+    Artifact getArtifactByFileHashes(String projectKey, String artifactName, List<FileHash> fileHashes);
 }

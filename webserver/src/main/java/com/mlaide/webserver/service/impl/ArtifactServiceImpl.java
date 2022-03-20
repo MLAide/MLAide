@@ -113,9 +113,9 @@ public class ArtifactServiceImpl implements ArtifactService {
                     .s3ObjectVersionId(uploadResult.getObjectVersionId())
                     .build();
             files.add(ref);
-        }
 
-        artifactRepository.save(artifact);
+            artifactRepository.save(artifact);
+        }
     }
 
     @Override
@@ -224,6 +224,45 @@ public class ArtifactServiceImpl implements ArtifactService {
     }
 
     @Override
+    public Artifact getArtifactByFileHashes(String projectKey, String artifactName, List<FileHash> fileHashes) {
+        List<ArtifactEntity> artifacts = artifactRepository.findAllByProjectKeyAndNameOrderByVersionDesc(projectKey, artifactName);
+
+        for (ArtifactEntity artifact: artifacts) {
+            if ((artifact.getFiles() == null || artifact.getFiles().isEmpty())
+                    && (fileHashes == null || fileHashes.isEmpty())) {
+                return artifactMapper.fromEntity(artifact);
+            }
+
+            if (artifact.getFiles() == null || fileHashes == null) {
+                continue;
+            }
+            if (artifact.getFiles().size() != fileHashes.size()) {
+                continue;
+            }
+
+            boolean allFilesMatchHash = true;
+            for (int i = 0; i < artifact.getFiles().size() && allFilesMatchHash; i++) {
+                FileRefEntity file = artifact.getFiles().get(i);
+
+                Optional<FileHash> fileHash = fileHashes.stream()
+                        .filter(hash -> hash.getFileName() != null && hash.getFileName().equalsIgnoreCase(file.getFileName()))
+                        .findFirst();
+
+                if (fileHash.isEmpty() || !fileHash.get().getFileHash().equalsIgnoreCase(file.getHash())) {
+                    allFilesMatchHash = false;
+                }
+            }
+
+            if (allFilesMatchHash) {
+                return artifactMapper.fromEntity(artifact);
+            }
+        }
+
+        throw new NotFoundException();
+    }
+
+
+    @Override
     public ArtifactFile getFileInfo(String projectKey, String artifactName, Integer artifactVersion, String fileId) {
         FileRefEntity fileInfo = getFileInfoInternal(projectKey, artifactName, artifactVersion, fileId);
 
@@ -275,44 +314,6 @@ public class ArtifactServiceImpl implements ArtifactService {
                             + artifactVersion + " for project " + projectKey, e);
             throw e;
         }
-    }
-
-    @Override
-    public Optional<Artifact> getArtifactByFileHashes(String projectKey, String artifactName, List<FileHash> fileHashes) {
-        List<ArtifactEntity> artifacts = artifactRepository.findAllByProjectKeyAndNameOrderByVersionDesc(projectKey, artifactName);
-
-        for (ArtifactEntity artifact: artifacts) {
-            if ((artifact.getFiles() == null || artifact.getFiles().size() == 0)
-                    && (fileHashes == null || fileHashes.size() == 0)) {
-                return Optional.of(artifactMapper.fromEntity(artifact));
-            }
-
-            if (artifact.getFiles() == null || fileHashes == null) {
-                continue;
-            }
-            if (artifact.getFiles().size() != fileHashes.size()) {
-                continue;
-            }
-
-            boolean allFilesMatchHash = true;
-            for (int i = 0; i < artifact.getFiles().size() && allFilesMatchHash; i++) {
-                FileRefEntity file = artifact.getFiles().get(i);
-
-                Optional<FileHash> fileHash = fileHashes.stream()
-                        .filter(hash -> hash.getFileName() != null && hash.getFileName().equalsIgnoreCase(file.getFileName()))
-                        .findFirst();
-
-                if (fileHash.isEmpty() || !fileHash.get().getFileHash().equalsIgnoreCase(file.getHash())) {
-                    allFilesMatchHash = false;
-                }
-            }
-
-            if (allFilesMatchHash) {
-                return Optional.of(artifactMapper.fromEntity(artifact));
-            }
-        }
-
-        return Optional.empty();
     }
 
     private String buildInternalFileName(String filename, ArtifactEntity artifact) {

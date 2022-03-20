@@ -16,6 +16,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
@@ -25,15 +28,17 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static java.lang.String.format;
 import static java.time.OffsetDateTime.of;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
-import static org.testcontainers.shaded.com.google.common.primitives.Ints.asList;
 
 @ExtendWith(MockitoExtension.class)
 class ArtifactServiceImplTest {
@@ -200,9 +205,11 @@ class ArtifactServiceImplTest {
         private ArtifactEntity artifact;
         private InputStream artifactStream;
         private String artifactFileName;
+        private String fileHash;
 
         @BeforeEach
         void initializeCommonDefaultVariables() {
+            fileHash = faker.random().hex();
             project = ProjectFaker.newProject();
             artifact = ArtifactFaker.newArtifactEntity();
             artifactStream = FileFaker.randomInputStream();
@@ -211,22 +218,6 @@ class ArtifactServiceImplTest {
 
         private String buildExpectedInternalFileName() {
             return artifact.getType() + "/" + artifact.getName() + "/" + artifact.getVersion() + "/" + artifactFileName;
-        }
-
-        @Test
-        void should_upload_file_to_storage_service() throws IOException {
-            // Arrange
-            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(project.getKey(), artifact.getName(), artifact.getVersion()))
-                    .thenReturn(artifact);
-            when(storageService.upload(any(), any(), any())).thenReturn(new FileUploadResult(null, null));
-
-            // Act
-            artifactService.uploadArtifactFile(
-                    project.getKey(), artifact.getName(), artifact.getVersion(), artifactStream, artifactFileName, null);
-
-            // Assert
-            String expectedInternalFileName = buildExpectedInternalFileName();
-            verify(storageService).upload(project.getKey(), expectedInternalFileName, artifactStream);
         }
 
         @Test
@@ -241,15 +232,54 @@ class ArtifactServiceImplTest {
             // Act + Assert
             assertThatThrownBy(() -> artifactService.uploadArtifactFile(
                     projectKey, artifactName, artifactVersion, artifactStream, artifactFileName, null))
-                .isInstanceOf(NotFoundException.class);
+                    .isInstanceOf(NotFoundException.class);
         }
+
+        @Test
+        void should_not_upload_file_if_it_already_exists() throws IOException {
+            // Arrange
+            var fileName= buildExpectedInternalFileName();
+            var fileRefEntity = new FileRefEntity();
+            fileRefEntity.setInternalFileName(fileName);
+            fileRefEntity.setHash(fileHash);
+            var fileRefEntities = new ArrayList<FileRefEntity>();
+            fileRefEntities.add(fileRefEntity);
+            artifact.setFiles(fileRefEntities);
+            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(project.getKey(), artifact.getName(), artifact.getVersion()))
+                    .thenReturn(artifact);
+
+            // Act
+            artifactService.uploadArtifactFile(
+                    project.getKey(), artifact.getName(), artifact.getVersion(), artifactStream, artifactFileName, fileHash);
+
+            // Assert
+            verify(storageService, never()).upload(project.getKey(), fileName, artifactStream);
+            verify(artifactRepository, never()).save(artifact);
+        }
+
+        @Test
+        void should_upload_file_to_storage_service() throws IOException {
+            // Arrange
+            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(project.getKey(), artifact.getName(), artifact.getVersion()))
+                    .thenReturn(artifact);
+            when(storageService.upload(any(), any(), any())).thenReturn(new FileUploadResult(null, null));
+
+            // Act
+            artifactService.uploadArtifactFile(
+                    project.getKey(), artifact.getName(), artifact.getVersion(), artifactStream, artifactFileName, fileHash);
+
+            // Assert
+            String expectedInternalFileName = buildExpectedInternalFileName();
+            verify(storageService).upload(project.getKey(), expectedInternalFileName, artifactStream);
+        }
+
+
 
         @Test
         void upload_first_file_to_artifact_should_add_first_file_ref_to_artifact() throws IOException {
             // Arrange
-            var hash = faker.random().hex();
             var objectVersionId = faker.random().hex();
-            var fileUploadResult = new FileUploadResult(hash, objectVersionId);
+            var fileUploadResult = new FileUploadResult(fileHash, objectVersionId);
 
             when(artifactRepository.findOneByProjectKeyAndNameAndVersion(project.getKey(), artifact.getName(), artifact.getVersion()))
                     .thenReturn(artifact);
@@ -263,7 +293,7 @@ class ArtifactServiceImplTest {
                     artifact.getVersion(),
                     artifactStream,
                     artifactFileName,
-                    null);
+                    fileHash);
 
             // Assert
             assertThat(artifact.getFiles()).hasSize(1);
@@ -271,7 +301,7 @@ class ArtifactServiceImplTest {
             String expectedInternalFileName = buildExpectedInternalFileName();
             assertThat(fileRef.getInternalFileName()).isEqualTo(expectedInternalFileName);
             assertThat(fileRef.getFileName()).isEqualTo(artifactFileName);
-            assertThat(fileRef.getHash()).isEqualTo(hash);
+            assertThat(fileRef.getHash()).isEqualTo(fileHash);
             assertThat(fileRef.getS3ObjectVersionId()).isEqualTo(objectVersionId);
 
             verify(artifactRepository).save(artifact);
@@ -285,9 +315,8 @@ class ArtifactServiceImplTest {
             files.add(existingFileRef);
             artifact.setFiles(files);
 
-            var hash = faker.random().hex();
             var objectVersionId = faker.random().hex();
-            var fileUploadResult = new FileUploadResult(hash, objectVersionId);
+            var fileUploadResult = new FileUploadResult(fileHash, objectVersionId);
 
             when(artifactRepository.findOneByProjectKeyAndNameAndVersion(project.getKey(), artifact.getName(), artifact.getVersion()))
                     .thenReturn(artifact);
@@ -301,7 +330,7 @@ class ArtifactServiceImplTest {
                     artifact.getVersion(),
                     artifactStream,
                     artifactFileName,
-                    null);
+                    fileHash);
 
             // Assert
             assertThat(artifact.getFiles()).hasSize(2);
@@ -312,57 +341,7 @@ class ArtifactServiceImplTest {
             String expectedInternalFileName = buildExpectedInternalFileName();
             assertThat(fileRef.getInternalFileName()).isEqualTo(expectedInternalFileName);
             assertThat(fileRef.getFileName()).isEqualTo(artifactFileName);
-            assertThat(fileRef.getHash()).isEqualTo(hash);
-            assertThat(fileRef.getS3ObjectVersionId()).isEqualTo(objectVersionId);
-
-            verify(artifactRepository).save(artifact);
-        }
-
-        @Test
-        void upload_same_file_twice_should_update_objectVersionId_on_existing_file_ref() throws IOException {
-            // Arrange
-            var hash = faker.random().hex();
-            var objectVersionId = faker.random().hex();
-            var fileUploadResult = new FileUploadResult(hash, objectVersionId);
-
-            artifactFileName = "internal-file-name.txt";
-
-            // The function under test will identify the existing file by its internal filename and hash
-            var existingFileRef = FileRefEntity.builder()
-                    .fileName(artifactFileName)
-                    .internalFileName(
-                            buildExpectedInternalFileName())
-                    .hash(hash)
-                    .s3ObjectVersionId(faker.random().hex())
-                    .build();
-            List<FileRefEntity> files = new ArrayList<>();
-            files.add(existingFileRef);
-            artifact.setFiles(files);
-
-            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(project.getKey(), artifact.getName(), artifact.getVersion()))
-                    .thenReturn(artifact);
-            when(storageService.upload(any(), any(), any()))
-                    .thenReturn(fileUploadResult);
-
-            // Act
-            artifactService.uploadArtifactFile(
-                    project.getKey(),
-                    artifact.getName(),
-                    artifact.getVersion(),
-                    artifactStream,
-                    artifactFileName,
-                    null);
-
-            // Assert
-            assertThat(artifact.getFiles()).hasSize(1);
-
-            var fileRef = artifact.getFiles().get(0);
-            assertThat(fileRef).isSameAs(existingFileRef);
-
-            String expectedInternalFileName = buildExpectedInternalFileName();
-            assertThat(fileRef.getInternalFileName()).isEqualTo(expectedInternalFileName);
-            assertThat(fileRef.getFileName()).isEqualTo(artifactFileName);
-            assertThat(fileRef.getHash()).isEqualTo(hash);
+            assertThat(fileRef.getHash()).isEqualTo(fileHash);
             assertThat(fileRef.getS3ObjectVersionId()).isEqualTo(objectVersionId);
 
             verify(artifactRepository).save(artifact);
@@ -655,6 +634,135 @@ class ArtifactServiceImplTest {
             assertThatThrownBy(() -> artifactService.getArtifact(projectKey, artifactName, artifactVersion))
                     .isInstanceOf(NotFoundException.class);
         }
+    }
+
+    @Nested
+    class getArtifactByHashes {
+        private Project project;
+        private Artifact artifact;
+        private ArtifactEntity artifactEntity;
+        private List<ArtifactEntity> artifactsEntities;
+        private List<FileHash> fileHashes;
+        private InputStream artifactStream;
+        private String artifactFileName;
+
+        @BeforeEach
+        void initializeCommonDefaultVariables() {
+            project = ProjectFaker.newProject();
+            artifact = ArtifactFaker.newArtifact();
+            artifactEntity = ArtifactFaker.newArtifactEntity();
+            fileHashes = new ArrayList<FileHash>();
+            fileHashes.add(FileHashFaker.newFileHash());
+            artifactsEntities = new ArrayList<ArtifactEntity>();
+            artifactsEntities.add(artifactEntity);
+        }
+
+        @Test
+        void specified_artifact_does_not_exist_should_throw_NotFoundException() {
+            // Arrange
+            when(artifactRepository.findAllByProjectKeyAndNameOrderByVersionDesc(project.getKey(), artifactEntity.getName()))
+                    .thenReturn(emptyList());
+
+            // Act + Assert
+            assertThatThrownBy(() -> artifactService.getArtifactByFileHashes(project.getKey(), artifactEntity.getName(), fileHashes))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @ParameterizedTest
+        @MethodSource("com.mlaide.webserver.service.impl.ArtifactServiceImplTest#provideParametersForArtifactsWithNoFileRefsAndNoFileHashes")
+        void specified_artifact_has_no_files_and_no_file_hashes_should_return_artifact(List<FileRefEntity> fileRefEntities, List<FileHash> fileHashes) {
+            // Assert
+            artifactsEntities.get(0).setFiles(fileRefEntities);
+            when(artifactRepository.findAllByProjectKeyAndNameOrderByVersionDesc(project.getKey(), artifactEntity.getName()))
+                    .thenReturn(artifactsEntities);
+            when(artifactMapper.fromEntity(artifactEntity))
+                    .thenReturn(artifact);
+
+            // Act
+            var result = artifactService.getArtifactByFileHashes(project.getKey(), artifactEntity.getName(), fileHashes);
+
+            // Arrange
+            assertThat(result).isSameAs(artifact);
+        }
+
+        @ParameterizedTest
+        @MethodSource("com.mlaide.webserver.service.impl.ArtifactServiceImplTest#provideParametersForArtifactsWithFileRefsOrFileHashesEqualNull")
+        void specified_artifact_has_no_matches_should_throw_NotFoundException(List<FileRefEntity> fileRefEntities, List<FileHash> fileHashes) {
+            // Assert
+            artifactsEntities.get(0).setFiles(fileRefEntities);
+            when(artifactRepository.findAllByProjectKeyAndNameOrderByVersionDesc(project.getKey(), artifactEntity.getName()))
+                    .thenReturn(artifactsEntities);
+
+            // Act + Assert
+            assertThatThrownBy(() -> artifactService.getArtifactByFileHashes(project.getKey(), artifactEntity.getName(), fileHashes))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void specified_artifact_files_size_does_not_match_file_hashes_size_should_throw_NotFoundException() {
+            // Arrange
+            artifactsEntities.get(0).setFiles(emptyList());
+            when(artifactRepository.findAllByProjectKeyAndNameOrderByVersionDesc(project.getKey(), artifactEntity.getName()))
+                    .thenReturn(artifactsEntities);
+
+            // Act + Assert
+            assertThatThrownBy(() -> artifactService.getArtifactByFileHashes(project.getKey(), artifactEntity.getName(), fileHashes))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void specified_artifact_all_files_matches_should_return_artifact() {
+            // Arrange
+            var fileRefs = asList(FileRefFaker.newFileRefEntity(),FileRefFaker.newFileRefEntity());
+            var fileHashes = asList(FileHashFaker.newFileHash(),FileHashFaker.newFileHash());
+            fileRefs.get(0).setFileName(fileHashes.get(0).getFileName());
+            fileRefs.get(0).setHash(fileHashes.get(0).getFileHash());
+            fileRefs.get(1).setFileName(fileHashes.get(1).getFileName());
+            fileRefs.get(1).setHash(fileHashes.get(1).getFileHash());
+            artifactsEntities.get(0).setFiles(fileRefs);
+            when(artifactRepository.findAllByProjectKeyAndNameOrderByVersionDesc(project.getKey(), artifactEntity.getName()))
+                    .thenReturn(artifactsEntities);
+            when(artifactMapper.fromEntity(artifactEntity))
+                    .thenReturn(artifact);
+
+            // Act
+            var result = artifactService.getArtifactByFileHashes(project.getKey(), artifactEntity.getName(), fileHashes);
+
+            // Arrange
+            assertThat(result).isSameAs(artifact);
+        }
+
+        @Test
+        void specified_artifact_not_all_files_matches_should_throw_NotFoundException() {
+            // Arrange
+            var fileRefs = asList(FileRefFaker.newFileRefEntity(),FileRefFaker.newFileRefEntity());
+            var fileHashes = asList(FileHashFaker.newFileHash(),FileHashFaker.newFileHash());
+            fileRefs.get(0).setFileName(fileHashes.get(0).getFileName());
+            fileRefs.get(0).setHash(fileHashes.get(0).getFileHash());
+            artifactsEntities.get(0).setFiles(fileRefs);
+            when(artifactRepository.findAllByProjectKeyAndNameOrderByVersionDesc(project.getKey(), artifactEntity.getName()))
+                    .thenReturn(artifactsEntities);
+
+            // Act + Assert
+            assertThatThrownBy(() -> artifactService.getArtifactByFileHashes(project.getKey(), artifactEntity.getName(), fileHashes))
+                    .isInstanceOf(NotFoundException.class);
+        }
+    }
+
+    private static Stream<Arguments> provideParametersForArtifactsWithNoFileRefsAndNoFileHashes() {
+        return Stream.of(
+                Arguments.of(null, null),
+                Arguments.of(null, emptyList()),
+                Arguments.of(emptyList(), null),
+                Arguments.of(emptyList(), emptyList())
+        );
+    }
+
+    private static Stream<Arguments> provideParametersForArtifactsWithFileRefsOrFileHashesEqualNull() {
+        return Stream.of(
+                Arguments.of(null, asList(FileHashFaker.newFileHash())),
+                Arguments.of(asList(FileRefFaker.newFileRefEntity()), null)
+        );
     }
 
     @Nested
