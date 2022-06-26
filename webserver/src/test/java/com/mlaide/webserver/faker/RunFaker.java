@@ -13,6 +13,7 @@ public class RunFaker {
 
     public static Run newRun() {
         var run = new Run();
+        run.setCreatedAt(FakerUtils.pastDate());
         run.setKey(faker.random().nextInt(1000));
         run.setName(faker.superhero().name());
         run.setNote(faker.lorem().sentence());
