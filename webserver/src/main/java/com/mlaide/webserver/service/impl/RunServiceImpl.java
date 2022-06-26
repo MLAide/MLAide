@@ -1,8 +1,10 @@
 package com.mlaide.webserver.service.impl;
 
 import com.mlaide.webserver.model.*;
+import com.mlaide.webserver.repository.ArtifactRepository;
 import com.mlaide.webserver.repository.CounterRepository;
 import com.mlaide.webserver.repository.RunRepository;
+import com.mlaide.webserver.repository.entity.ArtifactEntity;
 import com.mlaide.webserver.repository.entity.ArtifactRefEntity;
 import com.mlaide.webserver.repository.entity.RunEntity;
 import com.mlaide.webserver.service.*;
@@ -19,7 +21,6 @@ import java.security.KeyPair;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,7 @@ public class RunServiceImpl implements RunService {
     private final ValidationService validationService;
     private final Clock clock;
     private final GitDiffService gitDiffService;
+    private final ArtifactRepository artifactRepository;
 
     @Autowired
     public RunServiceImpl(RunRepository runRepository,
@@ -48,7 +50,8 @@ public class RunServiceImpl implements RunService {
                           UserService userService,
                           ValidationService validationService,
                           Clock clock,
-                          GitDiffService gitDiffService) {
+                          GitDiffService gitDiffService,
+                          ArtifactRepository artifactRepository) {
         this.runRepository = runRepository;
         this.runMapper = runMapper;
         this.permissionService = permissionService;
@@ -59,6 +62,7 @@ public class RunServiceImpl implements RunService {
         this.validationService = validationService;
         this.clock = clock;
         this.gitDiffService = gitDiffService;
+        this.artifactRepository = artifactRepository;
     }
 
     @Override
@@ -103,6 +107,8 @@ public class RunServiceImpl implements RunService {
             run.setName(randomGeneratorService.randomRunName());
         }
 
+        setLatestVersionOfArtifacts(projectKey, run.getUsedArtifacts());
+
         throwIfAnyExperimentRefDoesNotExist(projectKey, run.getExperimentRefs());
         throwIfAnyArtifactDoesNotExist(projectKey, run.getUsedArtifacts());
 
@@ -127,6 +133,26 @@ public class RunServiceImpl implements RunService {
         runEntity = saveRun(runEntity);
 
         return runMapper.fromEntity(runEntity);
+    }
+
+    private void setLatestVersionOfArtifacts(String projectKey, List<ArtifactRef> artifacts) {
+        if (artifacts == null || artifacts.isEmpty()) {
+            return;
+        }
+
+        artifacts.forEach((artifact -> {
+            if (artifact.getVersion() == null) {
+                ArtifactEntity latestArtifact =
+                        this.artifactRepository.findFirstByProjectKeyAndNameOrderByVersionDesc(projectKey, artifact.getName());
+
+                if (latestArtifact == null) {
+                    throw new InvalidInputException(
+                            "One or more of the specified artifact refs are not valid or do not exist.");
+                }
+
+                artifact.setVersion(latestArtifact.getVersion());
+            }
+        }));
     }
 
     @Override

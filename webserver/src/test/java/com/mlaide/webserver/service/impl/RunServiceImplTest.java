@@ -3,6 +3,7 @@ package com.mlaide.webserver.service.impl;
 import com.github.javafaker.Faker;
 import com.mlaide.webserver.faker.*;
 import com.mlaide.webserver.model.*;
+import com.mlaide.webserver.repository.ArtifactRepository;
 import com.mlaide.webserver.repository.CounterRepository;
 import com.mlaide.webserver.repository.RunRepository;
 import com.mlaide.webserver.repository.entity.ArtifactRefEntity;
@@ -45,16 +46,14 @@ class RunServiceImplTest {
 
     private @Mock RunRepository runRepository;
     private @Mock RunMapper runMapper;
-    private @Mock
-    PermissionService permissionService;
-    private @Mock
-    ExperimentService experimentService;
+    private @Mock PermissionService permissionService;
+    private @Mock ExperimentService experimentService;
     private @Mock CounterRepository counterRepository;
     private @Mock RandomGeneratorService randomGeneratorService;
-    private @Mock
-    ValidationService validationService;
+    private @Mock ValidationService validationService;
     private @Mock UserService userService;
     private @Mock GitDiffService gitDiffService;
+    private @Mock ArtifactRepository artifactRepository;
 
     private Project project;
     private String projectKey;
@@ -76,7 +75,8 @@ class RunServiceImplTest {
                 userService,
                 validationService,
                 clock,
-                gitDiffService);
+                gitDiffService,
+                artifactRepository);
     }
 
     @Nested
