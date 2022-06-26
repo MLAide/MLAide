@@ -235,6 +235,55 @@ class RunServiceImplTest {
             assertThatThrownBy(() -> runService.addRun(projectKey, runToAdd)).isInstanceOf(InvalidInputException.class);
         }
 
+        @Test
+        void artifact_version_is_null_should_set_latest_artifact_version() throws InvalidInputException {
+            // Arrange
+            var artifactRef = new ArtifactRef();
+            artifactRef.setName("test");
+            runToAdd.setUsedArtifacts(asList(artifactRef));
+            runToAdd.setExperimentRefs(experimentRefs("ref1", "ref2"));
+
+            var artifactEntity = ArtifactFaker.newArtifactEntity();
+            when(experimentService.checkAllExperimentsExist(eq(project.getKey()), any()))
+                    .thenReturn(true);
+
+            when(validationService.checkAllArtifactsExist(project.getKey(), runToAdd.getUsedArtifacts()))
+                    .thenReturn(true);
+
+            when(artifactRepository.findFirstByProjectKeyAndNameOrderByVersionDesc(projectKey, runToAdd.getUsedArtifacts().get(0).getName()))
+                    .thenReturn(artifactEntity);
+
+            var savedRunEntity = new RunEntity();
+            when(runMapper.toEntity(runToAdd)).thenReturn(savedRunEntity);
+
+            var runEntityThatWasReturnedFromRepository = new RunEntity();
+            when(runRepository.save(savedRunEntity)).thenReturn(runEntityThatWasReturnedFromRepository);
+
+            var runThatWasReturnedFromRepository = new Run();
+            when(runMapper.fromEntity(runEntityThatWasReturnedFromRepository)).thenReturn(runThatWasReturnedFromRepository);
+
+            // Act
+            runService.addRun(project.getKey(), runToAdd);
+
+            // Assert
+            assertThat(runToAdd.getUsedArtifacts().get(0).getVersion()).isEqualTo(artifactEntity.getVersion());
+        }
+
+        @Test
+        void artifact_without_version_does_not_exist_should_throw_InvalidInputException() throws InvalidInputException {
+            // Arrange
+            var artifactRef = new ArtifactRef();
+            artifactRef.setName("test");
+            runToAdd.setUsedArtifacts(asList(artifactRef));
+
+            when(artifactRepository.findFirstByProjectKeyAndNameOrderByVersionDesc(projectKey, runToAdd.getUsedArtifacts().get(0).getName()))
+                    .thenReturn(null);
+
+            // Act + Assert
+            assertThatThrownBy(() -> runService.addRun(project.getKey(), runToAdd))
+                    .isInstanceOf(InvalidInputException.class);
+        }
+
         @Nested
         class allInputsAreValid {
             private int expectedRunKey;
