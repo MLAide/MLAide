@@ -6,9 +6,7 @@ import com.mlaide.webserver.model.*;
 import com.mlaide.webserver.repository.ArtifactRepository;
 import com.mlaide.webserver.repository.CounterRepository;
 import com.mlaide.webserver.repository.RunRepository;
-import com.mlaide.webserver.repository.entity.ArtifactRefEntity;
-import com.mlaide.webserver.repository.entity.RunEntity;
-import com.mlaide.webserver.repository.entity.UserRef;
+import com.mlaide.webserver.repository.entity.*;
 import com.mlaide.webserver.service.*;
 import com.mlaide.webserver.service.git.GitDiffService;
 import com.mlaide.webserver.service.git.InvalidGitRepositoryException;
@@ -558,7 +556,7 @@ class RunServiceImplTest {
         }
 
         @Test
-        void attaching_first_artifact_to_run_should_create_new_list_with_new_run() {
+        void attaching_first_artifact_to_run_should_create_new_list_with_new_artifact() {
             // Arrange
             Run run = RunFaker.newRun();
 
@@ -570,7 +568,7 @@ class RunServiceImplTest {
             when(runRepository.findOneByProjectKeyAndKey(project.getKey(), run.getKey())).thenReturn(existingRunEntity);
 
             // Act
-            runService.attachArtifactToRun(project.getKey(), run.getKey(), artifact.getName(), artifact.getVersion());
+            Run result = runService.attachArtifactToRun(project.getKey(), run.getKey(), artifact.getName(), artifact.getVersion());
 
             // Assert
             verify(runRepository).save(existingRunEntity);
@@ -605,6 +603,63 @@ class RunServiceImplTest {
             assertThat(artifactRefs.get(0)).isSameAs(existingArtifactRef);
             assertThat(artifactRefs.get(1).getName()).isEqualTo(artifact.getName());
             assertThat(artifactRefs.get(1).getVersion()).isEqualTo(artifact.getVersion());
+        }
+    }
+
+    @Nested
+    class attachArtifactToRunAndViceVersa {
+        @Test
+        void attaching_first_run_to_artifact_should_create_new_list_with_new_run() {
+            // Arrange
+            Run run = RunFaker.newRun();
+            RunEntity runEntity = RunFaker.newRunEntity();
+            ArtifactEntity artifactEntity = ArtifactFaker.newArtifactEntity();
+            artifactEntity.setRuns(null);
+
+            when(runRepository.findOneByProjectKeyAndKey(project.getKey(), runEntity.getKey())).thenReturn(runEntity);
+            when(runRepository.save(runEntity)).thenReturn(runEntity);
+            when(runMapper.fromEntity(runEntity)).thenReturn(run);
+
+            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(project.getKey(), artifactEntity.getName(), artifactEntity.getVersion())).thenReturn(artifactEntity);
+
+            // Act
+            runService.attachArtifactToRunAndViceVersa(project.getKey(), runEntity.getKey(), artifactEntity.getName(), artifactEntity.getVersion());
+
+            // Assert
+            verify(artifactRepository).save(artifactEntity);
+            assertThat(artifactEntity.getRuns()).hasSize(1);
+            assertThat(artifactEntity.getRuns().get(0).getName()).isEqualTo(run.getName());
+            assertThat(artifactEntity.getRuns().get(0).getKey()).isEqualTo(run.getKey());
+        }
+
+        @Test
+        void attaching_second_run_to_artifact_should_add_run_to_existing_list() {
+            // Arrange
+            Run run = RunFaker.newRun();
+            RunEntity runEntity = RunFaker.newRunEntity();
+            RunRefEntity existingRefEntity = new RunRefEntity(run.getKey(), run.getName());
+            RunRefEntity runRefEntity = new RunRefEntity(run.getKey(), run.getName());
+            ArtifactEntity artifactEntity = ArtifactFaker.newArtifactEntity();
+            ArrayList<RunRefEntity> runRefEntities = new ArrayList<>();
+            runRefEntities.add(existingRefEntity);
+            artifactEntity.setRuns(runRefEntities);
+
+
+            when(runRepository.findOneByProjectKeyAndKey(project.getKey(), runEntity.getKey())).thenReturn(runEntity);
+            when(runRepository.save(runEntity)).thenReturn(runEntity);
+            when(runMapper.fromEntity(runEntity)).thenReturn(run);
+
+            when(artifactRepository.findOneByProjectKeyAndNameAndVersion(project.getKey(), artifactEntity.getName(), artifactEntity.getVersion())).thenReturn(artifactEntity);
+
+            // Act
+            runService.attachArtifactToRunAndViceVersa(project.getKey(), runEntity.getKey(), artifactEntity.getName(), artifactEntity.getVersion());
+
+            // Assert
+            verify(artifactRepository).save(artifactEntity);
+            assertThat(artifactEntity.getRuns()).isSameAs(runRefEntities);
+            assertThat(runRefEntities.get(0)).isSameAs(existingRefEntity);
+            assertThat(runRefEntities.get(1).getName()).isEqualTo(run.getName());
+            assertThat(runRefEntities.get(1).getKey()).isEqualTo(run.getKey());
         }
     }
 

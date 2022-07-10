@@ -178,6 +178,4 @@ public class RunController {
 
         return ResponseEntity.ok().build();
     }
-
-    // TODO: getRunsOfArtifact
 }
