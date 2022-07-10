@@ -9,8 +9,10 @@ export interface Artifact {
   };
   model?: Model;
   name: string;
-  runKey: string;
-  runName: string;
+  runs: {
+    key: number;
+    name: string;
+  }[];
   type?: string;
   updatedAt?: Date;
   version: number;

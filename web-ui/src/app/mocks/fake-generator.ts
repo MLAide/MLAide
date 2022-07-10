@@ -79,7 +79,7 @@ const modelRevisionFunction = (faker) => {
     newStage: faker.random.arrayElement(Object.values(ModelStage)),
     note: faker.lorem.paragraph(),
     oldStage: faker.random.arrayElement(Object.values(ModelStage)),
-  }
+  };
 };
 
 const userSchemaFunction = (faker) => {
@@ -138,12 +138,18 @@ const artifactSchema = {
   name: {
     faker: "lorem.slug",
   },
-  runKey: {
-    faker: "lorem.word",
-  },
-  runName: {
-    faker: "lorem.slug",
-  },
+  runs: [
+    {
+      function() {
+        return {
+          name: this.faker.lorem.slug(),
+          key: this.faker.datatype.number(),
+        };
+      },
+      length: 4,
+      fixedLength: false,
+    },
+  ],
   updatedAt: {
     faker: "date.past",
   },
