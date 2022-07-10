@@ -57,6 +57,7 @@ public class ArtifactController {
     @PostMapping
     public ResponseEntity<Artifact> postArtifact(
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
+            @RequestParam(value = "run-key") @NotNull Integer runKey,
             @Valid @RequestBody Artifact artifact) {
         logger.info("post artifact");
 
@@ -64,7 +65,7 @@ public class ArtifactController {
             throw new IllegalArgumentException("request body must contain artifact");
         }
 
-        artifact = artifactService.addArtifact(projectKey, artifact);
+        artifact = artifactService.addArtifact(projectKey, artifact, runKey);
 
         return ResponseEntity.ok(artifact);
     }

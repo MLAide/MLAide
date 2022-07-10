@@ -27,7 +27,7 @@ public interface ArtifactRepository extends MongoRepository<ArtifactEntity, Obje
     @PostFilter("hasPermission(filterObject, 'VIEWER') " +
             "or hasPermission(filterObject, 'CONTRIBUTOR') " +
             "or hasPermission(filterObject, 'OWNER')")
-    List<ArtifactEntity> findAllByProjectKeyAndRunKeyIn(String projectKey, List<Integer> runKeys, Sort sort);
+    List<ArtifactEntity> findAllByProjectKeyAndRunsKeyIn(String projectKey, List<Integer> runKeys, Sort sort);
 
     @Override
     @PreAuthorize("hasPermission(#entity.projectKey, 'com.mlaide.webserver.repository.entity.ProjectEntity', 'CONTRIBUTOR') " +

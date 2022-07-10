@@ -49,21 +49,4 @@ public class RunEntity {
     @NotBlank
     private String status;
     private List<ArtifactRefEntity> usedArtifacts;
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class ExperimentRefEntity {
-        private String experimentKey;
-
-        public String getExperimentKey() {
-            return experimentKey;
-        }
-
-        public void setExperimentKey(String experimentKey) {
-            this.experimentKey = experimentKey;
-        }
-    }
 }

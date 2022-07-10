@@ -15,8 +15,6 @@ public class ArtifactFaker {
         artifact.setId(ObjectId.get());
         artifact.setName(faker.funnyName().name());
         artifact.setProjectKey(ProjectFaker.validProjectKey());
-        artifact.setRunKey(faker.random().nextInt(50));
-        artifact.setRunName(faker.superhero().name());
         artifact.setType(faker.animal().name());
         artifact.setVersion(faker.random().nextInt(Integer.MAX_VALUE));
 
@@ -28,8 +26,6 @@ public class ArtifactFaker {
         artifact.setCreatedAt(FakerUtils.pastDate());
         artifact.setCreatedBy(FakerUtils.newUserRef());
         artifact.setName(faker.funnyName().name());
-        artifact.setRunKey(faker.random().nextInt(50));
-        artifact.setRunName(faker.superhero().name());
         artifact.setType(faker.animal().name());
         artifact.setVersion(faker.random().nextInt(Integer.MAX_VALUE));
 

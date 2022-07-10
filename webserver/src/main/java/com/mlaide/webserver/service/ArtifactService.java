@@ -12,7 +12,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 public interface ArtifactService {
-    Artifact addArtifact(String projectKey, Artifact artifact);
+    Artifact addArtifact(String projectKey, Artifact artifact, Integer runKey);
 
     void uploadArtifactFile(String projectKey,
                             String artifactName,

@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -18,13 +18,12 @@ public class Artifact {
     private OffsetDateTime createdAt;
     private UserRef createdBy;
     private List<ArtifactFile> files;
-    private String runName;
-    @NotNull
-    private Integer runKey;
     private Map<String, String> metadata;
     private Model model;
     @NotBlank
     private String name;
+    @Null
+    private List<RunRef> runs;
     @NotBlank
     private String type;
     private OffsetDateTime updatedAt;

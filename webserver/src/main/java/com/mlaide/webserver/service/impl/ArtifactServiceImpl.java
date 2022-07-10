@@ -60,16 +60,14 @@ public class ArtifactServiceImpl implements ArtifactService {
     }
 
     @Override
-    public Artifact addArtifact(String projectKey, Artifact artifact) {
+    public Artifact addArtifact(String projectKey, Artifact artifact, Integer runKey) {
         ArtifactEntity artifactEntity = artifactMapper.toEntity(artifact);
 
-        artifactEntity = addArtifact(projectKey, artifactEntity);
+        artifactEntity = addArtifact(projectKey, artifactEntity, runKey);
 
-        // Attention: Do not use runKey of saved artifactEntity
-        // The saved entity could reference to a previous run if the artifact was already present (with same hash)
         runService.attachArtifactToRun(
                 projectKey,
-                artifact.getRunKey(),
+                runKey,
                 artifactEntity.getName(),
                 artifactEntity.getVersion());
 
@@ -186,7 +184,7 @@ public class ArtifactServiceImpl implements ArtifactService {
 
     @Override
     public ItemList<Artifact> getArtifactsByRunKeys(String projectKey, List<Integer> runKeys) {
-        List<ArtifactEntity> artifactEntities = artifactRepository.findAllByProjectKeyAndRunKeyIn(
+        List<ArtifactEntity> artifactEntities = artifactRepository.findAllByProjectKeyAndRunsKeyIn(
                 projectKey,
                 runKeys,
                 Sort.by(Sort.Direction.ASC, NAME, VERSION));
@@ -320,11 +318,10 @@ public class ArtifactServiceImpl implements ArtifactService {
         return artifact.getType() + "/" + artifact.getName() + "/" + artifact.getVersion() + "/" + filename;
     }
 
-    private ArtifactEntity addArtifact(String projectKey, ArtifactEntity artifactEntity) {
+    private ArtifactEntity addArtifact(String projectKey, ArtifactEntity artifactEntity, Integer runKey) {
 
-        Run run = runService.getRun(projectKey, artifactEntity.getRunKey());
-        throwIfRunNotFound(artifactEntity, run);
-        throwIfRunIsNotRunning(artifactEntity, run);
+        Run run = runService.getRun(projectKey, runKey);
+        throwIfRunIsNotRunning(run);
 
         // Define artifact metadata and link to uploaded file
         OffsetDateTime now = OffsetDateTime.now(clock);
@@ -332,9 +329,9 @@ public class ArtifactServiceImpl implements ArtifactService {
         artifactEntity.setCreatedAt(now);
         artifactEntity.setCreatedBy(userRef);
         artifactEntity.setProjectKey(projectKey);
-        artifactEntity.setRunName(run.getName());
         artifactEntity.setModel(null); // New artifacts can't contain any model
         artifactEntity.setUpdatedAt(now);
+        artifactEntity.setRuns(List.of(new RunRefEntity(run.getKey(), run.getName())));
 
         // Retrieve the next available version number from database.
         // Even if this is the first version of this artifact.
@@ -347,18 +344,12 @@ public class ArtifactServiceImpl implements ArtifactService {
         return saveArtifact(projectKey, artifactEntity);
     }
 
-    private void throwIfRunIsNotRunning(ArtifactEntity artifactEntity, Run run) {
+    private void throwIfRunIsNotRunning(Run run) {
         if (run.getStatus() != RunStatus.RUNNING) {
             throw new InvalidInputException(
-                    "Artifact is attached to run " + artifactEntity.getRunKey()
+                    "Artifact is attached to run " + run.getKey()
                             + ". This run is already in state " + run.getStatus()
                             + ". Adding artifacts to this runs is only possible if run is in RUNNING status.");
-        }
-    }
-
-    private void throwIfRunNotFound(ArtifactEntity artifactEntity, Run run) {
-        if (run == null) {
-            throw new NotFoundException("Artifact is attached to run " + artifactEntity.getRunKey() + ". No run with this ID exists");
         }
     }
 

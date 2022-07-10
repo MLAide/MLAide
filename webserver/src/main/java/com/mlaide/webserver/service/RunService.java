@@ -15,6 +15,7 @@ public interface RunService {
     Run getRun(String projectKey, Integer runKey);
     void updateRun(String projectKey, Run run);
     String createOrUpdateNote(String projectKey, Integer runKey, String note);
-    void attachArtifactToRun(String projectKey, Integer runKey, String artifactEntityName, Integer artifactVersion);
+    Run attachArtifactToRun(String projectKey, Integer runKey, String artifactEntityName, Integer artifactVersion);
+    void attachArtifactToRunAndViceVersa(String projectKey, Integer runKey, String artifactEntityName, Integer artifactVersion);
     GitDiff getGitDiffForRuns(String projectKey, Integer firstRunKey, Integer secondRunKey);
 }

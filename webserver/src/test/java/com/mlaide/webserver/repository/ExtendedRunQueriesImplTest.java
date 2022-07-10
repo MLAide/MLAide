@@ -3,6 +3,7 @@ package com.mlaide.webserver.repository;
 import com.mlaide.webserver.faker.RunFaker;
 import com.mlaide.webserver.integration.MongoDB;
 import com.mlaide.webserver.repository.entity.ArtifactRefEntity;
+import com.mlaide.webserver.repository.entity.ExperimentRefEntity;
 import com.mlaide.webserver.repository.entity.RunEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,8 +136,8 @@ class ExtendedRunQueriesImplTest {
     void assignExperimentRefs() {
         // arrange
         String projectKey = UUID.randomUUID().toString();
-        RunEntity.ExperimentRefEntity exp1 = new RunEntity.ExperimentRefEntity("experiment1");
-        RunEntity.ExperimentRefEntity exp2 = new RunEntity.ExperimentRefEntity("experiment2");
+        ExperimentRefEntity exp1 = new ExperimentRefEntity("experiment1");
+        ExperimentRefEntity exp2 = new ExperimentRefEntity("experiment2");
         RunEntity r1 = createCustomRunEntityWithExperimentRefs(1, "r1", projectKey, asList(exp1, exp2));
         RunEntity r2 = createCustomRunEntityWithExperimentRefs(2, "r2", projectKey, singletonList(exp1));
         RunEntity rAnother = createCustomRunEntityWithExperimentRefs(1, "r1", "another-project", singletonList(exp1));
@@ -205,7 +206,7 @@ class ExtendedRunQueriesImplTest {
     private RunEntity createCustomRunEntityWithExperimentRefs(Integer key,
                                                               String name,
                                                               String projectKey,
-                                                              List<RunEntity.ExperimentRefEntity> experimentRefList) {
+                                                              List<ExperimentRefEntity> experimentRefList) {
         RunEntity runEntity = RunFaker.newRunEntity();
 
         runEntity.setKey(key);

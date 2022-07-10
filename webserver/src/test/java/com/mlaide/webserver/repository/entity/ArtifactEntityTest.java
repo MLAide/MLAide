@@ -120,15 +120,6 @@ public class ArtifactEntityTest {
             assertThatThrownBy(() -> mongo.save(artifactEntity)).isInstanceOf(ConstraintViolationException.class);
         }
 
-        @Test
-        void runKey_is_null_should_throw_ConstraintViolationException() {
-            // Arrange
-            artifactEntity.setRunKey(null);
-
-            // Act + Assert
-            assertThatThrownBy(() -> mongo.save(artifactEntity)).isInstanceOf(ConstraintViolationException.class);
-        }
-
         @ParameterizedTest
         @NullSource
         @ValueSource(strings = {"", " "})
