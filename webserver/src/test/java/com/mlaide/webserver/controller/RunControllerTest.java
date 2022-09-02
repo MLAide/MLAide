@@ -312,7 +312,7 @@ class RunControllerTest {
             ResponseEntity<Void> result = runController.attachArtifact(projectKey, existingRun.getKey(), artifact.getName(), artifact.getVersion());
 
             // Assert
-            verify(runService).attachArtifactToRun(projectKey, existingRun.getKey(), artifact.getName(), artifact.getVersion());
+            verify(runService).attachArtifactToRunAndViceVersa(projectKey, existingRun.getKey(), artifact.getName(), artifact.getVersion());
             assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         }
     }
