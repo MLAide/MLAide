@@ -1,12 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnDestroy,
-  SimpleChanges,
-  ViewChild
-} from "@angular/core";
+import { Component, ElementRef, Input, OnChanges, OnDestroy, SimpleChanges, ViewChild } from "@angular/core";
 import { Observable } from "rxjs";
 import { GraphEdge, GraphNode, LineageGraphUiService } from "@mlaide/shared/services";
 import { Subscription } from "rxjs/internal/Subscription";
@@ -14,9 +6,9 @@ import { Experiment } from "@mlaide/state/experiment/experiment.models";
 import { Run } from "@mlaide/state/run/run.models";
 
 @Component({
-  selector: 'app-experiment-lineage-visualization',
-  templateUrl: './experiment-lineage-visualization.component.html',
-  styleUrls: ['./experiment-lineage-visualization.component.scss']
+  selector: "app-experiment-lineage-visualization",
+  templateUrl: "./experiment-lineage-visualization.component.html",
+  styleUrls: ["./experiment-lineage-visualization.component.scss"],
 })
 export class ExperimentLineageVisualizationComponent implements OnChanges, OnDestroy {
   @ViewChild("experimentGraph")
@@ -29,7 +21,7 @@ export class ExperimentLineageVisualizationComponent implements OnChanges, OnDes
   public runs$: Observable<Run[]>;
   private runsSubscription: Subscription;
 
-  constructor(private lineageGraphService: LineageGraphUiService) { }
+  constructor(private lineageGraphService: LineageGraphUiService) {}
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes.runs$) {
@@ -68,14 +60,14 @@ export class ExperimentLineageVisualizationComponent implements OnChanges, OnDes
     runs?.forEach((run) => {
       nodes.push({
         id: `run:${run.key}`,
-        label: `${run.name}:${run.key}`,
+        label: `${run.name}<br/><span class="subtitle">key: ${run.key}</span>`,
         class: "run",
       });
 
       run.artifacts?.forEach((artifact) => {
         nodes.push({
           id: `artifact:${artifact.name}:${artifact.version}`,
-          label: artifact.name,
+          label: `${artifact.name}<br/><span class="subtitle">version: ${artifact.version}</span>`,
           class: "artifact",
         });
       });
@@ -83,7 +75,7 @@ export class ExperimentLineageVisualizationComponent implements OnChanges, OnDes
       run.usedArtifacts?.forEach((usedArtifact) => {
         nodes.push({
           id: `artifact:${usedArtifact.name}:${usedArtifact.version}`,
-          label: usedArtifact.name,
+          label: `${usedArtifact.name}<br/><span class="subtitle">version: ${usedArtifact.version}</span>`,
           class: "artifact",
         });
       });

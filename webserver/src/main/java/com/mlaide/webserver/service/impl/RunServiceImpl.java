@@ -7,6 +7,7 @@ import com.mlaide.webserver.repository.RunRepository;
 import com.mlaide.webserver.repository.entity.ArtifactEntity;
 import com.mlaide.webserver.repository.entity.ArtifactRefEntity;
 import com.mlaide.webserver.repository.entity.RunEntity;
+import com.mlaide.webserver.repository.entity.RunRefEntity;
 import com.mlaide.webserver.service.*;
 import com.mlaide.webserver.service.git.GitDiffService;
 import com.mlaide.webserver.service.git.InvalidGitRepositoryException;
@@ -212,7 +213,7 @@ public class RunServiceImpl implements RunService {
     }
 
     @Override
-    public void attachArtifactToRun(String projectKey, Integer runKey, String artifactName, Integer artifactVersion) {
+    public Run attachArtifactToRun(String projectKey, Integer runKey, String artifactName, Integer artifactVersion) {
         logger.info("Attaching artifact ({}:{}) to run {} in project {}", artifactName, artifactVersion, runKey, projectKey);
 
         RunEntity runEntity = runRepository.findOneByProjectKeyAndKey(projectKey, runKey);
@@ -230,7 +231,27 @@ public class RunServiceImpl implements RunService {
             runEntity.getArtifacts().add(artifactRef);
         }
 
-        runRepository.save(runEntity);
+        runEntity = runRepository.save(runEntity);
+
+        return runMapper.fromEntity(runEntity);
+    }
+
+    @Override
+    public void attachArtifactToRunAndViceVersa(String projectKey, Integer runKey, String artifactName, Integer artifactVersion) {
+        Run run = attachArtifactToRun(projectKey, runKey, artifactName, artifactVersion);
+
+        logger.info("Attaching run ({}:{}) to artifact {} in project {}",runKey, projectKey, artifactName, artifactVersion);
+
+        RunRefEntity runRefEntity = new RunRefEntity(run.getKey(), run.getName());
+        ArtifactEntity artifactEntity = artifactRepository.findOneByProjectKeyAndNameAndVersion(projectKey, artifactName, artifactVersion);
+
+        if (artifactEntity.getRuns() == null) {
+            artifactEntity.setRuns(List.of(runRefEntity));
+        } else {
+            artifactEntity.getRuns().add(runRefEntity);
+        }
+
+        artifactRepository.save(artifactEntity);
     }
 
     @Override

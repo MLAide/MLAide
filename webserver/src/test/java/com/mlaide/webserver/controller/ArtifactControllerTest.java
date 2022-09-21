@@ -25,12 +25,10 @@ import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.mlaide.webserver.controller.ArtifactControllerTest.ArtifactServiceDownloadHandler.simulateArtifactDownload;
 import static com.mlaide.webserver.controller.ArtifactControllerTest.ArtifactServiceDownloadHandler.simulateFileDownload;
-import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.AdditionalAnswers.answerVoid;
@@ -54,7 +52,7 @@ class ArtifactControllerTest {
     }
 
     @Nested
-    class getArtifacts {
+    class GetArtifactsTest {
         ItemList<Artifact> artifacts = new ItemList<>();
 
         @Test
@@ -102,22 +100,24 @@ class ArtifactControllerTest {
     }
 
     @Nested
-    class postArtifact {
+    class PostArtifactTest {
         @Test
         void specified_artifact_is_null_should_throw_IllegalArgumentException(){
             // Act + Assert
-            assertThatThrownBy(() -> artifactController.postArtifact(projectKey, null)).isInstanceOf(IllegalArgumentException.class).hasMessage("request body must contain artifact");
+            assertThatThrownBy(() -> artifactController.postArtifact(projectKey, 1, null)).
+                    isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("request body must contain artifact");
         }
 
         @Test
         void should_add_specified_artifact_and_return_200_with_artifact() {
             // Arrange
             Artifact artifactToAdd = ArtifactFaker.newArtifact();
-            when(artifactService.addArtifact(projectKey, artifactToAdd)).thenReturn(artifactToAdd);
+            when(artifactService.addArtifact(projectKey, artifactToAdd, 1)).thenReturn(artifactToAdd);
 
             // Act
             ResponseEntity<Artifact>
-                    result = artifactController.postArtifact(projectKey, artifactToAdd);
+                    result = artifactController.postArtifact(projectKey, 1, artifactToAdd);
 
             // Assert
             assertThat(result).isNotNull();
@@ -127,7 +127,7 @@ class ArtifactControllerTest {
     }
 
     @Nested
-    class getLatestArtifact {
+    class GetLatestArtifactTest {
         @Test
         void specified_artifact_exists_should_return_200_with_artifact() {
             // Arrange
@@ -146,7 +146,7 @@ class ArtifactControllerTest {
     }
 
     @Nested
-    class getArtifact {
+    class GetArtifactTest {
         @Test
         void specified_artifact_exists_should_return_200_with_artifact() {
             // Arrange
@@ -165,7 +165,7 @@ class ArtifactControllerTest {
     }
 
     @Nested
-    class downloadArtifactAsZip {
+    class DownloadArtifactAsZipTest {
         @Test
         void default_should_write_file_to_body_as_stream_and_set_filename_in_response_header() throws IOException {
             // Arrange
@@ -199,7 +199,7 @@ class ArtifactControllerTest {
     }
 
     @Nested
-    class downloadFile {
+    class DownloadFileTest {
         @Test
         void default_should_write_file_to_body_as_stream_and_set_filename_in_response_header() throws IOException {
             // Arrange
@@ -240,7 +240,7 @@ class ArtifactControllerTest {
     }
 
     @Nested
-    class postFile{
+    class PostFileTest {
         @Test
         void specified_file_is_null_should_throw_IllegalArgumentException(){
             // Arrange
@@ -273,7 +273,7 @@ class ArtifactControllerTest {
     }
 
     @Nested
-    class findArtifactByFileHashes{
+    class FindArtifactByFileHashesTest {
         @Test
         void should_return_artifact_if_it_exists() {
             // Arrange

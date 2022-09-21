@@ -23,12 +23,15 @@ import { MatCardModule } from "@angular/material/card";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { FileDiffComponent } from "@mlaide/shared/components/file-diff/file-diff.component";
 import { MatMenuModule } from "@angular/material/menu";
+import { ModelListTableComponent } from "./components/model-list-table/model-list-table.component";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [
     // components
     ArtifactsListTableComponent,
     FileDiffComponent,
+    ModelListTableComponent,
     ModelStageI18nComponent,
     ProjectMemberRoleI18nComponent,
     RunParamsMetricsTableComponent,
@@ -53,6 +56,7 @@ import { MatMenuModule } from "@angular/material/menu";
     MatMenuModule,
     MatProgressSpinnerModule,
     MatTableModule,
+    MatTooltipModule,
   ],
   exports: [
     ArtifactsListTableComponent,
@@ -62,6 +66,7 @@ import { MatMenuModule } from "@angular/material/menu";
     RunParamsMetricsTableComponent,
     RunStatusI18nComponent,
     ProjectMemberRoleI18nComponent,
+    ModelListTableComponent,
     ModelStageI18nComponent,
   ],
 })

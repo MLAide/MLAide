@@ -10,10 +10,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class Error {
-    @NonNull
     private int code;
     private String message;
     private List<Violation> violations;
+
+    public Error(int code) {
+        this.code = code;
+    }
 
     public Error(int code, String message) {
         this.code = code;

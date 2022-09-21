@@ -11,8 +11,10 @@
     </div>
     <div>
       <mat-form-field fxFlex="100">
-        <mat-label i18n>Run name</mat-label>
-        <input matInput readonly="true" formControlName="runName" placeholder="Run name" />
+        <mat-label i18n>Runs</mat-label>
+        <mat-chip-list #tagList aria-label="Runs" class="run-chips">
+          <mat-chip *ngFor="let run of runs" [selectable]="false" [removable]="false"> {{ run.name }} - {{ run.key }} </mat-chip>
+        </mat-chip-list>
       </mat-form-field>
     </div>
     <div>

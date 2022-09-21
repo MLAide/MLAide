@@ -3,10 +3,12 @@ package com.mlaide.webserver.repository;
 import com.mlaide.webserver.faker.ArtifactFaker;
 import com.mlaide.webserver.faker.ModelFaker;
 import com.mlaide.webserver.faker.ProjectFaker;
+import com.mlaide.webserver.faker.RunRefFaker;
 import com.mlaide.webserver.integration.MongoDB;
 import com.mlaide.webserver.model.Stage;
 import com.mlaide.webserver.repository.entity.ArtifactEntity;
 import com.mlaide.webserver.repository.entity.ModelEntity;
+import com.mlaide.webserver.repository.entity.RunRefEntity;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -116,9 +118,11 @@ class ArtifactRepositoryTest {
 
     private ArtifactEntity createArtifactEntity(String projectKey, String artifactName, Integer artifactVersion) {
         ArtifactEntity artifact = ArtifactFaker.newArtifactEntity();
+        RunRefEntity runRefEntity = RunRefFaker.newRunRefEntity();
         artifact.setProjectKey(projectKey);
         artifact.setName(artifactName);
         artifact.setVersion(artifactVersion);
+        artifact.setRuns(asList(runRefEntity));
 
         return artifact;
     }
@@ -134,10 +138,12 @@ class ArtifactRepositoryTest {
         }
 
         ArtifactEntity artifact = ArtifactFaker.newArtifactEntity();
+        RunRefEntity runRefEntity = RunRefFaker.newRunRefEntity();
         artifact.setProjectKey(projectKey);
         artifact.setName(artifactName);
         artifact.setVersion(artifactVersion);
         artifact.setModel(modelEntity);
+        artifact.setRuns(asList(runRefEntity));
 
         return artifact;
     }

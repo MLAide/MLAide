@@ -3,6 +3,7 @@ package com.mlaide.webserver.faker;
 import com.github.javafaker.Faker;
 import com.mlaide.webserver.model.Run;
 import com.mlaide.webserver.model.RunStatus;
+import com.mlaide.webserver.repository.entity.ExperimentRefEntity;
 import com.mlaide.webserver.repository.entity.GitEntity;
 import com.mlaide.webserver.repository.entity.RunEntity;
 
@@ -24,8 +25,8 @@ public class RunFaker {
 
     public static RunEntity newRunEntity() {
         var runEntity = new RunEntity();
-        var experimentRefEntityList = new ArrayList<RunEntity.ExperimentRefEntity>();
-        var experimentRefEntity = new RunEntity.ExperimentRefEntity();
+        var experimentRefEntityList = new ArrayList<ExperimentRefEntity>();
+        var experimentRefEntity = new ExperimentRefEntity();
 
         experimentRefEntity.setExperimentKey(faker.funnyName().name());
         experimentRefEntityList.add(experimentRefEntity);

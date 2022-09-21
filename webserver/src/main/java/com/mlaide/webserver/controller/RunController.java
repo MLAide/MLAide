@@ -174,7 +174,7 @@ public class RunController {
             @PathVariable("runKey") @NotNull Integer runKey,
             @PathVariable("artifactName") @NotBlank String artifactName,
             @PathVariable("artifactVersion") @NotNull Integer artifactVersion) {
-        runService.attachArtifactToRun(projectKey, runKey, artifactName, artifactVersion);
+        runService.attachArtifactToRunAndViceVersa(projectKey, runKey, artifactName, artifactVersion);
 
         return ResponseEntity.ok().build();
     }

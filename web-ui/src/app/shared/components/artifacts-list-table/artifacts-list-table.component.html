@@ -14,17 +14,15 @@
       <th id="version" mat-header-cell *matHeaderCellDef i18n>Version</th>
       <td headers="version" mat-cell *matCellDef="let element">{{ element.version }}</td>
     </ng-container>
-    <ng-container matColumnDef="runName">
-      <th id="run-name" mat-header-cell *matHeaderCellDef i18n>Run name</th>
-      <td headers="run-name" mat-cell *matCellDef="let element">
-        <a mat-button color="primary" [routerLink]="['/projects/' + projectKey + '/runs/' + element.runKey]">{{
-          element.runName
-        }}</a>
+    <ng-container matColumnDef="runs">
+      <th id="runs" mat-header-cell *matHeaderCellDef i18n>Runs</th>
+      <td headers="runs" mat-cell *matCellDef="let element">
+        <mat-chip-list #tagList aria-label="Runs">
+          <mat-chip *ngFor="let run of element.runs" (click)="runClicked(run)" [selectable]="true" [removable]="false">
+            {{ run.name }} - {{ run.key }}
+          </mat-chip>
+        </mat-chip-list>
       </td>
-    </ng-container>
-    <ng-container matColumnDef="runKey">
-      <th id="run-key" mat-header-cell *matHeaderCellDef i18n>Run key</th>
-      <td headers="run-key" mat-cell *matCellDef="let element">{{ element.runKey }}</td>
     </ng-container>
     <ng-container matColumnDef="type">
       <th id="type" mat-header-cell *matHeaderCellDef i18n>Type</th>
@@ -34,10 +32,7 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
 
-  <mat-card *ngIf="(isLoading$ | async)" fxLayoutAlign="center center">
-    <mat-progress-spinner
-      color="primary"
-      mode="indeterminate">
-    </mat-progress-spinner>
+  <mat-card *ngIf="isLoading$ | async" fxLayoutAlign="center center">
+    <mat-progress-spinner color="primary" mode="indeterminate"> </mat-progress-spinner>
   </mat-card>
 </div>

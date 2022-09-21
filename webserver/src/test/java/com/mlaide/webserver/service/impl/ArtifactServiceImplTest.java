@@ -66,7 +66,7 @@ class ArtifactServiceImplTest {
     }
 
     @Nested
-    class addArtifact {
+    class AddArtifactTest {
         private Project project;
         private Run run;
         private Artifact inputArtifact;
@@ -79,7 +79,6 @@ class ArtifactServiceImplTest {
             run.setStatus(RunStatus.RUNNING);
             inputArtifact = ArtifactFaker.newArtifact();
             expectedArtifactToSave = ArtifactFaker.newArtifactEntity();
-            expectedArtifactToSave.setRunKey(run.getKey());
         }
 
         @Test
@@ -99,7 +98,7 @@ class ArtifactServiceImplTest {
             when(artifactRepository.save(expectedArtifactToSave)).thenReturn(expectedArtifactToSave);
 
             // Act
-            Artifact savedArtifact = artifactService.addArtifact(project.getKey(), inputArtifact);
+            Artifact savedArtifact = artifactService.addArtifact(project.getKey(), inputArtifact, run.getKey());
 
             // Assert
             verify(artifactRepository).save(expectedArtifactToSave);
@@ -107,24 +106,11 @@ class ArtifactServiceImplTest {
             assertThat(expectedArtifactToSave.getCreatedAt()).isEqualTo(now);
             assertThat(expectedArtifactToSave.getCreatedBy()).isEqualTo(currentUserRef);
             assertThat(expectedArtifactToSave.getProjectKey()).isEqualTo(project.getKey());
-            assertThat(expectedArtifactToSave.getRunName()).isEqualTo(run.getName());
             assertThat(expectedArtifactToSave.getModel()).isNull();
             assertThat(expectedArtifactToSave.getUpdatedAt()).isEqualTo(now);
             assertThat(expectedArtifactToSave.getVersion()).isEqualTo(artifactVersion);
 
             assertThat(savedArtifact).isSameAs(outputArtifact);
-        }
-
-        @Test
-        void add_artifact_to_a_run_that_does_not_exist_should_throw_NotFoundException() {
-            // Arrange
-            String projectKey = project.getKey();
-            when(artifactMapper.toEntity(inputArtifact)).thenReturn(expectedArtifactToSave);
-            when(runService.getRun(projectKey, run.getKey())).thenReturn(null);
-
-            // Act
-            assertThatThrownBy(() -> artifactService.addArtifact(projectKey, inputArtifact))
-                .isInstanceOf(NotFoundException.class);
         }
 
         @Test
@@ -137,7 +123,7 @@ class ArtifactServiceImplTest {
             when(runService.getRun(projectKey, run.getKey())).thenReturn(run);
 
             // Act
-            assertThatThrownBy(() -> artifactService.addArtifact(projectKey, inputArtifact))
+            assertThatThrownBy(() -> artifactService.addArtifact(projectKey, inputArtifact, run.getKey()))
                     .isInstanceOf(InvalidInputException.class);
 
         }
@@ -150,7 +136,7 @@ class ArtifactServiceImplTest {
             when(artifactRepository.save(expectedArtifactToSave)).thenReturn(expectedArtifactToSave);
 
             // Act
-            artifactService.addArtifact(project.getKey(), inputArtifact);
+            artifactService.addArtifact(project.getKey(), inputArtifact, run.getKey());
 
             // Assert
             verify(permissionService).grantPermissionBasedOnProject(project.getKey(), expectedArtifactToSave.getId(), ArtifactEntity.class);
@@ -168,7 +154,7 @@ class ArtifactServiceImplTest {
                     .grantPermissionBasedOnProject(projectKey, expectedArtifactToSave.getId(), ArtifactEntity.class);
 
             // Act
-            assertThatThrownBy(() -> artifactService.addArtifact(projectKey, inputArtifact))
+            assertThatThrownBy(() -> artifactService.addArtifact(projectKey, inputArtifact, run.getKey()))
                 .isInstanceOf(RuntimeException.class);
 
             // Assert
@@ -188,19 +174,19 @@ class ArtifactServiceImplTest {
             when(artifactRepository.save(expectedArtifactToSave)).thenReturn(expectedArtifactToSave);
 
             // Act
-            artifactService.addArtifact(project.getKey(), inputArtifact);
+            artifactService.addArtifact(project.getKey(), inputArtifact, run.getKey());
 
             // Assert
             verify(runService).attachArtifactToRun(
                     project.getKey(),
-                    inputArtifact.getRunKey(),
+                    run.getKey(),
                     expectedArtifactToSave.getName(),
                     expectedArtifactToSave.getVersion());
         }
     }
 
     @Nested
-    class uploadArtifactFile {
+    class UploadArtifactFileTest {
         private Project project;
         private ArtifactEntity artifact;
         private InputStream artifactStream;
@@ -349,7 +335,7 @@ class ArtifactServiceImplTest {
     }
 
     @Nested
-    class createOrUpdateModel {
+    class CreateOrUpdateModelTest {
         private Project project;
         private ArtifactEntity artifact;
         private UserRef userRef;
@@ -464,7 +450,7 @@ class ArtifactServiceImplTest {
     }
 
     @Nested
-    class getArtifacts {
+    class GetArtifactsTest {
         @Test
         void should_map_and_return_all_artifacts_from_repository() {
             // Arrange
@@ -487,7 +473,7 @@ class ArtifactServiceImplTest {
     }
 
     @Nested
-    class getModels {
+    class GetModelsTest {
         @Test
         void should_map_and_return_all_artifacts_with_model_from_repository() {
             // Arrange
@@ -510,7 +496,7 @@ class ArtifactServiceImplTest {
     }
 
     @Nested
-    class getArtifactsByRunKeys {
+    class GetArtifactsByRunKeysTest {
         @Test
         void should_map_and_return_all_artifacts_that_belong_to_specified_run_from_repository() {
             // Arrange
@@ -521,7 +507,7 @@ class ArtifactServiceImplTest {
             List<ArtifactEntity> artifactEntities = new ArrayList<>();
             List<Artifact> expectedArtifacts = new ArrayList<>();
 
-            when(artifactRepository.findAllByProjectKeyAndRunKeyIn(
+            when(artifactRepository.findAllByProjectKeyAndRunsKeyIn(
                     project.getKey(),
                     runKeys,
                     Sort.by(Sort.Direction.ASC, "name", "version")))
@@ -539,7 +525,7 @@ class ArtifactServiceImplTest {
     }
 
     @Nested
-    class getLatestArtifact {
+    class GetLatestArtifactTest {
         @Test
         void should_map_and_return_specified_artifact_from_repository() {
             // Arrange
@@ -597,7 +583,7 @@ class ArtifactServiceImplTest {
     }
 
     @Nested
-    class getArtifact {
+    class GetArtifactTest {
         @Test
         void should_map_and_return_specified_artifact_from_repository() {
             // Arrange
@@ -637,7 +623,7 @@ class ArtifactServiceImplTest {
     }
 
     @Nested
-    class getArtifactByHashes {
+    class GetArtifactByHashesTest {
         private Project project;
         private Artifact artifact;
         private ArtifactEntity artifactEntity;
@@ -766,7 +752,7 @@ class ArtifactServiceImplTest {
     }
 
     @Nested
-    class getFileInfo {
+    class GetFileInfoTest {
         @Test
         void specified_artifact_does_not_exist_should_throw_NotFoundException() {
             // Arrange
@@ -831,7 +817,7 @@ class ArtifactServiceImplTest {
     }
 
     @Nested
-    class downloadArtifact {
+    class DownloadArtifactTest {
         @Test
         void specified_artifact_does_not_exist_should_throw_NotFoundException() {
             // Arrange
@@ -926,7 +912,7 @@ class ArtifactServiceImplTest {
     }
 
     @Nested
-    class downloadFile {
+    class DownloadFileTest {
         @Test
         void artifact_contains_two_files_should_create_output_stream_that_represents_a_zip_with_those_two_files() throws IOException {
             // Arrange

@@ -10,13 +10,10 @@ import { ArtifactEffects } from "@mlaide/state/artifact/artifact.effects";
 import { ArtifactApi, ArtifactListResponse } from "@mlaide/state/artifact/artifact.api";
 import { EditModelComponent } from "@mlaide/models/edit-model/edit-model.component";
 import Spy = jasmine.Spy;
+import { getRandomArtifact, getRandomArtifacts, getRandomProject, getRandomRun } from "@mlaide/mocks/fake-generator";
 import {
-  getRandomArtifact,
-  getRandomArtifacts,
-  getRandomProject, getRandomRun
-} from "@mlaide/mocks/fake-generator";
-import {
-  closeEditModelDialog, closeModelStageLogDialog,
+  closeEditModelDialog,
+  closeModelStageLogDialog,
   downloadArtifact,
   downloadArtifactFailed,
   downloadArtifactSucceeded,
@@ -25,14 +22,15 @@ import {
   editModelSucceeded,
   loadArtifacts,
   loadArtifactsFailed,
-  loadArtifactsOfCurrentRun, loadArtifactsOfCurrentRunFailed,
+  loadArtifactsOfCurrentRun,
+  loadArtifactsOfCurrentRunFailed,
   loadArtifactsOfCurrentRunSucceeded,
   loadArtifactsSucceeded,
   loadModels,
   loadModelsFailed,
   loadModelsSucceeded,
   openEditModelDialog,
-  openModelStageLogDialog
+  openModelStageLogDialog,
 } from "@mlaide/state/artifact/artifact.actions";
 import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
@@ -56,26 +54,29 @@ describe("ArtifactEffects", () => {
   let store: MockStore;
 
   beforeEach(() => {
-    artifactApiStub = jasmine.createSpyObj<ArtifactApi>("ArtifactApi", ["getArtifacts", "putModel", "download", "getArtifactsByRunKeys"]);
+    artifactApiStub = jasmine.createSpyObj<ArtifactApi>("ArtifactApi", [
+      "getArtifacts",
+      "putModel",
+      "download",
+      "getArtifactsByRunKeys",
+    ]);
     fileSaverServiceStub = jasmine.createSpyObj<FileSaverService>("FileSaverService", ["save"]);
 
     TestBed.configureTestingModule({
-      imports: [
-        MatDialogModule
-      ],
+      imports: [MatDialogModule],
       providers: [
         ArtifactEffects,
         provideMockActions(() => actions$),
         provideMockStore(),
         { provide: ArtifactApi, useValue: artifactApiStub },
-        { provide: FileSaverService, useValue: fileSaverServiceStub }
+        { provide: FileSaverService, useValue: fileSaverServiceStub },
       ],
     });
 
     effects = TestBed.inject<ArtifactEffects>(ArtifactEffects);
     matDialog = TestBed.inject<MatDialog>(MatDialog);
 
-    closeAllDialogSpy = spyOn(matDialog, 'closeAll');
+    closeAllDialogSpy = spyOn(matDialog, "closeAll");
     store = TestBed.inject(MockStore);
   });
 
@@ -94,9 +95,8 @@ describe("ArtifactEffects", () => {
       const response: ArtifactListResponse = { items: models };
       artifactApiStub.getArtifacts.withArgs(project.key, true).and.returnValue(of(response));
 
-
       // act
-      effects.loadModels$.subscribe(action => {
+      effects.loadModels$.subscribe((action) => {
         // assert
         expect(action).toEqual(loadModelsSucceeded({ models }));
         expect(artifactApiStub.getArtifacts).toHaveBeenCalledWith(project.key, true);
@@ -111,7 +111,7 @@ describe("ArtifactEffects", () => {
       artifactApiStub.getArtifacts.withArgs(project.key, true).and.returnValue(throwError("failed"));
 
       // act
-      effects.loadModels$.subscribe(action => {
+      effects.loadModels$.subscribe((action) => {
         // assert
         expect(action).toEqual(loadModelsFailed({ payload: "failed" }));
         expect(artifactApiStub.getArtifacts).toHaveBeenCalledWith(project.key, true);
@@ -127,7 +127,7 @@ describe("ArtifactEffects", () => {
       actions$ = of(editModelSucceeded());
 
       // act
-      effects.reloadModels$.subscribe(action => {
+      effects.reloadModels$.subscribe((action) => {
         // assert
         expect(action).toEqual(loadModels());
 
@@ -143,12 +143,14 @@ describe("ArtifactEffects", () => {
       actions$ = of(loadModelsFailed({ payload: error }));
 
       // act
-      effects.loadModelsFailed$.subscribe(action => {
+      effects.loadModelsFailed$.subscribe((action) => {
         // assert
-        expect(action).toEqual(showErrorMessage({
-          message: "Could not load models. A unknown error occurred.",
-          error: error
-        }));
+        expect(action).toEqual(
+          showErrorMessage({
+            message: "Could not load models. A unknown error occurred.",
+            error: error,
+          })
+        );
 
         done();
       });
@@ -170,9 +172,8 @@ describe("ArtifactEffects", () => {
       const response: ArtifactListResponse = { items: artifacts };
       artifactApiStub.getArtifacts.withArgs(project.key).and.returnValue(of(response));
 
-
       // act
-      effects.loadArtifacts$.subscribe(action => {
+      effects.loadArtifacts$.subscribe((action) => {
         // assert
         expect(action).toEqual(loadArtifactsSucceeded({ artifacts }));
         expect(artifactApiStub.getArtifacts).toHaveBeenCalledWith(project.key);
@@ -187,7 +188,7 @@ describe("ArtifactEffects", () => {
       artifactApiStub.getArtifacts.withArgs(project.key).and.returnValue(throwError("failed"));
 
       // act
-      effects.loadArtifacts$.subscribe(action => {
+      effects.loadArtifacts$.subscribe((action) => {
         // assert
         expect(action).toEqual(loadArtifactsFailed({ payload: "failed" }));
         expect(artifactApiStub.getArtifacts).toHaveBeenCalledWith(project.key);
@@ -204,12 +205,14 @@ describe("ArtifactEffects", () => {
       actions$ = of(loadArtifactsFailed({ payload: error }));
 
       // act
-      effects.loadArtifactsFailed$.subscribe(action => {
+      effects.loadArtifactsFailed$.subscribe((action) => {
         // assert
-        expect(action).toEqual(showErrorMessage({
-          message: "Could not load artifacts. A unknown error occurred.",
-          error: error
-        }));
+        expect(action).toEqual(
+          showErrorMessage({
+            message: "Could not load artifacts. A unknown error occurred.",
+            error: error,
+          })
+        );
 
         done();
       });
@@ -230,30 +233,24 @@ describe("ArtifactEffects", () => {
       const createOrUpdateModel: CreateOrUpdateModel = {
         note: artifact.model.modelRevisions[0].note,
         stage: artifact.model.stage,
-      }
-      actions$ = of(editModel({
-        modelName: artifact.name,
-        note: artifact.model.modelRevisions[0].note,
-        runName: artifact.runName,
-        stage: artifact.model.stage,
-        version: artifact.version}));
-      artifactApiStub.putModel.withArgs(
-        project.key,
-        artifact.name,
-        artifact.version,
-        createOrUpdateModel
-      ).and.returnValue(of(void 0));
+      };
+      actions$ = of(
+        editModel({
+          modelName: artifact.name,
+          note: artifact.model.modelRevisions[0].note,
+          stage: artifact.model.stage,
+          version: artifact.version,
+        })
+      );
+      artifactApiStub.putModel
+        .withArgs(project.key, artifact.name, artifact.version, createOrUpdateModel)
+        .and.returnValue(of(void 0));
 
       // act
-      effects.updateModel$.subscribe(action => {
+      effects.updateModel$.subscribe((action) => {
         // assert
         expect(action).toEqual(editModelSucceeded());
-        expect(artifactApiStub.putModel).toHaveBeenCalledWith(
-          project.key,
-          artifact.name,
-          artifact.version,
-          createOrUpdateModel
-        );
+        expect(artifactApiStub.putModel).toHaveBeenCalledWith(project.key, artifact.name, artifact.version, createOrUpdateModel);
 
         done();
       });
@@ -265,30 +262,24 @@ describe("ArtifactEffects", () => {
       const createOrUpdateModel: CreateOrUpdateModel = {
         note: artifact.model.modelRevisions[0].note,
         stage: artifact.model.stage,
-      }
-      actions$ = of(editModel({
-        modelName: artifact.name,
-        note: artifact.model.modelRevisions[0].note,
-        runName: artifact.runName,
-        stage: artifact.model.stage,
-        version: artifact.version}));
-      artifactApiStub.putModel.withArgs(
-        project.key,
-        artifact.name,
-        artifact.version,
-        createOrUpdateModel
-      ).and.returnValue(throwError("failed"));
+      };
+      actions$ = of(
+        editModel({
+          modelName: artifact.name,
+          note: artifact.model.modelRevisions[0].note,
+          stage: artifact.model.stage,
+          version: artifact.version,
+        })
+      );
+      artifactApiStub.putModel
+        .withArgs(project.key, artifact.name, artifact.version, createOrUpdateModel)
+        .and.returnValue(throwError("failed"));
 
       // act
-      effects.updateModel$.subscribe(action => {
+      effects.updateModel$.subscribe((action) => {
         // assert
         expect(action).toEqual(editModelFailed({ payload: "failed" }));
-        expect(artifactApiStub.putModel).toHaveBeenCalledWith(
-          project.key,
-          artifact.name,
-          artifact.version,
-          createOrUpdateModel
-        );
+        expect(artifactApiStub.putModel).toHaveBeenCalledWith(project.key, artifact.name, artifact.version, createOrUpdateModel);
 
         done();
       });
@@ -298,10 +289,12 @@ describe("ArtifactEffects", () => {
   describe("openModelStageLogDialog$", () => {
     it("should open MatDialog with ModelStageLogComponent", async (done) => {
       // arrange
-      let openDialogSpy: Spy<(component: ComponentType<ModelStageLogComponent>, config?: MatDialogConfig) => MatDialogRef<ModelStageLogComponent>>;
-      openDialogSpy = spyOn(matDialog, 'open');
+      let openDialogSpy: Spy<
+        (component: ComponentType<ModelStageLogComponent>, config?: MatDialogConfig) => MatDialogRef<ModelStageLogComponent>
+      >;
+      openDialogSpy = spyOn(matDialog, "open");
       const artifact = await getRandomArtifact();
-      actions$ = of(openModelStageLogDialog({modelRevisions: artifact.model.modelRevisions}));
+      actions$ = of(openModelStageLogDialog({ modelRevisions: artifact.model.modelRevisions }));
 
       // act
       effects.openModelStageLogDialog$.subscribe(() => {
@@ -337,10 +330,12 @@ describe("ArtifactEffects", () => {
   describe("openEditModelDialog$", () => {
     it("should open MatDialog with EditModelComponent", async (done) => {
       // arrange
-      let openDialogSpy: Spy<(component: ComponentType<EditModelComponent>, config?: MatDialogConfig) => MatDialogRef<EditModelComponent>>;
-      openDialogSpy = spyOn(matDialog, 'open');
+      let openDialogSpy: Spy<
+        (component: ComponentType<EditModelComponent>, config?: MatDialogConfig) => MatDialogRef<EditModelComponent>
+      >;
+      openDialogSpy = spyOn(matDialog, "open");
       const artifact = await getRandomArtifact();
-      actions$ = of(openEditModelDialog({artifact}));
+      actions$ = of(openEditModelDialog({ artifact }));
 
       // act
       effects.openEditModelDialog$.subscribe(() => {
@@ -359,10 +354,7 @@ describe("ArtifactEffects", () => {
   });
 
   describe("closeEditModelDialog$", () => {
-    let actions = [
-      closeEditModelDialog(),
-      editModelSucceeded(),
-    ];
+    let actions = [closeEditModelDialog(), editModelSucceeded()];
 
     actions.forEach((action) => {
       it(`'${action.type}' should close all open MatDialog instances`, async (done) => {
@@ -377,7 +369,7 @@ describe("ArtifactEffects", () => {
           done();
         });
       });
-    })
+    });
   });
 
   describe("downloadArtifact$", () => {
@@ -391,12 +383,14 @@ describe("ArtifactEffects", () => {
     it("should trigger downloadArtifactSucceeded action containing artifact binary if api call is successful", async (done) => {
       // arrange
       const artifact = await getRandomArtifact();
-      actions$ = of(downloadArtifact({
-        projectKey: project.key,
-        artifactName: artifact.name,
-        artifactVersion: artifact.version,
-        artifactFileId: artifact.files[0].fileId
-      }));
+      actions$ = of(
+        downloadArtifact({
+          projectKey: project.key,
+          artifactName: artifact.name,
+          artifactVersion: artifact.version,
+          artifactFileId: artifact.files[0].fileId,
+        })
+      );
       const headers: HttpHeaders = new HttpHeaders({
         "Content-Disposition": 'attachment; filename="data.csv"',
         "Content-Type": "text/csv",
@@ -406,14 +400,21 @@ describe("ArtifactEffects", () => {
         body: returnBuffer,
         headers: headers,
       });
-      artifactApiStub.download.withArgs(project.key, artifact.name, artifact.version, artifact.files[0].fileId).and.returnValue(of(response));
+      artifactApiStub.download
+        .withArgs(project.key, artifact.name, artifact.version, artifact.files[0].fileId)
+        .and.returnValue(of(response));
 
       // act
-      effects.downloadArtifact$.subscribe(action => {
+      effects.downloadArtifact$.subscribe((action) => {
         // assert
         const expectedBlob = new Blob([new Uint16Array([1, 2, 3])]);
         expect(action).toEqual(downloadArtifactSucceeded({ blob: expectedBlob, fileName: "data.csv" }));
-        expect(artifactApiStub.download).toHaveBeenCalledWith(project.key, artifact.name, artifact.version, artifact.files[0].fileId);
+        expect(artifactApiStub.download).toHaveBeenCalledWith(
+          project.key,
+          artifact.name,
+          artifact.version,
+          artifact.files[0].fileId
+        );
 
         done();
       });
@@ -422,19 +423,28 @@ describe("ArtifactEffects", () => {
     it("should trigger downloadArtifactFailed action if api call is not successful", async (done) => {
       // arrange
       const artifact = await getRandomArtifact();
-      actions$ = of(downloadArtifact({
-        projectKey: project.key,
-        artifactName: artifact.name,
-        artifactVersion: artifact.version,
-        artifactFileId: artifact.files[0].fileId
-      }));
-      artifactApiStub.download.withArgs(project.key, artifact.name, artifact.version, artifact.files[0].fileId).and.returnValue(throwError("failed"));
+      actions$ = of(
+        downloadArtifact({
+          projectKey: project.key,
+          artifactName: artifact.name,
+          artifactVersion: artifact.version,
+          artifactFileId: artifact.files[0].fileId,
+        })
+      );
+      artifactApiStub.download
+        .withArgs(project.key, artifact.name, artifact.version, artifact.files[0].fileId)
+        .and.returnValue(throwError("failed"));
 
       // act
-      effects.downloadArtifact$.subscribe(action => {
+      effects.downloadArtifact$.subscribe((action) => {
         // assert
         expect(action).toEqual(downloadArtifactFailed({ payload: "failed" }));
-        expect(artifactApiStub.download).toHaveBeenCalledWith(project.key, artifact.name, artifact.version, artifact.files[0].fileId);
+        expect(artifactApiStub.download).toHaveBeenCalledWith(
+          project.key,
+          artifact.name,
+          artifact.version,
+          artifact.files[0].fileId
+        );
 
         done();
       });
@@ -448,12 +458,14 @@ describe("ArtifactEffects", () => {
       actions$ = of(downloadArtifactFailed({ payload: error }));
 
       // act
-      effects.downloadArtifactFailed$.subscribe(action => {
+      effects.downloadArtifactFailed$.subscribe((action) => {
         // assert
-        expect(action).toEqual(showErrorMessage({
-          message: "Could not download artifact. A unknown error occurred.",
-          error: error
-        }));
+        expect(action).toEqual(
+          showErrorMessage({
+            message: "Could not download artifact. A unknown error occurred.",
+            error: error,
+          })
+        );
 
         done();
       });
@@ -496,9 +508,8 @@ describe("ArtifactEffects", () => {
       const response: ArtifactListResponse = { items: artifacts };
       artifactApiStub.getArtifactsByRunKeys.withArgs(project.key, [run.key]).and.returnValue(of(response));
 
-
       // act
-      effects.loadArtifactsOfCurrentRun$.subscribe(action => {
+      effects.loadArtifactsOfCurrentRun$.subscribe((action) => {
         // assert
         expect(action).toEqual(loadArtifactsOfCurrentRunSucceeded({ artifacts }));
         expect(artifactApiStub.getArtifactsByRunKeys).toHaveBeenCalledWith(project.key, [run.key]);
@@ -513,7 +524,7 @@ describe("ArtifactEffects", () => {
       artifactApiStub.getArtifactsByRunKeys.withArgs(project.key, [run.key]).and.returnValue(throwError("failed"));
 
       // act
-      effects.loadArtifactsOfCurrentRun$.subscribe(action => {
+      effects.loadArtifactsOfCurrentRun$.subscribe((action) => {
         // assert
         expect(action).toEqual(loadArtifactsOfCurrentRunFailed({ payload: "failed" }));
         expect(artifactApiStub.getArtifactsByRunKeys).toHaveBeenCalledWith(project.key, [run.key]);
@@ -530,12 +541,14 @@ describe("ArtifactEffects", () => {
       actions$ = of(loadArtifactsOfCurrentRunFailed({ payload: error }));
 
       // act
-      effects.loadArtifactsOfCurrentRunFailed$.subscribe(action => {
+      effects.loadArtifactsOfCurrentRunFailed$.subscribe((action) => {
         // assert
-        expect(action).toEqual(showErrorMessage({
-          message: "Could not load artifacts. A unknown error occurred.",
-          error: error
-        }));
+        expect(action).toEqual(
+          showErrorMessage({
+            message: "Could not load artifacts. A unknown error occurred.",
+            error: error,
+          })
+        );
 
         done();
       });

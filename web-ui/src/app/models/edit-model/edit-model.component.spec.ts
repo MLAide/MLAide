@@ -19,6 +19,8 @@ import { MockStore, provideMockStore } from "@ngrx/store/testing";
 import { Action } from "@ngrx/store";
 import { closeEditModelDialog, editModel } from "@mlaide/state/artifact/artifact.actions";
 import { Artifact } from "@mlaide/state/artifact/artifact.models";
+import { MatChipHarness, MatChipListHarness } from "@angular/material/chips/testing";
+import { MatChipsModule } from "@angular/material/chips";
 
 describe("EditModelComponent", () => {
   let component: EditModelComponent;
@@ -42,15 +44,8 @@ describe("EditModelComponent", () => {
     };
 
     await TestBed.configureTestingModule({
-      declarations: [
-        EditModelComponent,
-        ModelStageI18nComponent
-      ],
-      providers: [
-        FormBuilder,
-        { provide: MAT_DIALOG_DATA, useValue: formData },
-        provideMockStore()
-      ],
+      declarations: [EditModelComponent, ModelStageI18nComponent],
+      providers: [FormBuilder, { provide: MAT_DIALOG_DATA, useValue: formData }, provideMockStore()],
       imports: [
         BrowserAnimationsModule,
         FormsModule,
@@ -58,12 +53,13 @@ describe("EditModelComponent", () => {
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
+        MatChipsModule,
         ReactiveFormsModule,
       ],
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
-    dispatchSpy = spyOn(store, 'dispatch');
+    dispatchSpy = spyOn(store, "dispatch");
   });
 
   beforeEach(() => {
@@ -90,7 +86,6 @@ describe("EditModelComponent", () => {
       // assert
       expect(component.form).not.toBeNull();
       expect(component.form.get("modelName").value).toEqual(fakeArtifact.name);
-      expect(component.form.get("runName").value).toEqual(fakeArtifact.runName);
       expect(component.form.get("version").value).toEqual(fakeArtifact.version);
       expect(component.form.get("stage").value).toEqual(component.currentStage);
       expect(component.form.get("note").value).toEqual(component.note);
@@ -136,7 +131,7 @@ describe("EditModelComponent", () => {
 
       // assert
       expect(control.value).toEqual(component.note);
-      expect(dispatchSpy).toHaveBeenCalledWith(editModel( component.form.value ));
+      expect(dispatchSpy).toHaveBeenCalledWith(editModel(component.form.value));
     });
   });
 
@@ -161,9 +156,11 @@ describe("EditModelComponent", () => {
 
         // assert
         expect(formFields.length).toBe(5);
-        await Promise.all(formFields.map(async (formField) => {
-          expect(await formField.hasLabel()).toBeTruthy();
-        }));
+        await Promise.all(
+          formFields.map(async (formField) => {
+            expect(await formField.hasLabel()).toBeTruthy();
+          })
+        );
       });
 
       it("should have prefilled readonly form field -- model name", async () => {
@@ -181,19 +178,21 @@ describe("EditModelComponent", () => {
         expect(await input.getPlaceholder()).toEqual("Model name");
       });
 
-      it("should have prefilled readonly form field -- run name", async () => {
+      it("should have readonly chips of runs", async () => {
         // arrange
         // Have to add " *" to label because it is required
-        const formField: MatFormFieldHarness = await loader.getHarness(
-          MatFormFieldHarness.with({ floatingLabelText: "Run name" })
-        );
-        const input: MatInputHarness = await loader.getHarness(MatInputHarness.with({ value: fakeArtifact.runName }));
+        const formField: MatFormFieldHarness = await loader.getHarness(MatFormFieldHarness.with({ floatingLabelText: "Runs" }));
+        const chipList: MatChipListHarness = await loader.getHarness(MatChipListHarness);
+        const chips: MatChipHarness[] = await chipList.getChips();
 
         // assert
         expect(formField).not.toBeNull();
-        expect(input).not.toBeNull();
-        expect(await input.isReadonly()).toBeTruthy();
-        expect(await input.getPlaceholder()).toEqual("Run name");
+        expect(chipList).not.toBeNull();
+        await Promise.all(
+          chips.map(async (chip, index) => {
+            expect(await chip.getText()).toEqual(`${fakeArtifact.runs[index].name} - ${fakeArtifact.runs[index].key}`);
+          })
+        );
       });
 
       it("should have prefilled readonly form field -- model version", async () => {

@@ -17,7 +17,7 @@ export class LineageGraphUiService {
     });
 
     nodes.forEach((node) => {
-      graph.setNode(node.id, { label: node.label, class: node.class });
+      graph.setNode(node.id, { label: node.label, class: node.class, labelType: "html" });
     });
 
     graph.nodes().forEach(function (v) {

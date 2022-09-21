@@ -27,6 +27,7 @@ import javax.validation.ConstraintViolationException;
 
 import java.time.OffsetDateTime;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -121,9 +122,18 @@ public class ArtifactEntityTest {
         }
 
         @Test
-        void runKey_is_null_should_throw_ConstraintViolationException() {
+        void runs_is_null_should_throw_ConstraintViolationException() {
             // Arrange
-            artifactEntity.setRunKey(null);
+            artifactEntity.setRuns(null);
+
+            // Act + Assert
+            assertThatThrownBy(() -> mongo.save(artifactEntity)).isInstanceOf(ConstraintViolationException.class);
+        }
+
+        @Test
+        void runs_is_empty_should_throw_ConstraintViolationException() {
+            // Arrange
+            artifactEntity.setRuns(emptyList());
 
             // Act + Assert
             assertThatThrownBy(() -> mongo.save(artifactEntity)).isInstanceOf(ConstraintViolationException.class);

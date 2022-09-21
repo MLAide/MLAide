@@ -1,6 +1,7 @@
 package com.mlaide.webserver.repository;
 
 import com.mlaide.webserver.repository.entity.ArtifactRefEntity;
+import com.mlaide.webserver.repository.entity.ExperimentRefEntity;
 import com.mlaide.webserver.repository.entity.RunEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -96,7 +97,7 @@ public class ExtendedRunQueriesImpl implements ExtendedRunQueries {
     @Override
     public void assignExperimentRefs(String projectKey,
                                      Collection<Integer> runIds,
-                                     Collection<RunEntity.ExperimentRefEntity> experimentRefsToAssign) {
+                                     Collection<ExperimentRefEntity> experimentRefsToAssign) {
         Query query = query(where("key").in(runIds).and("projectKey").is(projectKey));
         UpdateDefinition update = new Update().addToSet("experimentRefs").each(experimentRefsToAssign);
 
