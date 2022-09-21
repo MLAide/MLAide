@@ -15,19 +15,23 @@ export class EditModelComponent {
   public form: FormGroup;
   public modelStage = ModelStage;
   public note = "";
+  public runs: { name: string; key: number }[];
 
-  constructor(private formBuilder: FormBuilder,
-              @Inject(MAT_DIALOG_DATA) public data: { artifact: Artifact; title: string },
-              private store: Store) {
+  constructor(
+    private formBuilder: FormBuilder,
+    @Inject(MAT_DIALOG_DATA) public data: { artifact: Artifact; title: string },
+    private store: Store
+  ) {
     this.currentStage = data.artifact.model.stage;
 
     this.form = this.formBuilder.group({
       modelName: [data.artifact.name, []],
-      runName: [data.artifact.runName, []],
       version: [data.artifact.version, []],
       stage: [this.currentStage, { validators: [Validators.required], updateOn: "change" }],
       note: [this.note, []],
     });
+
+    this.runs = data.artifact.runs;
   }
 
   cancel() {

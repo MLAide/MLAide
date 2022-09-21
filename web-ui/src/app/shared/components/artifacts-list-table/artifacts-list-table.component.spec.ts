@@ -1,9 +1,8 @@
-import { HarnessLoader, TestElement } from "@angular/cdk/testing";
+import { HarnessLoader } from "@angular/cdk/testing";
 import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { DatePipe } from "@angular/common";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { MatButtonModule } from "@angular/material/button";
-import { MatButtonHarness } from "@angular/material/button/testing";
 import { MatTableModule } from "@angular/material/table";
 import { MatHeaderRowHarness, MatRowHarness, MatRowHarnessColumnsText, MatTableHarness } from "@angular/material/table/testing";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
@@ -19,6 +18,8 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatCardModule } from "@angular/material/card";
 import { Artifact } from "@mlaide/state/artifact/artifact.models";
 import { Project } from "@mlaide/state/project/project.models";
+import { MatChipHarness, MatChipListHarness } from "@angular/material/chips/testing";
+import { MatChipsModule } from "@angular/material/chips";
 
 describe("ArtifactsListTableComponent", () => {
   let component: ArtifactsListTableComponent;
@@ -34,17 +35,15 @@ describe("ArtifactsListTableComponent", () => {
     fakeProject = await getRandomProject();
 
     await TestBed.configureTestingModule({
-      declarations: [
-        ArtifactsListTableComponent,
-        MockPipe(DatePipe, (v) => v)
-      ],
+      declarations: [ArtifactsListTableComponent, MockPipe(DatePipe, (v) => v)],
       imports: [
         BrowserAnimationsModule,
         MatButtonModule,
         MatCardModule,
         MatProgressSpinnerModule,
         MatTableModule,
-        RouterTestingModule
+        MatChipsModule,
+        RouterTestingModule,
       ],
     }).compileComponents();
   });
@@ -86,12 +85,11 @@ describe("ArtifactsListTableComponent", () => {
         const headerRow: MatRowHarnessColumnsText = await headers[0].getCellTextByColumnName();
 
         // assert
-        expect(Object.keys(headerRow).length).toBe(6);
+        expect(Object.keys(headerRow).length).toBe(5);
         expect(headerRow.createdAt).toBe("Created at");
         expect(headerRow.artifactName).toBe("Artifact name");
         expect(headerRow.version).toBe("Version");
-        expect(headerRow.runName).toBe("Run name");
-        expect(headerRow.runKey).toBe("Run key");
+        expect(headerRow.runs).toBe("Runs");
         expect(headerRow.type).toBe("Type");
       });
 
@@ -101,34 +99,22 @@ describe("ArtifactsListTableComponent", () => {
         fixture.detectChanges();
         const table: MatTableHarness = await loader.getHarness(MatTableHarness);
         const rows: MatRowHarness[] = await table.getRows();
+        const chipLists: MatChipListHarness[] = await loader.getAllHarnesses(MatChipListHarness);
 
         // assert
         expect(rows.length).toBe(fakeArtifacts.length);
-        await Promise.all(fakeArtifacts.map(async (fakeArtifact, index) => {
-          const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
+        await Promise.all(
+          fakeArtifacts.map(async (fakeArtifact, index) => {
+            const row: MatRowHarnessColumnsText = await rows[index].getCellTextByColumnName();
+            const chips: MatChipHarness[] = await chipLists[index].getChips();
 
-          expect(row.createdAt).toEqual(String(fakeArtifact.createdAt));
-          expect(row.artifactName).toEqual(fakeArtifact.name);
-          expect(row.version).toEqual(String(fakeArtifact.version));
-          expect(row.runName).toEqual(fakeArtifact.runName);
-          expect(row.runKey).toEqual(fakeArtifact.runKey);
-          expect(row.type).toEqual(fakeArtifact.type);
-        }))
-      });
-
-      it("should have correct router link to details for each run", async () => {
-        // arrange + act also in beforeEach
-        component.artifacts$ = of(fakeArtifacts);
-        fixture.detectChanges();
-
-        // assert
-        await Promise.all(fakeArtifacts.map(async (artifact) => {
-          const runLink: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ text: artifact.runName }));
-          const aElement: TestElement = await runLink.host();
-
-          expect(runLink).toBeTruthy();
-          expect(await aElement.getAttribute("href")).toEqual(`/projects/${fakeProject.key}/runs/${artifact.runKey}`);
-        }));
+            expect(row.createdAt).toEqual(String(fakeArtifact.createdAt));
+            expect(row.artifactName).toEqual(fakeArtifact.name);
+            expect(row.version).toEqual(String(fakeArtifact.version));
+            expect(row.type).toEqual(fakeArtifact.type);
+            await chipsEqualRuns(chips, fakeArtifact);
+          })
+        );
       });
     });
 
@@ -160,4 +146,12 @@ describe("ArtifactsListTableComponent", () => {
       });
     });
   });
+
+  async function chipsEqualRuns(chips: MatChipHarness[], artifact: Artifact) {
+    await Promise.all(
+      chips.map(async (chip, index) => {
+        expect(await chip.getText()).toEqual(`${artifact.runs[index].name} - ${artifact.runs[index].key}`);
+      })
+    );
+  }
 });

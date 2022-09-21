@@ -81,7 +81,7 @@ describe("RunsListTableComponent", () => {
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
-    dispatchSpy = spyOn(store, 'dispatch');
+    dispatchSpy = spyOn(store, "dispatch");
   });
 
   beforeEach(async () => {
@@ -266,10 +266,9 @@ describe("RunsListTableComponent", () => {
       component.exportSelectedRuns();
 
       // assert
-      expect(dispatchSpy).toHaveBeenCalledWith(exportRuns({runKeys: [fakeRuns[0].key]}));
+      expect(dispatchSpy).toHaveBeenCalledWith(exportRuns({ runKeys: [fakeRuns[0].key] }));
     });
   });
-
 
   describe("goToRunCompareComponent", () => {
     it("should navigate to compare with selected runs", async () => {
@@ -292,7 +291,6 @@ describe("RunsListTableComponent", () => {
       });
     });
   });
-
 
   describe("isAllSelected", () => {
     beforeEach(() => {
@@ -361,7 +359,6 @@ describe("RunsListTableComponent", () => {
       expect(component.selection.selected.length).toEqual(fakeRuns.length);
     });
   });
-
 
   describe("selectedLessThanOneRow", () => {
     it("should return true if less than one row is selected", async () => {
@@ -455,7 +452,7 @@ describe("RunsListTableComponent", () => {
         },
       ];
 
-      columns.forEach(column => {
+      columns.forEach((column) => {
         it(`should add ${column.name} column if ${column.id} is checked in columns menu`, async () => {
           // arrange + act also in beforeEach
           const partialCheckBox: Partial<MatCheckbox> = {
@@ -465,7 +462,7 @@ describe("RunsListTableComponent", () => {
           const checkBoxChange: MatCheckboxChange = {
             checked: true,
             source: partialCheckBox as MatCheckbox,
-          }
+          };
 
           // act
           component.columnsMenuChanged(checkBoxChange);
@@ -488,7 +485,7 @@ describe("RunsListTableComponent", () => {
         },
       ];
 
-      columns.forEach(column => {
+      columns.forEach((column) => {
         it(`should remove ${column.name} column if ${column.id} is checked and then unchecked in columns menu`, async () => {
           // arrange + act also in beforeEach
           const partialCheckBox: Partial<MatCheckbox> = {
@@ -498,7 +495,7 @@ describe("RunsListTableComponent", () => {
           let checkBoxChange: MatCheckboxChange = {
             checked: true,
             source: partialCheckBox as MatCheckbox,
-          }
+          };
 
           // act
           component.columnsMenuChanged(checkBoxChange);
@@ -510,7 +507,16 @@ describe("RunsListTableComponent", () => {
           component.columnsMenuChanged(checkBoxChange);
 
           // assert
-          expect(component.displayedColumns).toEqual(["select", "name", "status", "startTime", "runTime", "metrics", "createdBy", "experiments"]);
+          expect(component.displayedColumns).toEqual([
+            "select",
+            "name",
+            "status",
+            "startTime",
+            "runTime",
+            "metrics",
+            "createdBy",
+            "experiments",
+          ]);
         });
       });
     });
@@ -621,9 +627,7 @@ describe("RunsListTableComponent", () => {
     describe("columns menu", () => {
       it("should have columns menu button with view_column icon", async () => {
         // arrange + act also in beforeEach
-        const button: MatButtonHarness = await loader.getHarness(
-          MatButtonHarness.with({ selector: "#columns-button" })
-        );
+        const button: MatButtonHarness = await loader.getHarness(MatButtonHarness.with({ selector: "#columns-button" }));
         const icon: MatIconHarness = await loader.getHarness(MatIconHarness.with({ name: "view_column" }));
 
         // assert
@@ -634,7 +638,7 @@ describe("RunsListTableComponent", () => {
 
       it("should have columns menu", async () => {
         // arrange + act also in beforeEach
-        const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
+        const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({ triggerText: "view_column Columns" }));
 
         // assert
         expect(menu).toBeTruthy();
@@ -642,7 +646,7 @@ describe("RunsListTableComponent", () => {
 
       it("should contain two items", async () => {
         // arrange + act also in beforeEach
-        const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
+        const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({ triggerText: "view_column Columns" }));
 
         // act
         await menu.open();
@@ -655,19 +659,19 @@ describe("RunsListTableComponent", () => {
         {
           name: "parameters",
           position: 0,
-          expectedText: "Parameters"
+          expectedText: "Parameters",
         },
         {
           name: "git commit",
           position: 1,
-          expectedText: "Git Commit"
+          expectedText: "Git Commit",
         },
       ];
 
-      menuItems.forEach(menuItem => {
+      menuItems.forEach((menuItem) => {
         it(`should contain ${menuItem.name} checkbox`, async () => {
           // arrange + act also in beforeEach
-          const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
+          const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({ triggerText: "view_column Columns" }));
 
           // act
           await menu.open();
@@ -682,7 +686,7 @@ describe("RunsListTableComponent", () => {
         // arrange + act also in beforeEach
         const spy = spyOn(component, "columnsMenuChanged");
         const rootLoader = TestbedHarnessEnvironment.documentRootLoader(fixture);
-        const menu: MatMenuHarness = await rootLoader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
+        const menu: MatMenuHarness = await rootLoader.getHarness(MatMenuHarness.with({ triggerText: "view_column Columns" }));
 
         // act
         await menu.open();
@@ -706,7 +710,6 @@ describe("RunsListTableComponent", () => {
       });
 
       describe("without parameters", () => {
-
         it("should have defined headers", async () => {
           // arrange + act also in beforeEach
           const table: MatTableHarness = await loader.getHarness(MatTableHarness);
@@ -741,44 +744,48 @@ describe("RunsListTableComponent", () => {
           expect(checkboxes.length).toBe(fakeRuns.length + 1);
           expect(lists.length).toBe(fakeRuns.length);
 
-          await Promise.all(fakeRuns.map(async (fakeRun, fakeRunIndex) => {
-            const row: MatRowHarnessColumnsText = await rows[fakeRunIndex].getCellTextByColumnName();
-            const chips: MatChipHarness[] = await chipLists[fakeRunIndex].getChips();
+          await Promise.all(
+            fakeRuns.map(async (fakeRun, fakeRunIndex) => {
+              const row: MatRowHarnessColumnsText = await rows[fakeRunIndex].getCellTextByColumnName();
+              const chips: MatChipHarness[] = await chipLists[fakeRunIndex].getChips();
 
-            // material sorts the metrics list
-            const orderedMetricsObject = Object.keys(fakeRun.metrics)
-              .sort()
-              .reduce((obj, key) => {
-                obj[key] = fakeRun.metrics[key];
-                return obj;
-              }, {});
+              // material sorts the metrics list
+              const orderedMetricsObject = Object.keys(fakeRun.metrics)
+                .sort()
+                .reduce((obj, key) => {
+                  obj[key] = fakeRun.metrics[key];
+                  return obj;
+                }, {});
 
-            let metricsString = "";
+              let metricsString = "";
 
-            await Promise.all(Object.keys(orderedMetricsObject).map(async (key, keyIndex) => {
-              const keyValueString = ` remove ${key} : ${fakeRun.metrics[key]}`;
-              metricsString += keyValueString;
+              await Promise.all(
+                Object.keys(orderedMetricsObject).map(async (key, keyIndex) => {
+                  const keyValueString = ` remove ${key} : ${fakeRun.metrics[key]}`;
+                  metricsString += keyValueString;
 
-              // assert metrics' list elements
-              const items = await lists[fakeRunIndex].getItems();
-              expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
-            }));
+                  // assert metrics' list elements
+                  const items = await lists[fakeRunIndex].getItems();
+                  expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
+                })
+              );
 
-            expect(row.name).toEqual(fakeRun.name);
-            expect(row.status.toUpperCase().replace(" ", "_")).toEqual(fakeRun.status);
-            expect(row.startTime).toEqual(String(fakeRun.startTime));
-            // We need to do this because the duration pipe's first argument is startTime
-            expect(row.runTime).toEqual(String(fakeRun.startTime));
-            expect(row.metrics).toEqual(metricsString.trim());
-            expect(row.createdBy).toEqual(fakeRun.createdBy.nickName);
-            await chipsEqualExperimentKeys(chips, fakeRun);
-          }));
+              expect(row.name).toEqual(fakeRun.name);
+              expect(row.status.toUpperCase().replace(" ", "_")).toEqual(fakeRun.status);
+              expect(row.startTime).toEqual(String(fakeRun.startTime));
+              // We need to do this because the duration pipe's first argument is startTime
+              expect(row.runTime).toEqual(String(fakeRun.startTime));
+              expect(row.metrics).toEqual(metricsString.trim());
+              expect(row.createdBy).toEqual(fakeRun.createdBy.nickName);
+              await chipsEqualExperimentKeys(chips, fakeRun);
+            })
+          );
         });
       });
 
       describe("with parameters", () => {
         beforeEach(async () => {
-          const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
+          const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({ triggerText: "view_column Columns" }));
 
           // act
           await menu.open();
@@ -827,62 +834,68 @@ describe("RunsListTableComponent", () => {
           expect(parametersLists.length).toBe(fakeRuns.length);
           expect(metricsLists.length).toBe(fakeRuns.length);
 
-          await Promise.all(fakeRuns.map(async (fakeRun, fakeRunIndex) => {
-            const row: MatRowHarnessColumnsText = await rows[fakeRunIndex].getCellTextByColumnName();
-            const chips: MatChipHarness[] = await chipLists[fakeRunIndex].getChips();
+          await Promise.all(
+            fakeRuns.map(async (fakeRun, fakeRunIndex) => {
+              const row: MatRowHarnessColumnsText = await rows[fakeRunIndex].getCellTextByColumnName();
+              const chips: MatChipHarness[] = await chipLists[fakeRunIndex].getChips();
 
-            // material sorts the metrics list
-            const orderedMetricsObject = Object.keys(fakeRun.metrics)
-              .sort()
-              .reduce((obj, key) => {
-                obj[key] = fakeRun.metrics[key];
-                return obj;
-              }, {});
+              // material sorts the metrics list
+              const orderedMetricsObject = Object.keys(fakeRun.metrics)
+                .sort()
+                .reduce((obj, key) => {
+                  obj[key] = fakeRun.metrics[key];
+                  return obj;
+                }, {});
 
-            // material sorts the parameters list
-            const orderedParametersObject = Object.keys(fakeRun.parameters)
-              .sort()
-              .reduce((obj, key) => {
-                obj[key] = fakeRun.parameters[key];
-                return obj;
-              }, {});
+              // material sorts the parameters list
+              const orderedParametersObject = Object.keys(fakeRun.parameters)
+                .sort()
+                .reduce((obj, key) => {
+                  obj[key] = fakeRun.parameters[key];
+                  return obj;
+                }, {});
 
-            let parametersString = "";
-            await Promise.all(Object.keys(orderedParametersObject).map(async (key, keyIndex) => {
-              const keyValueString = ` remove ${key} : ${fakeRun.parameters[key]}`;
-              parametersString += keyValueString;
+              let parametersString = "";
+              await Promise.all(
+                Object.keys(orderedParametersObject).map(async (key, keyIndex) => {
+                  const keyValueString = ` remove ${key} : ${fakeRun.parameters[key]}`;
+                  parametersString += keyValueString;
 
-              // assert metrics' list elements
-              const items = await parametersLists[fakeRunIndex].getItems();
-              expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
-            }));
+                  // assert metrics' list elements
+                  const items = await parametersLists[fakeRunIndex].getItems();
+                  expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
+                })
+              );
 
-            let metricsString = "";
-            await Promise.all(Object.keys(orderedMetricsObject).map(async (key, keyIndex) => {
-              const keyValueString = ` remove ${key} : ${fakeRun.metrics[key]}`;
-              metricsString += keyValueString;
+              let metricsString = "";
+              await Promise.all(
+                Object.keys(orderedMetricsObject).map(async (key, keyIndex) => {
+                  const keyValueString = ` remove ${key} : ${fakeRun.metrics[key]}`;
+                  metricsString += keyValueString;
 
-              // assert metrics' list elements
-              const items = await metricsLists[fakeRunIndex].getItems();
-              expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
-            }));
+                  // assert metrics' list elements
+                  const items = await metricsLists[fakeRunIndex].getItems();
+                  expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
+                })
+              );
 
-            expect(row.name).toEqual(fakeRun.name);
-            expect(row.status.toUpperCase().replace(" ", "_")).toEqual(fakeRun.status);
-            expect(row.startTime).toEqual(String(fakeRun.startTime));
-            // We need to do this because the duration pipe's first argument is startTime
-            expect(row.runTime).toEqual(String(fakeRun.startTime));
-            expect(row.parameters).toEqual(parametersString.trim());
-            expect(row.metrics).toEqual(metricsString.trim());
-            expect(row.createdBy).toEqual(fakeRun.createdBy.nickName);
-            await chipsEqualExperimentKeys(chips, fakeRun);
-          }));
+              expect(row.name).toEqual(fakeRun.name);
+              expect(row.status.toUpperCase().replace(" ", "_")).toEqual(fakeRun.status);
+              expect(row.startTime).toEqual(String(fakeRun.startTime));
+              // We need to do this because the duration pipe's first argument is startTime
+              expect(row.runTime).toEqual(String(fakeRun.startTime));
+              expect(row.parameters).toEqual(parametersString.trim());
+              expect(row.metrics).toEqual(metricsString.trim());
+              expect(row.createdBy).toEqual(fakeRun.createdBy.nickName);
+              await chipsEqualExperimentKeys(chips, fakeRun);
+            })
+          );
         });
       });
 
       describe("with git commit", () => {
         beforeEach(async () => {
-          const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({triggerText: "view_column Columns"}));
+          const menu: MatMenuHarness = await loader.getHarness(MatMenuHarness.with({ triggerText: "view_column Columns" }));
 
           // act
           await menu.open();
@@ -918,7 +931,7 @@ describe("RunsListTableComponent", () => {
           const table: MatTableHarness = await loader.getHarness(MatTableHarness);
           const rows: MatRowHarness[] = await table.getRows();
           const chipLists: MatChipListHarness[] = await loader.getAllHarnesses(MatChipListHarness);
-          const checkboxes: MatCheckboxHarness[] = await loader.getAllHarnesses(MatCheckboxHarness)
+          const checkboxes: MatCheckboxHarness[] = await loader.getAllHarnesses(MatCheckboxHarness);
           const metricsLists: MatListHarness[] = await loader.getAllHarnesses(MatListHarness.with({ selector: "#metrics-list" }));
 
           // assert
@@ -927,38 +940,42 @@ describe("RunsListTableComponent", () => {
           expect(checkboxes.length).toBe(fakeRuns.length + 1);
           expect(metricsLists.length).toBe(fakeRuns.length);
 
-          await Promise.all(fakeRuns.map(async (fakeRun, fakeRunIndex) => {
-            const row: MatRowHarnessColumnsText = await rows[fakeRunIndex].getCellTextByColumnName();
-            const chips: MatChipHarness[] = await chipLists[fakeRunIndex].getChips();
+          await Promise.all(
+            fakeRuns.map(async (fakeRun, fakeRunIndex) => {
+              const row: MatRowHarnessColumnsText = await rows[fakeRunIndex].getCellTextByColumnName();
+              const chips: MatChipHarness[] = await chipLists[fakeRunIndex].getChips();
 
-            // material sorts the metrics list
-            const orderedMetricsObject = Object.keys(fakeRun.metrics)
-              .sort()
-              .reduce((obj, key) => {
-                obj[key] = fakeRun.metrics[key];
-                return obj;
-              }, {});
+              // material sorts the metrics list
+              const orderedMetricsObject = Object.keys(fakeRun.metrics)
+                .sort()
+                .reduce((obj, key) => {
+                  obj[key] = fakeRun.metrics[key];
+                  return obj;
+                }, {});
 
-            let metricsString = "";
-            await Promise.all(Object.keys(orderedMetricsObject).map(async (key, keyIndex) => {
-              const keyValueString = ` remove ${key} : ${fakeRun.metrics[key]}`;
-              metricsString += keyValueString;
+              let metricsString = "";
+              await Promise.all(
+                Object.keys(orderedMetricsObject).map(async (key, keyIndex) => {
+                  const keyValueString = ` remove ${key} : ${fakeRun.metrics[key]}`;
+                  metricsString += keyValueString;
 
-              // assert metrics' list elements
-              const items = await metricsLists[fakeRunIndex].getItems();
-              expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
-            }));
+                  // assert metrics' list elements
+                  const items = await metricsLists[fakeRunIndex].getItems();
+                  expect(await items[keyIndex].getText()).toEqual(keyValueString.trim());
+                })
+              );
 
-            expect(row.name).toEqual(fakeRun.name);
-            expect(row.status.toUpperCase().replace(" ", "_")).toEqual(fakeRun.status);
-            expect(row.startTime).toEqual(String(fakeRun.startTime));
-            // We need to do this because the duration pipe's first argument is startTime
-            expect(row.runTime).toEqual(String(fakeRun.startTime));
-            expect(row.metrics).toEqual(metricsString.trim());
-            expect(row.gitCommitHash).toEqual(fakeRun.git.commitHash);
-            expect(row.createdBy).toEqual(fakeRun.createdBy.nickName);
-            await chipsEqualExperimentKeys(chips, fakeRun);
-          }));
+              expect(row.name).toEqual(fakeRun.name);
+              expect(row.status.toUpperCase().replace(" ", "_")).toEqual(fakeRun.status);
+              expect(row.startTime).toEqual(String(fakeRun.startTime));
+              // We need to do this because the duration pipe's first argument is startTime
+              expect(row.runTime).toEqual(String(fakeRun.startTime));
+              expect(row.metrics).toEqual(metricsString.trim());
+              expect(row.gitCommitHash).toEqual(fakeRun.git.commitHash);
+              expect(row.createdBy).toEqual(fakeRun.createdBy.nickName);
+              await chipsEqualExperimentKeys(chips, fakeRun);
+            })
+          );
         });
       });
 
@@ -972,7 +989,7 @@ describe("RunsListTableComponent", () => {
             const aElement: TestElement = await runLink.host();
 
             expect(runLink).toBeTruthy();
-            // Only take 27 characters because in travis the attribute will not be shortened automatically to 27 chars
+            // Only take 27 characters because   in travis the attribute will not be shortened automatically to 27 chars
             expect((await aElement.getAttribute("ng-reflect-router-link")).substr(0, 27)).toEqual(
               // Only take 27 characters because in the attribute will be shortened automatically to 27 chars
               String(`/projects/${fakeProject.key}/runs/${run.key}`).substr(0, 27)
@@ -984,8 +1001,10 @@ describe("RunsListTableComponent", () => {
   });
 
   async function chipsEqualExperimentKeys(chips: MatChipHarness[], run: Run) {
-    await Promise.all(chips.map(async (chip, index) => {
-      expect(await chip.getText()).toEqual(run.experimentRefs[index].experimentKey);
-    }));
+    await Promise.all(
+      chips.map(async (chip, index) => {
+        expect(await chip.getText()).toEqual(run.experimentRefs[index].experimentKey);
+      })
+    );
   }
 });

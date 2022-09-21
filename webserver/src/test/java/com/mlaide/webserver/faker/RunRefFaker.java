@@ -9,8 +9,8 @@ public class RunRefFaker {
     public static RunRefEntity newRunRefEntity() {
         var runRefEntity = new RunRefEntity();
 
+        runRefEntity.setKey(faker.random().nextInt(Integer.MAX_VALUE));
         runRefEntity.setName(faker.funnyName().name());
-        runRefEntity.setKey(faker.random().nextInt(50));
 
         return runRefEntity;
     }

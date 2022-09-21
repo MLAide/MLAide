@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ExperimentLineageVisualizationComponent } from './experiment-lineage-visualization.component';
+import { ExperimentLineageVisualizationComponent } from "./experiment-lineage-visualization.component";
 import { GraphEdge, GraphNode, LineageGraphUiService } from "@mlaide/shared/services";
 import { Run } from "@mlaide/state/run/run.models";
 import { of } from "rxjs";
@@ -12,7 +12,7 @@ import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
 import { MatCardHarness } from "@angular/material/card/testing";
 import { MatCardModule } from "@angular/material/card";
 
-describe('ExperimentLineageVisualizationComponent', () => {
+describe("ExperimentLineageVisualizationComponent", () => {
   let component: ExperimentLineageVisualizationComponent;
   let fixture: ComponentFixture<ExperimentLineageVisualizationComponent>;
 
@@ -23,13 +23,10 @@ describe('ExperimentLineageVisualizationComponent', () => {
     lineageGraphServiceStub = jasmine.createSpyObj("lineageGraphService", ["renderLineage"]);
 
     await TestBed.configureTestingModule({
-      declarations: [ ExperimentLineageVisualizationComponent ],
-      providers: [
-        { provide: LineageGraphUiService, useValue: lineageGraphServiceStub },
-      ],
-      imports: [MatCardModule]
-    })
-    .compileComponents();
+      declarations: [ExperimentLineageVisualizationComponent],
+      providers: [{ provide: LineageGraphUiService, useValue: lineageGraphServiceStub }],
+      imports: [MatCardModule],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -38,7 +35,7 @@ describe('ExperimentLineageVisualizationComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 
@@ -111,27 +108,27 @@ describe('ExperimentLineageVisualizationComponent', () => {
       const expectedNodes: GraphNode[] = [
         {
           id: `run:${fakeRuns[0].key}`,
-          label: `${fakeRuns[0].name}:${fakeRuns[0].key}`,
+          label: `${fakeRuns[0].name}<br/><span class="subtitle">key: ${fakeRuns[0].key}</span>`,
           class: "run",
         },
         {
           id: `artifact:${fakeRuns[0].artifacts[0].name}:${fakeRuns[0].artifacts[0].version}`,
-          label: `${fakeRuns[0].artifacts[0].name}`,
+          label: `${fakeRuns[0].artifacts[0].name}<br/><span class="subtitle">version: ${fakeRuns[0].artifacts[0].version}</span>`,
           class: "artifact",
         },
         {
           id: `run:${fakeRuns[1].key}`,
-          label: `${fakeRuns[1].name}:${fakeRuns[1].key}`,
+          label: `${fakeRuns[1].name}<br/><span class="subtitle">key: ${fakeRuns[1].key}</span>`,
           class: "run",
         },
         {
           id: `artifact:${fakeRuns[1].artifacts[0].name}:${fakeRuns[1].artifacts[0].version}`,
-          label: `${fakeRuns[1].artifacts[0].name}`,
+          label: `${fakeRuns[1].artifacts[0].name}<br/><span class="subtitle">version: ${fakeRuns[1].artifacts[0].version}</span>`,
           class: "artifact",
         },
         {
           id: `artifact:${fakeRuns[1].artifacts[1].name}:${fakeRuns[1].artifacts[1].version}`,
-          label: `${fakeRuns[1].artifacts[1].name}`,
+          label: `${fakeRuns[1].artifacts[1].name}<br/><span class="subtitle">version: ${fakeRuns[1].artifacts[1].version}</span>`,
           class: "artifact",
         },
       ];
@@ -205,7 +202,9 @@ describe('ExperimentLineageVisualizationComponent', () => {
       const description: HTMLElement = fixture.nativeElement.querySelector("#experiment-graph-header-description");
 
       // assert
-      expect(description.textContent).toContain(`This graph shows the connections between runs and artifacts within the experiment ${fakeExperiment.name}`);
+      expect(description.textContent).toContain(
+        `This graph shows the connections between runs and artifacts within the experiment ${fakeExperiment.name}`
+      );
     });
 
     it("should contain mat-card", async () => {
