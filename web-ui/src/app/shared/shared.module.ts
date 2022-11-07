@@ -25,12 +25,17 @@ import { FileDiffComponent } from "@mlaide/shared/components/file-diff/file-diff
 import { MatMenuModule } from "@angular/material/menu";
 import { ModelListTableComponent } from "./components/model-list-table/model-list-table.component";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { FileUploadComponent } from './components/file-upload/file-upload.component';
+import { DragNDropDirective } from './directives/drag-n-drop.directive';
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatInputModule } from "@angular/material/input";
 
 @NgModule({
   declarations: [
     // components
     ArtifactsListTableComponent,
     FileDiffComponent,
+    FileUploadComponent,
     ModelListTableComponent,
     ModelStageI18nComponent,
     ProjectMemberRoleI18nComponent,
@@ -40,6 +45,8 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 
     // pipes
     DurationPipe,
+     FileUploadComponent,
+     DragNDropDirective,
   ],
   imports: [
     CommonModule,
@@ -51,7 +58,9 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     MatCardModule,
     MatCheckboxModule,
     MatChipsModule,
+    MatDialogModule,
     MatIconModule,
+    MatInputModule,
     MatListModule,
     MatMenuModule,
     MatProgressSpinnerModule,
@@ -60,8 +69,10 @@ import { MatTooltipModule } from "@angular/material/tooltip";
   ],
   exports: [
     ArtifactsListTableComponent,
+    FileUploadComponent,
     FileDiffComponent,
     RunsListTableComponent,
+    DragNDropDirective,
     DurationPipe,
     RunParamsMetricsTableComponent,
     RunStatusI18nComponent,

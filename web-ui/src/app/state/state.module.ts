@@ -23,6 +23,7 @@ import { apiKeysReducer } from "./api-key/api-key.reducers";
 import { ApiKeyEffects } from "./api-key/api-key.effects";
 import { SshKeyEffects } from "@mlaide/state/ssh-key/ssh-key.effects";
 import { sshKeysReducer } from "@mlaide/state/ssh-key/ssh-key.reducers";
+import { ValidationDataEffects } from "@mlaide/state/validation-data/validation-data.effects";
 
 @NgModule({
   declarations: [],
@@ -51,7 +52,8 @@ import { sshKeysReducer } from "@mlaide/state/ssh-key/ssh-key.reducers";
       RunEffects,
       SharedEffects,
       SshKeyEffects,
-      UserEffects
+      UserEffects,
+      ValidationDataEffects
     ]),
 
     StoreRouterConnectingModule.forRoot(),

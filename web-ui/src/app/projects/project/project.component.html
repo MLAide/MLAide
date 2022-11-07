@@ -38,6 +38,12 @@
             <span matLine i18n>Settings</span>
           </div>
         </a>
+        <a mat-list-item [routerLink]="['/projects/' + project?.key + '/validation-data']">
+          <div fxLayout="row" fxLayoutAlign="center center">
+            <mat-icon matListIcon class="padding">article</mat-icon>
+            <span matLine i18n>Validation Data Sets</span>
+          </div>
+        </a>
       </mat-nav-list>
     </mat-drawer>
     <mat-drawer-content class="bg-white">

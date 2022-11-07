@@ -37,6 +37,10 @@ export const routes: Routes = [
         path: "settings",
         loadChildren: () => import("@mlaide/project-settings/project-settings.module").then((m) => m.ProjectSettingsModule),
       },
+      {
+        path: "validation-data",
+        loadChildren: () => import("@mlaide/validation-data/validation-data.module").then((m) => m.ValidationDataModule),
+      },
       { path: "", redirectTo: "experiments", pathMatch: "full" },
     ],
   },
