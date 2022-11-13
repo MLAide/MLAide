@@ -1,0 +1,31 @@
+<!--https://medium.com/@tarekabdelkhalek/how-to-create-a-drag-and-drop-file-uploading-in-angular-78d9eba0b854-->
+
+    <mat-card>
+      <div class="upload-container" appDragNDrop (fileDropped)="onFileDropped($event)">
+        <input type="file" #fileDropRef id="fileDropRef" multiple (change)="fileBrowseHandler($event.target.files)" />
+        <div>
+          <mat-icon style="font-size: 48px;">file_upload</mat-icon>
+        </div>
+        <br>
+        <div>
+          Drag and drop file here or
+        </div>
+        <br>
+        <div>
+          <button mat-raised-button color="primary" for="fileDropRef" aria-label="Add new validation data set" i18n>Browse Files</button>
+        </div>
+      </div>
+    </mat-card>
+
+<div style="margin-top: 24px">
+  <span class="mat-h2">Uploaded files</span>
+</div>
+<div fxLayout="column" fxLayoutAlign="center center">
+  <div class="single-file" *ngFor="let file of files; let i = index">
+    <mat-card>
+      <p>{{ file?.name }}</p>
+    </mat-card>
+
+    </div>
+</div>
+
