@@ -28,6 +28,11 @@ import { routerNavigatedAction } from "@ngrx/router-store";
 
 @Injectable({ providedIn: "root" })
 export class ProjectEffects {
+  public constructor(private readonly actions$: Actions,
+                     private readonly dialog: MatDialog,
+                     private readonly projectApi: ProjectApi,
+                     private readonly store: Store) {}
+
   navigatedProject$ = createEffect(() =>
     this.actions$.pipe(
       ofType(routerNavigatedAction),
@@ -167,8 +172,5 @@ export class ProjectEffects {
     return error instanceof HttpErrorResponse && error.status === statusCode;
   }
 
-  public constructor(private readonly actions$: Actions,
-                     private readonly dialog: MatDialog,
-                     private readonly projectApi: ProjectApi,
-                     private readonly store: Store) {}
+
 }

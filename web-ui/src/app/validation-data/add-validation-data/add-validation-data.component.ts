@@ -6,8 +6,9 @@ import {
 } from "@mlaide/state/project-member/project-member.actions";
 import { ENTER } from "@angular/cdk/keycodes";
 import { Store } from "@ngrx/store";
-import { FormBuilder } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { ValidationSet } from "@mlaide/state/validation-data/validation-data.models";
 
 @Component({
   selector: 'app-add-validation-data',
@@ -15,12 +16,23 @@ import { MAT_DIALOG_DATA } from "@angular/material/dialog";
   styleUrls: ['./add-validation-data.component.scss']
 })
 export class AddValidationDataComponent implements OnInit {
+    public form: FormGroup;
 
   constructor(
     private store: Store,
     private formBuilder: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: { title: string }
-  ) { }
+    @Inject(MAT_DIALOG_DATA) public data: { title: string, validationSet: ValidationSet }
+) {
+  this.form = this.formBuilder.group({
+    name: [
+      data.validationSet?.name,
+      {
+        validators: [Validators.required],
+        updateOn: "change",
+      },
+    ],
+  });
+}
 
   ngOnInit(): void {
   }

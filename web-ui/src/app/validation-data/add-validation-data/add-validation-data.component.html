@@ -2,7 +2,12 @@
     <h1 class="mat-display-2" mat-dialog-title i18n>{{ data.title }}</h1>
   </div>
   <div>
-  <mat-dialog-content (keydown)="keyDown($event)">
+  <mat-dialog-content [formGroup]="form" (keydown)="keyDown($event)">
+    <mat-form-field>
+      <mat-label i18n>Validation data set name</mat-label>
+      <input matInput formControlName="name" placeholder="Validation data set name" cdkFocusInitial required />
+      <mat-error *ngIf="form.get('name').hasError('required')" i18n> You must provide a validation data set name. </mat-error>
+    </mat-form-field>
     <app-file-upload></app-file-upload>
   </mat-dialog-content>
   </div>
@@ -11,7 +16,7 @@
     <span class="margin-right-sm"></span>
     <button
       id="add-validation-data-upload-button"
-      mat-button
+      mat-buttonç
       (click)="save()"
       type="submit"
       color="primary"
