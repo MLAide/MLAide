@@ -1,15 +1,14 @@
 package com.mlaide.webserver.service;
 
-import com.mlaide.webserver.model.Artifact;
 import com.mlaide.webserver.model.FileHash;
-import com.mlaide.webserver.model.ValidationSet;
+import com.mlaide.webserver.model.ValidationDataSet;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public interface ValidationSetService {
-    ValidationSet addValidationSet(String projectKey, ValidationSet validationSet);
+public interface ValidationDataSetService {
+    ValidationDataSet addValidationSet(String projectKey, ValidationDataSet validationDataSet);
 
     void uploadValidaitonSetFile(String projectKey,
                             String validationSetName,
@@ -19,5 +18,5 @@ public interface ValidationSetService {
                                  String fileHash)
             throws IOException;
 
-    ValidationSet getValidationSetByFileHashes(String projectKey, String validationSetName, List<FileHash> fileHashes);
+    ValidationDataSet getValidationSetByFileHashes(String projectKey, String validationSetName, List<FileHash> fileHashes);
 }

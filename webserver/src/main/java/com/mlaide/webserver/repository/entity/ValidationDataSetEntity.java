@@ -24,7 +24,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ValidationSetEntity {
+public class ValidationDataSetEntity {
     @PastOrPresent
     @NotNull
     private OffsetDateTime createdAt;

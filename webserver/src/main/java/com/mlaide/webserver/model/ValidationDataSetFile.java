@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ValidationSetFile {
+public class ValidationDataSetFile {
     private String fileId;
     private String fileName;
 }

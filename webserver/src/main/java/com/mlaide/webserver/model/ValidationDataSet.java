@@ -12,10 +12,10 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ValidationSet {
+public class ValidationDataSet {
     private OffsetDateTime createdAt;
     private UserRef createdBy;
-    private List<ValidationSetFile> files;
+    private List<ValidationDataSetFile> files;
     @NotBlank
     private String name;
     private Integer version;
