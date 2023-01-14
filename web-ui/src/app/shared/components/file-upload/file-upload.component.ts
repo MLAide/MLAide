@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from "@angular/core";
 import * as CryptoJS from 'crypto-js';
 
 @Component({
@@ -9,8 +9,9 @@ import * as CryptoJS from 'crypto-js';
 export class FileUploadComponent implements OnInit {
   @ViewChild("fileDropRef", { static: false }) fileDropEl: ElementRef;
   files: any[] = [];
+  @Output() newFilesForUploadWithHashesAddedEvent = new EventEmitter<any>();
+
   myFiles: {
-    fileName: string;
     file: File;
     fileHash: string;
   }[] = [];
@@ -66,15 +67,13 @@ export class FileUploadComponent implements OnInit {
    * @param files (Files List)
    */
   async prepareFilesList(files: Array<File>) {
-
     for (const item of files) {
       var name = item.name;
       this.files.push(item);
       var md5 = await this.calculateHashForFile(item);
-      this.myFiles.push({fileName: name, file: item, fileHash: md5})
-      //console.log("md5 " + md5);
-      console.log(JSON.stringify(this.myFiles));
+      this.myFiles.push({file: item, fileHash: md5})
     }
+    this.newFilesForUploadWithHashesAddedEvent.emit(this.myFiles);
     this.fileDropEl.nativeElement.value = "";
     this.uploadFilesSimulator(0);
   }

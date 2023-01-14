@@ -20,5 +20,5 @@ public interface ValidationDataSetRepository extends MongoRepository<ValidationD
 //            "or hasPermission(returnObject, 'OWNER')")
     ValidationDataSetEntity findOneByProjectKeyAndNameAndVersion(String projectKey, String name, Integer version);
 
-    List<ValidationDataSetEntity> findAllByProjectKeyAndNameOrderByVersionDesc(String projectKey, String validationSetName);
+    List<ValidationDataSetEntity> findAllByProjectKeyAndNameOrderByVersionDesc(String projectKey, String validationDataSetName);
 }

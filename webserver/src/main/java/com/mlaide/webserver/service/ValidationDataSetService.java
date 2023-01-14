@@ -11,12 +11,12 @@ public interface ValidationDataSetService {
     ValidationDataSet addValidationSet(String projectKey, ValidationDataSet validationDataSet);
 
     void uploadValidaitonSetFile(String projectKey,
-                            String validationSetName,
-                            Integer validationSetVersion,
+                            String validationDataSetName,
+                            Integer validationDataSetVersion,
                             InputStream inputStream,
                             String filename,
                                  String fileHash)
             throws IOException;
 
-    ValidationDataSet getValidationSetByFileHashes(String projectKey, String validationSetName, List<FileHash> fileHashes);
+    ValidationDataSet getValidationSetByFileHashes(String projectKey, String validationDataSetName, List<FileHash> fileHashes);
 }

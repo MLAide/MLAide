@@ -1,11 +1,16 @@
 import { Inject, Injectable } from "@angular/core";
-import { ValidationSet } from "@mlaide/state/validation-data-set/validation-data-set.models";
+import {
+  FileHash,
+  ValidationDataSet,
+  ValidationDataSetFile
+} from "@mlaide/state/validation-data-set/validation-data-set.models";
 import { APP_CONFIG, AppConfig } from "@mlaide/config/app-config.model";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { Experiment } from "@mlaide/state/experiment/experiment.models";
 
 export class ValidationDataSetListResponse {
-  items: ValidationSet[];
+  items: ValidationDataSet[];
 }
 
 @Injectable({ providedIn: "root" })
@@ -16,8 +21,14 @@ export class ValidationDataSetApi {
     this.baseUrl = `${appConfig.apiServer.uri}/api/${appConfig.apiServer.version}`;
   }
 
-  public addValidationSet(validationSet: ValidationSet): Observable<ValidationSet> {
-    return this.http.post<ValidationSet>(`${this.baseUrl}/validationSet`, validationSet);
+  public addValidationDataSet(projectKey: string, validationDataSet: ValidationDataSet): Observable<ValidationDataSet> {
+    return this.http.post<ValidationDataSet>(`${this.baseUrl}/projects/${projectKey}/validationDataSets`, validationDataSet);
+  }
+
+  public findValidationDataSetByFileHashes(projectKey: string, validationDataSetName: string, fileHashes: FileHash[]): Observable<ValidationDataSet> {
+    return this.http.post<ValidationDataSet>(
+      `${this.baseUrl}/projects/${projectKey}/validationDataSets/${validationDataSetName}/find-by-file-hashes`,
+      fileHashes);
   }
 
 }

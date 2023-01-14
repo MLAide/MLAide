@@ -57,8 +57,8 @@ public class ValidationDataSetServiceImpl implements ValidationDataSetService {
     }
 
     @Override
-    public void uploadValidaitonSetFile(String projectKey, String validationSetName, Integer validationSetVersion, InputStream inputStream, String filename, String fileHash) throws IOException {
-        ValidationDataSetEntity validationDataSetEntity = validationDataSetRepository.findOneByProjectKeyAndNameAndVersion(projectKey, validationSetName, validationSetVersion);
+    public void uploadValidaitonSetFile(String projectKey, String validationDataSetName, Integer validationDataSetVersion, InputStream inputStream, String filename, String fileHash) throws IOException {
+        ValidationDataSetEntity validationDataSetEntity = validationDataSetRepository.findOneByProjectKeyAndNameAndVersion(projectKey, validationDataSetName, validationDataSetVersion);
         if (validationDataSetEntity == null) {
             throw new NotFoundException();
         }
@@ -76,7 +76,7 @@ public class ValidationDataSetServiceImpl implements ValidationDataSetService {
 
         if (existingFile.isPresent() && fileHash.equalsIgnoreCase(existingFile.get().getHash())) {
             // The same file with the same content (hash) already exists. We don't need to store it twice.
-            logger.info("validation set file is already present - ignoring re-uploaded file");
+            logger.info("validation data set file is already present - ignoring re-uploaded file");
         } else {
             FileUploadResult uploadResult = storageService.upload(projectKey, internalFileName, inputStream);
 
@@ -94,10 +94,10 @@ public class ValidationDataSetServiceImpl implements ValidationDataSetService {
     }
 
     @Override
-    public ValidationDataSet getValidationSetByFileHashes(String projectKey, String validationSetName, List<FileHash> fileHashes) {
-        List<ValidationDataSetEntity> validationSetEntities = validationDataSetRepository.findAllByProjectKeyAndNameOrderByVersionDesc(projectKey, validationSetName);
+    public ValidationDataSet getValidationSetByFileHashes(String projectKey, String validationDataSetName, List<FileHash> fileHashes) {
+        List<ValidationDataSetEntity> validationDataSetEntities = validationDataSetRepository.findAllByProjectKeyAndNameOrderByVersionDesc(projectKey, validationDataSetName);
 
-        for (ValidationDataSetEntity validationDataSetEntity : validationSetEntities) {
+        for (ValidationDataSetEntity validationDataSetEntity : validationDataSetEntities) {
             if ((validationDataSetEntity.getFiles() == null || validationDataSetEntity.getFiles().isEmpty())
                     && (fileHashes == null || fileHashes.isEmpty())) {
                 return validationDataSetMapper.fromEntity(validationDataSetEntity);
@@ -146,21 +146,21 @@ public class ValidationDataSetServiceImpl implements ValidationDataSetService {
         // Retrieve the next available version number from database.
         // Even if this is the first version of this artifact.
         // Calculating/Defining artifact version in service is not thread safe or transactional.
-        int validationSetVersion = counterRepository.getNextSequenceValue(
+        int validationDataSetVersion = counterRepository.getNextSequenceValue(
                 format("%s.validation-set.%s", projectKey, validationDataSetEntity.getName()));
-        validationDataSetEntity.setVersion(validationSetVersion);
-        logger.info("New validation set '{}' got version {}", validationDataSetEntity.getName(), validationSetVersion);
+        validationDataSetEntity.setVersion(validationDataSetVersion);
+        logger.info("New validation data set '{}' got version {}", validationDataSetEntity.getName(), validationDataSetVersion);
 
         return saveValidationSet(projectKey, validationDataSetEntity);
     }
 
     private ValidationDataSetEntity saveValidationSet(String projectKey, ValidationDataSetEntity validationDataSetEntity) {
         validationDataSetEntity = validationDataSetRepository.save(validationDataSetEntity);
-        logger.info("created new validation set");
+        logger.info("created new validation data set");
         try {
             permissionService.grantPermissionBasedOnProject(projectKey, validationDataSetEntity.getId(), validationDataSetEntity.getClass());
         } catch (Exception e) {
-            logger.error("Failed to grant permission to newly created validation set", e);
+            logger.error("Failed to grant permission to newly created validation data set", e);
             validationDataSetRepository.deleteById(validationDataSetEntity.getId());
             throw e;
         }

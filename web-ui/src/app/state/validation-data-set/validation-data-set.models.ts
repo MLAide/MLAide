@@ -1,14 +1,19 @@
 import { UserRef } from "@mlaide/state/run/run.models";
 
-export interface ValidationSet {
+export interface ValidationDataSet {
   createdAt: Date;
   createdBy: UserRef;
-  files: ValidationSetFile[];
+  files: ValidationDataSetFile[];
   name: string;
   version: number;
 }
 
-export interface ValidationSetFile {
+export interface ValidationDataSetFile {
   fileId: string;
   fileName: string;
+}
+
+export interface FileHash {
+  fileName: string;
+  fileHash: string;
 }

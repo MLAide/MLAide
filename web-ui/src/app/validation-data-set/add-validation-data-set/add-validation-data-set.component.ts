@@ -1,14 +1,13 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from "@angular/core";
-import {
-  addProjectMember,
-  closeAddOrEditProjectMemberDialog,
-  editProjectMember
-} from "@mlaide/state/project-member/project-member.actions";
 import { ENTER } from "@angular/cdk/keycodes";
 import { Store } from "@ngrx/store";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { ValidationSet } from "@mlaide/state/validation-data-set/validation-data-set.models";
+import { ValidationDataSet } from "@mlaide/state/validation-data-set/validation-data-set.models";
+import {
+  addValidationDataSet,
+  closeAddValidationDataSetDialog
+} from "@mlaide/state/validation-data-set/validation-data-set.actions";
 
 @Component({
   selector: 'app-add-validation-data-set',
@@ -21,11 +20,11 @@ export class AddValidationDataSetComponent implements OnInit {
   constructor(
     private store: Store,
     private formBuilder: FormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: { title: string, validationSet: ValidationSet }
+    @Inject(MAT_DIALOG_DATA) public data: { title: string, validationDataSet: ValidationDataSet }
 ) {
   this.form = this.formBuilder.group({
     name: [
-      data.validationSet?.name,
+      data.validationDataSet?.name,
       {
         validators: [Validators.required],
         updateOn: "change",
@@ -37,8 +36,12 @@ export class AddValidationDataSetComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  public logMyFiles(event) {
+    alert(JSON.stringify(event.file));
+  }
+
   public cancel() {
-    this.store.dispatch(closeAddOrEditProjectMemberDialog());
+    this.store.dispatch(closeAddValidationDataSetDialog());
   }
 
   public keyDown(event) {
@@ -55,10 +58,6 @@ export class AddValidationDataSetComponent implements OnInit {
   }
 
   public save() {
-    /*if (this.isEditMode) {
-      this.store.dispatch(editProjectMember({ projectMember: this.form.value }));
-    } else {
-      this.store.dispatch(addProjectMember({ projectMember: this.form.value }));
-    }*/
+      this.store.dispatch(addValidationDataSet({ validationDataSet: this.form.value }));
   }
 }

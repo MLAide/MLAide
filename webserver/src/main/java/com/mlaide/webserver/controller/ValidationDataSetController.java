@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @Validated
-@RequestMapping(path = "/api/v1/projects/{projectKey}/validationSets")
+@RequestMapping(path = "/api/v1/projects/{projectKey}/validationDataSets")
 public class ValidationDataSetController {
     private final Logger logger = LoggerFactory.getLogger(ValidationDataSetController.class);
     private final ValidationDataSetService validationDataSetService;
@@ -35,10 +35,10 @@ public class ValidationDataSetController {
     public ResponseEntity<ValidationDataSet> postValidationSet(
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @Valid @RequestBody ValidationDataSet validationDataSet) {
-        logger.info("post validation set");
+        logger.info("post validation data set");
 
         if (validationDataSet == null) {
-            throw new IllegalArgumentException("request body must contain validation set");
+            throw new IllegalArgumentException("request body must contain validation data set");
         }
 
         validationDataSet = validationDataSetService.addValidationSet(projectKey, validationDataSet);
@@ -46,23 +46,23 @@ public class ValidationDataSetController {
         return ResponseEntity.ok(validationDataSet);
     }
 
-    @PostMapping(path = "{validationSetName}/{validationSetVersion}/files")
+    @PostMapping(path = "{validationDataSetName}/{validationDataSetVersion}/files")
     public ResponseEntity<Void> postFile(
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
-            @PathVariable("validationSetName") @NotBlank String validationSetName,
-            @PathVariable("validationSetVersion") @NotNull Integer validationSetVersion,
+            @PathVariable("validationDataSetName") @NotBlank String validationDataSetName,
+            @PathVariable("validationDataSetVersion") @NotNull Integer validationDataSetVersion,
             @RequestParam("file-hash") @NotNull String fileHash,
             @RequestParam("file") MultipartFile file) throws IOException {
-        logger.info("post validation set");
+        logger.info("post validation data set");
 
         if (file == null) {
-            throw new IllegalArgumentException("request body must contain validation set");
+            throw new IllegalArgumentException("request body must contain validation data set");
         }
 
         validationDataSetService.uploadValidaitonSetFile(
                 projectKey,
-                validationSetName,
-                validationSetVersion,
+                validationDataSetName,
+                validationDataSetVersion,
                 file.getInputStream(),
                 file.getOriginalFilename(),
                 fileHash);
@@ -70,12 +70,12 @@ public class ValidationDataSetController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(path = "{validationSetName}/find-by-file-hashes")
-    public ResponseEntity<ValidationDataSet> findArtifactByFileHashes(
+    @PostMapping(path = "{validationDataSetName}/find-by-file-hashes")
+    public ResponseEntity<ValidationDataSet> findValidationDataSetByFileHashes(
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
-            @PathVariable("artifactName") @NotBlank String validationSetName,
+            @PathVariable("artifactName") @NotBlank String validationDataSetName,
             @RequestBody List<FileHash> fileHashes) {
-        ValidationDataSet validationDataSet = validationDataSetService.getValidationSetByFileHashes(projectKey, validationSetName, fileHashes);
+        ValidationDataSet validationDataSet = validationDataSetService.getValidationSetByFileHashes(projectKey, validationDataSetName, fileHashes);
 
         return ResponseEntity.ok(validationDataSet);
     }
