@@ -1,8 +1,11 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { AuthGuard } from "@mlaide/auth/auth-guard.service";
+import {
+  ValidationDataSetListComponent
+} from "@mlaide/validation-data-set/validation-data-set-list/validation-data-set-list.component";
 
-import { ValidationDataListComponent } from "@mlaide/validation-data/validation-data-list/validation-data-list.component";
+
 
 export const routes: Routes = [
   {
@@ -11,7 +14,7 @@ export const routes: Routes = [
     children: [
       {
         path: "",
-        component: ValidationDataListComponent,
+        component: ValidationDataSetListComponent,
         canActivate: [AuthGuard],
         pathMatch: "full",
         data: { "id": "validationDataList" }
@@ -24,4 +27,4 @@ export const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class ValidationDataRoutingModule {}
+export class ValidationDataSetRoutingModule {}

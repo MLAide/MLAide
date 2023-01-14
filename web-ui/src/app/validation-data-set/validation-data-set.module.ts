@@ -1,21 +1,22 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ValidationDataListComponent } from './validation-data-list/validation-data-list.component';
-import { ValidationDataRoutingModule } from "@mlaide/validation-data/validation-data-routing.module";
+import { ValidationDataSetListComponent } from './validation-data-set-list/validation-data-set-list.component';
+import { ValidationDataSetRoutingModule } from "@mlaide/validation-data-set/validation-data-set-routing.module";
 import { SharedModule } from "@mlaide/shared/shared.module";
 import { MatButtonModule } from "@angular/material/button";
-import { AddValidationDataComponent } from './add-validation-data/add-validation-data.component';
+import { AddValidationDataSetComponent } from './add-validation-data-set/add-validation-data-set.component';
 import { MatCardModule } from "@angular/material/card";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
+import { ReactiveFormsModule } from "@angular/forms";
 
 
 
 @NgModule({
   declarations: [
-    ValidationDataListComponent,
-    AddValidationDataComponent
+    ValidationDataSetListComponent,
+    AddValidationDataSetComponent
   ],
   imports: [
     CommonModule,
@@ -24,9 +25,10 @@ import { MatInputModule } from "@angular/material/input";
     MatDialogModule,
     MatIconModule,
     MatInputModule,
-    ValidationDataRoutingModule,
-    SharedModule
+    ValidationDataSetRoutingModule,
+    SharedModule,
+    ReactiveFormsModule
   ]
 })
 
-export class ValidationDataModule { }
+export class ValidationDataSetModule { }

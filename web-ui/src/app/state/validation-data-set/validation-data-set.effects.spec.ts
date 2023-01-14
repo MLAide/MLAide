@@ -9,19 +9,19 @@ import { TestBed } from "@angular/core/testing";
 import { provideMockActions } from "@ngrx/effects/testing";
 import { Router } from "@angular/router";
 import Spy = jasmine.Spy;
-import { ValidationDataEffects } from "@mlaide/state/validation-data/validation-data.effects";
-import { AddValidationDataComponent } from "@mlaide/validation-data/add-validation-data/add-validation-data.component";
+import { ValidationDataSetEffects } from "@mlaide/state/validation-data-set/validation-data-set.effects";
+import { AddValidationDataSetComponent } from "@mlaide/validation-data-set/add-validation-data-set/add-validation-data-set.component";
 import {
-  closeAddValidationDataDialog,
-  openAddValidationDataDialog
-} from "@mlaide/state/validation-data/validation-data.actions";
+  closeAddValidationDataSetDialog,
+  openAddValidationDataSetDialog
+} from "@mlaide/state/validation-data-set/validation-data-set.actions";
 
-describe("ValidationDataEffects", () => {
+describe("ValidationDataSetEffects", () => {
   let actions$ = new Observable<Action>();
-  let effects: ValidationDataEffects;
+  let effects: ValidationDataSetEffects;
   let store: MockStore;
   let matDialog: MatDialog;
-  let openDialogSpy: Spy<(component: ComponentType<AddValidationDataComponent>, config?: MatDialogConfig) => MatDialogRef<AddValidationDataComponent>>;
+  let openDialogSpy: Spy<(component: ComponentType<AddValidationDataSetComponent>, config?: MatDialogConfig) => MatDialogRef<AddValidationDataSetComponent>>;
   let closeAllDialogSpy: Spy<() => void>;
   let router;
 
@@ -35,7 +35,7 @@ describe("ValidationDataEffects", () => {
         MatDialogModule,
       ],
       providers: [
-        ValidationDataEffects,
+        ValidationDataSetEffects,
         provideMockActions(() => actions$),
         provideMockStore(),
         { provide: Router, useValue: router }
@@ -43,23 +43,23 @@ describe("ValidationDataEffects", () => {
     });
 
     store = TestBed.inject(MockStore);
-    effects = TestBed.inject<ValidationDataEffects>(ValidationDataEffects);
+    effects = TestBed.inject<ValidationDataSetEffects>(ValidationDataSetEffects);
     matDialog = TestBed.inject<MatDialog>(MatDialog);
     openDialogSpy = spyOn(matDialog, 'open');
     closeAllDialogSpy = spyOn(matDialog, 'closeAll');
   });
 
-  describe("openAddValidationDataDialog$", () => {
-    it("should open MatDialog with AddValidationDataComponent", async (done) => {
+  describe("openAddValidationDataSetDialog$", () => {
+    it("should open MatDialog with AddValidationDataSetComponent", async (done) => {
       // arrange
-      actions$ = of(openAddValidationDataDialog());
+      actions$ = of(openAddValidationDataSetDialog());
 
       // act
-      effects.openAddValidationDataDialog$.subscribe(() => {
+      effects.openAddValidationDataSetDialog$.subscribe(() => {
         // assert
-        expect(openDialogSpy).toHaveBeenCalledWith(AddValidationDataComponent, { minWidth: "20%",
+        expect(openDialogSpy).toHaveBeenCalledWith(AddValidationDataSetComponent, { minWidth: "20%",
           data: {
-            title: `Add new validation data`,
+            title: `Add new validation data set`,
           }, });
 
         done();
@@ -67,13 +67,13 @@ describe("ValidationDataEffects", () => {
     });
   });
 
-  describe("closeAddValidationDataDialog$", () => {
+  describe("closeAddValidationDataSetDialog$", () => {
     it("should close all open MatDialog instances", async (done) => {
       // arrange
-      actions$ = of(closeAddValidationDataDialog());
+      actions$ = of(closeAddValidationDataSetDialog());
 
       // act
-      effects.closeAddValidationDataDialog$.subscribe(() => {
+      effects.closeAddValidationDataSetDialog$.subscribe(() => {
         // assert
         expect(closeAllDialogSpy).toHaveBeenCalled();
 

@@ -1,25 +1,25 @@
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import * as validationDataActions from "@mlaide/state/validation-data/validation-data.actions";
+import * as validationDataActions from "@mlaide/state/validation-data-set/validation-data-set.actions";
 import { catchError, map, switchMap, tap } from "rxjs/operators";
-import { AddValidationDataComponent } from "@mlaide/validation-data/add-validation-data/add-validation-data.component";
+import { AddValidationDataSetComponent } from "@mlaide/validation-data-set/add-validation-data-set/add-validation-data-set.component";
 import { Injectable } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
 import { Store } from "@ngrx/store";
 import { of } from "rxjs";
-import { ValidationDataApi } from "@mlaide/state/validation-data/validation-data.api";
+import { ValidationDataSetApi } from "@mlaide/state/validation-data-set/validation-data-set.api";
 import { addProjectFailed } from "@mlaide/state/project/project.actions";
 import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
 import { HttpErrorResponse } from "@angular/common/http";
 
 @Injectable({ providedIn: "root" })
-export class ValidationDataEffects {
+export class ValidationDataSetEffects {
   public constructor(
     private readonly actions$: Actions,
     private readonly dialog: MatDialog,
     private readonly router: Router,
     private readonly store: Store,
-    private readonly validationDataApi: ValidationDataApi) {}
+    private readonly validationDataApi: ValidationDataSetApi) {}
 
   addValidationSet$ = createEffect(() => {
       return this.actions$.pipe(
@@ -58,11 +58,11 @@ export class ValidationDataEffects {
     )
   );
 
-  openAddValidationDataDialog$ = createEffect(() =>
+  openAddValidationDataSetDialog$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(validationDataActions.openAddValidationDataDialog),
+        ofType(validationDataActions.openAddValidationDataSetDialog),
         tap((data) => {
-          this.dialog.open(AddValidationDataComponent, {
+          this.dialog.open(AddValidationDataSetComponent, {
             minWidth: "20%",
             data: {
               title: `Add new validation data set`,
@@ -74,9 +74,9 @@ export class ValidationDataEffects {
     { dispatch: false }
   );
 
-  closeAddValidationDataDialog$ = createEffect(() =>
+  closeAddValidationDataSetDialog$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(validationDataActions.closeAddValidationDataDialog,
+        ofType(validationDataActions.closeAddValidationDataSetDialog,
           //projectMemberActions.addProjectMemberSucceeded,
           ),
         tap(() => this.dialog.closeAll())

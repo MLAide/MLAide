@@ -8,14 +8,14 @@ import { ENTER } from "@angular/cdk/keycodes";
 import { Store } from "@ngrx/store";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { ValidationSet } from "@mlaide/state/validation-data/validation-data.models";
+import { ValidationSet } from "@mlaide/state/validation-data-set/validation-data-set.models";
 
 @Component({
-  selector: 'app-add-validation-data',
-  templateUrl: './add-validation-data.component.html',
-  styleUrls: ['./add-validation-data.component.scss']
+  selector: 'app-add-validation-data-set',
+  templateUrl: './add-validation-data-set.component.html',
+  styleUrls: ['./add-validation-data-set.component.scss']
 })
-export class AddValidationDataComponent implements OnInit {
+export class AddValidationDataSetComponent implements OnInit {
     public form: FormGroup;
 
   constructor(
