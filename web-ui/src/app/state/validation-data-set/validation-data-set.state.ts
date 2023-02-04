@@ -2,6 +2,6 @@ import { ValidationDataSet } from "@mlaide/state/validation-data-set/validation-
 
 export interface ValidationDataSetState {
   isLoading: boolean;
-
-  items: ValidationDataSet[]
+  foundValidationDataSetWithFileHashes: ValidationDataSet;
+  items: ValidationDataSet[];
 }

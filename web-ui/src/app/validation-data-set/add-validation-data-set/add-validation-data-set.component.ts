@@ -3,11 +3,17 @@ import { ENTER } from "@angular/cdk/keycodes";
 import { Store } from "@ngrx/store";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { ValidationDataSet } from "@mlaide/state/validation-data-set/validation-data-set.models";
+import { FileHash, ValidationDataSet } from "@mlaide/state/validation-data-set/validation-data-set.models";
 import {
-  addValidationDataSet,
-  closeAddValidationDataSetDialog
+  closeAddValidationDataSetDialog, addValidationDataSetWithFiles
 } from "@mlaide/state/validation-data-set/validation-data-set.actions";
+import { UploadFilesWithFileHashes } from "@mlaide/shared/components/file-upload/file-upload.component";
+import {
+  selectFoundValidationDataSetWithFileHashes
+} from "@mlaide/state/validation-data-set/validation-data-set.selectors";
+import { tap } from "rxjs/operators";
+import { Observable } from "rxjs";
+import { AppState } from "@mlaide/state/app.state";
 
 @Component({
   selector: 'app-add-validation-data-set',
@@ -16,6 +22,8 @@ import {
 })
 export class AddValidationDataSetComponent implements OnInit {
     public form: FormGroup;
+public foundValidationDataSetWithFileHashes$: Observable<ValidationDataSet>;
+    private uploadFilesWithFileHashes: UploadFilesWithFileHashes[]
 
   constructor(
     private store: Store,
@@ -34,10 +42,11 @@ export class AddValidationDataSetComponent implements OnInit {
 }
 
   ngOnInit(): void {
+      this.foundValidationDataSetWithFileHashes$ = this.store.select(selectFoundValidationDataSetWithFileHashes);
   }
 
-  public logMyFiles(event) {
-    alert(JSON.stringify(event.file));
+  public logMyFiles(uploadFilesWithHashes: UploadFilesWithFileHashes[]) {
+      this.uploadFilesWithFileHashes = uploadFilesWithHashes;
   }
 
   public cancel() {
@@ -58,6 +67,6 @@ export class AddValidationDataSetComponent implements OnInit {
   }
 
   public save() {
-      this.store.dispatch(addValidationDataSet({ validationDataSet: this.form.value }));
+      this.store.dispatch(addValidationDataSetWithFiles({ validationDataSet: this.form.value, uploadFilesWithFileHashes: this.uploadFilesWithFileHashes }));
   }
 }

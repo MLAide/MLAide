@@ -9,6 +9,7 @@ import { AuthState } from "@mlaide/state/auth/auth.state";
 import { UserState } from "@mlaide/state/user/user.state";
 import { ApiKeyState } from "@mlaide/state/api-key/api-key.state";
 import { SshKeyState } from "@mlaide/state/ssh-key/ssh-key.state";
+import { ValidationDataSetState } from "@mlaide/state/validation-data-set/validation-data-set.state";
 
 export interface AppState {
   apiKeys: ApiKeyState;
@@ -22,4 +23,5 @@ export interface AppState {
   runs: RunState;
   sshKeys: SshKeyState;
   user: UserState;
+  validationDataSets: ValidationDataSetState
 }

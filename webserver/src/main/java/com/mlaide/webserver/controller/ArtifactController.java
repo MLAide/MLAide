@@ -162,6 +162,7 @@ public class ArtifactController {
             @PathVariable("artifactName") @NotBlank String artifactName,
             @RequestBody List<FileHash> fileHashes) {
         Artifact artifact = artifactService.getArtifactByFileHashes(projectKey, artifactName, fileHashes);
+        //TODO: Add sort, otherwise the order of the files will lead to errors
 
         return ResponseEntity.ok(artifact);
     }

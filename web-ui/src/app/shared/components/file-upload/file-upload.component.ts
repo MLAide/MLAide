@@ -1,5 +1,6 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from "@angular/core";
 import * as CryptoJS from 'crypto-js';
+import { FileHash } from "@mlaide/state/validation-data-set/validation-data-set.models";
 
 @Component({
   selector: 'app-file-upload',
@@ -9,12 +10,9 @@ import * as CryptoJS from 'crypto-js';
 export class FileUploadComponent implements OnInit {
   @ViewChild("fileDropRef", { static: false }) fileDropEl: ElementRef;
   files: any[] = [];
-  @Output() newFilesForUploadWithHashesAddedEvent = new EventEmitter<any>();
+  @Output() newFilesForUploadWithHashesAddedEvent = new EventEmitter<UploadFilesWithFileHashes[]>();
 
-  myFiles: {
-    file: File;
-    fileHash: string;
-  }[] = [];
+  uploadFilesWithHashes: UploadFilesWithFileHashes[] = [];
 
   /**
    * on file drop handler
@@ -43,39 +41,23 @@ export class FileUploadComponent implements OnInit {
   }
 
   /**
-   * Simulate the upload process
-   */
-  uploadFilesSimulator(index: number) {
-    setTimeout(() => {
-      if (index === this.files.length) {
-        return;
-      } else {
-        const progressInterval = setInterval(() => {
-          if (this.files[index].progress === 100) {
-            clearInterval(progressInterval);
-            this.uploadFilesSimulator(index + 1);
-          } else {
-            this.files[index].progress += 5;
-          }
-        }, 200);
-      }
-    }, 1000);
-  }
-
-  /**
    * Convert Files list to normal array list
    * @param files (Files List)
    */
   async prepareFilesList(files: Array<File>) {
     for (const item of files) {
-      var name = item.name;
       this.files.push(item);
       var md5 = await this.calculateHashForFile(item);
-      this.myFiles.push({file: item, fileHash: md5})
+      this.uploadFilesWithHashes.push({
+        file: item,
+        fileHash: {
+          fileName: item.name,
+          fileHash: md5
+        }
+      })
     }
-    this.newFilesForUploadWithHashesAddedEvent.emit(this.myFiles);
+    this.newFilesForUploadWithHashesAddedEvent.emit(this.uploadFilesWithHashes);
     this.fileDropEl.nativeElement.value = "";
-    this.uploadFilesSimulator(0);
   }
 
   private async calculateHashForFile(file: any): Promise<string> {
@@ -114,4 +96,9 @@ export class FileUploadComponent implements OnInit {
   ngOnInit(): void {
   }
 
+}
+
+export interface UploadFilesWithFileHashes {
+  file: File;
+  fileHash: FileHash;
 }

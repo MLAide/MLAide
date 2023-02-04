@@ -5,8 +5,8 @@ import {
   ValidationDataSetFile
 } from "@mlaide/state/validation-data-set/validation-data-set.models";
 import { APP_CONFIG, AppConfig } from "@mlaide/config/app-config.model";
-import { HttpClient } from "@angular/common/http";
-import { Observable } from "rxjs";
+import { HttpClient, HttpResponse } from "@angular/common/http";
+import { EMPTY, Observable } from "rxjs";
 import { Experiment } from "@mlaide/state/experiment/experiment.models";
 
 export class ValidationDataSetListResponse {
@@ -25,10 +25,25 @@ export class ValidationDataSetApi {
     return this.http.post<ValidationDataSet>(`${this.baseUrl}/projects/${projectKey}/validationDataSets`, validationDataSet);
   }
 
-  public findValidationDataSetByFileHashes(projectKey: string, validationDataSetName: string, fileHashes: FileHash[]): Observable<ValidationDataSet> {
+  public uploadFile(projectKey: string, validationDataSetName: string, validationDataSetVersion: number, fileHash: string, file: File): Observable<void> {
+    const formData: FormData = new FormData();
+    formData.append("file", file);
+
+    const params = {
+      fileHash: fileHash
+    }
+
+    return this.http.post<void>(`${this.baseUrl}/projects/${projectKey}/validationDataSets/${validationDataSetName}/${validationDataSetVersion}/files`,
+      formData,
+      {
+        params
+      });
+  }
+
+  public findValidationDataSetByFileHashes(projectKey: string, validationDataSetName: string, fileHashes: FileHash[]): Observable<HttpResponse<ValidationDataSet>> {
     return this.http.post<ValidationDataSet>(
       `${this.baseUrl}/projects/${projectKey}/validationDataSets/${validationDataSetName}/find-by-file-hashes`,
-      fileHashes);
+      fileHashes, { observe: 'response'});
   }
 
 }

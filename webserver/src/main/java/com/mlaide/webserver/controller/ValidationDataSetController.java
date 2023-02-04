@@ -51,7 +51,7 @@ public class ValidationDataSetController {
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
             @PathVariable("validationDataSetName") @NotBlank String validationDataSetName,
             @PathVariable("validationDataSetVersion") @NotNull Integer validationDataSetVersion,
-            @RequestParam("file-hash") @NotNull String fileHash,
+            @RequestParam("fileHash") @NotNull String fileHash,
             @RequestParam("file") MultipartFile file) throws IOException {
         logger.info("post validation data set");
 
@@ -73,8 +73,10 @@ public class ValidationDataSetController {
     @PostMapping(path = "{validationDataSetName}/find-by-file-hashes")
     public ResponseEntity<ValidationDataSet> findValidationDataSetByFileHashes(
             @PathVariable("projectKey") @Pattern(regexp = ValidationRegEx.PROJECT_KEY) String projectKey,
-            @PathVariable("artifactName") @NotBlank String validationDataSetName,
+            @PathVariable("validationDataSetName") @NotBlank String validationDataSetName,
             @RequestBody List<FileHash> fileHashes) {
+        logger.info("post find validation data set by file hashes");
+
         ValidationDataSet validationDataSet = validationDataSetService.getValidationSetByFileHashes(projectKey, validationDataSetName, fileHashes);
 
         return ResponseEntity.ok(validationDataSet);

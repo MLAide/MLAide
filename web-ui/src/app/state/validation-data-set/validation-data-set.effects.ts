@@ -6,17 +6,16 @@ import { Injectable } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { Router } from "@angular/router";
 import { Store } from "@ngrx/store";
-import { of } from "rxjs";
+import { merge, Observable, of, throwError } from "rxjs";
 import { ValidationDataSetApi } from "@mlaide/state/validation-data-set/validation-data-set.api";
-import { addProjectFailed } from "@mlaide/state/project/project.actions";
-import { showErrorMessage } from "@mlaide/state/shared/shared.actions";
+import { showErrorMessage, showSuccessMessage } from "@mlaide/state/shared/shared.actions";
 import { HttpErrorResponse } from "@angular/common/http";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
-import * as projectMemberActions from "@mlaide/state/project-member/project-member.actions";
 import {
-  findValidationDataSetByFileHashes,
-  findValidationDataSetByFileHashesFailed
-} from "@mlaide/state/validation-data-set/validation-data-set.actions";
+  AddValidationDataSetAndUploadFilesResult, FileHash,
+  ValidationDataSet
+} from "@mlaide/state/validation-data-set/validation-data-set.models";
+import { UploadFilesWithFileHashes } from "@mlaide/shared/components/file-upload/file-upload.component";
 
 @Injectable({ providedIn: "root" })
 export class ValidationDataSetEffects {
@@ -26,36 +25,66 @@ export class ValidationDataSetEffects {
     private readonly router: Router,
     private readonly store: Store,
     private readonly validationDataApi: ValidationDataSetApi) {}
-
-  addValidationDataSet$ = createEffect(() => {
+  addValidationDataSetWithFiles$ = createEffect(() => {
       return this.actions$.pipe(
-        ofType(validationDataActions.addValidationDataSet),
+        ofType(validationDataActions.addValidationDataSetWithFiles),
         concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
         mergeMap(([action, projectKey]) => {
-          return this.validationDataApi.addValidationDataSet(
+          const fileHashes: FileHash[] = [];
+          action.uploadFilesWithFileHashes?.forEach((uploadFileWithFileHash) => {
+              fileHashes.push(uploadFileWithFileHash.fileHash);
+            }
+          )
+
+          return this.validationDataApi.findValidationDataSetByFileHashes(
             projectKey,
-            action.validationDataSet
+            action.validationDataSet.name,
+            fileHashes
+          ).pipe(
+            map((httpResponse) => AddValidationDataSetAndUploadFilesResult.Existing),
+            catchError((error) => {
+              if (error instanceof HttpErrorResponse) {
+                if (error.status === 404) {
+                  return this.addValidationDataSetAndUploadFiles(projectKey, action.validationDataSet, action.uploadFilesWithFileHashes).pipe(map(() => AddValidationDataSetAndUploadFilesResult.Created));
+                }
+              }
+              throwError(error);
+            }),
           );
         }),
-        map((createdValidationDataSet) => validationDataActions.addValidationDataSetSucceeded({validationDataSet: createdValidationDataSet})),
-        catchError((error) => of(validationDataActions.addValidationDataSetFailed(error)))
+        map((addValidationDataSetAndUploadFilesResult) => validationDataActions.addValidationDataSetWithFilesSucceeded({addValidationDataSetAndUploadFilesResult: addValidationDataSetAndUploadFilesResult})),
+        catchError((error) => {
+          return of(validationDataActions.addValidationDataSetWithFilesFailed(error));
+        })
       );
     }
   );
 
-  addValidationDataSetFailed$ = createEffect(() =>
+  addValidationDataSetWithFilesSucceeded$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(validationDataActions.addValidationDataSetWithFilesSucceeded),
+        switchMap((action) => {
+          const createdMessage = "The validation data set was created successfully";
+          const existedMessage = "This validation data set already exists";
+          const message = action.addValidationDataSetAndUploadFilesResult === AddValidationDataSetAndUploadFilesResult.Created ? createdMessage : existedMessage;
+
+          return [
+            validationDataActions.closeAddValidationDataSetDialog(),
+            showSuccessMessage({ message: message })
+          ]
+        })
+      )
+  );
+
+  addValidationDataSetWithFilesFailed$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(validationDataActions.addValidationDataSetFailed),
+      ofType(validationDataActions.addValidationDataSetWithFilesFailed),
       map((action) => action.payload),
       map((error) => {
         let message = "Could not create validation data set. A unknown error occurred.";
 
         if (this.hasErrorStatusCode(error, 400)) {
           message = "The validation data set could not be created, because of invalid input data. Please try again with valid input data.";
-        }
-
-        if (this.hasErrorStatusCode(error, 409)) {
-          message = "A validation data set with this key already exists. Please choose a different validation set key.";
         }
 
         return {
@@ -66,6 +95,7 @@ export class ValidationDataSetEffects {
       map(showErrorMessage)
     )
   );
+
 
   openAddValidationDataSetDialog$ = createEffect(() =>
       this.actions$.pipe(
@@ -87,45 +117,26 @@ export class ValidationDataSetEffects {
       this.actions$.pipe(
         ofType(validationDataActions.closeAddValidationDataSetDialog,
           //projectMemberActions.addProjectMemberSucceeded,
-          ),
+        ),
         tap(() => this.dialog.closeAll())
       ),
     { dispatch: false }
   );
 
-  findValidationDataSetByFileHashes$ = createEffect(() => {
-      return this.actions$.pipe(
-        ofType(validationDataActions.findValidationDataSetByFileHashes),
-        concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-        mergeMap(([action, projectKey]) => {
-          return this.validationDataApi.findValidationDataSetByFileHashes(
-            projectKey,
-            action.validationDataSet.name,
-            action.fileHashes
-          );
-        }),
-        map((createdValidationDataSet) => validationDataActions.findValidationDataSetByFileHashesSucceeded({validationDataSet: createdValidationDataSet})),
-        catchError((error) => of(validationDataActions.findValidationDataSetByFileHashesFailed(error)))
-      );
-    }
-  );
 
-  findValidationDataSetByFileHashesFailed$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(validationDataActions.findValidationDataSetByFileHashesFailed),
-      map((action) => action.payload),
-      map((error) => {
-        let message = "Could not find validation data set by file hashes. A unknown error occurred.";
-
-        return {
-          message: message,
-          error: error
-        };
-      }),
-      map(showErrorMessage)
-    )
-  );
-
+  private addValidationDataSetAndUploadFiles(projectKey: string, validationDataSet: ValidationDataSet, uploadFilesWithFileHashes: UploadFilesWithFileHashes[]): Observable<void> {
+    return this.validationDataApi.addValidationDataSet(
+      projectKey,
+      validationDataSet
+    ).pipe(
+      mergeMap((createdValidationDataSet) => {
+        const httpCalls$ = uploadFilesWithFileHashes.map((uploadFileWithFileHash) =>
+          this.validationDataApi.uploadFile(projectKey, createdValidationDataSet.name, createdValidationDataSet.version, uploadFileWithFileHash.fileHash.fileHash, uploadFileWithFileHash.file)
+        );
+        return merge(...httpCalls$);
+      })
+    );
+  }
 
   private hasErrorStatusCode = (error, statusCode: number): boolean => {
     return error instanceof HttpErrorResponse && error.status === statusCode;

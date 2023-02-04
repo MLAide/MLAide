@@ -20,12 +20,22 @@
 <div style="margin-top: 24px">
   <span class="mat-h2">Files for upload</span>
 </div>
-<div fxLayout="column" fxLayoutAlign="center center">
-  <div class="single-file" *ngFor="let file of files; let i = index">
-    <mat-card>
-      <p>{{ file?.name }}</p>
-    </mat-card>
 
-    </div>
+<div class="single-file" *ngFor="let file of files; let i = index">
+  <div fxLayout="row">
+    <mat-card fxFlex="100" fxLayoutAlign="space-between center">
+
+        <div>
+        <p>{{ file?.name }}</p>
+        </div>
+        <div>
+          <button mat-button (click)="deleteFile(i)" matTooltip="Delete file {{file.name}}" aria-label="Icon button to delete a upload file from list">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+
+    </mat-card>
+  </div>
 </div>
+
 

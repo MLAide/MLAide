@@ -24,6 +24,7 @@ import { ApiKeyEffects } from "./api-key/api-key.effects";
 import { SshKeyEffects } from "@mlaide/state/ssh-key/ssh-key.effects";
 import { sshKeysReducer } from "@mlaide/state/ssh-key/ssh-key.reducers";
 import { ValidationDataSetEffects } from "@mlaide/state/validation-data-set/validation-data-set.effects";
+import { validationDataSetsReducer } from "@mlaide/state/validation-data-set/validation-data-set.reducers";
 
 @NgModule({
   declarations: [],
@@ -39,7 +40,8 @@ import { ValidationDataSetEffects } from "@mlaide/state/validation-data-set/vali
       shared: sharedReducer,
       sshKeys: sshKeysReducer,
       router: routerReducer,
-      user: userReducer
+      user: userReducer,
+      validationDatSets: validationDataSetsReducer
     }),
     StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot([
