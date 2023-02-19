@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ValidationDataSetRepository extends MongoRepository<ValidationDataSetEntity, ObjectId> {
+public interface ValidationDataSetRepository extends MongoRepository<ValidationDataSetEntity, ObjectId>, ExtendedValidationDataSetQueries {
     @Override
     @PreAuthorize("hasPermission(#entity.projectKey, 'com.mlaide.webserver.repository.entity.ProjectEntity', 'CONTRIBUTOR') " +
             "or hasPermission(#entity.projectKey, 'com.mlaide.webserver.repository.entity.ProjectEntity', 'OWNER')")

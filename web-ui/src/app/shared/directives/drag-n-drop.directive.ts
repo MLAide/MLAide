@@ -27,9 +27,18 @@ export class DragNDropDirective {
     evt.preventDefault();
     evt.stopPropagation();
     this.fileOver = false;
-    let files = evt.dataTransfer.files;
-    if (files.length > 0) {
-      this.fileDropped.emit(files);
+
+    // https://stackoverflow.com/questions/3590058/does-html5-allow-drag-drop-upload-of-folders-or-a-folder-tree
+    const items = evt.dataTransfer.items;
+    for (const item of items) {
+      if(item.webkitGetAsEntry().isFile) {
+        let files = evt.dataTransfer.files;
+        if (files.length > 0) {
+          this.fileDropped.emit(files);
+        }
+      } else if (item.webkitGetAsEntry().isDirectory) {
+        // TODO: Handle directories
+      }
     }
   }
 

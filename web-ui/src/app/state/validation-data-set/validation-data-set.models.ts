@@ -17,8 +17,3 @@ export interface FileHash {
   fileName: string;
   fileHash: string;
 }
-
-export enum AddValidationDataSetAndUploadFilesResult {
-  Created = "CREATED",
-  Existing = "EXISTING"
-}

@@ -1,6 +1,6 @@
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import * as validationDataActions from "@mlaide/state/validation-data-set/validation-data-set.actions";
-import { catchError, map, mergeMap, switchMap, tap } from "rxjs/operators";
+import { catchError, map, mergeMap, reduce, switchMap, tap } from "rxjs/operators";
 import { AddValidationDataSetComponent } from "@mlaide/validation-data-set/add-validation-data-set/add-validation-data-set.component";
 import { Injectable } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
@@ -12,7 +12,7 @@ import { showErrorMessage, showSuccessMessage } from "@mlaide/state/shared/share
 import { HttpErrorResponse } from "@angular/common/http";
 import { selectCurrentProjectKey } from "@mlaide/state/project/project.selectors";
 import {
-  AddValidationDataSetAndUploadFilesResult, FileHash,
+  FileHash,
   ValidationDataSet
 } from "@mlaide/state/validation-data-set/validation-data-set.models";
 import { UploadFilesWithFileHashes } from "@mlaide/shared/components/file-upload/file-upload.component";
@@ -41,21 +41,24 @@ export class ValidationDataSetEffects {
             action.validationDataSet.name,
             fileHashes
           ).pipe(
-            map((httpResponse) => AddValidationDataSetAndUploadFilesResult.Existing),
             catchError((error) => {
               if (error instanceof HttpErrorResponse) {
                 if (error.status === 404) {
-                  return this.addValidationDataSetAndUploadFiles(projectKey, action.validationDataSet, action.uploadFilesWithFileHashes).pipe(map(() => AddValidationDataSetAndUploadFilesResult.Created));
+                  return this.addValidationDataSetAndUploadFiles(projectKey, action.validationDataSet, action.uploadFilesWithFileHashes);
                 }
               }
               throwError(error);
             }),
+            reduce((arr, addValidationDataSetAndUploadFilesResult) => {
+              arr.push(addValidationDataSetAndUploadFilesResult)
+              return arr;
+            }, []),
+            map(() => validationDataActions.addValidationDataSetWithFilesSucceeded()),
+            catchError((error) => {
+              return of(validationDataActions.addValidationDataSetWithFilesFailed(error));
+            })
           );
         }),
-        map((addValidationDataSetAndUploadFilesResult) => validationDataActions.addValidationDataSetWithFilesSucceeded({addValidationDataSetAndUploadFilesResult: addValidationDataSetAndUploadFilesResult})),
-        catchError((error) => {
-          return of(validationDataActions.addValidationDataSetWithFilesFailed(error));
-        })
       );
     }
   );
@@ -64,9 +67,7 @@ export class ValidationDataSetEffects {
       this.actions$.pipe(
         ofType(validationDataActions.addValidationDataSetWithFilesSucceeded),
         switchMap((action) => {
-          const createdMessage = "The validation data set was created successfully";
-          const existedMessage = "This validation data set already exists";
-          const message = action.addValidationDataSetAndUploadFilesResult === AddValidationDataSetAndUploadFilesResult.Created ? createdMessage : existedMessage;
+          const message = "The validation data set was created or updated successfully";
 
           return [
             validationDataActions.closeAddValidationDataSetDialog(),

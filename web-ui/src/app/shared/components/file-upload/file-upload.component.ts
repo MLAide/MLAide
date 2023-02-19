@@ -9,7 +9,6 @@ import { FileHash } from "@mlaide/state/validation-data-set/validation-data-set.
 })
 export class FileUploadComponent implements OnInit {
   @ViewChild("fileDropRef", { static: false }) fileDropEl: ElementRef;
-  files: any[] = [];
   @Output() newFilesForUploadWithHashesAddedEvent = new EventEmitter<UploadFilesWithFileHashes[]>();
 
   uploadFilesWithHashes: UploadFilesWithFileHashes[] = [];
@@ -33,11 +32,7 @@ export class FileUploadComponent implements OnInit {
    * @param index (File index)
    */
   deleteFile(index: number) {
-    if (this.files[index].progress < 100) {
-      console.log("Upload in progress.");
-      return;
-    }
-    this.files.splice(index, 1);
+    this.uploadFilesWithHashes.splice(index, 1);
   }
 
   /**
@@ -46,15 +41,16 @@ export class FileUploadComponent implements OnInit {
    */
   async prepareFilesList(files: Array<File>) {
     for (const item of files) {
-      this.files.push(item);
       var md5 = await this.calculateHashForFile(item);
-      this.uploadFilesWithHashes.push({
-        file: item,
-        fileHash: {
-          fileName: item.name,
-          fileHash: md5
-        }
-      })
+      if(!this.uploadFilesWithHashes.find(element => element.fileHash.fileHash == md5)) {
+        this.uploadFilesWithHashes.push({
+          file: item,
+          fileHash: {
+            fileName: item.name,
+            fileHash: md5
+          }
+        });
+      }
     }
     this.newFilesForUploadWithHashesAddedEvent.emit(this.uploadFilesWithHashes);
     this.fileDropEl.nativeElement.value = "";
@@ -76,21 +72,6 @@ export class FileUploadComponent implements OnInit {
     });
   }
 
-  /**
-   * format bytes
-   * @param bytes (File size in bytes)
-   * @param decimals (Decimals point)
-   */
-  formatBytes(bytes, decimals = 2) {
-    if (bytes === 0) {
-      return "0 Bytes";
-    }
-    const k = 1024;
-    const dm = decimals <= 0 ? 0 : decimals;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-  }
   constructor() { }
 
   ngOnInit(): void {

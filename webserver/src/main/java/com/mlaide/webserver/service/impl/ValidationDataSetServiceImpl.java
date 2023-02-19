@@ -66,13 +66,10 @@ public class ValidationDataSetServiceImpl implements ValidationDataSetService {
         String internalFileName = buildInternalFileName(filename, validationDataSetEntity);
 
         List<FileRefEntity> files = validationDataSetEntity.getFiles();
-        if (files == null) {
-            files = new ArrayList<>();
-            validationDataSetEntity.setFiles(files);
+        Optional<FileRefEntity> existingFile = Optional.empty();
+        if (files != null) {
+            existingFile = files.stream().filter(f -> f.getInternalFileName().equals(internalFileName)).findFirst();
         }
-
-        Optional<FileRefEntity> existingFile =
-                files.stream().filter(f -> f.getInternalFileName().equals(internalFileName)).findFirst();
 
         if (existingFile.isPresent() && fileHash.equalsIgnoreCase(existingFile.get().getHash())) {
             // The same file with the same content (hash) already exists. We don't need to store it twice.
@@ -87,9 +84,8 @@ public class ValidationDataSetServiceImpl implements ValidationDataSetService {
                     .hash(fileHash)
                     .s3ObjectVersionId(uploadResult.getObjectVersionId())
                     .build();
-            files.add(ref);
 
-            validationDataSetRepository.save(validationDataSetEntity);
+            validationDataSetRepository.pushFileRef(validationDataSetEntity.getId(), ref);
         }
     }
 
