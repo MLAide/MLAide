@@ -13,8 +13,9 @@ export class UserEffects {
     this.actions$.pipe(
       ofType(isUserAuthenticated),
       filter(action => action.isUserAuthenticated),
-      mergeMap(() => this.userApi.getCurrentUser()),
-      map((currentUser) => currentUserChanged({ currentUser }))
+      mergeMap(() => this.userApi.getCurrentUser().pipe(
+        map((currentUser) => currentUserChanged({ currentUser }))
+      )),
     )
   );
 
@@ -28,9 +29,10 @@ export class UserEffects {
   updateUserProfile$ = createEffect(() =>
     this.actions$.pipe(
       ofType(editUserProfile),
-      mergeMap((action) => this.userApi.updateCurrentUser(action.user)),
-      map((user) => editUserProfileSucceeded({ user })),
-      catchError(error => of(editUserProfileFailed({ payload: error })))
+      mergeMap((action) => this.userApi.updateCurrentUser(action.user).pipe(
+        map((user) => editUserProfileSucceeded({ user })),
+        catchError(error => of(editUserProfileFailed({ payload: error })))
+      )),
     )
   );
 

@@ -26,10 +26,11 @@ export class ProjectMemberEffects {
         action.type !== projectMemberActions.deleteProjectMemberSucceeded.type
         || (action as any).projectMember.email !== currentUser.email),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([_, projectKey]) => this.projectMemberApi.getProjectMembers(projectKey)),
-      map((projectMemberListResponse) => ({ projectMembers: projectMemberListResponse.items })),
-      map((projectMembers) => projectMemberActions.loadProjectMembersSucceeded(projectMembers)),
-      catchError((error) => of(projectMemberActions.loadProjectMembersFailed({payload: error })))
+      mergeMap(([_, projectKey]) => this.projectMemberApi.getProjectMembers(projectKey).pipe(
+        map((projectMemberListResponse) => ({ projectMembers: projectMemberListResponse.items })),
+        map((projectMembers) => projectMemberActions.loadProjectMembersSucceeded(projectMembers)),
+        catchError((error) => of(projectMemberActions.loadProjectMembersFailed({payload: error })))
+      )),
     )
   );
 
@@ -58,14 +59,11 @@ export class ProjectMemberEffects {
     this.actions$.pipe(
       ofType(projectMemberActions.addProjectMember),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([action, projectKey]) => {
-        return this.projectMemberApi.patchProjectMembers(
-          projectKey,
-          action.projectMember
-        );
-      }),
-      map(() => projectMemberActions.addProjectMemberSucceeded()),
-      catchError((error) => of(projectMemberActions.addProjectMemberFailed(error)))
+      mergeMap(([action, projectKey]) => this.projectMemberApi.patchProjectMembers(projectKey, action.projectMember).pipe(
+          map(() => projectMemberActions.addProjectMemberSucceeded()),
+          catchError((error) => of(projectMemberActions.addProjectMemberFailed(error)))
+        )
+      ),
     )
   );
 
@@ -85,14 +83,11 @@ export class ProjectMemberEffects {
     this.actions$.pipe(
       ofType(projectMemberActions.editProjectMember),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([action, projectKey]) => {
-        return this.projectMemberApi.patchProjectMembers(
-          projectKey,
-          action.projectMember
-        );
-      }),
-      map(() => projectMemberActions.editProjectMemberSucceeded()),
-      catchError((error) => of(projectMemberActions.editProjectMemberFailed({payload: error })))
+      mergeMap(([action, projectKey]) => this.projectMemberApi.patchProjectMembers(projectKey, action.projectMember).pipe(
+          map(() => projectMemberActions.editProjectMemberSucceeded()),
+          catchError((error) => of(projectMemberActions.editProjectMemberFailed({payload: error })))
+        )
+      ),
     )
   );
 
@@ -155,10 +150,12 @@ export class ProjectMemberEffects {
       ofType(projectMemberActions.deleteProjectMember),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       mergeMap(([action, projectKey]) =>
-        this.projectMemberApi.deleteProjectMember(projectKey, action.projectMember.email).pipe(map(() => action.projectMember))
+        this.projectMemberApi.deleteProjectMember(projectKey, action.projectMember.email).pipe(
+          map(() => action.projectMember),
+          map((projectMember) => projectMemberActions.deleteProjectMemberSucceeded({ projectMember })),
+          catchError((error) => of(projectMemberActions.deleteProjectMemberFailed({payload: error })))
+        )
       ),
-      map((projectMember) => projectMemberActions.deleteProjectMemberSucceeded({ projectMember })),
-      catchError((error) => of(projectMemberActions.deleteProjectMemberFailed({payload: error })))
     )
   );
 

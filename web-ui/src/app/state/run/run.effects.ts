@@ -17,9 +17,10 @@ export class RunEffects {
       ofType(runActions.loadCurrentRun),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       concatLatestFrom(() => this.store.select(selectCurrentRunKey)),
-      mergeMap(([[_, projectKey], runKey]) => this.runApi.getRun(projectKey, runKey)),
-      map((run) => runActions.loadCurrentRunSucceeded({ run: run })),
-      catchError((error) => of(runActions.loadCurrentRunFailed({ payload: error })))
+      mergeMap(([[_, projectKey], runKey]) => this.runApi.getRun(projectKey, runKey).pipe(
+        map((run) => runActions.loadCurrentRunSucceeded({ run: run })),
+        catchError((error) => of(runActions.loadCurrentRunFailed({ payload: error })))
+      )),
     )
   );
 
@@ -40,9 +41,10 @@ export class RunEffects {
       ofType(runActions.editRunNote),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       concatLatestFrom(() => this.store.select(selectCurrentRunKey)),
-      mergeMap(([[action, projectKey], runKey]) => this.runApi.updateRunNote(projectKey, runKey, action.note)),
-      map(note => runActions.editRunNoteSucceeded({ note })),
-      catchError((error) => of(runActions.editRunNoteFailed({ payload: error })))
+      mergeMap(([[action, projectKey], runKey]) => this.runApi.updateRunNote(projectKey, runKey, action.note).pipe(
+        map(note => runActions.editRunNoteSucceeded({ note })),
+        catchError((error) => of(runActions.editRunNoteFailed({ payload: error })))
+      )),
     )
   );
 
@@ -101,10 +103,11 @@ export class RunEffects {
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       concatLatestFrom(() => this.store.select(selectSelectedRunKeys)),
       filter(([[_, projectKey], runKeys]) => runKeys.length === 2),
-      mergeMap(([[_, projectKey], runKeys]) => this.runApi.getGitDiffsByRunKeys(projectKey, runKeys[0], runKeys[1])),
-      map((gitDiff) => ({ gitDiff: gitDiff })),
-      map((gitDiff) => runActions.loadGitDiffByRunKeysSucceeded(gitDiff)),
-      catchError((error) => of(runActions.loadGitDiffByRunKeysFailed({ payload: error })))
+      mergeMap(([[_, projectKey], runKeys]) => this.runApi.getGitDiffsByRunKeys(projectKey, runKeys[0], runKeys[1]).pipe(
+        map((gitDiff) => ({ gitDiff: gitDiff })),
+        map((gitDiff) => runActions.loadGitDiffByRunKeysSucceeded(gitDiff)),
+        catchError((error) => of(runActions.loadGitDiffByRunKeysFailed({ payload: error })))
+      )),
     )
   );
 
@@ -124,10 +127,11 @@ export class RunEffects {
     this.actions$.pipe(
       ofType(runActions.loadRuns),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([_, projectKey]) => this.runApi.getRuns(projectKey)),
-      map((runListResponse) => ({ runs: runListResponse.items })),
-      map((runs) => runActions.loadRunsSucceeded(runs)),
-      catchError((error) => of(runActions.loadRunsFailed({ payload: error })))
+      mergeMap(([_, projectKey]) => this.runApi.getRuns(projectKey).pipe(
+        map((runListResponse) => ({ runs: runListResponse.items })),
+        map((runs) => runActions.loadRunsSucceeded(runs)),
+        catchError((error) => of(runActions.loadRunsFailed({ payload: error })))
+      )),
     )
   );
 
@@ -148,10 +152,11 @@ export class RunEffects {
       ofType(runActions.loadRunsByRunKeys),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       concatLatestFrom(() => this.store.select(selectSelectedRunKeys)),
-      mergeMap(([[_, projectKey], runKeys]) => this.runApi.getRunsByRunKeys(projectKey, runKeys)),
-      map((runListResponse) => ({ runs: runListResponse.items })),
-      map((runs) => runActions.loadRunsByRunKeysSucceeded(runs)),
-      catchError((error) => of(runActions.loadRunsByRunKeysFailed({ payload: error })))
+      mergeMap(([[_, projectKey], runKeys]) => this.runApi.getRunsByRunKeys(projectKey, runKeys).pipe(
+        map((runListResponse) => ({ runs: runListResponse.items })),
+        map((runs) => runActions.loadRunsByRunKeysSucceeded(runs)),
+        catchError((error) => of(runActions.loadRunsByRunKeysFailed({ payload: error })))
+      )),
     )
   );
 

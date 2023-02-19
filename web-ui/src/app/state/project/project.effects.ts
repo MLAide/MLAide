@@ -45,9 +45,10 @@ export class ProjectEffects {
     this.actions$.pipe(
       ofType(loadProject),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([_, projectKey]) => this.projectApi.getProject(projectKey)),
-      map((project) => loadProjectSucceeded({ project })),
-      catchError((error) => of(loadProjectFailed({ payload: error })))
+      mergeMap(([_, projectKey]) => this.projectApi.getProject(projectKey).pipe(
+        map((project) => loadProjectSucceeded({ project })),
+        catchError((error) => of(loadProjectFailed({ payload: error })))
+      )),
     )
   );
 

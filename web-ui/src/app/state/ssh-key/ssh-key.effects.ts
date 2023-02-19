@@ -14,10 +14,11 @@ export class SshKeyEffects {
   loadSshKeys$ = createEffect(() =>
     this.actions$.pipe(
       ofType(actions.loadSshKeys),
-      mergeMap(() => this.userApi.getSshKeys()),
-      map((sshKeyListResponse) => ({ sshKeys: sshKeyListResponse.items })),
-      map((sshKeys) => actions.loadSshKeysSucceeded(sshKeys)),
-      catchError((error) => of(actions.loadSshKeysFailed({ payload: error })))
+      mergeMap(() => this.userApi.getSshKeys().pipe(
+        map((sshKeyListResponse) => ({ sshKeys: sshKeyListResponse.items })),
+        map((sshKeys) => actions.loadSshKeysSucceeded(sshKeys)),
+        catchError((error) => of(actions.loadSshKeysFailed({ payload: error })))
+      )),
     )
   );
 
@@ -35,9 +36,10 @@ export class SshKeyEffects {
   addSshKey$ = createEffect(() =>
     this.actions$.pipe(
       ofType(actions.addSshKey),
-      mergeMap(action => this.userApi.createSshKey(action.sshKey)),
-      map((sshKey) => actions.addSshKeySucceeded({ sshKey })),
-      catchError((error) => of(actions.addSshKeyFailed({ payload: error })))
+      mergeMap(action => this.userApi.createSshKey(action.sshKey).pipe(
+        map((sshKey) => actions.addSshKeySucceeded({ sshKey })),
+        catchError((error) => of(actions.addSshKeyFailed({ payload: error })))
+      )),
     )
   );
 
@@ -87,9 +89,10 @@ export class SshKeyEffects {
   deleteSshKey$ = createEffect(() =>
     this.actions$.pipe(
       ofType(actions.deleteSshKey),
-      mergeMap((action) => this.userApi.deleteSshKey(action.sshKey)),
-      map(() => actions.deleteSshKeySucceeded()),
-      catchError((error) => of(actions.deleteSshKeyFailed({ payload: error })))
+      mergeMap((action) => this.userApi.deleteSshKey(action.sshKey).pipe(
+        map(() => actions.deleteSshKeySucceeded()),
+        catchError((error) => of(actions.deleteSshKeyFailed({ payload: error })))
+      )),
     )
   );
 

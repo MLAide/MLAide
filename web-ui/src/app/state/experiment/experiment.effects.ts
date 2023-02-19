@@ -21,10 +21,11 @@ export class ExperimentEffects {
     this.actions$.pipe(
       ofType(experimentActions.loadExperiments),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([_, projectKey]) => this.experimentsApi.getExperiments(projectKey)),
-      map((experimentListResponse) => ({ experiments: experimentListResponse.items })),
-      map((experiments) => experimentActions.loadExperimentsSucceeded(experiments)),
-      catchError((error) => of(experimentActions.loadExperimentsFailed({ payload: error })))
+      mergeMap(([_, projectKey]) => this.experimentsApi.getExperiments(projectKey).pipe(
+        map((experimentListResponse) => ({ experiments: experimentListResponse.items })),
+        map((experiments) => experimentActions.loadExperimentsSucceeded(experiments)),
+        catchError((error) => of(experimentActions.loadExperimentsFailed({ payload: error })))
+      )),
     )
   );
 
@@ -78,20 +79,21 @@ export class ExperimentEffects {
     )
   );
 
-  editExperiment$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(experimentActions.editExperiment),
-      concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([action, projectKey]) => this.experimentsApi.patchExperiment(projectKey, action.experiment.key, action.experiment)),
-      map((experiment) => experimentActions.editExperimentSucceeded({ experiment })),
-      catchError((error) => of(experimentActions.editExperimentFailed({ payload: error })))
-    )
-  );
-
   refreshExperiments$ = createEffect(() =>
     this.actions$.pipe(
       ofType(experimentActions.editExperimentSucceeded),
       map(() => experimentActions.loadExperiments())
+    )
+  );
+
+  editExperiment$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(experimentActions.editExperiment),
+      concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
+      mergeMap(([action, projectKey]) => this.experimentsApi.patchExperiment(projectKey, action.experiment.key, action.experiment).pipe(
+        map((experiment) => experimentActions.editExperimentSucceeded({ experiment })),
+        catchError((error) => of(experimentActions.editExperimentFailed({ payload: error })))
+      )),
     )
   );
 

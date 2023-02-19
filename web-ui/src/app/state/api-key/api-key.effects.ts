@@ -13,10 +13,11 @@ export class ApiKeyEffects {
   loadApiKeys$ = createEffect(() =>
     this.actions$.pipe(
       ofType(actions.loadApiKeys),
-      mergeMap(() => this.userApi.getApiKeys()),
-      map((apiKeyListResponse) => ({ apiKeys: apiKeyListResponse.items })),
-      map((apiKeys) => actions.loadApiKeysSucceeded(apiKeys)),
-      catchError((error) => of(actions.loadApiKeysFailed({ payload: error })))
+      mergeMap(() => this.userApi.getApiKeys().pipe(
+        map((apiKeyListResponse) => ({ apiKeys: apiKeyListResponse.items })),
+        map((apiKeys) => actions.loadApiKeysSucceeded(apiKeys)),
+        catchError((error) => of(actions.loadApiKeysFailed({ payload: error })))
+      )),
     )
   );
 
@@ -34,9 +35,10 @@ export class ApiKeyEffects {
   addApiKey$ = createEffect(() =>
     this.actions$.pipe(
       ofType(actions.addApiKey),
-      mergeMap(action => this.userApi.createApiKey(action.apiKey)),
-      map((apiKey) => actions.addApiKeySucceeded({ apiKey })),
-      catchError((error) => of(actions.addApiKeyFailed({ payload: error })))
+      mergeMap(action => this.userApi.createApiKey(action.apiKey).pipe(
+        map((apiKey) => actions.addApiKeySucceeded({ apiKey })),
+        catchError((error) => of(actions.addApiKeyFailed({ payload: error })))
+      )),
     )
   );
 
@@ -86,9 +88,10 @@ export class ApiKeyEffects {
   deleteApiKey$ = createEffect(() =>
     this.actions$.pipe(
       ofType(actions.deleteApiKey),
-      mergeMap((action) => this.userApi.deleteApiKey(action.apiKey)),
-      map(() => actions.deleteApiKeySucceeded()),
-      catchError((error) => of(actions.deleteApiKeyFailed({ payload: error })))
+      mergeMap((action) => this.userApi.deleteApiKey(action.apiKey).pipe(
+        map(() => actions.deleteApiKeySucceeded()),
+        catchError((error) => of(actions.deleteApiKeyFailed({ payload: error })))
+      )),
     )
   );
 

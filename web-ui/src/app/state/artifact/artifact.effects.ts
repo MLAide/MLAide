@@ -20,10 +20,11 @@ export class ArtifactEffects {
     this.actions$.pipe(
       ofType(artifactActions.loadModels),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([action, projectKey]) => this.artifactApi.getArtifacts(projectKey, true)),
-      map((artifactListResponse) => ({ models: artifactListResponse.items })),
-      map((models) => artifactActions.loadModelsSucceeded(models)),
-      catchError((error) => of(artifactActions.loadModelsFailed({payload: error})))
+      mergeMap(([action, projectKey]) => this.artifactApi.getArtifacts(projectKey, true).pipe(
+        map((artifactListResponse) => ({ models: artifactListResponse.items })),
+        map((models) => artifactActions.loadModelsSucceeded(models)),
+        catchError((error) => of(artifactActions.loadModelsFailed({payload: error})))
+      )),
     )
   );
 
@@ -50,10 +51,11 @@ export class ArtifactEffects {
     this.actions$.pipe(
       ofType(artifactActions.loadArtifacts),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
-      mergeMap(([action, projectKey]) => this.artifactApi.getArtifacts(projectKey)),
-      map((artifactListResponse) => ({ artifacts: artifactListResponse.items })),
-      map((artifacts) => artifactActions.loadArtifactsSucceeded(artifacts)),
-      catchError((error) => of(artifactActions.loadArtifactsFailed({payload: error})))
+      mergeMap(([action, projectKey]) => this.artifactApi.getArtifacts(projectKey).pipe(
+        map((artifactListResponse) => ({ artifacts: artifactListResponse.items })),
+        map((artifacts) => artifactActions.loadArtifactsSucceeded(artifacts)),
+        catchError((error) => of(artifactActions.loadArtifactsFailed({payload: error})))
+      )),
     )
   );
 
@@ -84,10 +86,11 @@ export class ArtifactEffects {
           editModelData.modelName,
           editModelData.version,
           createOrUpdateModel
+        ).pipe(
+            map(() => artifactActions.editModelSucceeded()),
+            catchError((error) => of(artifactActions.editModelFailed({payload: error})))
         );
       }),
-      map(() => artifactActions.editModelSucceeded()),
-      catchError((error) => of(artifactActions.editModelFailed({payload: error})))
     )
   );
 
@@ -144,21 +147,22 @@ export class ArtifactEffects {
   downloadArtifact$ = createEffect(() =>
     this.actions$.pipe(
       ofType(artifactActions.downloadArtifact),
-      mergeMap((action) => this.artifactApi.download(action.projectKey, action.artifactName, action.artifactVersion, action.artifactFileId)),
-      map((response) => {
-        const blob = new Blob([response.body], {
-          type: response.headers.get("Content-Type"),
-        });
-        const contentDisposition: string = response.headers.get("Content-Disposition");
-        // https://stackoverflow.com/questions/23054475/javascript-regex-for-extracting-filename-from-content-disposition-header/23054920
-        const regEx = new RegExp(/filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/gi);
+      mergeMap((action) => this.artifactApi.download(action.projectKey, action.artifactName, action.artifactVersion, action.artifactFileId).pipe(
+        map((response) => {
+          const blob = new Blob([response.body], {
+            type: response.headers.get("Content-Type"),
+          });
+          const contentDisposition: string = response.headers.get("Content-Disposition");
+          // https://stackoverflow.com/questions/23054475/javascript-regex-for-extracting-filename-from-content-disposition-header/23054920
+          const regEx = new RegExp(/filename\*?=['"]?(?:UTF-\d['"]*)?([^;\r\n"']*)['"]?;?/gi);
 
-        const fileName = regEx.exec(contentDisposition)[1];
+          const fileName = regEx.exec(contentDisposition)[1];
 
-        return { blob, fileName };
-      }),
-      map((downloadResult) => artifactActions.downloadArtifactSucceeded(downloadResult)),
-      catchError((error) => of(artifactActions.downloadArtifactFailed({payload: error})))
+          return { blob, fileName };
+        }),
+        map((downloadResult) => artifactActions.downloadArtifactSucceeded(downloadResult)),
+        catchError((error) => of(artifactActions.downloadArtifactFailed({payload: error})))
+      )),
     )
   );
 
@@ -189,10 +193,12 @@ export class ArtifactEffects {
       ofType(artifactActions.loadArtifactsOfCurrentRun),
       concatLatestFrom(() => this.store.select(selectCurrentProjectKey)),
       concatLatestFrom(() => this.store.select(selectCurrentRunKey)),
-      mergeMap(([[action, projectKey], runKey]) => this.artifactApi.getArtifactsByRunKeys(projectKey, [runKey])),
-      map((response) => response.items),
-      map((artifacts) => artifactActions.loadArtifactsOfCurrentRunSucceeded({ artifacts })),
-      catchError((error) => of(artifactActions.loadArtifactsOfCurrentRunFailed({payload: error})))
+      mergeMap(([[action, projectKey], runKey]) => this.artifactApi.getArtifactsByRunKeys(projectKey, [runKey]).pipe(
+          map((response) => response.items),
+          map((artifacts) => artifactActions.loadArtifactsOfCurrentRunSucceeded({ artifacts })),
+          catchError((error) => of(artifactActions.loadArtifactsOfCurrentRunFailed({payload: error})))
+        )
+      ),
     )
   );
 
