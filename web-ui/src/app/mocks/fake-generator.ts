@@ -7,6 +7,7 @@ import { GitDiff, Run, RunStatus } from "@mlaide/state/run/run.models";
 import { Experiment } from "@mlaide/state/experiment/experiment.models";
 import { ApiKey } from "@mlaide/state/api-key/api-key.models";
 import { SshKey } from "@mlaide/state/ssh-key/ssh-key.models";
+import { ValidationDataSet } from "@mlaide/state/validation-data-set/validation-data-set.models";
 
 const artifactFileSchemaFunction = (faker) => {
   return {
@@ -341,6 +342,39 @@ const userSchema = {
   },
 };
 
+const validationDataSetFileSchemaFunction = (faker) => {
+  return {
+    fileId: faker.datatype.uuid(),
+    fileName: faker.system.fileName(),
+  };
+};
+
+const validationDataSetSchema = {
+  createdAt: {
+    faker: "date.past",
+  },
+  createdBy: {
+    function() {
+      return userSchemaFunction(this.faker);
+    },
+  },
+  files: [
+    {
+      function() {
+        return validationDataSetFileSchemaFunction(this.faker);
+      },
+      length: 2,
+      fixedLength: false,
+    },
+  ],
+  name: {
+    faker: "lorem.slug",
+  },
+  version: {
+    faker: "datatype.number",
+  },
+};
+
 export const getRandomApiKeys = async (count: number = 1): Promise<ApiKey[]> => {
   const mockerResult = await mocker().schema("fakeApiKeys", apiKeySchema, count).build();
 
@@ -455,4 +489,15 @@ export const getRandomUsers = async (count: number = 1): Promise<User[]> => {
 export const getRandomUser = async (): Promise<User> => {
   const users = await getRandomUsers();
   return users[0];
+};
+
+export const getRandomValidationDataSet = async (): Promise<ValidationDataSet> => {
+  const validationDataSets = await getRandomValidationDataSets();
+  return validationDataSets[0];
+};
+
+export const getRandomValidationDataSets = async (count: number = 1): Promise<ValidationDataSet[]> => {
+  const mockerResult = await mocker().schema("fakeValidationDataSets", validationDataSetSchema, count).build();
+
+  return mockerResult.fakeValidationDataSets;
 };
