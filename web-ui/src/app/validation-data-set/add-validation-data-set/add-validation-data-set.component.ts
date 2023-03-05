@@ -1,19 +1,13 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from "@angular/core";
+import { Component, Inject, OnInit } from "@angular/core";
 import { ENTER } from "@angular/cdk/keycodes";
 import { Store } from "@ngrx/store";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { FileHash, ValidationDataSet } from "@mlaide/state/validation-data-set/validation-data-set.models";
+import { ValidationDataSet } from "@mlaide/state/validation-data-set/validation-data-set.models";
 import {
   closeAddValidationDataSetDialog, addValidationDataSetWithFiles
 } from "@mlaide/state/validation-data-set/validation-data-set.actions";
 import { UploadFilesWithFileHashes } from "@mlaide/shared/components/file-upload/file-upload.component";
-import {
-  selectFoundValidationDataSetWithFileHashes
-} from "@mlaide/state/validation-data-set/validation-data-set.selectors";
-import { tap } from "rxjs/operators";
-import { Observable } from "rxjs";
-import { AppState } from "@mlaide/state/app.state";
 
 @Component({
   selector: 'app-add-validation-data-set',
@@ -22,7 +16,6 @@ import { AppState } from "@mlaide/state/app.state";
 })
 export class AddValidationDataSetComponent implements OnInit {
     public form: FormGroup;
-public foundValidationDataSetWithFileHashes$: Observable<ValidationDataSet>;
     private uploadFilesWithFileHashes: UploadFilesWithFileHashes[]
 
   constructor(
@@ -42,7 +35,6 @@ public foundValidationDataSetWithFileHashes$: Observable<ValidationDataSet>;
 }
 
   ngOnInit(): void {
-      this.foundValidationDataSetWithFileHashes$ = this.store.select(selectFoundValidationDataSetWithFileHashes);
   }
 
   public logMyFiles(uploadFilesWithHashes: UploadFilesWithFileHashes[]) {
@@ -54,7 +46,7 @@ public foundValidationDataSetWithFileHashes$: Observable<ValidationDataSet>;
   }
 
   public keyDown(event) {
-    /*if (event.keyCode === ENTER) {
+    if (event.keyCode === ENTER) {
       if (this.form.valid) {
         this.save();
       } else {
@@ -63,7 +55,7 @@ public foundValidationDataSetWithFileHashes$: Observable<ValidationDataSet>;
           control.markAsTouched({ onlySelf: true });
         });
       }
-    }*/
+    }
   }
 
   public save() {
