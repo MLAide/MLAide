@@ -47,7 +47,7 @@ export class ValidationDataSetEffects {
                   return this.addValidationDataSetAndUploadFiles(projectKey, action.validationDataSet, action.uploadFilesWithFileHashes);
                 }
               }
-              throwError(error);
+              return throwError(error);
             }),
             reduce((arr, addValidationDataSetAndUploadFilesResult) => {
               arr.push(addValidationDataSetAndUploadFilesResult)
@@ -55,7 +55,7 @@ export class ValidationDataSetEffects {
             }, []),
             map(() => validationDataActions.addValidationDataSetWithFilesSucceeded()),
             catchError((error) => {
-              return of(validationDataActions.addValidationDataSetWithFilesFailed(error));
+              return of(validationDataActions.addValidationDataSetWithFilesFailed({ payload: error }));
             })
           );
         }),
@@ -66,7 +66,7 @@ export class ValidationDataSetEffects {
   addValidationDataSetWithFilesSucceeded$ = createEffect(() =>
       this.actions$.pipe(
         ofType(validationDataActions.addValidationDataSetWithFilesSucceeded),
-        switchMap((action) => {
+        switchMap(() => {
           const message = "The validation data set was created or updated successfully";
 
           return [
