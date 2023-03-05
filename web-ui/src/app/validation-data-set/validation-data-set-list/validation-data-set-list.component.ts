@@ -15,7 +15,7 @@ export class ValidationDataSetListComponent implements OnInit {
   }
 
 
-  public addValidationDataSet(): void {
+  public openAddValidationDataSetDialog(): void {
     this.store.dispatch(openAddValidationDataSetDialog());
   }
 }
