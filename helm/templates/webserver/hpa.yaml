@@ -1,0 +1,28 @@
+{{- if .Values.webserver.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "mlaide.fullname" . }}
+  labels:
+    {{- include "mlaide.webserver.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "mlaide.fullname" . }}
+  minReplicas: {{ .Values.webserver.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.webserver.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.webserver.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.webserver.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.webserver.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.webserver.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

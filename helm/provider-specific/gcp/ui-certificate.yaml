@@ -1,0 +1,7 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: mlaide-ui-cert
+spec:
+  domains:
+  - {{ .Values.ui.ingress.domain }}
