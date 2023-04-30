@@ -22,3 +22,6 @@ contribution/
 .idea/
 *.tmproj
 .vscode/
+
+# GitHub Pages
+index.html
