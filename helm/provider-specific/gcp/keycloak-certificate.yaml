@@ -1,7 +1,0 @@
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
-metadata:
-  name: mlaide-keycloak-cert
-spec:
-  domains:
-  - {{ .Values.keycloak.ingress.domain }}
