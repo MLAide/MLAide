@@ -8,7 +8,7 @@
       <input matInput formControlName="name" placeholder="Validation data set name" cdkFocusInitial required />
       <mat-error *ngIf="form.get('name').hasError('required')" i18n> You must provide a validation data set name. </mat-error>
     </mat-form-field>
-    <app-file-upload (newFilesForUploadWithHashesAddedEvent)="logMyFiles($event)"></app-file-upload>
+    <app-file-upload (newFilesForUploadWithHashesAddedEvent)="updateFilesForUploadWithHashes($event)"></app-file-upload>
   </mat-dialog-content>
   </div>
   <mat-dialog-actions align="end">
@@ -17,12 +17,12 @@
     <button
       id="add-validation-data-set-upload-button"
       mat-button
-      (click)="save()"
+      (click)="create()"
       type="submit"
       color="primary"
       cdkFocusInitial
       i18n
     >
-      Upload
+      Create
     </button>
   </mat-dialog-actions>

@@ -37,7 +37,7 @@ export class AddValidationDataSetComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  public logMyFiles(uploadFilesWithHashes: UploadFilesWithFileHashes[]) {
+  public updateFilesForUploadWithHashes(uploadFilesWithHashes: UploadFilesWithFileHashes[]) {
       this.uploadFilesWithFileHashes = uploadFilesWithHashes;
   }
 
@@ -48,7 +48,7 @@ export class AddValidationDataSetComponent implements OnInit {
   public keyDown(event) {
     if (event.keyCode === ENTER) {
       if (this.form.valid) {
-        this.save();
+        this.create();
       } else {
         Object.keys(this.form.controls).forEach((field) => {
           const control = this.form.get(field);
@@ -58,7 +58,7 @@ export class AddValidationDataSetComponent implements OnInit {
     }
   }
 
-  public save() {
+  public create() {
       this.store.dispatch(addValidationDataSetWithFiles({ validationDataSet: this.form.value, uploadFilesWithFileHashes: this.uploadFilesWithFileHashes }));
   }
 }
