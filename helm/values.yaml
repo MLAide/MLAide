@@ -1,61 +1,73 @@
-# Default values for mlaide.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
+# -- The name of the secret containing docker registry credentials.
+# Secret must exist in the same namespace as the helm release.
 imagePullSecrets: []
+
+# -- String to partially override mlaide.fullname template (will maintain the release name)
 nameOverride: ""
+
+# -- String to fully override mlaide.fullname template
 fullnameOverride: ""
 
 ui:
+  # -- The number of replicas of the UI deployment.
   replicaCount: 1
 
   image:
+    # The image repository of the MLAide UI image.
     repository: mlaide/web-ui
-    pullPolicy: IfNotPresent
+    # -- The tag of the MLAide UI image.
     tag: latest
+    # -- The pull policy for the MLAide UI image.
+    pullPolicy: IfNotPresent
 
   serviceAccount:
-    # Specifies whether a service account should be created
+    # -- Specifies whether a service account should be created.
     create: true
-    # Annotations to add to the service account
+    # -- Annotations to add to the service account.
     annotations: {}
-    # The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
+    # -- The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template.
     name: "ui"
 
+  # -- Pod annotations for MLAide UI.
   podAnnotations: {}
 
+  # -- Pod security context configuration to be applied for MLAide UI.
   podSecurityContext: {}
-    # fsGroup: 2000
 
+  # -- Container security context configuration to be applied for MLAide UI.
   securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
 
   service:
+    # -- The type of service to create for the MLAide UI.
     type: ClusterIP
+    # -- The port for the MLAide UI service.
     port: 80
 
   ingress:
+    # -- Specifies whether a ingress should be created.
     enabled: false
+    # -- The name of the Ingress Class associated with the ingress.
     className: ""
+    # -- Ingress annotations.
     annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
     hosts:
-      - host: chart-example.local
+      - 
+        # -- Host for the ingress rule.
+        host:
         paths:
-          - path: /
+          - 
+            # -- Path for the Ingress rule.
+            path: /
+            # -- Path Type for the Ingress rule.
             pathType: ImplementationSpecific
+    # -- TLS configuration.
     tls: []
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
 
+  # -- Pod resource requests and limits.
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -69,68 +81,86 @@ ui:
     #   memory: 128Mi
 
   autoscaling:
+    # -- Specifies whether autoscaling should be enabled.
     enabled: false
+    # -- The minimum number of Pods when autoscaling is enabled.
     minReplicas: 1
+    # -- The maximum number of Pods when autoscaling is enabled.
     maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
+    # -- The target CPU utilization for the horizontal pod autoscaler.
+    targetCPUUtilizationPercentage:
+    # -- The target memory utilization for the horizontal pod autoscaler.
+    targetMemoryUtilizationPercentage:
 
+  # -- Node labels for Pod assignment.
   nodeSelector: {}
 
+  # -- Node taints to tolerate.
   tolerations: []
 
+  # -- Pod affinity.
   affinity: {}
 
 webserver:
+  # -- The number of replicas of the webserver deployment.
   replicaCount: 1
 
   image:
+    # The image repository of the MLAide webserver image.
     repository: mlaide/webserver
-    pullPolicy: IfNotPresent
+    # -- The tag of the MLAide webserver image.
     tag: latest
+    # -- The pull policy for the MLAide webserver image.
+    pullPolicy: IfNotPresent
 
   serviceAccount:
-    # Specifies whether a service account should be created
+    # -- Specifies whether a service account should be created.
     create: true
-    # Annotations to add to the service account
+    # -- Annotations to add to the service account.
     annotations: {}
-    # The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
+    # -- The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template.
     name: "webserver"
 
+  # -- Pod annotations for MLAide webserver.
   podAnnotations: {}
 
+  # -- Pod security context configuration to be applied for MLAide webserver.
   podSecurityContext: {}
-    # fsGroup: 2000
 
+  # -- Container security context configuration to be applied for MLAide webserver.
   securityContext: {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
 
   service:
+    # -- The type of service to create for the MLAide webserver.
     type: ClusterIP
+    # -- The port for the MLAide webserver service.
     port: 80
 
   ingress:
+    # -- Specifies whether a ingress should be created.
     enabled: false
+    # -- The name of the Ingress Class associated with the ingress.
     className: ""
+    # -- Ingress annotations.
     annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
     hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
+      - 
+        # -- Host for the ingress rule.
+        host:
+        paths:
+          - 
+            # -- Path for the Ingress rule.
+            path: /
+            # -- Path Type for the Ingress rule.
+            pathType: ImplementationSpecific
+    # -- TLS configuration.
     tls: []
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
 
+  # -- Pod resource requests and limits.
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -144,69 +174,106 @@ webserver:
     #   memory: 128Mi
 
   autoscaling:
+    # -- Specifies whether autoscaling should be enabled.
     enabled: false
+    # -- The minimum number of Pods when autoscaling is enabled.
     minReplicas: 1
+    # -- The maximum number of Pods when autoscaling is enabled.
     maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
+    # -- The target CPU utilization for the horizontal pod autoscaler.
+    targetCPUUtilizationPercentage:
+    # -- The target memory utilization for the horizontal pod autoscaler.
+    targetMemoryUtilizationPercentage:
 
+  # -- Node labels for Pod assignment.
   nodeSelector: {}
 
+  # -- Node taints to tolerate.
   tolerations: []
 
+  # -- Pod affinity.
   affinity: {}
 
-  loggingLevel: "DEBUG"
+  # -- The logging level. Must be one of [TRACE, DEBUG, INFO, WARN, ERROR]
+  loggingLevel: "INFO"
 
   mongodb:
-    host: ""
-    port: ""
-    username: ""
-    password: ""
-    database: ""
+    # -- (string) The MongoDB® hostname.
+    host:
+    # -- (string) The MongoDB® port.
+    port:
+    # -- (string) The MongoDB® username. This will be stored as a kubernetes secret.
+    username:
+    # -- (string) The MongoDB® password. This will be stored as a kubernetes secret.
+    password:
+    # -- (string) The MongoDB® database name.
+    database:
 
   s3:
-    host: ""
-    port: ""
-    accessKey: ""
-    secretKey: ""
+    # -- (string) The S3 hostname.
+    host:
+    # -- (string) The S3 port.
+    port:
+    # -- (string) The S3 access key. This will be stored as a kubernetes secret.
+    accessKey:
+    # -- (string) The S3 secret key. This will be stored as a kubernetes secret.
+    secretKey:
 
+# -- Configures OpenID Connect (OIDC) for MLAide.
+# @default -- see below
 oidc:
-  audience: ""
-  issuer: ""
-  scope: ""
+  # -- (string) The audience specified in the access token issued by the authorization server.
+  audience:
+  # -- (string) The issuer URL of the authorization server.
+  issuer:
+  # -- (string) The scopes to request during login.
+  scope:
   ui:
-    clientId: ""
+    # -- (string) The client ID of MLAide registered on the authorization server.
+    clientId:
   webserver:
-    jwkSetUri: ""
-    userInfoEndpoint: ""
-    nicknamePropertyName: ""
+    # -- (string) The JWKS URI provided by the authorization server.
+    jwkSetUri:
+    # -- (string) The User Info Endpoint URI provided by the authorization server to retrieve user details.
+    userInfoEndpoint:
+    # -- (string) The property name withing the user info JSON containing 
+    # the nickname/name of the user.
+    nicknamePropertyName:
 
 mongodb:
+  # -- Specifies whether this Helm chart should install MongoDB.
   enabled: false
 
 minio:
+  # -- Specifies whether this Helm chart should install MinIO (S3).
   enabled: false
 
 keycloak:
+  # -- Specifies whether this Helm chart should install Keycloak.
   enabled: false
+  # @ignored
   proxy: edge
+  # @ignored
   ingress:
     enabled: false
     domain: ""
     rules:
       - host: ""
     annotations: {}
+  # @ignored
   image:
     tag: 19.0.3-legacy
+  # @ignored
   extraVolumes: |
     - name: demo-realm-secret
       secret:
         secretName: demo-realm-secret
+  # @ignored
   extraVolumeMounts: |
     - name: demo-realm-secret
       mountPath: "/realm/"
       readOnly: true
+  # @ignored
   extraEnv: |
     - name: KEYCLOAK_IMPORT
       value: /realm/demo-realm.json
